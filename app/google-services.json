@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "220049840971",
+    "project_id": "confessme-b66d2",
+    "storage_bucket": "confessme-b66d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220049840971:android:53bec972b0d12ba8b226ce",
+        "android_client_info": {
+          "package_name": "com.example.confessapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220049840971-upm7mdl5ln42gpqoss7s649k9ni9qhk8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA7CjP54mRaWHjBGfySrMRdZ7zDbdlJ8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220049840971-upm7mdl5ln42gpqoss7s649k9ni9qhk8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

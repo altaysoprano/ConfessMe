@@ -1,0 +1,60 @@
+package com.example.arabamapp.viewmodel;
+
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+import com.example.arabamapp.Model.CarModel;
+import com.example.arabamapp.Model.CarModelDetail;
+import com.example.arabamapp.Network.APIService;
+import com.example.arabamapp.Network.RetroInstance;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class CarListViewModel extends ViewModel {
+
+    private MutableLiveData<List<CarModel>> carList;
+    private CarModel carModel;
+
+    public CarListViewModel() {
+        carList = new MutableLiveData<>();
+    }
+
+    public MutableLiveData<List<CarModel>> getCarList() {
+        return carList;
+    }
+
+    public CarModel getCar() {return carModel;}
+
+    public void makeApiCall(String categoryId, Integer minYear, Integer maxYear, Integer sort, Integer sortDirection,
+                            int take) {
+        APIService apiService = RetroInstance.getRetroClient().create(APIService.class);
+        Call<List<CarModel>> call = apiService.getCarList(categoryId, minYear, maxYear,
+                sort, sortDirection, take);
+        call.enqueue(new Callback<List<CarModel>>() {
+            @Override
+            public void onResponse(Call<List<CarModel>> call, Response<List<CarModel>> response) {
+                carList.postValue(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<CarModel>> call, Throwable t) {
+                carList.postValue(null);
+            }
+        });
+    }
+
+    public void makeApiCallforCar(int id) {
+        APIService apiService = RetroInstance.getRetroClient().create(APIService.class);
+        Call<CarModelDetail> call = apiService.getCar(id);
+        call.enqueue(new Callback<CarModel>() {
+            @Override
+            public void onResponse(Call<CarModel> call, Response<CarModel> response) {
+                carModel = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<CarModel> call, Thr
