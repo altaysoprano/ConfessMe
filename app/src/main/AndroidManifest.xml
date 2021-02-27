@@ -11,7 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".HomePageActivity"
+            android:theme="@style/ThemeMyApp"
+            ></activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/ThemeMyApp" />
         <activity
             android:name=".RegisterActivity"
             android:background="#000000"

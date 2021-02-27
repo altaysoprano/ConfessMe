@@ -6,4 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".HomePageActivity">
 
+    <include
+        android:id="@+id/home_page_toolbar"
+        layout="@layout/toolbar"></include>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

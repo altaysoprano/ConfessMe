@@ -83,6 +83,7 @@
             android:paddingEnd="15dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/custom_input_password"

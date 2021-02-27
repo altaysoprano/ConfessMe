@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -27,6 +29,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -45,11 +48,13 @@ public class SignInActivity extends AppCompatActivity {
     LinearLayout logoLayout;
     TextInputLayout emailTextInputLayout;
     TextInputEditText emailEditText;
+    TextInputEditText passwordEditText;
     TextView signUpTextView;
     TextInputLayout passwordTextInputLayout;
     private CallbackManager mCallbackManager;
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth mAuth;
     LoginButton facebookLoginButton;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,20 +69,76 @@ public class SignInActivity extends AppCompatActivity {
         logoLayout = findViewById(R.id.logo_layout);
         emailTextInputLayout = findViewById(R.id.email_textfield);
         emailEditText = findViewById(R.id.email_edit_text);
+        passwordEditText = findViewById(R.id.password_edit_text);
         passwordTextInputLayout = findViewById(R.id.password_textfield);
         nestedScrollView.setBackgroundColor(Color.WHITE);
         facebookLoginButton = findViewById(R.id.facebook_login_button);
         signUpTextView = findViewById(R.id.sign_up_text);
+
+        //ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Logging In...");
+
+        //Firebase
+        mAuth = FirebaseAuth.getInstance();
 
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SignInActivity.this, RegisterActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = emailEditText.getText().toString().trim();
+                String password = passwordEditText.getText().toString().trim();
+                if(email == null || email.isEmpty()) {
+                    emailEditText.setError("Email field cannot be left blank");
+                    emailEditText.setFocusable(true);
+                }
+                else if(password == null || password.isEmpty()) {
+                    passwordEditText.setError("Password field cannot be left blank");
+                    passwordEditText.setFocusable(true);
+                }
+                else {
+                    loginUser(email, password);
+                }
+            }
+        });
+    }
 
+    private void loginUser(String email, String password) {
+
+        progressDialog.show();
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            progressDialog.dismiss();
+                            // Sign in success, update UI with the signed-in user's information
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            startActivity(new Intent(SignInActivity.this, HomePageActivity.class));
+                            finish();
+                        } else {
+                            progressDialog.dismiss();
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(SignInActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Toast.makeText(SignInActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //Hide keyboard when click somewhere else
@@ -97,6 +158,7 @@ public class SignInActivity extends AppCompatActivity {
         }
         return super.dispatchTouchEvent( event );
     }
+
 
 
 }
