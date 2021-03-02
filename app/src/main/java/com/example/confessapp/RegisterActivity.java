@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(RegisterActivity.this, "Registered", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(RegisterActivity.this, ProfileActivity.class);
+                            Intent intent = new Intent(RegisterActivity.this, HomePageActivity.class);
                             startActivity(intent);
                             finish();
                         } else {

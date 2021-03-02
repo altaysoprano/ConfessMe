@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -51,10 +52,10 @@ public class SignInActivity extends AppCompatActivity {
     TextInputEditText passwordEditText;
     TextView signUpTextView;
     TextInputLayout passwordTextInputLayout;
-    private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
     LoginButton facebookLoginButton;
     ProgressDialog progressDialog;
+    TextView forgotPasswordText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,7 @@ public class SignInActivity extends AppCompatActivity {
         nestedScrollView.setBackgroundColor(Color.WHITE);
         facebookLoginButton = findViewById(R.id.facebook_login_button);
         signUpTextView = findViewById(R.id.sign_up_text);
+        forgotPasswordText = findViewById(R.id.forgot_password_text);
 
         //ProgressDialog
         progressDialog = new ProgressDialog(this);
@@ -88,6 +90,13 @@ public class SignInActivity extends AppCompatActivity {
                 Intent intent = new Intent(SignInActivity.this, RegisterActivity.class);
                 startActivity(intent);
                 finish();
+            }
+        });
+
+        forgotPasswordText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showRecoverPasswordDialog();
             }
         });
 
@@ -109,6 +118,11 @@ public class SignInActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void showRecoverPasswordDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Recover Password");
     }
 
     private void loginUser(String email, String password) {
@@ -158,6 +172,22 @@ public class SignInActivity extends AppCompatActivity {
         }
         return super.dispatchTouchEvent( event );
     }
+
+    @Override
+    protected void onStart() {
+        checkUserStatus();
+        super.onStart();
+    }
+
+    private void checkUserStatus() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if(user != null) {
+            startActivity(new Intent(SignInActivity.this, HomePageActivity.class));
+            finish();
+        }
+    }
+
 
 
 

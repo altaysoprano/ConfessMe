@@ -2,4 +2,7 @@
     <string name="app_name">ConfessApp</string>
     <string name="facebook_app_id">3988490407840116</string>
     <string name="fb_login_protocol_scheme">fb3988490407840116</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
