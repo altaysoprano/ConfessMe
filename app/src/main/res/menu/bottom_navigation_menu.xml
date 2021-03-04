@@ -9,13 +9,13 @@
     <item
         android:id="@+id/search"
         android:enabled="true"
-        android:icon="@drawable/ic_person"
+        android:icon="@drawable/ic_search"
         android:title="Search"/>
     <item
         android:id="@+id/profile"
         android:enabled="true"
-        android:icon="@drawable/ic_search"
-        android:title="Search"/>
+        android:icon="@drawable/ic_person"
+        android:title="Profile"/>
     <item
         android:id="@+id/inbox"
         android:enabled="true"

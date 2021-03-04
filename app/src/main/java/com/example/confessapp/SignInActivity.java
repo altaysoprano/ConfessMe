@@ -40,7 +40,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignInActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity implements RecoverDialog.RecoverDialogListener {
 
     NestedScrollView nestedScrollView;
     LinearLayout editTextLayout;
@@ -79,7 +79,6 @@ public class SignInActivity extends AppCompatActivity {
 
         //ProgressDialog
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Logging In...");
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -121,12 +120,13 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void showRecoverPasswordDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Recover Password");
+        RecoverDialog recoverDialog = new RecoverDialog();
+        recoverDialog.show(getSupportFragmentManager(), "Recover Dialog");
     }
 
     private void loginUser(String email, String password) {
 
+        progressDialog.setMessage("Logging In...");
         progressDialog.show();
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -188,7 +188,35 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    //Email (RecoverDialog)
+    @Override
+    public void applyEmail(String email) {
+        beginRecovery(email);
+    }
 
+    private void beginRecovery(String email) {
 
+        progressDialog.setMessage("Email sending...");
+        progressDialog.show();
 
+        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()) {
+                    Toast.makeText(SignInActivity.this, "Email sent", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+                else {
+                    Toast.makeText(SignInActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SignInActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+        });
+    }
 }
