@@ -13,6 +13,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentLoginBinding
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.util.UiState
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

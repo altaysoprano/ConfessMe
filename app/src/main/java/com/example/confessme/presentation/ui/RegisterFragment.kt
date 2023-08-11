@@ -14,6 +14,7 @@ import com.example.confessme.databinding.FragmentLoginBinding
 import com.example.confessme.databinding.FragmentRegisterBinding
 import com.example.confessme.presentation.RegisterViewModel
 import com.example.confessme.util.UiState
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
