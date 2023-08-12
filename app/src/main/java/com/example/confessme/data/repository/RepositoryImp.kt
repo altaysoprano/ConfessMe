@@ -35,13 +35,14 @@ class RepositoryImp(
                     result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character and must be at least 8 characters long."))
                     return
                 }
+                val randomUsername = generateRandomUsername(10)
                 firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { authTask ->
                     if (authTask.isSuccessful) {
                         val user = firebaseAuth.currentUser
                         if (user != null) {
                             val uid = user.uid
                             database.collection("users").document(uid)
-                                .set(User(email, pass))
+                                .set(User(email, pass, userName = randomUsername))
                                 .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
                                 .addOnFailureListener { exception ->
                                     result.invoke(UiState.Failure(exception.localizedMessage))
@@ -66,8 +67,32 @@ class RepositoryImp(
         }
     }
 
+    override fun updateProfile(userName: String, bio: String, result: (UiState<String>) -> Unit) {
+/*
+        val user = firebaseAuth.currentUser
+        if (user != null) {
+            val uid = user.uid
+            database.collection("users").document(uid)
+                .set(User(userName = userName, bio = bio))
+                .addOnSuccessListener { result.invoke(UiState.Success("Profile successfully updated")) }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not found"))
+        }
+*/
+    }
+
     fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
         return passwordRegex.matches(password)
+    }
+
+    fun generateRandomUsername(length: Int): String {
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
     }
 }

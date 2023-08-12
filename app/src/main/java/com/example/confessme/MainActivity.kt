@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
             else -> binding.bottomNavigationView.visibility = View.GONE
         }
 
-
         if(addToStack) {
             transaction.addToBackStack(null)
         }

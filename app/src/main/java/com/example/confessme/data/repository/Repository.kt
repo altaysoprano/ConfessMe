@@ -6,4 +6,5 @@ interface Repository {
 
     fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit)
     fun signUp(email: String, pass: String, confirmPass: String, result: (UiState<String>) -> Unit)
+    fun updateProfile(userName: String, bio: String, result: (UiState<String>) -> Unit)
 }
