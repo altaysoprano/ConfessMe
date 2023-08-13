@@ -20,6 +20,7 @@ class EditProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentEditProfileBinding.inflate(inflater, container, false)
+        (activity as AppCompatActivity?)!!.title = "Edit Profile"
 
         return binding.root
     }

@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         supportFragmentManager.beginTransaction()
             .add(R.id.coordinator, LoginFragment())
             .commit()
-        binding.bottomNavigationView.visibility = View.GONE
+        binding.bottomNavigationView.visibility = View.VISIBLE
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
