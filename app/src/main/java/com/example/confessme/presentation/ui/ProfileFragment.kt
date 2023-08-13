@@ -32,6 +32,7 @@ class ProfileFragment : Fragment() {
 
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        (activity as AppCompatActivity?)!!.title = "Profile"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
@@ -39,7 +40,7 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
+        inflater.inflate(R.menu.profile_menu, menu)
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -47,6 +48,9 @@ class ProfileFragment : Fragment() {
         when (item.itemId) {
             R.id.sign_out -> {
                 viewModel.signOut(activity as FragmentNavigation)
+            }
+            R.id.edit_orofile -> {
+                navRegister.navigateFrag(EditProfileFragment(), true)
             }
         }
         return super.onOptionsItemSelected(item)

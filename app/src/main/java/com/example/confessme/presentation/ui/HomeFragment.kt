@@ -29,8 +29,10 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+        (activity as AppCompatActivity?)!!.title = "Home"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
+
 
         return binding.root
     }
