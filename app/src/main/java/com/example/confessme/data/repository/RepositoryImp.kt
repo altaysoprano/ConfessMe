@@ -68,20 +68,41 @@ class RepositoryImp(
     }
 
     override fun updateProfile(userName: String, bio: String, result: (UiState<String>) -> Unit) {
-/*
         val user = firebaseAuth.currentUser
         if (user != null) {
             val uid = user.uid
-            database.collection("users").document(uid)
-                .set(User(userName = userName, bio = bio))
-                .addOnSuccessListener { result.invoke(UiState.Success("Profile successfully updated")) }
+
+            // Kullanıcı adı boşsa veya 3 karakterden kısa ise hata döndür
+            if (userName.isBlank() || userName.length < 3) {
+                result.invoke(UiState.Failure("Username must be at least 3 characters long."))
+                return
+            }
+
+            // Kullanıcı adının daha önce alınıp alınmadığını kontrol et
+            database.collection("users")
+                .whereEqualTo("userName", userName)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        result.invoke(UiState.Failure("Username is already taken. Please choose a different one."))
+                    } else {
+                        // Kullanıcı adı uygunsa güncelleme işlemini yap
+                        database.collection("users").document(uid)
+                            .update("userName", userName, "bio", bio)
+                            .addOnSuccessListener {
+                                result.invoke(UiState.Success("Profile successfully updated"))
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    }
+                }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
             result.invoke(UiState.Failure("User not found"))
         }
-*/
     }
 
     fun isValidPassword(password: String): Boolean {
@@ -89,7 +110,7 @@ class RepositoryImp(
         return passwordRegex.matches(password)
     }
 
-    fun generateRandomUsername(length: Int): String {
+    private fun generateRandomUsername(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..length)
             .map { allowedChars.random() }
