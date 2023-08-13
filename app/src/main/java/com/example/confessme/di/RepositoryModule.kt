@@ -4,6 +4,7 @@ import com.example.confessme.data.repository.Repository
 import com.example.confessme.data.repository.RepositoryImp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,9 +19,10 @@ object RepositoryModule {
     @Singleton
     fun provideRepository(
         firebaseAuth: FirebaseAuth,
-        database: FirebaseFirestore
+        database: FirebaseFirestore,
+        storage: FirebaseStorage
     ) : Repository {
-        return RepositoryImp(firebaseAuth, database)
+        return RepositoryImp(firebaseAuth, database, storage)
     }
 
 }

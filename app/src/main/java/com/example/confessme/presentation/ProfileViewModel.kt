@@ -1,6 +1,7 @@
 package com.example.confessme.presentation
 
 import android.app.AlertDialog
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -26,9 +27,9 @@ class ProfileViewModel @Inject constructor(
     val updateProfileState: LiveData<UiState<String>>
         get() = _updateProfileState
 
-    fun updateProfile(username: String, bio: String) {
+    fun updateProfile(username: String, bio: String, imageUri: Uri) {
         _updateProfileState.value = UiState.Loading
-        repository.updateProfile(username, bio) {
+        repository.updateProfile(username, bio, imageUri) {
             _updateProfileState.value = it
         }
     }

@@ -1,14 +1,18 @@
 package com.example.confessme.data.repository
 
+import android.net.Uri
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.util.Date
 
 class RepositoryImp(
     private val firebaseAuth: FirebaseAuth,
-    private val database: FirebaseFirestore
+    private val database: FirebaseFirestore,
+    private val storage: FirebaseStorage
 ) : Repository {
 
     override fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit) {
@@ -67,7 +71,7 @@ class RepositoryImp(
         }
     }
 
-    override fun updateProfile(userName: String, bio: String, result: (UiState<String>) -> Unit) {
+    override fun updateProfile(userName: String, bio: String, imageUri: Uri, result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
         if (user != null) {
             val uid = user.uid
@@ -90,7 +94,16 @@ class RepositoryImp(
                         database.collection("users").document(uid)
                             .update("userName", userName, "bio", bio)
                             .addOnSuccessListener {
-                                result.invoke(UiState.Success("Profile successfully updated"))
+                                val reference = storage.reference.child("Profile").child(Date().time.toString())
+                                reference.putFile(imageUri).addOnCompleteListener {
+                                    if(it.isSuccessful) {
+                                        reference.downloadUrl.addOnSuccessListener {
+                                            result.invoke(UiState.Success("Profile successfully updated"))
+                                        }
+                                    } else {
+                                        result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
+                                    }
+                                }
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))

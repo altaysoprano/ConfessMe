@@ -46,7 +46,11 @@ class EditProfileFragment : Fragment() {
             val username = binding.firstNameEt.text.toString()
             val bio = binding.bioEt.text.toString()
 
-            viewModel.updateProfile(username, bio)
+            if (::selectedImg.isInitialized) {
+                viewModel.updateProfile(username, bio, selectedImg)
+            } else {
+                viewModel.updateProfile(username, bio, Uri.EMPTY) // veya null geçebilirsiniz, tercihinize göre
+            }
         }
 
         viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
