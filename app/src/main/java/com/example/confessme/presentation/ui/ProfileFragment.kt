@@ -59,6 +59,9 @@ class ProfileFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.VISIBLE
+        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+        }
     }
 
 }

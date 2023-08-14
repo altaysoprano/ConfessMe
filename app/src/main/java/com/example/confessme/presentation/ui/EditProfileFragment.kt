@@ -4,8 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -34,7 +38,14 @@ class EditProfileFragment : Fragment() {
         binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.title = "Edit Profile"
         navRegister = activity as FragmentNavigation
+        setHasOptionsMenu(true)
 
+        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_close) // "X" simgesi olarak kullanılan drawable
+        }
+
+        // Profil fotoğrafı kısmına tıklayınca galeriyi aç
         binding.profileImage.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_GET_CONTENT
@@ -86,6 +97,16 @@ class EditProfileFragment : Fragment() {
                 binding.profileImage.setImageURI(selectedImg)
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                requireActivity().onBackPressed()
+                return true
+            }
+        }
+        return false
     }
 
 }
