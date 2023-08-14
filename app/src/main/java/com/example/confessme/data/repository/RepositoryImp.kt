@@ -91,23 +91,42 @@ class RepositoryImp(
                         result.invoke(UiState.Failure("Username is already taken. Please choose a different one."))
                     } else {
                         // Kullanıcı adı uygunsa güncelleme işlemini yap
-                        database.collection("users").document(uid)
-                            .update("userName", userName, "bio", bio)
-                            .addOnSuccessListener {
-                                val reference = storage.reference.child("Profile").child(Date().time.toString())
-                                reference.putFile(imageUri).addOnCompleteListener {
-                                    if(it.isSuccessful) {
-                                        reference.downloadUrl.addOnSuccessListener {
-                                            result.invoke(UiState.Success("Profile successfully updated"))
-                                        }
-                                    } else {
-                                        result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
+                        val userDocument = database.collection("users").document(uid)
+
+                        val profileUpdate = mutableMapOf<String, Any?>(
+                            "userName" to userName,
+                            "bio" to bio
+                        )
+
+                        // Eğer imageUri boş değilse, profil fotoğrafını da güncelle
+                        if (imageUri != Uri.EMPTY) {
+                            val reference = storage.reference.child("Profile").child(Date().time.toString())
+                            reference.putFile(imageUri).addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    reference.downloadUrl.addOnSuccessListener { imageUrl ->
+                                        profileUpdate["imageUrl"] = imageUrl.toString()
+                                        userDocument.update(profileUpdate)
+                                            .addOnSuccessListener {
+                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                result.invoke(UiState.Failure(exception.localizedMessage))
+                                            }
                                     }
+                                } else {
+                                    result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
                                 }
                             }
-                            .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure(exception.localizedMessage))
-                            }
+                        } else {
+                            // Profil fotoğrafı seçilmediyse sadece kullanıcı bilgilerini güncelle
+                            userDocument.update(profileUpdate)
+                                .addOnSuccessListener {
+                                    result.invoke(UiState.Success("Profile successfully updated"))
+                                }
+                                .addOnFailureListener { exception ->
+                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                }
+                        }
                     }
                 }
                 .addOnFailureListener { exception ->
