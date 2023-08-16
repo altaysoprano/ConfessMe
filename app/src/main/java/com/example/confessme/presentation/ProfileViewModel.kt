@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.Repository
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -18,19 +19,25 @@ class ProfileViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
-    private lateinit var storage: FirebaseStorage
-    private lateinit var dialog: AlertDialog
-
     private val _updateProfileState = MutableLiveData<UiState<String>>()
     val updateProfileState: LiveData<UiState<String>>
         get() = _updateProfileState
 
-    fun updateProfile(username: String, bio: String, imageUri: Uri) {
+    private val _fetchProfileState = MutableLiveData<UiState<User?>>()
+    val fetchProfileState: LiveData<UiState<User?>>
+        get() = _fetchProfileState
+
+    fun updateProfile(previousUserName: String, username: String, bio: String, imageUri: Uri) {
         _updateProfileState.value = UiState.Loading
-        repository.updateProfile(username, bio, imageUri) {
+        repository.updateProfile(previousUserName, username, bio, imageUri) {
             _updateProfileState.value = it
+        }
+    }
+
+    fun getProfileData() {
+        _fetchProfileState.value = UiState.Loading
+        repository.fetchUserProfile {
+            _fetchProfileState.value = it
         }
     }
 

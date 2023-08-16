@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentEditProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
@@ -30,6 +31,7 @@ class EditProfileFragment : Fragment() {
     private lateinit var selectedImg: Uri
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
+    private lateinit var currentUsername: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,14 +55,50 @@ class EditProfileFragment : Fragment() {
             startActivityForResult(intent, 1)
         }
 
+        viewModel.getProfileData()
+
+        viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarEditProfile.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarEditProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarEditProfile.visibility = View.GONE
+                    val userProfile = state.data
+                    if (userProfile != null) {
+                        currentUsername = userProfile.userName
+                        binding.firstNameEt.setText(userProfile.userName)
+                        binding.bioEt.setText(userProfile.bio)
+                        if (userProfile.imageUrl.isNotEmpty()) {
+                            Glide.with(requireContext())
+                                .load(userProfile.imageUrl)
+                                .into(binding.profileImage)
+                        }
+                    }
+                }
+            }
+        }
+
         binding.saveButton.setOnClickListener {
             val username = binding.firstNameEt.text.toString()
             val bio = binding.bioEt.text.toString()
 
             if (::selectedImg.isInitialized) {
-                viewModel.updateProfile(username, bio, selectedImg)
+                viewModel.updateProfile(currentUsername, username, bio, selectedImg)
             } else {
-                viewModel.updateProfile(username, bio, Uri.EMPTY) // veya null geçebilirsiniz, tercihinize göre
+                viewModel.updateProfile(
+                    currentUsername,
+                    username,
+                    bio,
+                    Uri.EMPTY
+                ) // veya null geçebilirsiniz, tercihinize göre
             }
         }
 
@@ -89,9 +127,9 @@ class EditProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(data != null) {
+        if (data != null) {
 
-            if(data.data != null) {
+            if (data.data != null) {
                 selectedImg = data.data!!
 
                 binding.profileImage.setImageURI(selectedImg)

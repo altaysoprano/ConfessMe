@@ -1,6 +1,7 @@
 package com.example.confessme.data.repository
 
 import android.net.Uri
+import android.util.Log
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -71,8 +72,9 @@ class RepositoryImp(
         }
     }
 
-    override fun updateProfile(userName: String, bio: String, imageUri: Uri, result: (UiState<String>) -> Unit) {
+    override fun updateProfile(previousUserName: String, userName: String, bio: String, imageUri: Uri, result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
+
         if (user != null) {
             val uid = user.uid
 
@@ -87,7 +89,7 @@ class RepositoryImp(
                 .whereEqualTo("userName", userName)
                 .get()
                 .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
+                    if (!documents.isEmpty && previousUserName != userName) {
                         result.invoke(UiState.Failure("Username is already taken. Please choose a different one."))
                     } else {
                         // Kullanıcı adı uygunsa güncelleme işlemini yap
@@ -127,6 +129,31 @@ class RepositoryImp(
                                     result.invoke(UiState.Failure(exception.localizedMessage))
                                 }
                         }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not found"))
+        }
+    }
+
+    override fun fetchUserProfile(result: (UiState<User?>) -> Unit) {
+        val user = firebaseAuth.currentUser
+        if (user != null) {
+            val uid = user.uid
+
+            // Kullanıcının belirli bir alanını Firestore'dan çekme işlemi
+            database.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val userProfile = document.toObject(User::class.java)
+                        result.invoke(UiState.Success(userProfile))
+                    } else {
+                        result.invoke(UiState.Failure("User data not found"))
                     }
                 }
                 .addOnFailureListener { exception ->
