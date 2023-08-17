@@ -9,12 +9,16 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.HomeViewModel
+import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +27,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +39,36 @@ class ProfileFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = "Profile"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
+
+        viewModel.getProfileData()
+
+        viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarProfile.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    val userProfile = state.data
+                    if (userProfile != null) {
+                        binding.firstNameTv.text = userProfile.userName
+                        binding.bioTv.text = userProfile.bio
+                        if (userProfile.imageUrl.isNotEmpty()) {
+                            Glide.with(requireContext())
+                                .load(userProfile.imageUrl)
+                                .into(binding.profileScreenProfileImage)
+                        }
+                    }
+                }
+            }
+        }
 
         return binding.root
     }

@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.Repository
+import com.example.confessme.presentation.ui.FragmentNavigation
+import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -18,6 +20,9 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
+
+    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private lateinit var navRegister: FragmentNavigation
 
     private val _updateProfileState = MutableLiveData<UiState<String>>()
     val updateProfileState: LiveData<UiState<String>>
@@ -41,6 +46,10 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-
+    fun signOut(activity: FragmentNavigation) {
+        navRegister = activity as FragmentNavigation
+        firebaseAuth.signOut()
+        navRegister.navigateFrag(LoginFragment(), false)
+    }
 
 }
