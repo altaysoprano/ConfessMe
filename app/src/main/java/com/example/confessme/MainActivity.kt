@@ -9,6 +9,7 @@ import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.HomeFragment
 import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.presentation.ui.ProfileFragment
+import com.example.confessme.presentation.ui.SearchFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
         supportFragmentManager.beginTransaction()
             .add(R.id.coordinator, LoginFragment())
             .commit()
-        binding.bottomNavigationView.visibility = View.VISIBLE
+        binding.bottomNavigationView.visibility = View.GONE
 
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId){
@@ -32,6 +33,9 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
                 }
                 R.id.profile -> {
                     navigateFrag(ProfileFragment(), false)
+                }
+                R.id.search -> {
+                    navigateFrag(SearchFragment(), false)
                 }
                 else ->{
                 }
@@ -46,7 +50,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
             .replace(R.id.coordinator, fragment)
 
         when (fragment) {
-            is HomeFragment, is ProfileFragment -> binding.bottomNavigationView.visibility = View.VISIBLE
+            is HomeFragment, is ProfileFragment, is SearchFragment -> binding.bottomNavigationView.visibility = View.VISIBLE
             else -> binding.bottomNavigationView.visibility = View.GONE
         }
 

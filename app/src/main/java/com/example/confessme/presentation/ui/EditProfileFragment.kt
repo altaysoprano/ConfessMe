@@ -98,7 +98,7 @@ class EditProfileFragment : Fragment() {
                     username,
                     bio,
                     Uri.EMPTY
-                ) // veya null geçebilirsiniz, tercihinize göre
+                )
             }
         }
 
@@ -116,7 +116,13 @@ class EditProfileFragment : Fragment() {
 
                 is UiState.Success -> {
                     binding.progressBarEditProfile.visibility = View.GONE
-                    navRegister.navigateFrag(ProfileFragment(), false)
+                    val fragmentManager = parentFragmentManager
+                    for (i in 0 until fragmentManager.backStackEntryCount) {
+                        fragmentManager.popBackStack()
+                    }
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.coordinator, ProfileFragment())
+                        .commit()
                 }
             }
         }

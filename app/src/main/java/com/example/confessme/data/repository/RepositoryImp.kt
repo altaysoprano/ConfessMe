@@ -164,6 +164,33 @@ class RepositoryImp(
         }
     }
 
+    override fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            database.collection("users")
+                .orderBy("userName")
+                .startAt(query)
+                .endAt(query + "\uf8ff")
+                .get()
+                .addOnSuccessListener { documents ->
+                    val userList = mutableListOf<User>()
+
+                    for (document in documents) {
+                        val user = document.toObject(User::class.java)
+                        userList.add(user)
+                    }
+
+                    result.invoke(UiState.Success(userList))
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not found"))
+        }
+    }
+
     fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
         return passwordRegex.matches(password)

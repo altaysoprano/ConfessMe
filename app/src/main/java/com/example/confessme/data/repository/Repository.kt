@@ -17,4 +17,6 @@ interface Repository {
     )
 
     fun fetchUserProfile(result: (UiState<User?>) -> Unit)
+
+    fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
 }
