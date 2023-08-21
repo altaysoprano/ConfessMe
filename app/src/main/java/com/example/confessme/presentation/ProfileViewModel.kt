@@ -38,11 +38,19 @@ class ProfileViewModel @Inject constructor(
             _updateProfileState.value = it
         }
     }
+    fun fetchUserProfileByUsername(username: String) {
+        _fetchProfileState.value = UiState.Loading
+
+        repository.fetchUserProfileByUsername(username) { result ->
+            _fetchProfileState.postValue(result)
+        }
+    }
 
     fun getProfileData() {
         _fetchProfileState.value = UiState.Loading
-        repository.fetchUserProfile {
-            _fetchProfileState.value = it
+
+        repository.fetchUserProfile() { result ->
+            _fetchProfileState.postValue(result)
         }
     }
 

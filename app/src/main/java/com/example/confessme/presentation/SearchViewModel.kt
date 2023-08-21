@@ -22,6 +22,11 @@ class SearchViewModel @Inject constructor(
     val searchResults: LiveData<UiState<List<User>>>
         get() = _searchResults
 
+    private val _userProfile = MutableLiveData<UiState<User?>>()
+    val userProfile: LiveData<UiState<User?>>
+        get() = _userProfile
+
+
     private var searchJob: Job? = null
 
     fun searchUsers(query: String) {

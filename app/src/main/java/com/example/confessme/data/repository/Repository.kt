@@ -15,8 +15,7 @@ interface Repository {
         imageUri: Uri,
         result: (UiState<String>) -> Unit
     )
-
     fun fetchUserProfile(result: (UiState<User?>) -> Unit)
-
+    fun fetchUserProfileByUsername(username: String, result: (UiState<User?>) -> Unit)
     fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
 }

@@ -7,7 +7,10 @@ import com.bumptech.glide.Glide
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.UserItemBinding
 
-class UserListAdapter(private val userList: MutableList<User> = mutableListOf()) :
+class UserListAdapter(
+    private val userList: MutableList<User> = mutableListOf(),
+    private val onItemClick: (User) -> Unit
+) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
@@ -39,6 +42,10 @@ class UserListAdapter(private val userList: MutableList<User> = mutableListOf())
                     Glide.with(itemView)
                         .load(user.imageUrl)
                         .into(searchScreenProfileImage)
+                }
+
+                itemView.setOnClickListener {
+                    onItemClick(user)
                 }
             }
         }

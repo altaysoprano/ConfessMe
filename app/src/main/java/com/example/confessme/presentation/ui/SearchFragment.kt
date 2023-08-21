@@ -8,9 +8,12 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
+import com.example.confessme.presentation.ProfileSearchSharedViewModel
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,10 +22,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class SearchFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
+    private lateinit var navRegister: FragmentNavigation
     private val viewModel: SearchViewModel by viewModels()
+    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
 
-    private val userListAdapter: UserListAdapter by lazy {
-        UserListAdapter(mutableListOf()) // İlk başta boş bir liste ile başlatıyoruz
+    private val userListAdapter = UserListAdapter(mutableListOf()) { user ->
+        onItemClick(user)
     }
 
     override fun onCreateView(
@@ -30,6 +35,7 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
+        navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         (activity as AppCompatActivity?)!!.title = "Search"
 
@@ -74,4 +80,12 @@ class SearchFragment : Fragment() {
             }
         }
     }
+
+    private fun onItemClick(user: User) {
+        sharedViewModel.setSelectedUserName(user.userName)
+
+        val profileFragment = ProfileFragment()
+        navRegister.navigateFrag(profileFragment, true)
+    }
+
 }

@@ -144,7 +144,6 @@ class RepositoryImp(
         if (user != null) {
             val uid = user.uid
 
-            // Kullanıcının belirli bir alanını Firestore'dan çekme işlemi
             database.collection("users")
                 .document(uid)
                 .get()
@@ -163,6 +162,25 @@ class RepositoryImp(
             result.invoke(UiState.Failure("User not found"))
         }
     }
+
+    override fun fetchUserProfileByUsername(username: String, result: (UiState<User?>) -> Unit) {
+        database.collection("users")
+            .whereEqualTo("userName", username)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val document = documents.documents[0]
+                    val user = document.toObject(User::class.java)
+                    result.invoke(UiState.Success(user))
+                } else {
+                    result.invoke(UiState.Failure("User data not found"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                result.invoke(UiState.Failure(exception.localizedMessage))
+            }
+    }
+
 
     override fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit) {
         val user = firebaseAuth.currentUser

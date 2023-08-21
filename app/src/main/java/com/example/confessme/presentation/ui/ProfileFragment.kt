@@ -1,7 +1,7 @@
 package com.example.confessme.presentation.ui
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,12 +11,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.confessme.R
-import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
-import com.example.confessme.presentation.HomeViewModel
+import com.example.confessme.presentation.ProfileSearchSharedViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -28,6 +28,7 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
+    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +41,12 @@ class ProfileFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
-        viewModel.getProfileData()
+        sharedViewModel.selectedUserName.observe(viewLifecycleOwner) { username ->
+            if (!username.isNullOrEmpty()) {
+                Log.d("Mesaj: ", username.toString())
+                viewModel.fetchUserProfileByUsername(username)
+            }
+        }
 
         viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -83,6 +89,7 @@ class ProfileFragment : Fragment() {
             R.id.sign_out -> {
                 viewModel.signOut(activity as FragmentNavigation)
             }
+
             R.id.edit_orofile -> {
                 navRegister.navigateFrag(EditProfileFragment(), true)
             }
@@ -92,7 +99,8 @@ class ProfileFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.VISIBLE
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.VISIBLE
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
         }
