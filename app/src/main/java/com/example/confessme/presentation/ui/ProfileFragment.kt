@@ -43,8 +43,9 @@ class ProfileFragment : Fragment() {
 
         sharedViewModel.selectedUserName.observe(viewLifecycleOwner) { username ->
             if (!username.isNullOrEmpty()) {
-                Log.d("Mesaj: ", username.toString())
                 viewModel.fetchUserProfileByUsername(username)
+            } else {
+                viewModel.getProfileData()
             }
         }
 
@@ -77,6 +78,11 @@ class ProfileFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sharedViewModel.setSelectedUserName("")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
