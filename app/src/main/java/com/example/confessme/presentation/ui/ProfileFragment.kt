@@ -96,7 +96,7 @@ class ProfileFragment : Fragment() {
                 viewModel.signOut(activity as FragmentNavigation)
             }
 
-            R.id.edit_orofile -> {
+            R.id.edit_profile -> {
                 navRegister.navigateFrag(EditProfileFragment(), true)
             }
         }

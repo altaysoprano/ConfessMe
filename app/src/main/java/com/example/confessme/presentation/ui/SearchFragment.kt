@@ -87,5 +87,4 @@ class SearchFragment : Fragment() {
         val profileFragment = ProfileFragment()
         navRegister.navigateFrag(profileFragment, true)
     }
-
 }
