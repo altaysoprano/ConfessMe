@@ -37,7 +37,7 @@ class ProfileFragment : Fragment() {
 
         binding = FragmentProfileBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-        (activity as AppCompatActivity?)!!.title = "Profile"
+        (activity as AppCompatActivity?)!!.title = "My Profile"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
@@ -86,7 +86,18 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.profile_menu, menu)
+        val actionBar = (activity as AppCompatActivity?)?.supportActionBar
+
+        if (!sharedViewModel.selectedUserName.value.isNullOrEmpty()) {
+            actionBar?.setDisplayHomeAsUpEnabled(true)
+            actionBar?.setDisplayShowHomeEnabled(true)
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                View.GONE
+            actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
+            (activity as AppCompatActivity?)!!.title = "Profile"
+        } else {
+            inflater.inflate(R.menu.profile_menu, menu)
+        }
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -98,6 +109,9 @@ class ProfileFragment : Fragment() {
 
             R.id.edit_profile -> {
                 navRegister.navigateFrag(EditProfileFragment(), true)
+            }
+            android.R.id.home -> {
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)

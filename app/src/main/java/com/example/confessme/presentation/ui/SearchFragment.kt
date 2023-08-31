@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
 import com.example.confessme.presentation.ProfileSearchSharedViewModel
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.UiState
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -86,5 +88,14 @@ class SearchFragment : Fragment() {
 
         val profileFragment = ProfileFragment()
         navRegister.navigateFrag(profileFragment, true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.VISIBLE
+        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(false)
+        }
     }
 }
