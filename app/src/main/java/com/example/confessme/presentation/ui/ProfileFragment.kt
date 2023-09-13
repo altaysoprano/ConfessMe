@@ -44,8 +44,10 @@ class ProfileFragment : Fragment() {
         sharedViewModel.selectedUserName.observe(viewLifecycleOwner) { username ->
             if (!username.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByUsername(username)
+                binding.followButton.visibility = View.VISIBLE
             } else {
                 viewModel.getProfileData()
+                binding.followButton.visibility = View.GONE
             }
         }
 

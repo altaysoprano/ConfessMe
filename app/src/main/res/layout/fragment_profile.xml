@@ -44,12 +44,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="8dp"/>
 
+    <Button
+        android:id="@+id/followButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Follow"
+        app:layout_constraintTop_toBottomOf="@id/bioTv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
     <View
         android:id="@+id/dividerView"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#E0E0E0"
-        app:layout_constraintTop_toBottomOf="@id/bioTv"
+        app:layout_constraintTop_toBottomOf="@id/followButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
