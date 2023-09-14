@@ -32,11 +32,8 @@ class RepositoryImp(
     }
 
     override fun signUp(email: String, pass: String, confirmPass: String, result: (UiState<String>) -> Unit) {
-        // Bütün alanların dolu olup olmadığının kontrolü
         if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty()) {
-            // Şifrelerin uyuşup uyuşmadığının kontrolü
             if (pass == confirmPass) {
-                // Şifre geçerliliği kontrolü
                 if (!isValidPassword(pass)) {
                     result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character and must be at least 8 characters long."))
                     return
@@ -57,10 +54,8 @@ class RepositoryImp(
                     } else {
                         val exception = authTask.exception
                         if (exception is FirebaseAuthUserCollisionException) {
-                            // Kullanıcı zaten varsa
                             result.invoke(UiState.Failure("User already exists"))
                         } else {
-                            // Farklı bir hata durumu
                             result.invoke(UiState.Failure("Unknown error: ${exception?.localizedMessage}"))
                         }
                     }
@@ -79,13 +74,11 @@ class RepositoryImp(
         if (user != null) {
             val uid = user.uid
 
-            // Kullanıcı adı boşsa veya 3 karakterden kısa ise hata döndür
             if (userName.isBlank() || userName.length < 3) {
                 result.invoke(UiState.Failure("Username must be at least 3 characters long."))
                 return
             }
 
-            // Kullanıcı adının daha önce alınıp alınmadığını kontrol et
             database.collection("users")
                 .whereEqualTo("userName", userName)
                 .get()
@@ -93,15 +86,12 @@ class RepositoryImp(
                     if (!documents.isEmpty && previousUserName != userName) {
                         result.invoke(UiState.Failure("Username is already taken. Please choose a different one."))
                     } else {
-                        // Kullanıcı adı uygunsa güncelleme işlemini yap
                         val userDocument = database.collection("users").document(uid)
 
                         val profileUpdate = mutableMapOf<String, Any?>(
                             "userName" to userName,
                             "bio" to bio
                         )
-
-                        // Eğer imageUri boş değilse, profil fotoğrafını da güncelle
                         if (imageUri != Uri.EMPTY) {
                             val reference = storage.reference.child("Profile").child(Date().time.toString())
                             reference.putFile(imageUri).addOnCompleteListener {

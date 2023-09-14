@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -145,17 +146,17 @@ class ProfileFragment : Fragment() {
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
                 when (state) {
                     is UiState.Loading -> {
-                        binding.progressBarProfile.visibility = View.VISIBLE
+                        binding.progressBarFollowButton.visibility = View.VISIBLE
                     }
 
                     is UiState.Failure -> {
-                        binding.progressBarProfile.visibility = View.GONE
+                        binding.progressBarFollowButton.visibility = View.GONE
                         Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                             .show()
                     }
 
                     is UiState.Success -> {
-                        binding.progressBarProfile.visibility = View.GONE
+                        binding.progressBarFollowButton.visibility = View.GONE
                         checkIfUserFollowed(selectedUserName)
                         Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
@@ -175,20 +176,22 @@ class ProfileFragment : Fragment() {
                         binding.followButton.text = "Following"
                         binding.followButton.setBackgroundColor(Color.WHITE)
                         binding.followButton.setTextColor(Color.BLACK)
+                        binding.progressBarFollowButton.indeterminateTintList = ColorStateList.valueOf(Color.BLACK)
                     } else {
                         binding.followButton.text = "Follow"
                         binding.followButton.setBackgroundColor(Color.parseColor("#cf363c"))
                         binding.followButton.setTextColor(Color.parseColor("#ffffff"))
+                        binding.progressBarFollowButton.indeterminateTintList = ColorStateList.valueOf(Color.WHITE)
                     }
-                    binding.progressBarProfile.visibility = View.GONE
+                    binding.progressBarFollowButton.visibility = View.GONE
                 }
                 is UiState.Failure -> {
-                    binding.progressBarProfile.visibility = View.GONE
+                    binding.progressBarFollowButton.visibility = View.GONE
                     Toast.makeText(requireContext(), result.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
                 is UiState.Loading -> {
-                    binding.progressBarProfile.visibility = View.VISIBLE
+                    binding.progressBarFollowButton.visibility = View.VISIBLE
                 }
             }
         }

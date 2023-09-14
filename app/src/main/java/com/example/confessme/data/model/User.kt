@@ -6,6 +6,4 @@ data class User(
     val bio: String = "",
     val userName: String = "",
     val imageUrl: String = "",
-    val followers: List<String> = emptyList(),
-    val following: List<String> = emptyList()
 )
