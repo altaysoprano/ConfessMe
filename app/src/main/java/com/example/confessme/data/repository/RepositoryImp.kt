@@ -6,6 +6,7 @@ import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.Date
@@ -206,6 +207,64 @@ class RepositoryImp(
                 }
         } else {
             result.invoke(UiState.Failure("User not found"))
+        }
+    }
+
+    override fun followUser(userIdToFollow: String, callback: (UiState<String>) -> Unit) {
+        val currentUserUid = firebaseAuth.currentUser?.uid
+
+        if (currentUserUid != null) {
+            val followingRef = database.collection("users").document(currentUserUid)
+                .collection("following").document(userIdToFollow)
+
+            followingRef.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
+                .addOnSuccessListener {
+                    callback.invoke(UiState.Success("User followed"))
+                }
+                .addOnFailureListener { exception ->
+                    callback.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            callback.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit) {
+        val currentUserUid = firebaseAuth.currentUser?.uid
+
+        if (currentUserUid != null) {
+            val followingRef = database.collection("users").document(currentUserUid)
+                .collection("following").document(userIdToUnfollow)
+
+            followingRef.delete()
+                .addOnSuccessListener {
+                    callback.invoke(UiState.Success("User unfollowed"))
+                }
+                .addOnFailureListener { exception ->
+                    callback.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            callback.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit) {
+        val currentUserUid = firebaseAuth.currentUser?.uid
+
+        if (currentUserUid != null) {
+            val followingRef = database.collection("users").document(currentUserUid)
+                .collection("following").document(usernameToCheck)
+
+            followingRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    val isFollowed = documentSnapshot.exists()
+                    callback.invoke(UiState.Success(isFollowed))
+                }
+                .addOnFailureListener { exception ->
+                    callback.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            callback.invoke(UiState.Failure("User not authenticated"))
         }
     }
 

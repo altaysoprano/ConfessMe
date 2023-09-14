@@ -32,6 +32,14 @@ class ProfileViewModel @Inject constructor(
     val fetchProfileState: LiveData<UiState<User?>>
         get() = _fetchProfileState
 
+    private val _followUserState = MutableLiveData<UiState<String>>()
+    val followUserState: LiveData<UiState<String>>
+        get() = _followUserState
+
+    private val _checkFollowingState = MutableLiveData<UiState<Boolean>>()
+    val checkFollowingState: LiveData<UiState<Boolean>>
+        get() = _checkFollowingState
+
     fun updateProfile(previousUserName: String, username: String, bio: String, imageUri: Uri) {
         _updateProfileState.value = UiState.Loading
         repository.updateProfile(previousUserName, username, bio, imageUri) {
@@ -43,6 +51,37 @@ class ProfileViewModel @Inject constructor(
 
         repository.fetchUserProfileByUsername(username) { result ->
             _fetchProfileState.postValue(result)
+        }
+    }
+
+    fun followOrUnfollowUser(usernameToFollow: String) {
+        _followUserState.value = UiState.Loading
+
+        repository.checkIfUserFollowed(usernameToFollow) { result ->
+            if (result is UiState.Success && result.data) {
+                repository.unfollowUser(usernameToFollow) { unfollowResult ->
+                    if (unfollowResult is UiState.Success) {
+                        _followUserState.postValue(unfollowResult)
+                    } else {
+                        _followUserState.postValue(UiState.Failure(unfollowResult.toString()))
+                    }
+                }
+            } else {
+                repository.followUser(usernameToFollow) { followResult ->
+                    if (followResult is UiState.Success) {
+                        _followUserState.postValue(UiState.Success(followResult.data))
+                    } else {
+                        _followUserState.postValue(UiState.Failure(followResult.toString()))
+                    }
+                }
+            }
+        }
+    }
+    fun checkIfUserFollowed(usernameToCheck: String) {
+        _checkFollowingState.value = UiState.Loading
+
+        repository.checkIfUserFollowed(usernameToCheck) { result ->
+            _checkFollowingState.postValue(result)
         }
     }
 

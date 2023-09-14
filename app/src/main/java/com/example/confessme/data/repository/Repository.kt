@@ -18,4 +18,7 @@ interface Repository {
     fun fetchUserProfile(result: (UiState<User?>) -> Unit)
     fun fetchUserProfileByUsername(username: String, result: (UiState<User?>) -> Unit)
     fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
+    fun followUser(userIdToFollow: String, callback: (UiState<String>) -> Unit)
+    fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit)
+    fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit)
 }

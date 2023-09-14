@@ -1,5 +1,7 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -44,6 +46,7 @@ class ProfileFragment : Fragment() {
         sharedViewModel.selectedUserName.observe(viewLifecycleOwner) { username ->
             if (!username.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByUsername(username)
+                checkIfUserFollowed(username)
                 binding.followButton.visibility = View.VISIBLE
             } else {
                 viewModel.getProfileData()
@@ -77,6 +80,10 @@ class ProfileFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        binding.followButton.setOnClickListener {
+            followOrUnfollowUser()
         }
 
         return binding.root
@@ -127,6 +134,62 @@ class ProfileFragment : Fragment() {
                 View.VISIBLE
             (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(false)
+            }
+        }
+    }
+
+    private fun followOrUnfollowUser() {
+        val selectedUserName = sharedViewModel.selectedUserName.value
+        if (!selectedUserName.isNullOrEmpty()) {
+            viewModel.followOrUnfollowUser(selectedUserName)
+            viewModel.followUserState.observe(viewLifecycleOwner) { state ->
+                when (state) {
+                    is UiState.Loading -> {
+                        binding.progressBarProfile.visibility = View.VISIBLE
+                    }
+
+                    is UiState.Failure -> {
+                        binding.progressBarProfile.visibility = View.GONE
+                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    is UiState.Success -> {
+                        binding.progressBarProfile.visibility = View.GONE
+                        checkIfUserFollowed(selectedUserName)
+                        Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private fun checkIfUserFollowed(usernameToCheck: String) {
+        viewModel.checkIfUserFollowed(usernameToCheck)
+        viewModel.checkFollowingState.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is UiState.Success -> {
+                    val isFollowing = result.data
+                    if (isFollowing) {
+                        binding.followButton.text = "Following"
+                        binding.followButton.setBackgroundColor(Color.WHITE)
+                        binding.followButton.setTextColor(Color.BLACK)
+                    } else {
+                        binding.followButton.text = "Follow"
+                        binding.followButton.setBackgroundColor(Color.parseColor("#cf363c"))
+                        binding.followButton.setTextColor(Color.parseColor("#ffffff"))
+                    }
+                    binding.progressBarProfile.visibility = View.GONE
+                }
+                is UiState.Failure -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), result.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is UiState.Loading -> {
+                    binding.progressBarProfile.visibility = View.VISIBLE
+                }
             }
         }
     }
