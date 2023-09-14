@@ -48,10 +48,10 @@ class ProfileFragment : Fragment() {
             if (!username.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByUsername(username)
                 checkIfUserFollowed(username)
-                binding.followButton.visibility = View.VISIBLE
+                binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
             } else {
                 viewModel.getProfileData()
-                binding.followButton.visibility = View.GONE
+                binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
             }
         }
 
@@ -83,7 +83,7 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        binding.followButton.setOnClickListener {
+        binding.progressButtonLayout.followButtonCardview.setOnClickListener {
             followOrUnfollowUser()
         }
 
@@ -146,17 +146,17 @@ class ProfileFragment : Fragment() {
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
                 when (state) {
                     is UiState.Loading -> {
-                        binding.progressBarFollowButton.visibility = View.VISIBLE
+                        binding.progressButtonLayout.progressBarFollowButton.visibility = View.VISIBLE
                     }
 
                     is UiState.Failure -> {
-                        binding.progressBarFollowButton.visibility = View.GONE
+                        binding.progressButtonLayout.progressBarFollowButton.visibility = View.GONE
                         Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                             .show()
                     }
 
                     is UiState.Success -> {
-                        binding.progressBarFollowButton.visibility = View.GONE
+                        binding.progressButtonLayout.progressBarFollowButton.visibility = View.GONE
                         checkIfUserFollowed(selectedUserName)
                         Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
@@ -173,25 +173,25 @@ class ProfileFragment : Fragment() {
                 is UiState.Success -> {
                     val isFollowing = result.data
                     if (isFollowing) {
-                        binding.followButton.text = "Following"
-                        binding.followButton.setBackgroundColor(Color.WHITE)
-                        binding.followButton.setTextColor(Color.BLACK)
-                        binding.progressBarFollowButton.indeterminateTintList = ColorStateList.valueOf(Color.BLACK)
+                        binding.progressButtonLayout.followButtonTv.text = "FOLLOWING"
+                        binding.progressButtonLayout.followButtonLayout.setBackgroundColor(Color.WHITE)
+                        binding.progressButtonLayout.followButtonTv.setTextColor(Color.BLACK)
+                        binding.progressButtonLayout.progressBarFollowButton.indeterminateTintList = ColorStateList.valueOf(Color.BLACK)
                     } else {
-                        binding.followButton.text = "Follow"
-                        binding.followButton.setBackgroundColor(Color.parseColor("#cf363c"))
-                        binding.followButton.setTextColor(Color.parseColor("#ffffff"))
-                        binding.progressBarFollowButton.indeterminateTintList = ColorStateList.valueOf(Color.WHITE)
+                        binding.progressButtonLayout.followButtonTv.text = "FOLLOW"
+                        binding.progressButtonLayout.followButtonLayout.setBackgroundColor(Color.parseColor("#cf363c"))
+                        binding.progressButtonLayout.followButtonTv.setTextColor(Color.parseColor("#ffffff"))
+                        binding.progressButtonLayout.progressBarFollowButton.indeterminateTintList = ColorStateList.valueOf(Color.WHITE)
                     }
-                    binding.progressBarFollowButton.visibility = View.GONE
+                    binding.progressButtonLayout.progressBarFollowButton.visibility = View.GONE
                 }
                 is UiState.Failure -> {
-                    binding.progressBarFollowButton.visibility = View.GONE
+                    binding.progressButtonLayout.progressBarFollowButton.visibility = View.GONE
                     Toast.makeText(requireContext(), result.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
                 is UiState.Loading -> {
-                    binding.progressBarFollowButton.visibility = View.VISIBLE
+                    binding.progressButtonLayout.progressBarFollowButton.visibility = View.VISIBLE
                 }
             }
         }
