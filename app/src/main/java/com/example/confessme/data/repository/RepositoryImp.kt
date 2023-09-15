@@ -177,6 +177,8 @@ class RepositoryImp(
         val user = firebaseAuth.currentUser
 
         if (user != null) {
+            val currentUserUid = user.uid
+
             database.collection("users")
                 .orderBy("userName")
                 .startAt(query)
@@ -186,8 +188,12 @@ class RepositoryImp(
                     val userList = mutableListOf<User>()
 
                     for (document in documents) {
-                        val user = document.toObject(User::class.java)
-                        userList.add(user)
+                        val uid = document.id
+
+                        if (uid != currentUserUid) {
+                            val user = document.toObject(User::class.java)
+                            userList.add(user)
+                        }
                     }
 
                     result.invoke(UiState.Success(userList))
