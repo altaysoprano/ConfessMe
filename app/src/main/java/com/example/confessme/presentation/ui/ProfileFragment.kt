@@ -12,17 +12,21 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TableLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.ProfileSearchSharedViewModel
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.presentation.ProfileViewPagerAdapter
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,6 +34,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
+    private lateinit var viewPagerAdapter: ProfileViewPagerAdapter
     private val viewModel: ProfileViewModel by viewModels()
     private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
 
@@ -43,12 +48,39 @@ class ProfileFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = "My Profile"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
+        viewPagerAdapter = ProfileViewPagerAdapter(this)
+        binding.profileViewPager.adapter = viewPagerAdapter
+
+        binding.profileTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                tab?.let {
+                    binding.profileViewPager.currentItem = it.position
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Bir sekme seçilmemiş durumdayken yapılacak işlemler buraya gelecek
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler buraya gelecek
+            }
+        })
+
+        binding.profileViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                binding.profileTabLayout.getTabAt(position)?.select()
+            }
+        })
 
         sharedViewModel.selectedUserName.observe(viewLifecycleOwner) { username ->
             if (!username.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByUsername(username)
                 checkIfUserFollowed(username)
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
+                binding.profileViewPager.adapter = null
+                binding.profileTabLayout.visibility = View.GONE
             } else {
                 viewModel.getProfileData()
                 binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
