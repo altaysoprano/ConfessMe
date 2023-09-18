@@ -71,6 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription=""
+        app:tabTextAppearance="@style/ProfileTabLayoutText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/profile_tab_layout">
@@ -107,5 +108,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/confess_fab_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/confess"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="2dp"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/confessmered"
+        app:fabSize="normal"
+        android:elevation="8dp"
+        >
+    </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -58,4 +58,10 @@
         <item name="cornerSizeBottomRight">50dp</item>
         <item name="cornerSizeBottomLeft">50dp</item>
     </style>
+
+    <style name="ProfileTabLayoutText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 </resources>

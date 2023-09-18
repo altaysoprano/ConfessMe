@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">ConfessMe</string>
-    <string name="confessions_to_me">Confessions To Me</string>
-    <string name="my_confessions">My Confessions</string>
+    <string name="confessions_to_me">Confessıons To Me</string>
+    <string name="my_confessions">My Confessıons</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="confess">Confess</string>
 </resources>

@@ -81,6 +81,7 @@ class ProfileFragment : Fragment() {
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
                 binding.profileViewPager.adapter = null
                 binding.profileTabLayout.visibility = View.GONE
+                binding.confessFabButton.visibility = View.VISIBLE
             } else {
                 viewModel.getProfileData()
                 binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
@@ -117,6 +118,10 @@ class ProfileFragment : Fragment() {
 
         binding.progressButtonLayout.followButtonCardview.setOnClickListener {
             followOrUnfollowUser()
+        }
+
+        binding.confessFabButton.setOnClickListener {
+            navRegister.navigateFrag(ConfessFragment(), true)
         }
 
         return binding.root
