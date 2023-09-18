@@ -2,6 +2,7 @@ package com.example.confessme.data.repository
 
 import android.net.Uri
 import android.util.Log
+import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -261,6 +262,60 @@ class RepositoryImp(
                 }
         } else {
             callback.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun addConfession(username: String, confessionText: String, result: (UiState<String>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+            // Kullanıcı adından UID'yi almak için bir Firestore sorgusu yapalım
+            database.collection("users")
+                .whereEqualTo("userName", username)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        val userDocument = documents.documents[0]
+                        val userId = userDocument.id // Bu kullanıcının UID'sini verir
+
+                        // Şimdi UID'yi kullanarak itirafları ekleyebiliriz
+                        val confessionCollection = database.collection("users").document(currentUserUid)
+                            .collection("my_confessions")
+                        val newConfessionDocument = confessionCollection.document()
+                        val confessionData = hashMapOf(
+                            "text" to confessionText,
+                            "timestamp" to FieldValue.serverTimestamp()
+                        )
+
+                        val batch = database.batch()
+
+                        // İtirafı yapan kullanıcının "my confessions" koleksiyonuna ekle
+                        batch.set(newConfessionDocument, confessionData)
+
+                        // Aynı itirafı alan kullanıcının "confessions to me" koleksiyonuna ekle
+                        val confessionToMeCollection = database.collection("users").document(userId)
+                            .collection("confessions_to_me")
+                        val newConfessionToMeDocument = confessionToMeCollection.document()
+
+                        batch.set(newConfessionToMeDocument, confessionData)
+
+                        batch.commit()
+                            .addOnSuccessListener {
+                                result.invoke(UiState.Success("Confession added successfully"))
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure("User with username not found"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
         }
     }
 
