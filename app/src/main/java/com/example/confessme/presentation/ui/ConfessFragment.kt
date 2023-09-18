@@ -1,6 +1,8 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -29,6 +31,7 @@ class ConfessFragment : Fragment() {
     private lateinit var binding: FragmentConfessBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ConfessViewModel by viewModels()
+    private var isConfessButtonEnabled = true
     private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -45,6 +48,31 @@ class ConfessFragment : Fragment() {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_close)
         }
+
+        val maxLength = 560 // Maksimum karakter sınırı
+        binding.confessEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Değişiklik öncesi işlemler
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                val currentLength = s?.length ?: 0
+                if (currentLength > maxLength) {
+                    binding.confessEditText.error = "Character limit exceeded"
+                    isConfessButtonEnabled = false
+                    requireActivity().invalidateOptionsMenu()
+                } else {
+                    binding.confessEditText.error = null
+                    isConfessButtonEnabled = true
+                    requireActivity().invalidateOptionsMenu()
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // Değişiklik sonrası işlemler
+            }
+        })
 
         viewModel.addConfessionState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -92,7 +120,9 @@ class ConfessFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.confess_menu, menu) // R.menu.confess_menu, menu içinde "Confess" butonunu içerir
+        inflater.inflate(R.menu.confess_menu, menu)
+        val confessMenuItem = menu.findItem(R.id.action_confess)
+        confessMenuItem.isEnabled = isConfessButtonEnabled
         super.onCreateOptionsMenu(menu, inflater)
     }
 
