@@ -123,12 +123,7 @@ class ProfileFragment : Fragment() {
         binding.confessFabButton.setOnClickListener {
             val selectedUserName = sharedViewModel.selectedUserName.value
             if (!selectedUserName.isNullOrEmpty()) {
-                val bundle = Bundle()
-                bundle.putString("selectedUserName", selectedUserName)
-
                 val confessFragment = ConfessFragment()
-                confessFragment.arguments = bundle
-
                 navRegister.navigateFrag(confessFragment, true)
             } else {
                 Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()

@@ -1,7 +1,6 @@
 package com.example.confessme.data.repository
 
 import android.net.Uri
-import android.util.Log
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
@@ -9,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import java.util.Date
 
@@ -265,19 +265,20 @@ class RepositoryImp(
         }
     }
 
-    override fun addConfession(username: String, confessionText: String, result: (UiState<String>) -> Unit) {
+    override fun addConfession(userName: String, confessionText: String, result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
             val currentUserUid = user.uid
             // Kullanıcı adından UID'yi almak için bir Firestore sorgusu yapalım
             database.collection("users")
-                .whereEqualTo("userName", username)
+                .whereEqualTo("userName", userName)
                 .get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
                         val userDocument = documents.documents[0]
                         val userId = userDocument.id // Bu kullanıcının UID'sini verir
+                        val imageUrl = userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
 
                         // Şimdi UID'yi kullanarak itirafları ekleyebiliriz
                         val confessionCollection = database.collection("users").document(currentUserUid)
@@ -285,6 +286,8 @@ class RepositoryImp(
                         val newConfessionDocument = confessionCollection.document()
                         val confessionData = hashMapOf(
                             "text" to confessionText,
+                            "username" to userName,
+                            "imageUrl" to imageUrl,  // Kullanıcının profil resmi URL'sini ekleyin
                             "timestamp" to FieldValue.serverTimestamp()
                         )
 
@@ -310,6 +313,35 @@ class RepositoryImp(
                     } else {
                         result.invoke(UiState.Failure("User with username not found"))
                     }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun fetchCurrentUserConfessions(result: (UiState<List<Confession>>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+            val confessionCollection = database.collection("users").document(currentUserUid)
+                .collection("my_confessions")
+
+            confessionCollection
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val confessionList = mutableListOf<Confession>()
+
+                    for (document in documents) {
+                        val confession = document.toObject(Confession::class.java)
+                        confessionList.add(confession)
+                    }
+
+                    result.invoke(UiState.Success(confessionList))
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))

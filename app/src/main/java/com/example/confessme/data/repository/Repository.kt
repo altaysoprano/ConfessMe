@@ -1,6 +1,7 @@
 package com.example.confessme.data.repository
 
 import android.net.Uri
+import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 
@@ -21,5 +22,6 @@ interface Repository {
     fun followUser(userIdToFollow: String, callback: (UiState<String>) -> Unit)
     fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit)
     fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit)
-    fun addConfession(userId: String, confessionText: String, result: (UiState<String>) -> Unit)
+    fun addConfession(userName: String, confessionText: String, result: (UiState<String>) -> Unit)
+    fun fetchCurrentUserConfessions(result: (UiState<List<Confession>>) -> Unit)
 }

@@ -78,12 +78,12 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/confessions_to_me">
+            android:text="@string/my_confessions">
         </com.google.android.material.tabs.TabItem>
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/my_confessions">
+            android:text="@string/confessions_to_me">
         </com.google.android.material.tabs.TabItem>
     </com.google.android.material.tabs.TabLayout>
 

@@ -3,6 +3,7 @@ package com.example.confessme.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.Repository
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -19,11 +20,25 @@ class ConfessViewModel @Inject constructor(
     val addConfessionState: LiveData<UiState<String>>
         get() = _addConfessionState
 
-    fun addConfession(userId: String, confessionText: String) {
+    private val _fetchConfessionsState = MutableLiveData<UiState<List<Confession>>>()
+    val fetchConfessionsState: LiveData<UiState<List<Confession>>>
+        get() = _fetchConfessionsState
+
+    init {
+        fetchConfessions()
+    }
+
+    fun addConfession(userName: String, confessionText: String) {
         _addConfessionState.value = UiState.Loading
-        repository.addConfession(userId, confessionText) {
+        repository.addConfession(userName, confessionText) {
             _addConfessionState.value = it
         }
     }
 
+    private fun fetchConfessions() {
+        _fetchConfessionsState.value = UiState.Loading
+        repository.fetchCurrentUserConfessions { result ->
+            _fetchConfessionsState.postValue(result)
+        }
+    }
 }

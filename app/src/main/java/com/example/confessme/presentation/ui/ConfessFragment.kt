@@ -49,10 +49,9 @@ class ConfessFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_close)
         }
 
-        val maxLength = 560 // Maksimum karakter sınırı
+        val maxLength = 560
         binding.confessEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Değişiklik öncesi işlemler
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -70,7 +69,6 @@ class ConfessFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                // Değişiklik sonrası işlemler
             }
         })
 
