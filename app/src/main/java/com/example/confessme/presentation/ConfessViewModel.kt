@@ -31,9 +31,9 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    fun fetchConfessions(isMyConfessions: Boolean = true) {
+    fun fetchConfessions(limit: Long, isMyConfessions: Boolean = true) {
         _fetchConfessionsState.value = UiState.Loading
-        repository.fetchConfessions(isMyConfessions) { result ->
+        repository.fetchConfessions(limit, isMyConfessions) { result ->
             _fetchConfessionsState.postValue(result)
         }
     }

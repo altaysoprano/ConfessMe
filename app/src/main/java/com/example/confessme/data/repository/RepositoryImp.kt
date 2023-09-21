@@ -341,7 +341,7 @@ class RepositoryImp(
         }
     }
 
-    override fun fetchConfessions(isMyConfessions: Boolean, result: (UiState<List<Confession>>) -> Unit) {
+    override fun fetchConfessions(limit: Long, isMyConfessions: Boolean, result: (UiState<List<Confession>>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -356,6 +356,7 @@ class RepositoryImp(
 
             confessionCollection
                 .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(limit)
                 .get()
                 .addOnSuccessListener { documents ->
                     val confessionList = mutableListOf<Confession>()

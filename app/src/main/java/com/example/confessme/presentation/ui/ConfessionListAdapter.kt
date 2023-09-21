@@ -11,8 +11,7 @@ import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.databinding.UserItemBinding
 
 class ConfessionListAdapter(
-    private val confessList: MutableList<Confession> = mutableListOf(),
-    private val isMyConfessions: Boolean
+    private val confessList: MutableList<Confession> = mutableListOf()
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {

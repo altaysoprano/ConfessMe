@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
@@ -21,8 +22,9 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
+    private var limit: Long = 20
 
-    private val confessListAdapter = ConfessionListAdapter(mutableListOf(), isMyConfessions)
+    private val confessListAdapter = ConfessionListAdapter(mutableListOf())
     private val viewModel: ConfessViewModel by viewModels()
 
     override fun onCreateView(
@@ -33,7 +35,25 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         binding = FragmentConfessionsToMeBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
 
-        viewModel.fetchConfessions(isMyConfessions)
+        viewModel.fetchConfessions(limit, isMyConfessions)
+
+        binding.confessionToMeListRecyclerviewId.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                    && firstVisibleItemPosition >= 0
+                    && totalItemCount >= limit
+                ) {
+                    limit += 10
+                    viewModel.fetchConfessions(limit, isMyConfessions)
+                }
+            }
+        })
 
         setupRecyclerView()
         observeFetchConfessions()
@@ -53,15 +73,15 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    profileBinding.progressBarProfile.visibility = View.VISIBLE
+                    binding.progressBarConfessionsToMe.visibility = View.VISIBLE
                 }
                 is UiState.Failure -> {
-                    profileBinding.progressBarProfile.visibility = View.GONE
+                    binding.progressBarConfessionsToMe.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
                 is UiState.Success -> {
-                    profileBinding.progressBarProfile.visibility = View.GONE
+                    binding.progressBarConfessionsToMe.visibility = View.GONE
                     confessListAdapter.updateList(state.data)
                 }
             }
