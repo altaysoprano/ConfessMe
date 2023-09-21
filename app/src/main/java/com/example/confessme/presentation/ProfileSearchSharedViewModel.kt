@@ -3,7 +3,6 @@ package com.example.confessme.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.confessme.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -16,4 +15,5 @@ class ProfileSearchSharedViewModel @Inject constructor() : ViewModel() {
     fun setSelectedUserName(username: String) {
         _selectedUserName.value = username
     }
+
 }

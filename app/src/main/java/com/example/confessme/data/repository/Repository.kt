@@ -23,5 +23,4 @@ interface Repository {
     fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit)
     fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit)
     fun addConfession(userName: String, confessionText: String, result: (UiState<String>) -> Unit)
-    fun fetchCurrentUserConfessions(result: (UiState<List<Confession>>) -> Unit)
-}
+    fun fetchConfessions(isMyConfessions: Boolean, result: (UiState<List<Confession>>) -> Unit)}

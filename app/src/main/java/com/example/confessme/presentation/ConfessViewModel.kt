@@ -24,10 +24,6 @@ class ConfessViewModel @Inject constructor(
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
         get() = _fetchConfessionsState
 
-    init {
-        fetchConfessions()
-    }
-
     fun addConfession(userName: String, confessionText: String) {
         _addConfessionState.value = UiState.Loading
         repository.addConfession(userName, confessionText) {
@@ -35,9 +31,9 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    private fun fetchConfessions() {
+    fun fetchConfessions(isMyConfessions: Boolean = true) {
         _fetchConfessionsState.value = UiState.Loading
-        repository.fetchCurrentUserConfessions { result ->
+        repository.fetchConfessions(isMyConfessions) { result ->
             _fetchConfessionsState.postValue(result)
         }
     }

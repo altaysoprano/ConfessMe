@@ -1,8 +1,6 @@
 package com.example.confessme.presentation
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.confessme.presentation.ui.ConfessionsFragment
 import com.example.confessme.presentation.ui.ConfessionsToMeFragment
@@ -15,9 +13,9 @@ class ProfileViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragmen
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> ConfessionsFragment()
-            1 -> ConfessionsToMeFragment()
-            else -> ConfessionsFragment()
+            0 -> ConfessionsFragment(isMyConfessions = true)
+            1 -> ConfessionsToMeFragment(isMyConfessions = false)
+            else -> ConfessionsFragment(isMyConfessions = true) // Varsayılan olarak birini seçebilirsiniz.
         }
     }
 }

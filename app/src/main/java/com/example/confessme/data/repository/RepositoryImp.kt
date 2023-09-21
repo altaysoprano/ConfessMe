@@ -270,48 +270,67 @@ class RepositoryImp(
 
         if (user != null) {
             val currentUserUid = user.uid
-            // Kullanıcı adından UID'yi almak için bir Firestore sorgusu yapalım
-            database.collection("users")
-                .whereEqualTo("userName", userName)
+
+            // Current user'ın Firestore'daki bilgilerini almak için UID kullanımı
+            database.collection("users").document(currentUserUid)
                 .get()
-                .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        val userDocument = documents.documents[0]
-                        val userId = userDocument.id // Bu kullanıcının UID'sini verir
-                        val imageUrl = userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
+                .addOnSuccessListener { currentUserDocument ->
+                    if (currentUserDocument.exists()) {
+                        val fromUserImageUrl = currentUserDocument.getString("imageUrl")
+                        val fromUserUsername = currentUserDocument.getString("userName")
 
-                        // Şimdi UID'yi kullanarak itirafları ekleyebiliriz
-                        val confessionCollection = database.collection("users").document(currentUserUid)
-                            .collection("my_confessions")
-                        val newConfessionDocument = confessionCollection.document()
-                        val confessionData = hashMapOf(
-                            "text" to confessionText,
-                            "username" to userName,
-                            "imageUrl" to imageUrl,  // Kullanıcının profil resmi URL'sini ekleyin
-                            "timestamp" to FieldValue.serverTimestamp()
-                        )
+                        // Kullanıcı adından UID'yi almak için bir Firestore sorgusu yapalım
+                        database.collection("users")
+                            .whereEqualTo("userName", userName)
+                            .get()
+                            .addOnSuccessListener { documents ->
+                                if (!documents.isEmpty) {
+                                    val userDocument = documents.documents[0]
+                                    val userId = userDocument.id // Bu kullanıcının UID'sini verir
+                                    val imageUrl = userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
 
-                        val batch = database.batch()
+                                    // Şimdi UID'yi kullanarak itirafları ekleyebiliriz
+                                    val confessionCollection = database.collection("users").document(currentUserUid)
+                                        .collection("my_confessions")
+                                    val newConfessionDocument = confessionCollection.document()
 
-                        // İtirafı yapan kullanıcının "my confessions" koleksiyonuna ekle
-                        batch.set(newConfessionDocument, confessionData)
+                                    val confessionData = hashMapOf(
+                                        "text" to confessionText,
+                                        "username" to userName, // İtirafın yapıldığı kişinin username'i
+                                        "imageUrl" to imageUrl, // İtirafın yapıldığı kişinin imageUrl'i
+                                        "fromUserUsername" to fromUserUsername, // Current user'ın username'i
+                                        "fromUserImageUrl" to fromUserImageUrl, // Current user'ın imageUrl'i
+                                        "timestamp" to FieldValue.serverTimestamp()
+                                    )
 
-                        // Aynı itirafı alan kullanıcının "confessions to me" koleksiyonuna ekle
-                        val confessionToMeCollection = database.collection("users").document(userId)
-                            .collection("confessions_to_me")
-                        val newConfessionToMeDocument = confessionToMeCollection.document()
+                                    val batch = database.batch()
 
-                        batch.set(newConfessionToMeDocument, confessionData)
+                                    // İtirafı yapan kullanıcının "my confessions" koleksiyonuna ekle
+                                    batch.set(newConfessionDocument, confessionData)
 
-                        batch.commit()
-                            .addOnSuccessListener {
-                                result.invoke(UiState.Success("Confession added successfully"))
+                                    // Aynı itirafı alan kullanıcının "confessions to me" koleksiyonuna ekle
+                                    val confessionToMeCollection = database.collection("users").document(userId)
+                                        .collection("confessions_to_me")
+                                    val newConfessionToMeDocument = confessionToMeCollection.document()
+
+                                    batch.set(newConfessionToMeDocument, confessionData)
+
+                                    batch.commit()
+                                        .addOnSuccessListener {
+                                            result.invoke(UiState.Success("Confession added successfully"))
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                        }
+                                } else {
+                                    result.invoke(UiState.Failure("User with username not found"))
+                                }
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
                             }
                     } else {
-                        result.invoke(UiState.Failure("User with username not found"))
+                        result.invoke(UiState.Failure("Current user not found in Firestore"))
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -322,13 +341,18 @@ class RepositoryImp(
         }
     }
 
-    override fun fetchCurrentUserConfessions(result: (UiState<List<Confession>>) -> Unit) {
+    override fun fetchConfessions(isMyConfessions: Boolean, result: (UiState<List<Confession>>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
             val currentUserUid = user.uid
-            val confessionCollection = database.collection("users").document(currentUserUid)
-                .collection("my_confessions")
+            val confessionCollection = if (isMyConfessions) {
+                database.collection("users").document(currentUserUid)
+                    .collection("my_confessions")
+            } else {
+                database.collection("users").document(currentUserUid)
+                    .collection("confessions_to_me")
+            }
 
             confessionCollection
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -351,7 +375,7 @@ class RepositoryImp(
         }
     }
 
-    fun isValidPassword(password: String): Boolean {
+    private fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
         return passwordRegex.matches(password)
     }

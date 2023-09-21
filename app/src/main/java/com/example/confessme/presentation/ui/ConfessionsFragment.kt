@@ -17,11 +17,12 @@ import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfessionsFragment : Fragment() {
+class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
     private lateinit var binding: FragmentConfessionsBinding
+    private lateinit var profileBinding: FragmentProfileBinding
 
-    private val confessListAdapter = ConfessionListAdapter(mutableListOf())
+    private val confessListAdapter = ConfessionListAdapter(mutableListOf(), isMyConfessions)
     private val viewModel: ConfessViewModel by viewModels()
 
     override fun onCreateView(
@@ -30,9 +31,12 @@ class ConfessionsFragment : Fragment() {
     ): View {
 
         binding = FragmentConfessionsBinding.inflate(inflater, container, false)
+        profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+
+        viewModel.fetchConfessions(isMyConfessions)
 
         setupRecyclerView()
-        observeSearchResults()
+        observeFetchConfessions()
 
         return binding.root
     }
@@ -44,19 +48,19 @@ class ConfessionsFragment : Fragment() {
         }
     }
 
-    private fun observeSearchResults() {
+    private fun observeFetchConfessions() {
         viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarConfessions.visibility = View.VISIBLE
+                    profileBinding.progressBarProfile.visibility = View.VISIBLE
                 }
                 is UiState.Failure -> {
-                    binding.progressBarConfessions.visibility = View.GONE
+                    profileBinding.progressBarProfile.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
                 is UiState.Success -> {
-                    binding.progressBarConfessions.visibility = View.GONE
+                    profileBinding.progressBarProfile.visibility = View.GONE
                     confessListAdapter.updateList(state.data)
                 }
             }

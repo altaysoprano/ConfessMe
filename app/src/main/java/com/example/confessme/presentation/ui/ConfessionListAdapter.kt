@@ -11,7 +11,8 @@ import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.databinding.UserItemBinding
 
 class ConfessionListAdapter(
-    private val confessList: MutableList<Confession> = mutableListOf()
+    private val confessList: MutableList<Confession> = mutableListOf(),
+    private val isMyConfessions: Boolean
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {
@@ -19,7 +20,10 @@ class ConfessionListAdapter(
         return ConfessionViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ConfessionListAdapter.ConfessionViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ConfessionListAdapter.ConfessionViewHolder,
+        position: Int
+    ) {
         val confess = confessList[position]
         holder.bind(confess)
     }
@@ -38,12 +42,13 @@ class ConfessionListAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(confess: Confession) {
             binding.apply {
-                confessionsScreenUsername.text = "@" + confess.username
+                confessionsScreenUsername.text = confess.fromUserUsername
+                confessionsScreenToUserName.text = "@" + confess.username + " "
                 confessionsScreenConfession.text = confess.text
 
-                if (confess.imageUrl.isNotEmpty()) {
+                if (confess.fromUserImageUrl.isNotEmpty()) {
                     Glide.with(itemView)
-                        .load(confess.imageUrl)
+                        .load(confess.fromUserImageUrl)
                         .into(confessionsScreenProfileImage)
                 }
 
