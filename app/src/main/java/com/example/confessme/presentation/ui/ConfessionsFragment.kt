@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.UiState
@@ -22,6 +24,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
+    private lateinit var noConfessFoundBinding: NoConfessFoundBinding
     private var limit: Long = 20
 
     private val confessListAdapter = ConfessionListAdapter(mutableListOf())
@@ -34,6 +37,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
         binding = FragmentConfessionsBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        noConfessFoundBinding = binding.confessionsNoConfessFoundView
 
         viewModel.fetchConfessions(limit, isMyConfessions)
 
@@ -81,7 +85,12 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                 }
                 is UiState.Success -> {
                     binding.progressBarConfessions.visibility = View.GONE
-                    confessListAdapter.updateList(state.data)
+                    if (state.data.isEmpty()) {
+                        noConfessFoundBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noConfessFoundBinding.root.visibility = View.GONE
+                        confessListAdapter.updateList(state.data)
+                    }
                 }
             }
         }

@@ -13,6 +13,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
+    private lateinit var noConfessFoundBinding: NoConfessFoundBinding
     private var limit: Long = 20
 
     private val confessListAdapter = ConfessionListAdapter(mutableListOf())
@@ -34,6 +36,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
         binding = FragmentConfessionsToMeBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        noConfessFoundBinding = binding.confessionsToMeNoConfessFoundView
 
         viewModel.fetchConfessions(limit, isMyConfessions)
 
@@ -82,7 +85,12 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                 }
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMe.visibility = View.GONE
-                    confessListAdapter.updateList(state.data)
+                    if (state.data.isEmpty()) {
+                        noConfessFoundBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noConfessFoundBinding.root.visibility = View.GONE
+                        confessListAdapter.updateList(state.data)
+                    }
                 }
             }
         }
