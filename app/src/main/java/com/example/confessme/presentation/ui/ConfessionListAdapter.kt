@@ -9,6 +9,10 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.databinding.UserItemBinding
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ConfessionListAdapter(
     private val confessList: MutableList<Confession> = mutableListOf()
@@ -45,6 +49,10 @@ class ConfessionListAdapter(
                 confessionsScreenToUserName.text = "@" + confess.username + " "
                 confessionsScreenConfession.text = confess.text
 
+                val timestamp = confess.timestamp as Timestamp
+                val timeSinceConfession = calculateTimeSinceConfession(timestamp)
+                confessionsScreenTimestamp.text = timeSinceConfession
+
                 if (confess.fromUserImageUrl.isNotEmpty()) {
                     Glide.with(itemView)
                         .load(confess.fromUserImageUrl)
@@ -53,6 +61,28 @@ class ConfessionListAdapter(
 
                 itemView.setOnClickListener {
 
+                }
+            }
+        }
+    }
+
+    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
+        val currentTime = Timestamp.now()
+        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
+
+        val minutes = timeDifference / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        return when {
+            timeDifference < 60 -> "$timeDifference seconds ago"
+            minutes < 60 -> "$minutes minutes ago"
+            hours < 24 -> "$hours hours ago"
+            else -> {
+                if (days == 1L) {
+                    "1 day ago"
+                } else {
+                    "$days days ago"
                 }
             }
         }
