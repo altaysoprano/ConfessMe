@@ -1,10 +1,22 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.ConfessItemBinding
@@ -46,8 +58,28 @@ class ConfessionListAdapter(
         fun bind(confess: Confession) {
             binding.apply {
                 confessionsScreenUsername.text = confess.fromUserUsername
-                confessionsScreenToUserName.text = "@" + confess.username + " "
-                confessionsScreenConfession.text = confess.text
+                val toUserName = "@${confess.username} " // Tousername'i ayarla
+
+                val spannable = SpannableString("$toUserName${confess.text}")
+
+                val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
+                val usernameStart = 0
+                val usernameEnd = toUserName.length
+
+                spannable.setSpan(
+                    ForegroundColorSpan(usernameColor),
+                    usernameStart,
+                    usernameEnd,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                spannable.setSpan(
+                    StyleSpan(Typeface.BOLD),
+                    usernameStart,
+                    usernameEnd,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                confessionsScreenConfession.text = spannable
 
                 val timestamp = confess.timestamp as Timestamp
                 val timeSinceConfession = calculateTimeSinceConfession(timestamp)
@@ -59,11 +91,33 @@ class ConfessionListAdapter(
                         .into(confessionsScreenProfileImage)
                 }
 
+                confessionsScreenConfession.setOnClickListener {
+                    confess.isExpanded = !confess.isExpanded
+                    updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
+                }
+
+                // TextView'in başlangıç durumunu ayarla
+                updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
+
+                confessionsScreenConfession.viewTreeObserver.addOnGlobalLayoutListener(
+                    object : ViewTreeObserver.OnGlobalLayoutListener {
+                        override fun onGlobalLayout() {
+                            confessionsScreenConfession.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                        }
+                    }
+                )
+
                 itemView.setOnClickListener {
 
                 }
             }
         }
+    }
+
+    private fun updateTextViewExpansion(textview: TextView, isExpanded: Boolean) {
+        val maxLines = if (isExpanded) Int.MAX_VALUE else 2
+        textview.maxLines = maxLines
     }
 
     private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {

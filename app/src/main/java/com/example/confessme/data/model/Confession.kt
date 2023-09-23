@@ -6,5 +6,6 @@ data class Confession(
     val fromUserUsername: String = "",
     val fromUserImageUrl: String = "",
     val imageUrl: String = "",
-    val timestamp: Any? = null
+    val timestamp: Any? = null,
+    var isExpanded: Boolean = false
 )

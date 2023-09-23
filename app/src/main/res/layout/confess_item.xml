@@ -11,7 +11,7 @@
         android:src="@drawable/empty_profile_photo" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
@@ -35,8 +35,8 @@
                 android:id="@+id/middle_dot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="4dp"
                 android:maxLines="1"
+                android:paddingEnd="4dp"
                 android:text="·"
                 android:textStyle="bold" />
 
@@ -52,26 +52,22 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/confessionsScreenToUserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="tousername "
-                android:textColor="@color/confessmered"
-                android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/confessionsScreenConfession"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
                 android:text="confession"
-                android:textStyle="normal" />
-        </LinearLayout>
+                android:textStyle="normal"
+                android:clickable="true"
+                android:focusable="true"
+                android:maxLines="2" />
 
+        </LinearLayout>
 
     </LinearLayout>
 
