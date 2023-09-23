@@ -27,7 +27,10 @@ import java.util.Date
 import java.util.Locale
 
 class ConfessionListAdapter(
-    private val confessList: MutableList<Confession> = mutableListOf()
+    private val confessList: MutableList<Confession> = mutableListOf(),
+    private val isMyConfession: Boolean,
+    private val onAnswerClick: () -> Unit,
+    private val onFavoriteClick: () -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {
@@ -91,6 +94,18 @@ class ConfessionListAdapter(
                         .into(confessionsScreenProfileImage)
                 }
 
+                if (isMyConfession) {
+                    icAnswer.alpha = 0.5f
+                    icFavorite.alpha = 0.5f
+                    icAnswer.isClickable = false
+                    icFavorite.isClickable = false
+                } else {
+                    icAnswer.alpha = 1.0f
+                    icFavorite.alpha = 1.0f
+                    icAnswer.isClickable = true
+                    icFavorite.isClickable = true
+                }
+
                 confessionsScreenConfession.setOnClickListener {
                     confess.isExpanded = !confess.isExpanded
                     updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
@@ -107,6 +122,14 @@ class ConfessionListAdapter(
                         }
                     }
                 )
+
+                icAnswer.setOnClickListener {
+                    onAnswerClick()
+                }
+
+                icFavorite.setOnClickListener {
+                    onFavoriteClick()
+                }
 
                 itemView.setOnClickListener {
 

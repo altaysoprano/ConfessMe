@@ -15,7 +15,7 @@ class ProfileViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragmen
         return when (position) {
             0 -> ConfessionsFragment(isMyConfessions = true)
             1 -> ConfessionsToMeFragment(isMyConfessions = false)
-            else -> ConfessionsFragment(isMyConfessions = true) // Varsayılan olarak birini seçebilirsiniz.
+            else -> ConfessionsFragment(isMyConfessions = true)
         }
     }
 }

@@ -23,10 +23,12 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
+    private lateinit var navRegister: FragmentNavigation
     private lateinit var noConfessFoundBinding: NoConfessFoundBinding
     private var limit: Long = 20
 
-    private val confessListAdapter = ConfessionListAdapter(mutableListOf())
+    private lateinit var confessListAdapter: ConfessionListAdapter
+
     private val viewModel: ConfessViewModel by viewModels()
 
     override fun onCreateView(
@@ -36,11 +38,23 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
         binding = FragmentConfessionsToMeBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        navRegister = activity as FragmentNavigation
         noConfessFoundBinding = binding.confessionsToMeNoConfessFoundView
+
+        confessListAdapter = ConfessionListAdapter(
+            mutableListOf(),
+            isMyConfessions,
+            onAnswerClick = {
+                navRegister.navigateFrag(ConfessAnswerFragment(), true)
+            },
+            onFavoriteClick = {
+            }
+        )
 
         viewModel.fetchConfessions(limit, isMyConfessions)
 
-        binding.confessionToMeListRecyclerviewId.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.confessionToMeListRecyclerviewId.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -78,11 +92,13 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                 is UiState.Loading -> {
                     binding.progressBarConfessionsToMe.visibility = View.VISIBLE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarConfessionsToMe.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMe.visibility = View.GONE
                     if (state.data.isEmpty()) {

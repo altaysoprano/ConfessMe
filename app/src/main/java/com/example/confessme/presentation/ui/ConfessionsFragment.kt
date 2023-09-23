@@ -24,10 +24,10 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
+    private lateinit var confessListAdapter: ConfessionListAdapter
     private lateinit var noConfessFoundBinding: NoConfessFoundBinding
     private var limit: Long = 20
 
-    private val confessListAdapter = ConfessionListAdapter(mutableListOf())
     private val viewModel: ConfessViewModel by viewModels()
 
     override fun onCreateView(
@@ -37,6 +37,12 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
         binding = FragmentConfessionsBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        confessListAdapter = ConfessionListAdapter(
+            mutableListOf(),
+            isMyConfessions,
+            onAnswerClick = {},
+            onFavoriteClick = {}
+        )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView
 
         viewModel.fetchConfessions(limit, isMyConfessions)
