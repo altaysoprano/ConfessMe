@@ -3,6 +3,7 @@ package com.example.confessme.presentation.ui
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -18,7 +19,10 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ProfileSearchSharedViewModel
+import com.example.confessme.util.UiState
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ConfessAnswerFragment : Fragment() {
 
     private lateinit var binding: FragmentConfessAnswerBinding
@@ -27,11 +31,10 @@ class ConfessAnswerFragment : Fragment() {
     private var isAnswerButtonEnabled = true
     private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = FragmentConfessAnswerBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.title = "Reply To Confession"
@@ -66,6 +69,27 @@ class ConfessAnswerFragment : Fragment() {
             }
         })
 
+        viewModel.addAnswerState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    requireActivity().onBackPressed()
+                    Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+
         return binding.root
     }
 
@@ -75,14 +99,21 @@ class ConfessAnswerFragment : Fragment() {
                 requireActivity().onBackPressed()
                 return true
             }
+
             R.id.action_confess -> {
-                val selectedUserName = sharedViewModel.selectedUserName.value ?: ""
                 val answerText = binding.confessAnswerEditText.text.toString()
+                val confessionId = arguments?.getString("confessionId", "")
 
-                if (answerText.isNotEmpty()) {
+                Log.d("Mesaj: ", "Answer Id in ConfessAnswer: $confessionId")
 
+                if (answerText.trim().isNotEmpty()) {
+                    viewModel.addAnswer(confessionId ?: "", answerText)
                 } else {
-                    Toast.makeText(requireContext(), "Your answer cannot be blank", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Your answer cannot be blank",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 return true
             }

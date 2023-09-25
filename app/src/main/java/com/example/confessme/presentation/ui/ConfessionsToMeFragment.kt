@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
+import com.example.confessme.presentation.ProfileSearchSharedViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,6 +32,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
     private lateinit var confessListAdapter: ConfessionListAdapter
 
     private val viewModel: ConfessViewModel by viewModels()
+    private val sharedViewModel: ProfileSearchSharedViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +43,19 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         noConfessFoundBinding = binding.confessionsToMeNoConfessFoundView
-
         confessListAdapter = ConfessionListAdapter(
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = {
-                navRegister.navigateFrag(ConfessAnswerFragment(), true)
+            onAnswerClick = { confessionId ->
+                if (!confessionId.isNullOrEmpty()) {
+                    val bundle = Bundle()
+                    bundle.putString("confessionId", confessionId)
+                    val confessAnswerFragment = ConfessAnswerFragment()
+                    confessAnswerFragment.arguments = bundle
+                    navRegister.navigateFrag(confessAnswerFragment, true)
+                } else {
+                    Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT).show()
+                }
             },
             onFavoriteClick = {
             }

@@ -29,7 +29,7 @@ import java.util.Locale
 class ConfessionListAdapter(
     private val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
-    private val onAnswerClick: () -> Unit,
+    private val onAnswerClick: (String) -> Unit,
     private val onFavoriteClick: () -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
@@ -111,7 +111,6 @@ class ConfessionListAdapter(
                     updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
                 }
 
-                // TextView'in başlangıç durumunu ayarla
                 updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
 
                 confessionsScreenConfession.viewTreeObserver.addOnGlobalLayoutListener(
@@ -124,7 +123,9 @@ class ConfessionListAdapter(
                 )
 
                 icAnswer.setOnClickListener {
-                    onAnswerClick()
+                    val confess = confessList[adapterPosition]
+                    Log.d("Mesaj: ", "Adapter'da id: ${confess.id}")
+                    onAnswerClick(confess.id)
                 }
 
                 icFavorite.setOnClickListener {

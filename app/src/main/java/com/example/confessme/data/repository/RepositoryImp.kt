@@ -1,6 +1,8 @@
 package com.example.confessme.data.repository
 
 import android.net.Uri
+import android.util.Log
+import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
@@ -32,7 +34,12 @@ class RepositoryImp(
         }
     }
 
-    override fun signUp(email: String, pass: String, confirmPass: String, result: (UiState<String>) -> Unit) {
+    override fun signUp(
+        email: String,
+        pass: String,
+        confirmPass: String,
+        result: (UiState<String>) -> Unit
+    ) {
         if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty()) {
             if (pass == confirmPass) {
                 if (!isValidPassword(pass)) {
@@ -40,27 +47,28 @@ class RepositoryImp(
                     return
                 }
                 val randomUsername = generateRandomUsername(10)
-                firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { authTask ->
-                    if (authTask.isSuccessful) {
-                        val user = firebaseAuth.currentUser
-                        if (user != null) {
-                            val uid = user.uid
-                            database.collection("users").document(uid)
-                                .set(User(email, pass, userName = randomUsername))
-                                .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
-                                .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure(exception.localizedMessage))
-                                }
-                        }
-                    } else {
-                        val exception = authTask.exception
-                        if (exception is FirebaseAuthUserCollisionException) {
-                            result.invoke(UiState.Failure("User already exists"))
+                firebaseAuth.createUserWithEmailAndPassword(email, pass)
+                    .addOnCompleteListener { authTask ->
+                        if (authTask.isSuccessful) {
+                            val user = firebaseAuth.currentUser
+                            if (user != null) {
+                                val uid = user.uid
+                                database.collection("users").document(uid)
+                                    .set(User(email, pass, userName = randomUsername))
+                                    .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                    }
+                            }
                         } else {
-                            result.invoke(UiState.Failure("Unknown error: ${exception?.localizedMessage}"))
+                            val exception = authTask.exception
+                            if (exception is FirebaseAuthUserCollisionException) {
+                                result.invoke(UiState.Failure("User already exists"))
+                            } else {
+                                result.invoke(UiState.Failure("Unknown error: ${exception?.localizedMessage}"))
+                            }
                         }
                     }
-                }
             } else {
                 result.invoke(UiState.Failure("Passwords do not match."))
             }
@@ -69,7 +77,13 @@ class RepositoryImp(
         }
     }
 
-    override fun updateProfile(previousUserName: String, userName: String, bio: String, imageUri: Uri, result: (UiState<String>) -> Unit) {
+    override fun updateProfile(
+        previousUserName: String,
+        userName: String,
+        bio: String,
+        imageUri: Uri,
+        result: (UiState<String>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -94,7 +108,8 @@ class RepositoryImp(
                             "bio" to bio
                         )
                         if (imageUri != Uri.EMPTY) {
-                            val reference = storage.reference.child("Profile").child(Date().time.toString())
+                            val reference =
+                                storage.reference.child("Profile").child(Date().time.toString())
                             reference.putFile(imageUri).addOnCompleteListener {
                                 if (it.isSuccessful) {
                                     reference.downloadUrl.addOnSuccessListener { imageUrl ->
@@ -245,7 +260,10 @@ class RepositoryImp(
         }
     }
 
-    override fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit) {
+    override fun checkIfUserFollowed(
+        usernameToCheck: String,
+        callback: (UiState<Boolean>) -> Unit
+    ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
@@ -265,13 +283,16 @@ class RepositoryImp(
         }
     }
 
-    override fun addConfession(userName: String, confessionText: String, result: (UiState<String>) -> Unit) {
+    override fun addConfession(
+        userName: String,
+        confessionText: String,
+        result: (UiState<String>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
             val currentUserUid = user.uid
 
-            // Current user'ın Firestore'daki bilgilerini almak için UID kullanımı
             database.collection("users").document(currentUserUid)
                 .get()
                 .addOnSuccessListener { currentUserDocument ->
@@ -279,7 +300,6 @@ class RepositoryImp(
                         val fromUserImageUrl = currentUserDocument.getString("imageUrl")
                         val fromUserUsername = currentUserDocument.getString("userName")
 
-                        // Kullanıcı adından UID'yi almak için bir Firestore sorgusu yapalım
                         database.collection("users")
                             .whereEqualTo("userName", userName)
                             .get()
@@ -287,31 +307,33 @@ class RepositoryImp(
                                 if (!documents.isEmpty) {
                                     val userDocument = documents.documents[0]
                                     val userId = userDocument.id // Bu kullanıcının UID'sini verir
-                                    val imageUrl = userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
+                                    val imageUrl =
+                                        userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
 
-                                    // Şimdi UID'yi kullanarak itirafları ekleyebiliriz
-                                    val confessionCollection = database.collection("users").document(currentUserUid)
-                                        .collection("my_confessions")
+                                    val confessionCollection =
+                                        database.collection("users").document(currentUserUid)
+                                            .collection("my_confessions")
                                     val newConfessionDocument = confessionCollection.document()
 
                                     val confessionData = hashMapOf(
+                                        "id" to newConfessionDocument.id,
                                         "text" to confessionText,
-                                        "username" to userName, // İtirafın yapıldığı kişinin username'i
-                                        "imageUrl" to imageUrl, // İtirafın yapıldığı kişinin imageUrl'i
-                                        "fromUserUsername" to fromUserUsername, // Current user'ın username'i
-                                        "fromUserImageUrl" to fromUserImageUrl, // Current user'ın imageUrl'i
+                                        "username" to userName,
+                                        "imageUrl" to imageUrl,
+                                        "fromUserUsername" to fromUserUsername,
+                                        "fromUserImageUrl" to fromUserImageUrl,
                                         "timestamp" to FieldValue.serverTimestamp()
                                     )
 
                                     val batch = database.batch()
 
-                                    // İtirafı yapan kullanıcının "my confessions" koleksiyonuna ekle
                                     batch.set(newConfessionDocument, confessionData)
 
-                                    // Aynı itirafı alan kullanıcının "confessions to me" koleksiyonuna ekle
-                                    val confessionToMeCollection = database.collection("users").document(userId)
-                                        .collection("confessions_to_me")
-                                    val newConfessionToMeDocument = confessionToMeCollection.document()
+                                    val confessionToMeCollection =
+                                        database.collection("users").document(userId)
+                                            .collection("confessions_to_me")
+                                    val newConfessionToMeDocument =
+                                        confessionToMeCollection.document()
 
                                     batch.set(newConfessionToMeDocument, confessionData)
 
@@ -341,7 +363,11 @@ class RepositoryImp(
         }
     }
 
-    override fun fetchConfessions(limit: Long, isMyConfessions: Boolean, result: (UiState<List<Confession>>) -> Unit) {
+    override fun fetchConfessions(
+        limit: Long,
+        isMyConfessions: Boolean,
+        result: (UiState<List<Confession>>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -373,6 +399,95 @@ class RepositoryImp(
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun addAnswer(
+        confessionId: String,
+        answerText: String,
+        result: (UiState<String>) -> Unit
+    ) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            val confessionDocRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("confessions_to_me")
+                .whereEqualTo("id", confessionId)
+
+            confessionDocRef.get()
+                .addOnSuccessListener { confessionQuerySnapshot ->
+                    if (!confessionQuerySnapshot.isEmpty) {
+                        val confessionDoc = confessionQuerySnapshot.documents[0] // İlk belgeyi al
+
+                        val fromUserUsername = confessionDoc.getString("username") ?: ""
+                        val fromUserImageUrl = confessionDoc.getString("imageUrl") ?: ""
+                        val username = confessionDoc.getString("fromUserUsername") ?: ""
+                        val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
+
+                        val answerData = Answer(
+                            id = "",
+                            text = answerText,
+                            username = username,
+                            fromUserUsername = fromUserUsername,
+                            fromUserImageUrl = fromUserImageUrl,
+                            imageUrl = imageUrl,
+                            timestamp = FieldValue.serverTimestamp(),
+                            isExpanded = false
+                        )
+
+                        val batch = database.batch()
+
+                        // İlk olarak, mevcut "confessions" koleksiyonuna cevabı ekle
+                        val answersCollection = confessionDoc.reference.collection("answers")
+                        val answerRef = answersCollection.document()
+                        answerData.id = answerRef.id
+                        batch.set(answerRef, answerData)
+
+                        // Ardından, "my_confessions" koleksiyonuna cevabı ekle
+                        val usersCollection = database.collection("users")
+                        val userQuery = usersCollection.whereEqualTo("userName", username)
+                        userQuery.get()
+                            .addOnSuccessListener { userQuerySnapshot ->
+                                if (!userQuerySnapshot.isEmpty) {
+                                    val userDoc = userQuerySnapshot.documents[0]
+                                    val userUid = userDoc.id
+
+                                    Log.d("Mesaj: ", "User uid: $userUid")
+                                    Log.d("Mesaj: ", "confessionId: $confessionId")
+
+                                    val myConfessionsCollection = usersCollection.document(userUid)
+                                        .collection("my_confessions")
+
+                                    val confessionDocRef1 =
+                                        myConfessionsCollection.document(confessionId)
+
+                                    // Cevabı "my_confessions" koleksiyonuna eklemek için batch işlemi
+                                    val answersCollection1 = confessionDocRef1.collection("answers")
+                                    val answerRef1 = answersCollection1.document()
+                                    batch.set(answerRef1, answerData)
+
+                                    // Batch işlemini gerçekleştir
+                                    batch.commit()
+                                        .addOnSuccessListener {
+                                            result.invoke(UiState.Success("Answered successfully"))
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                        }
+                                } else {
+                                    result.invoke(UiState.Failure("User could not be found"))
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure("User not authenticated"))
+                    }
+                }
         }
     }
 

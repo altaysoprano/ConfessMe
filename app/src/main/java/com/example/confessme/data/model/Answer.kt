@@ -1,7 +1,7 @@
 package com.example.confessme.data.model
 
-data class Confession(
-    val id: String = "",
+data class Answer(
+    var id: String = "",
     val text: String = "",
     val username: String = "",
     val fromUserUsername: String = "",
