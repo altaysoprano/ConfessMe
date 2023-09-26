@@ -390,6 +390,7 @@ class RepositoryImp(
                     for (document in documents) {
                         val confession = document.toObject(Confession::class.java)
                         confessionList.add(confession)
+                        Log.d("Mesaj: ", "isAnswered: ${confession.answered}")
                     }
 
                     result.invoke(UiState.Success(confessionList))
@@ -420,7 +421,7 @@ class RepositoryImp(
             confessionDocRef.get()
                 .addOnSuccessListener { confessionQuerySnapshot ->
                     if (!confessionQuerySnapshot.isEmpty) {
-                        val confessionDoc = confessionQuerySnapshot.documents[0] // İlk belgeyi al
+                        val confessionDoc = confessionQuerySnapshot.documents[0]
 
                         val fromUserUsername = confessionDoc.getString("username") ?: ""
                         val fromUserImageUrl = confessionDoc.getString("imageUrl") ?: ""
@@ -446,6 +447,9 @@ class RepositoryImp(
                         answerData.id = answerRef.id
                         batch.set(answerRef, answerData)
 
+                        val updatedData = mapOf("answered" to true)
+                        batch.update(confessionDoc.reference, updatedData)
+
                         // Ardından, "my_confessions" koleksiyonuna cevabı ekle
                         val usersCollection = database.collection("users")
                         val userQuery = usersCollection.whereEqualTo("userName", username)
@@ -455,21 +459,19 @@ class RepositoryImp(
                                     val userDoc = userQuerySnapshot.documents[0]
                                     val userUid = userDoc.id
 
-                                    Log.d("Mesaj: ", "User uid: $userUid")
-                                    Log.d("Mesaj: ", "confessionId: $confessionId")
-
                                     val myConfessionsCollection = usersCollection.document(userUid)
                                         .collection("my_confessions")
 
                                     val confessionDocRef1 =
                                         myConfessionsCollection.document(confessionId)
 
-                                    // Cevabı "my_confessions" koleksiyonuna eklemek için batch işlemi
                                     val answersCollection1 = confessionDocRef1.collection("answers")
                                     val answerRef1 = answersCollection1.document()
                                     batch.set(answerRef1, answerData)
 
-                                    // Batch işlemini gerçekleştir
+                                    val updatedData1 = mapOf("answered" to true)
+                                    batch.update(confessionDocRef1, updatedData1)
+
                                     batch.commit()
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success("Answered successfully"))
@@ -488,6 +490,85 @@ class RepositoryImp(
                         result.invoke(UiState.Failure("User not authenticated"))
                     }
                 }
+        }
+    }
+
+    override fun addFavorite(confessionId: String, result: (UiState<Boolean>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            // Firestore batch işlemini başlat
+            val batch = database.batch()
+
+            // İlk olarak, "confessions_to_me" koleksiyonundan ilgili itirağı alın
+            val confessionDocRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("confessions_to_me")
+                .whereEqualTo("id", confessionId) // İlgili confessionId'ye sahip itirağı al
+
+            confessionDocRef.get()
+                .addOnSuccessListener { confessionQuerySnapshot ->
+                    if (!confessionQuerySnapshot.isEmpty) {
+                        val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
+                        val favorited = confessionDocumentSnapshot.getBoolean("favorited") ?: false
+
+                        // Eğer itiraf zaten favorilere ekliyse, favorited'ı false yapın
+                        val updatedData = mapOf("favorited" to !favorited)
+
+                        // Doğru belge referansını alın
+                        val documentRef = database.collection("users")
+                            .document(currentUserUid)
+                            .collection("confessions_to_me")
+                            .document(confessionQuerySnapshot.documents[0].id)
+
+                        // Batch işlemine güncelleme ekleyin
+                        batch.update(documentRef, updatedData)
+
+                        // Ardından, "my_confessions" koleksiyonundan aynı itirağı işaretleyin
+                        val username = confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
+                        Log.d("Mesaj: ", "username: $username")
+                        val userQuery = database.collection("users").whereEqualTo("userName", username)
+
+                        // Kullanıcıyı arayın ve Firestore batch işlemine ekleyin
+                        userQuery.get()
+                            .addOnSuccessListener { userQuerySnapshot ->
+                                if (!userQuerySnapshot.isEmpty) {
+                                    val userDoc = userQuerySnapshot.documents[0]
+                                    val userUid = userDoc.id
+
+                                    val myConfessionsCollection = database.collection("users")
+                                        .document(userUid)
+                                        .collection("my_confessions")
+                                    val myConfessionDocRef = myConfessionsCollection.document(confessionId)
+
+                                    val updatedData1 = mapOf("favorited" to !favorited)
+
+                                    // Batch işlemine ikinci güncellemeyi ekleyin
+                                    batch.update(myConfessionDocRef, updatedData1)
+
+                                    // Batch işlemiyle güncellemeleri uygulayın
+                                    batch.commit()
+                                        .addOnSuccessListener {
+                                            result.invoke(UiState.Success(!favorited))
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                        }
+                                } else {
+                                    result.invoke(UiState.Failure("User could not be found"))
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure("Confession not found"))
+                    }
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
         }
     }
 

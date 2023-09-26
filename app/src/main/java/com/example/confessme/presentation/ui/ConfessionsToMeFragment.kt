@@ -54,10 +54,12 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                     confessAnswerFragment.arguments = bundle
                     navRegister.navigateFrag(confessAnswerFragment, true)
                 } else {
-                    Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
+                        .show()
                 }
             },
-            onFavoriteClick = {
+            onFavoriteClick = { confessionId ->
+                viewModel.addFavorite(confessionId)
             }
         )
 
@@ -84,7 +86,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
         setupRecyclerView()
         observeFetchConfessions()
-
+        observeAddFavorite()
 
         return binding.root
     }
@@ -122,4 +124,24 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         }
     }
 
+    private fun observeAddFavorite() {
+        viewModel.addFavoriteState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessionsToMe.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessionsToMe.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessionsToMe.visibility = View.GONE
+                    Log.d("Mesaj: ", "State data: ${state.data.toString()}")
+                }
+            }
+        }
+    }
 }

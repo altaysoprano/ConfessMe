@@ -8,5 +8,6 @@ data class Answer(
     val fromUserImageUrl: String = "",
     val imageUrl: String = "",
     val timestamp: Any? = null,
-    var isExpanded: Boolean = false
+    var isExpanded: Boolean = false,
+    var isFavorited: Boolean = false
 )

@@ -27,10 +27,10 @@ import java.util.Date
 import java.util.Locale
 
 class ConfessionListAdapter(
-    private val confessList: MutableList<Confession> = mutableListOf(),
+    val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
     private val onAnswerClick: (String) -> Unit,
-    private val onFavoriteClick: () -> Unit
+    private val onFavoriteClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {
@@ -57,7 +57,7 @@ class ConfessionListAdapter(
     inner class ConfessionViewHolder(private val binding: ConfessItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        @SuppressLint("SetTextI18n")
+        @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
         fun bind(confess: Confession) {
             binding.apply {
                 confessionsScreenUsername.text = confess.fromUserUsername
@@ -106,6 +106,19 @@ class ConfessionListAdapter(
                     icFavorite.isClickable = true
                 }
 
+                if (confess.answered) {
+                    icAnswer.setColorFilter(Color.parseColor("#088E00"))
+                } else {
+                    icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+                }
+                Log.d("Mesaj: ", "Adapterda favorited: ${confess.favorited}")
+
+                if (confess.favorited) {
+                    icFavorite.setColorFilter(Color.parseColor("#BA0000"))
+                } else {
+                    icFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+                }
+
                 confessionsScreenConfession.setOnClickListener {
                     confess.isExpanded = !confess.isExpanded
                     updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
@@ -113,23 +126,28 @@ class ConfessionListAdapter(
 
                 updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
 
+                // AŞAĞIYI SİLİP DENE GENİŞLETME ÖZELLİĞİNİ
                 confessionsScreenConfession.viewTreeObserver.addOnGlobalLayoutListener(
                     object : ViewTreeObserver.OnGlobalLayoutListener {
                         override fun onGlobalLayout() {
-                            confessionsScreenConfession.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                            confessionsScreenConfession.viewTreeObserver.removeOnGlobalLayoutListener(
+                                this
+                            )
 
                         }
                     }
                 )
 
                 icAnswer.setOnClickListener {
-                    val confess = confessList[adapterPosition]
-                    Log.d("Mesaj: ", "Adapter'da id: ${confess.id}")
-                    onAnswerClick(confess.id)
+                    val confessAnswer = confessList[adapterPosition]
+                    onAnswerClick(confessAnswer.id)
                 }
 
                 icFavorite.setOnClickListener {
-                    onFavoriteClick()
+                    val confessFavorite = confessList[adapterPosition]
+                    onFavoriteClick(confessFavorite.id)
+
+                    notifyItemChanged(adapterPosition)
                 }
 
                 itemView.setOnClickListener {

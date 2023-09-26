@@ -29,4 +29,4 @@ interface Repository {
         answerText: String,
         result: (UiState<String>) -> Unit
     )
-}
+    fun addFavorite(confessionId: String, result: (UiState<Boolean>) -> Unit)}

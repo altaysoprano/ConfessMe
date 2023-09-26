@@ -104,8 +104,6 @@ class ConfessAnswerFragment : Fragment() {
                 val answerText = binding.confessAnswerEditText.text.toString()
                 val confessionId = arguments?.getString("confessionId", "")
 
-                Log.d("Mesaj: ", "Answer Id in ConfessAnswer: $confessionId")
-
                 if (answerText.trim().isNotEmpty()) {
                     viewModel.addAnswer(confessionId ?: "", answerText)
                 } else {
