@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -89,13 +90,30 @@
                 android:layout_weight="1.5"
                 android:layout_width="1dp"
                 android:layout_height="1dp" />
-
-            <ImageView
-                android:id="@+id/ic_favorite"
-                android:layout_weight="0.5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_favorite" />
+           <androidx.constraintlayout.widget.ConstraintLayout
+               android:layout_weight="0.5"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content">
+               <ImageView
+                   android:id="@+id/ic_favorite"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintBottom_toBottomOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   android:src="@drawable/ic_favorite" />
+               <ProgressBar
+                   android:id="@+id/progress_bar_favorite"
+                   android:layout_width="12dp"
+                   android:layout_height="12dp"
+                   android:visibility="invisible"
+                   android:indeterminateTint="@color/black"
+                   app:layout_constraintTop_toTopOf="@+id/ic_favorite"
+                   app:layout_constraintBottom_toBottomOf="@+id/ic_favorite"
+                   app:layout_constraintEnd_toEndOf="@+id/ic_favorite"
+                   app:layout_constraintStart_toStartOf="@+id/ic_favorite"/>
+           </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 

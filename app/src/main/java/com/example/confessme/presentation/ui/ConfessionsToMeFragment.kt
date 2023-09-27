@@ -1,7 +1,6 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +9,6 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.confessme.R
-import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessFoundBinding
@@ -139,9 +136,28 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMe.visibility = View.GONE
-                    Log.d("Mesaj: ", "State data: ${state.data.toString()}")
+                    val updatedConfession = state.data
+
+                    val position = updatedConfession?.let { findPositionById(it.id) }
+                    if (position != -1) {
+                        if (updatedConfession != null) {
+                            if (position != null) {
+                                confessListAdapter.updateItem(position, updatedConfession)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
+    private fun findPositionById(confessionId: String): Int {
+        for (index in 0 until confessListAdapter.confessList.size) {
+            if (confessListAdapter.confessList[index].id == confessionId) {
+                return index
+            }
+        }
+        return -1
+    }
+
 }

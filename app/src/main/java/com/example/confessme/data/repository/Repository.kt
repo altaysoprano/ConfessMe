@@ -16,6 +16,7 @@ interface Repository {
         imageUri: Uri,
         result: (UiState<String>) -> Unit
     )
+
     fun fetchUserProfile(result: (UiState<User?>) -> Unit)
     fun fetchUserProfileByUsername(username: String, result: (UiState<User?>) -> Unit)
     fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
@@ -23,10 +24,20 @@ interface Repository {
     fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit)
     fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit)
     fun addConfession(userName: String, confessionText: String, result: (UiState<String>) -> Unit)
-    fun fetchConfessions(limit: Long, isMyConfessions: Boolean, result: (UiState<List<Confession>>) -> Unit)
+    fun fetchConfessions(
+        limit: Long,
+        isMyConfessions: Boolean,
+        result: (UiState<List<Confession>>) -> Unit
+    )
+
     fun addAnswer(
         confessionId: String,
         answerText: String,
         result: (UiState<String>) -> Unit
     )
-    fun addFavorite(confessionId: String, result: (UiState<Boolean>) -> Unit)}
+
+    fun addFavorite(
+        confessionId: String,
+        callback: (UiState<Confession?>) -> Unit
+    )
+}

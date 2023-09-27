@@ -111,7 +111,6 @@ class ConfessionListAdapter(
                 } else {
                     icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
                 }
-                Log.d("Mesaj: ", "Adapterda favorited: ${confess.favorited}")
 
                 if (confess.favorited) {
                     icFavorite.setColorFilter(Color.parseColor("#BA0000"))
@@ -145,9 +144,9 @@ class ConfessionListAdapter(
 
                 icFavorite.setOnClickListener {
                     val confessFavorite = confessList[adapterPosition]
-                    onFavoriteClick(confessFavorite.id)
-
+                    confessFavorite.favorited = !confessFavorite.favorited
                     notifyItemChanged(adapterPosition)
+                    onFavoriteClick(confessFavorite.id)
                 }
 
                 itemView.setOnClickListener {
@@ -155,6 +154,11 @@ class ConfessionListAdapter(
                 }
             }
         }
+    }
+
+    fun updateItem(position: Int, updatedConfession: Confession) {
+        confessList[position] = updatedConfession
+        notifyItemChanged(position)
     }
 
     private fun updateTextViewExpansion(textview: TextView, isExpanded: Boolean) {
@@ -183,4 +187,5 @@ class ConfessionListAdapter(
             }
         }
     }
+
 }
