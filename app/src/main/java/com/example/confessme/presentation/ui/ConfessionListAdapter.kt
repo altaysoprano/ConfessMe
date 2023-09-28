@@ -29,7 +29,7 @@ import java.util.Locale
 class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
-    private val onAnswerClick: (String, Boolean) -> Unit,
+    private val onAnswerClick: (String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
@@ -108,7 +108,7 @@ class ConfessionListAdapter(
                 }
 
                 if (confess.answered) {
-                    icAnswer.setColorFilter(Color.parseColor("#088E00"))
+                    icAnswer.setColorFilter(Color.parseColor("#BA0000"))
                 } else {
                     icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
                 }
@@ -140,7 +140,7 @@ class ConfessionListAdapter(
 
                 icAnswer.setOnClickListener {
                     val confessAnswer = confessList[adapterPosition]
-                    onAnswerClick(confessAnswer.id, confess.answered)
+                    onAnswerClick(confessAnswer.id, confess.answered, confess.answer.text)
                 }
 
                 icFavorite.setOnClickListener {

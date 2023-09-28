@@ -29,7 +29,8 @@ class ConfessAnswerFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ConfessViewModel by viewModels()
     private var isAnswerButtonEnabled = true
-    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
+    private var isEditAnswer: Boolean = false
+    private lateinit var answerText: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,15 +42,17 @@ class ConfessAnswerFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
         val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
+        answerText = arguments?.getString("answerText", "") ?: ""
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_close)
         }
 
-        if(isConfessionAnswered == true) {
+        if(isConfessionAnswered == true && !isEditAnswer) {
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
+            binding.confessAnswerTextView.text = answerText
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
             binding.confessAnswerTextView.visibility = View.GONE
@@ -102,6 +105,8 @@ class ConfessAnswerFragment : Fragment() {
         return binding.root
     }
 
+    fun String.toEditable(): Editable =  Editable.Factory.getInstance().newEditable(this)
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
@@ -110,11 +115,11 @@ class ConfessAnswerFragment : Fragment() {
             }
 
             R.id.action_confess -> {
-                val answerText = binding.confessAnswerEditText.text.toString()
+                val answerEditText = binding.confessAnswerEditText.text.toString()
                 val confessionId = arguments?.getString("confessionId", "")
 
-                if (answerText.trim().isNotEmpty()) {
-                    viewModel.addAnswer(confessionId ?: "", answerText)
+                if (answerEditText.trim().isNotEmpty()) {
+                    viewModel.addAnswer(confessionId ?: "", answerEditText)
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -124,15 +129,31 @@ class ConfessAnswerFragment : Fragment() {
                 }
                 return true
             }
+            R.id.action_edit_answer -> {
+                (activity as AppCompatActivity?)!!.title = "Edit your answer"
+                binding.confessAnswerTextView.visibility = View.GONE
+                binding.confessAnswerEditText.let {
+                    it.visibility = View.VISIBLE
+                    it.setText(answerText)
+                }
+                isEditAnswer = true
+                requireActivity().invalidateOptionsMenu()
+            }
         }
         return false
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.confess_menu, menu)
-        val confessMenuItem = menu.findItem(R.id.action_confess)
-        confessMenuItem.isEnabled = isAnswerButtonEnabled
+        val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
+
+        if (isConfessionAnswered == true && !isEditAnswer) {
+            inflater.inflate(R.menu.edit_answer_menu, menu)
+            (activity as AppCompatActivity?)!!.title = "Your Answer"
+        } else {
+            inflater.inflate(R.menu.confess_menu, menu)
+            val confessMenuItem = menu.findItem(R.id.action_confess)
+            confessMenuItem.isEnabled = isAnswerButtonEnabled
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
-
 }

@@ -40,7 +40,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         confessListAdapter = ConfessionListAdapter(
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = {confessionId, isAnswered ->
+            onAnswerClick = {confessionId, isAnswered, answerText ->
 
             },
             onFavoriteClick = {}
