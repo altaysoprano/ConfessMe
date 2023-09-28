@@ -40,10 +40,19 @@ class ConfessAnswerFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = "Reply To Confession"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
+        val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_close)
+        }
+
+        if(isConfessionAnswered == true) {
+            binding.confessAnswerEditText.visibility = View.GONE
+            binding.confessAnswerTextView.visibility = View.VISIBLE
+        } else {
+            binding.confessAnswerEditText.visibility = View.VISIBLE
+            binding.confessAnswerTextView.visibility = View.GONE
         }
 
         val maxLength = 560

@@ -29,7 +29,7 @@ import java.util.Locale
 class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
-    private val onAnswerClick: (String) -> Unit,
+    private val onAnswerClick: (String, Boolean) -> Unit,
     private val onFavoriteClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
@@ -140,7 +140,7 @@ class ConfessionListAdapter(
 
                 icAnswer.setOnClickListener {
                     val confessAnswer = confessList[adapterPosition]
-                    onAnswerClick(confessAnswer.id)
+                    onAnswerClick(confessAnswer.id, confess.answered)
                 }
 
                 icFavorite.setOnClickListener {

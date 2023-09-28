@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
@@ -431,7 +432,6 @@ class RepositoryImp(
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
 
                         val answerData = Answer(
-                            id = "",
                             text = answerText,
                             username = username,
                             fromUserUsername = fromUserUsername,
@@ -443,13 +443,11 @@ class RepositoryImp(
 
                         val batch = database.batch()
 
-                        val answersCollection = confessionDoc.reference.collection("answers")
-                        val answerRef = answersCollection.document()
-                        answerData.id = answerRef.id
-                        batch.set(answerRef, answerData)
-
                         val updatedData = mapOf("answered" to true)
                         batch.update(confessionDoc.reference, updatedData)
+
+                        val answerField = mapOf("answer" to answerData)
+                        batch.set(confessionDoc.reference, answerField, SetOptions.merge())
 
                         val usersCollection = database.collection("users")
                         val userQuery = usersCollection.whereEqualTo("userName", username)
@@ -465,12 +463,11 @@ class RepositoryImp(
                                     val confessionDocRef1 =
                                         myConfessionsCollection.document(confessionId)
 
-                                    val answersCollection1 = confessionDocRef1.collection("answers")
-                                    val answerRef1 = answersCollection1.document()
-                                    batch.set(answerRef1, answerData)
-
                                     val updatedData1 = mapOf("answered" to true)
                                     batch.update(confessionDocRef1, updatedData1)
+
+                                    val answerField1 = mapOf("answer" to answerData)
+                                    batch.set(confessionDocRef1, answerField1, SetOptions.merge())
 
                                     batch.commit()
                                         .addOnSuccessListener {

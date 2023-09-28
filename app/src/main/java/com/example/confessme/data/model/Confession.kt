@@ -10,5 +10,6 @@ data class Confession(
     val timestamp: Any? = null,
     var isExpanded: Boolean = false,
     var favorited: Boolean = false,
-    var answered: Boolean = false
+    var answered: Boolean = false,
+    var answer: Answer = Answer()
 )

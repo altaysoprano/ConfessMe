@@ -40,7 +40,9 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         confessListAdapter = ConfessionListAdapter(
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = {},
+            onAnswerClick = {confessionId, isAnswered ->
+
+            },
             onFavoriteClick = {}
         )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView
