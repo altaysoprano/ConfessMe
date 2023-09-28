@@ -99,6 +99,7 @@ class ConfessionListAdapter(
                     icFavorite.alpha = 0.5f
                     icAnswer.isClickable = false
                     icFavorite.isClickable = false
+                    icFavorite.isEnabled = false
                 } else {
                     icAnswer.alpha = 1.0f
                     icFavorite.alpha = 1.0f
