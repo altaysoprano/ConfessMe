@@ -24,6 +24,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
+    private lateinit var navRegister: FragmentNavigation
     private lateinit var confessListAdapter: ConfessionListAdapter
     private lateinit var noConfessFoundBinding: NoConfessFoundBinding
     private var limit: Long = 20
@@ -37,11 +38,24 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
         binding = FragmentConfessionsBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        navRegister = activity as FragmentNavigation
         confessListAdapter = ConfessionListAdapter(
             mutableListOf(),
             isMyConfessions,
             onAnswerClick = {confessionId, isAnswered, answerText ->
-
+                if (!confessionId.isNullOrEmpty()) {
+                    val bundle = Bundle()
+                    bundle.putString("confessionId", confessionId)
+                    bundle.putBoolean("isAnswered", isAnswered)
+                    bundle.putString("answerText", answerText)
+                    bundle.putBoolean("isMyConfession", isMyConfessions)
+                    val confessAnswerFragment = ConfessAnswerFragment()
+                    confessAnswerFragment.arguments = bundle
+                    navRegister.navigateFrag(confessAnswerFragment, true)
+                } else {
+                    Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
+                        .show()
+                }
             },
             onFavoriteClick = {}
         )

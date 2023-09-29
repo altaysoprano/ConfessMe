@@ -7,7 +7,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,13 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
-import com.example.confessme.data.model.User
 import com.example.confessme.databinding.ConfessItemBinding
-import com.example.confessme.databinding.UserItemBinding
 import com.google.firebase.Timestamp
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
@@ -60,100 +54,109 @@ class ConfessionListAdapter(
         @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
         fun bind(confess: Confession) {
             binding.apply {
-                confessionsScreenUsername.text = confess.fromUserUsername
-                val toUserName = "@${confess.username} " // Tousername'i ayarla
-
-                val spannable = SpannableString("$toUserName${confess.text}")
-
-                val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
-                val usernameStart = 0
-                val usernameEnd = toUserName.length
-
-                spannable.setSpan(
-                    ForegroundColorSpan(usernameColor),
-                    usernameStart,
-                    usernameEnd,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                spannable.setSpan(
-                    StyleSpan(Typeface.BOLD),
-                    usernameStart,
-                    usernameEnd,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-
-                confessionsScreenConfession.text = spannable
-
-                val timestamp = confess.timestamp as Timestamp
-                val timeSinceConfession = calculateTimeSinceConfession(timestamp)
-                confessionsScreenTimestamp.text = timeSinceConfession
-
-                if (confess.fromUserImageUrl.isNotEmpty()) {
-                    Glide.with(itemView)
-                        .load(confess.fromUserImageUrl)
-                        .into(confessionsScreenProfileImage)
-                }
-
-                if (isMyConfession) {
-                    icAnswer.alpha = 0.5f
-                    icFavorite.alpha = 0.5f
-                    icAnswer.isClickable = false
-                    icFavorite.isClickable = false
-                    icFavorite.isEnabled = false
-                } else {
-                    icAnswer.alpha = 1.0f
-                    icFavorite.alpha = 1.0f
-                    icAnswer.isClickable = true
-                    icFavorite.isClickable = true
-                }
-
-                if (confess.answered) {
-                    icAnswer.setColorFilter(Color.parseColor("#BA0000"))
-                } else {
-                    icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
-                }
-
-                if (confess.favorited) {
-                    icFavorite.setColorFilter(Color.parseColor("#BA0000"))
-                } else {
-                    icFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-                }
-
-                confessionsScreenConfession.setOnClickListener {
-                    confess.isExpanded = !confess.isExpanded
-                    updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
-                }
-
-                updateTextViewExpansion(confessionsScreenConfession, confess.isExpanded)
-
-                // AŞAĞIYI SİLİP DENE GENİŞLETME ÖZELLİĞİNİ
-                confessionsScreenConfession.viewTreeObserver.addOnGlobalLayoutListener(
-                    object : ViewTreeObserver.OnGlobalLayoutListener {
-                        override fun onGlobalLayout() {
-                            confessionsScreenConfession.viewTreeObserver.removeOnGlobalLayoutListener(
-                                this
-                            )
-
-                        }
-                    }
-                )
-
-                icAnswer.setOnClickListener {
-                    val confessAnswer = confessList[adapterPosition]
-                    onAnswerClick(confessAnswer.id, confess.answered, confess.answer.text)
-                }
-
-                icFavorite.setOnClickListener {
-                    val confessFavorite = confessList[adapterPosition]
-                    confessFavorite.favorited = !confessFavorite.favorited
-                    notifyItemChanged(adapterPosition)
-                    onFavoriteClick(confessFavorite.id)
-                }
-
-                itemView.setOnClickListener {
-
-                }
+                setItems(confess, binding, itemView, adapterPosition)
             }
+        }
+    }
+
+    private fun setItems(
+        confess: Confession,
+        binding: ConfessItemBinding,
+        itemView: View,
+        adapterPosition: Int
+    ) {
+        val toUserName = "@${confess.username} " // Tousername'i ayarla
+        val spannable = SpannableString("$toUserName${confess.text}")
+
+        val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
+        val usernameStart = 0
+        val usernameEnd = toUserName.length
+
+        spannable.setSpan(
+            ForegroundColorSpan(usernameColor),
+            usernameStart,
+            usernameEnd,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            usernameStart,
+            usernameEnd,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        binding.confessionsScreenUsername.text = confess.fromUserUsername
+        binding.confessionsScreenConfession.text = spannable
+        binding.confessionsScreenTimestamp.text = calculateTimeSinceConfession(confess.timestamp as Timestamp)
+
+        if (confess.fromUserImageUrl.isNotEmpty()) {
+            Glide.with(itemView)
+                .load(confess.fromUserImageUrl)
+                .into(binding.confessionsScreenProfileImage)
+        }
+
+        setAnswerAndFavoriteItems(confess, binding, itemView, adapterPosition)
+
+        binding.confessionsScreenConfession.setOnClickListener {
+            confess.isExpanded = !confess.isExpanded
+            updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
+        }
+
+        updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
+    }
+
+    private fun setAnswerAndFavoriteItems(
+        confess: Confession,
+        binding: ConfessItemBinding,
+        itemView: View,
+        adapterPosition: Int
+    ) {
+        if (confess.answered) {
+            binding.icAnswer.alpha = 1f
+            binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
+        } else if (!isMyConfession) {
+            binding.icAnswer.alpha = 1f
+            binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+        } else {
+            binding.icAnswer.alpha = 0.5f
+            binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+            binding.icAnswer.isEnabled = false // Durum 9: Kullanıcı kendi confess'ine sahip ve yanıtlanmadı
+        }
+
+        if (confess.favorited) {
+            binding.icFavorite.alpha = 1f
+            binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
+        } else if (!isMyConfession) {
+            binding.icFavorite.alpha = 1f
+            binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
+        } else {
+            binding.icFavorite.alpha = 0.5f
+            binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
+        }
+
+        if (isMyConfession) {
+            binding.icFavorite.alpha = 0.5f
+            binding.icFavorite.isEnabled = false
+        } else {
+            // Durum 9: Kullanıcı kendi confess'ine sahip değil
+            binding.icFavorite.isEnabled = true
+            binding.icAnswer.isEnabled = true
+        }
+
+        binding.icAnswer.setOnClickListener {
+            val confessAnswer = confessList[adapterPosition]
+            onAnswerClick(confessAnswer.id, confess.answered, confess.answer.text)
+        }
+
+        binding.icFavorite.setOnClickListener {
+            val confessFavorite = confessList[adapterPosition]
+            confessFavorite.favorited = !confessFavorite.favorited
+            notifyItemChanged(adapterPosition)
+            onFavoriteClick(confessFavorite.id)
+        }
+
+        itemView.setOnClickListener {
+
         }
     }
 

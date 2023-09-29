@@ -30,6 +30,7 @@ class ConfessAnswerFragment : Fragment() {
     private val viewModel: ConfessViewModel by viewModels()
     private var isAnswerButtonEnabled = true
     private var isEditAnswer: Boolean = false
+    private var isMyConfession: Boolean = false
     private lateinit var answerText: String
 
     override fun onCreateView(
@@ -43,6 +44,7 @@ class ConfessAnswerFragment : Fragment() {
         setHasOptionsMenu(true)
         val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
         answerText = arguments?.getString("answerText", "") ?: ""
+        isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -139,6 +141,9 @@ class ConfessAnswerFragment : Fragment() {
                 isEditAnswer = true
                 requireActivity().invalidateOptionsMenu()
             }
+            R.id.action_fav_answer -> {
+
+            }
         }
         return false
     }
@@ -146,13 +151,18 @@ class ConfessAnswerFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
 
-        if (isConfessionAnswered == true && !isEditAnswer) {
-            inflater.inflate(R.menu.edit_answer_menu, menu)
-            (activity as AppCompatActivity?)!!.title = "Your Answer"
+        if(isMyConfession) {
+            inflater.inflate(R.menu.given_answer_menu, menu)
+            (activity as AppCompatActivity?)!!.title = "Response to Confession"
         } else {
-            inflater.inflate(R.menu.confess_menu, menu)
-            val confessMenuItem = menu.findItem(R.id.action_confess)
-            confessMenuItem.isEnabled = isAnswerButtonEnabled
+            if (isConfessionAnswered == true && !isEditAnswer) {
+                inflater.inflate(R.menu.edit_answer_menu, menu)
+                (activity as AppCompatActivity?)!!.title = "Your Answer"
+            } else {
+                inflater.inflate(R.menu.confess_menu, menu)
+                val confessMenuItem = menu.findItem(R.id.action_confess)
+                confessMenuItem.isEnabled = isAnswerButtonEnabled
+            }
         }
         super.onCreateOptionsMenu(menu, inflater)
     }

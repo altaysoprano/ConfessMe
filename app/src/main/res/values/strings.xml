@@ -9,4 +9,5 @@
     <string name="no_confess_found_here">No Confess Found Here</string>
     <string name="reply_to_confession" />
     <string name="edit_answer">Edit Answer</string>
+    <string name="fav_answer">Fav Answer</string>
 </resources>
