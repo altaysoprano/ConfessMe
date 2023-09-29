@@ -23,7 +23,7 @@ import com.google.firebase.Timestamp
 class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
-    private val onAnswerClick: (String, Boolean, String) -> Unit,
+    private val onAnswerClick: (String, Boolean, String, Boolean) -> Unit,
     private val onFavoriteClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
@@ -145,7 +145,7 @@ class ConfessionListAdapter(
 
         binding.icAnswer.setOnClickListener {
             val confessAnswer = confessList[adapterPosition]
-            onAnswerClick(confessAnswer.id, confess.answered, confess.answer.text)
+            onAnswerClick(confessAnswer.id, confess.answered, confess.answer.text, confess.answer.favorited)
         }
 
         binding.icFavorite.setOnClickListener {

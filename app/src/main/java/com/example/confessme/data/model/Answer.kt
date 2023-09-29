@@ -8,5 +8,5 @@ data class Answer(
     val imageUrl: String = "",
     val timestamp: Any? = null,
     var isExpanded: Boolean = false,
-    var isFavorited: Boolean = false
+    var favorited: Boolean = false
 )

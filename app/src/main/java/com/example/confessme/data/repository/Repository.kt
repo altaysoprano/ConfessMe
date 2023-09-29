@@ -40,4 +40,6 @@ interface Repository {
         confessionId: String,
         callback: (UiState<Confession?>) -> Unit
     )
+
+    fun favoriteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit)
 }

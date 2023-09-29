@@ -42,13 +42,14 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         confessListAdapter = ConfessionListAdapter(
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = {confessionId, isAnswered, answerText ->
+            onAnswerClick = {confessionId, isAnswered, answerText, isFavorited ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
                     bundle.putString("confessionId", confessionId)
                     bundle.putBoolean("isAnswered", isAnswered)
                     bundle.putString("answerText", answerText)
                     bundle.putBoolean("isMyConfession", isMyConfessions)
+                    bundle.putBoolean("favorited", isFavorited)
                     val confessAnswerFragment = ConfessAnswerFragment()
                     confessAnswerFragment.arguments = bundle
                     navRegister.navigateFrag(confessAnswerFragment, true)

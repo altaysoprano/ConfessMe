@@ -28,6 +28,10 @@ class ConfessViewModel @Inject constructor(
     val addFavoriteState: LiveData<UiState<Confession?>>
         get() = _addFavoriteState
 
+    private val _addFavoriteAnswer = MutableLiveData<UiState<Confession?>>()
+    val addFavoriteAnswer: LiveData<UiState<Confession?>>
+        get() = _addFavoriteAnswer
+
     private val _fetchConfessionsState = MutableLiveData<UiState<List<Confession>>>()
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
         get() = _fetchConfessionsState
@@ -57,6 +61,13 @@ class ConfessViewModel @Inject constructor(
         _addFavoriteState.value = UiState.Loading
         repository.addFavorite(confessionId) {
             _addFavoriteState.value = it
+        }
+    }
+
+    fun addAnswerFavorite(confessionId: String) {
+        _addFavoriteAnswer.value = UiState.Loading
+        repository.favoriteAnswer(confessionId) {
+            _addFavoriteAnswer.value = it
         }
     }
 }

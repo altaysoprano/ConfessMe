@@ -31,6 +31,7 @@ class ConfessAnswerFragment : Fragment() {
     private var isAnswerButtonEnabled = true
     private var isEditAnswer: Boolean = false
     private var isMyConfession: Boolean = false
+    private var isAnswerFavorited: Boolean = false
     private lateinit var answerText: String
 
     override fun onCreateView(
@@ -45,6 +46,7 @@ class ConfessAnswerFragment : Fragment() {
         val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
         answerText = arguments?.getString("answerText", "") ?: ""
         isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
+        isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -104,12 +106,33 @@ class ConfessAnswerFragment : Fragment() {
             }
         }
 
+        viewModel.addFavoriteAnswer.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    isAnswerFavorited = state.data?.answer?.favorited == true
+                    requireActivity().invalidateOptionsMenu()
+                }
+            }
+        }
+
         return binding.root
     }
 
-    fun String.toEditable(): Editable =  Editable.Factory.getInstance().newEditable(this)
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        val confessionId = arguments?.getString("confessionId", "")
+
         when (item.itemId) {
             android.R.id.home -> {
                 requireActivity().onBackPressed()
@@ -118,7 +141,6 @@ class ConfessAnswerFragment : Fragment() {
 
             R.id.action_confess -> {
                 val answerEditText = binding.confessAnswerEditText.text.toString()
-                val confessionId = arguments?.getString("confessionId", "")
 
                 if (answerEditText.trim().isNotEmpty()) {
                     viewModel.addAnswer(confessionId ?: "", answerEditText)
@@ -142,7 +164,7 @@ class ConfessAnswerFragment : Fragment() {
                 requireActivity().invalidateOptionsMenu()
             }
             R.id.action_fav_answer -> {
-
+                viewModel.addAnswerFavorite(confessionId ?: "")
             }
         }
         return false
@@ -154,6 +176,13 @@ class ConfessAnswerFragment : Fragment() {
         if(isMyConfession) {
             inflater.inflate(R.menu.given_answer_menu, menu)
             (activity as AppCompatActivity?)!!.title = "Response to Confession"
+            val favAnswerMenuItem = menu.findItem(R.id.action_fav_answer)
+
+            if(isAnswerFavorited) {
+                favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.red))
+            } else {
+                favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.white))
+            }
         } else {
             if (isConfessionAnswered == true && !isEditAnswer) {
                 inflater.inflate(R.menu.edit_answer_menu, menu)
@@ -164,6 +193,7 @@ class ConfessAnswerFragment : Fragment() {
                 confessMenuItem.isEnabled = isAnswerButtonEnabled
             }
         }
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 }

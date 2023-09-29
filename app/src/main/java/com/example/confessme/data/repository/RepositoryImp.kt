@@ -501,7 +501,7 @@ class RepositoryImp(
             val confessionDocRef = database.collection("users")
                 .document(currentUserUid)
                 .collection("confessions_to_me")
-                .whereEqualTo("id", confessionId) // İlgili confessionId'ye sahip itirağı al
+                .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
                 .addOnSuccessListener { confessionQuerySnapshot ->
@@ -573,6 +573,118 @@ class RepositoryImp(
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
+
+    override fun favoriteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            val batch = database.batch()
+
+            val confessionDocRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("my_confessions")
+                .whereEqualTo("id", confessionId)
+
+            confessionDocRef.get()
+                .addOnSuccessListener { confessionQuerySnapshot ->
+                    if (!confessionQuerySnapshot.isEmpty) {
+                        val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
+
+                        val answerMap =
+                            confessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
+                        if (answerMap != null) {
+                            val currentFavorited =
+                                answerMap["favorited"] as Boolean
+                            answerMap["favorited"] = !currentFavorited
+
+                            batch.update(
+                                confessionDocumentSnapshot.reference,
+                                mapOf("answer" to answerMap)
+                            )
+
+                            val username =
+                                confessionDocumentSnapshot.getString("username") ?: ""
+                            val userQuery =
+                                database.collection("users").whereEqualTo("userName", username)
+
+                            userQuery.get()
+                                .addOnSuccessListener { userQuerySnapshot ->
+                                    if (!userQuerySnapshot.isEmpty) {
+                                        val userDoc = userQuerySnapshot.documents[0]
+                                        val userUid = userDoc.id
+
+                                        val myConfessionDoc = database.collection("users")
+                                            .document(userUid)
+                                            .collection("confessions_to_me")
+                                            .whereEqualTo("id", confessionId)
+
+                                        myConfessionDoc.get()
+                                            .addOnSuccessListener { myConfessionQuerySnapshot ->
+                                                if (!myConfessionQuerySnapshot.isEmpty) {
+                                                    val myConfessionDocumentSnapshot =
+                                                        myConfessionQuerySnapshot.documents[0]
+                                                    val answerMap =
+                                                        myConfessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
+                                                    if (answerMap != null) {
+                                                        val currentFavorited =
+                                                            answerMap["favorited"] as Boolean
+                                                        answerMap["favorited"] = !currentFavorited
+
+                                                        batch.update(
+                                                            myConfessionDocumentSnapshot.reference,
+                                                            mapOf("answer" to answerMap)
+                                                        )
+
+                                                        batch.commit()
+                                                            .addOnSuccessListener {
+                                                                confessionDocRef.get()
+                                                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                                                        result.invoke(
+                                                                            UiState.Success(
+                                                                                updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                                                    Confession::class.java
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                    .addOnFailureListener { exception ->
+                                                                        result.invoke(
+                                                                            UiState.Failure(
+                                                                                exception.localizedMessage
+                                                                            )
+                                                                        )
+                                                                    }
+                                                            }
+                                                            .addOnFailureListener { exception ->
+                                                                result.invoke(
+                                                                    UiState.Failure(
+                                                                        exception.localizedMessage
+                                                                    )
+                                                                )
+                                                            }
+                                                    }
+                                                }
+                                            }
+                                    } else {
+                                        result.invoke(UiState.Failure("User could not be found"))
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                }
+                        } else {
+                            result.invoke(UiState.Failure("Confession not found"))
+                        }
+                    }
+                }
+        }else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+
 
     private fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
