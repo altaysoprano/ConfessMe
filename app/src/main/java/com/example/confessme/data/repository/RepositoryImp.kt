@@ -721,17 +721,11 @@ class RepositoryImp(
                             val userQuery =
                                 database.collection("users").whereEqualTo("userName", username)
 
-                            Log.d("Mesaj: ", "username: $username")
-
                             userQuery.get()
                                 .addOnSuccessListener { userQuerySnapshot ->
                                     if (!userQuerySnapshot.isEmpty) {
-                                        Log.d("Mesaj: ", "User bulundu")
                                         val userDoc = userQuerySnapshot.documents[0]
                                         val userUid = userDoc.id
-
-                                        Log.d("Mesaj: ", "confessionId2:" + confessionId)
-                                        Log.d("Mesaj: ", "userUid:" + userUid)
 
                                         val myConfessionsCollection = database.collection("users")
                                             .document(userUid)

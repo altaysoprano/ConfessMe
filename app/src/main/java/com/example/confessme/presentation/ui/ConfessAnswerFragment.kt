@@ -153,6 +153,14 @@ class ConfessAnswerFragment : Fragment() {
             if (isConfessionAnswered == true && !isEditAnswer) {
                 inflater.inflate(R.menu.edit_answer_menu, menu)
                 (activity as AppCompatActivity?)!!.title = "Your Answer"
+                val favAnswerMenuItem = menu.findItem(R.id.action_fav_answer)
+                favAnswerMenuItem.isEnabled = false
+
+                if(isAnswerFavorited) {
+                    favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.red))
+                } else {
+                    favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.white))
+                }
             } else {
                 inflater.inflate(R.menu.confess_menu, menu)
                 val confessMenuItem = menu.findItem(R.id.action_confess)
