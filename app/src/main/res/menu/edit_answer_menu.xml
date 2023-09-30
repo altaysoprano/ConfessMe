@@ -7,4 +7,10 @@
         android:orderInCategory="0"
         android:title="@string/edit_answer"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_delete_answer"
+        android:icon="@drawable/ic_delete"
+        android:orderInCategory="0"
+        android:title="Delete Answer"
+        app:showAsAction="ifRoom" />
 </menu>

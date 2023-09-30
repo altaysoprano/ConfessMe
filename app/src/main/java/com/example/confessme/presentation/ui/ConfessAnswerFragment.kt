@@ -85,46 +85,9 @@ class ConfessAnswerFragment : Fragment() {
             }
         })
 
-        viewModel.addAnswerState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
-                }
-
-                is UiState.Failure -> {
-                    binding.progressBarConfessAnswer.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.progressBarConfessAnswer.visibility = View.GONE
-                    requireActivity().onBackPressed()
-                    Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
-
-        viewModel.addFavoriteAnswer.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
-                }
-
-                is UiState.Failure -> {
-                    binding.progressBarConfessAnswer.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.progressBarConfessAnswer.visibility = View.GONE
-                    isAnswerFavorited = state.data?.answer?.favorited == true
-                    requireActivity().invalidateOptionsMenu()
-                }
-            }
-        }
+        observeAddAnswer()
+        observeFavorite()
+        observeDeleteAnswer()
 
         return binding.root
     }
@@ -166,6 +129,9 @@ class ConfessAnswerFragment : Fragment() {
             R.id.action_fav_answer -> {
                 viewModel.addAnswerFavorite(confessionId ?: "")
             }
+            R.id.action_delete_answer -> {
+                viewModel.deleteAnswer(confessionId ?: "")
+            }
         }
         return false
     }
@@ -175,7 +141,7 @@ class ConfessAnswerFragment : Fragment() {
 
         if(isMyConfession) {
             inflater.inflate(R.menu.given_answer_menu, menu)
-            (activity as AppCompatActivity?)!!.title = "Response to Confession"
+            (activity as AppCompatActivity?)!!.title = "Answer"
             val favAnswerMenuItem = menu.findItem(R.id.action_fav_answer)
 
             if(isAnswerFavorited) {
@@ -195,5 +161,73 @@ class ConfessAnswerFragment : Fragment() {
         }
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun observeFavorite() {
+        viewModel.addFavoriteAnswer.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    isAnswerFavorited = state.data?.answer?.favorited == true
+                    requireActivity().invalidateOptionsMenu()
+                }
+            }
+        }
+    }
+
+    private fun observeAddAnswer() {
+        viewModel.addAnswerState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    requireActivity().onBackPressed()
+                    Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun observeDeleteAnswer() {
+        viewModel.deleteAnswerState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    requireActivity().onBackPressed()
+                    Toast.makeText(requireContext(), "Answer deleted successfully", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
     }
 }

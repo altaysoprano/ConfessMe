@@ -664,6 +664,8 @@ class RepositoryImp(
                                                                     )
                                                                 )
                                                             }
+                                                    } else {
+                                                        result.invoke(UiState.Failure("Answer not found"))
                                                     }
                                                 }
                                             }
@@ -679,12 +681,136 @@ class RepositoryImp(
                         }
                     }
                 }
-        }else {
+        } else {
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
 
+    override fun deleteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit) {
+        val user = firebaseAuth.currentUser
 
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            val batch = database.batch()
+
+            val confessionDocRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("confessions_to_me")
+                .whereEqualTo("id", confessionId)
+
+            confessionDocRef.get()
+                .addOnSuccessListener { confessionQuerySnapshot ->
+                    if (!confessionQuerySnapshot.isEmpty) {
+                        val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
+
+                        val answerMap =
+                            confessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
+                        if (answerMap != null) {
+
+                            val answerFieldUpdate = mapOf("answer" to FieldValue.delete())
+
+                            val answeredFieldUpdate = mapOf("answered" to false)
+
+                            val confessionRef = confessionDocumentSnapshot.reference
+                            batch.update(confessionRef, answerFieldUpdate)
+                            batch.update(confessionRef, answeredFieldUpdate)
+
+                            val username =
+                                confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
+                            val userQuery =
+                                database.collection("users").whereEqualTo("userName", username)
+
+                            Log.d("Mesaj: ", "username: $username")
+
+                            userQuery.get()
+                                .addOnSuccessListener { userQuerySnapshot ->
+                                    if (!userQuerySnapshot.isEmpty) {
+                                        Log.d("Mesaj: ", "User bulundu")
+                                        val userDoc = userQuerySnapshot.documents[0]
+                                        val userUid = userDoc.id
+
+                                        Log.d("Mesaj: ", "confessionId2:" + confessionId)
+                                        Log.d("Mesaj: ", "userUid:" + userUid)
+
+                                        val myConfessionsCollection = database.collection("users")
+                                            .document(userUid)
+                                            .collection("my_confessions")
+                                        val myConfessionDocRef =
+                                            myConfessionsCollection.document(confessionId)
+
+                                        myConfessionDocRef.get()
+                                            .addOnSuccessListener { myConfessionDocumentSnapshot ->
+                                                if (myConfessionDocumentSnapshot.exists()) {
+                                                    Log.d("Mesaj: ", "Document bulundu")
+                                                    val answerMap1 =
+                                                        myConfessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
+
+                                                    if (answerMap1 != null) {
+                                                        val answerFieldUpdate1 =
+                                                            mapOf("answer" to FieldValue.delete())
+
+                                                        val answeredFieldUpdate1 =
+                                                            mapOf("answered" to false)
+
+                                                        batch.update(
+                                                            myConfessionDocRef,
+                                                            answerFieldUpdate1
+                                                        )
+                                                        batch.update(
+                                                            myConfessionDocRef,
+                                                            answeredFieldUpdate1
+                                                        )
+                                                        batch.commit()
+                                                            .addOnSuccessListener {
+                                                                confessionDocRef.get()
+                                                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                                                        result.invoke(
+                                                                            UiState.Success(
+                                                                                updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                                                    Confession::class.java
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    }
+                                                                    .addOnFailureListener { exception ->
+                                                                        result.invoke(
+                                                                            UiState.Failure(
+                                                                                exception.localizedMessage
+                                                                            )
+                                                                        )
+                                                                    }
+                                                            }
+                                                            .addOnFailureListener { exception ->
+                                                                result.invoke(
+                                                                    UiState.Failure(
+                                                                        exception.localizedMessage
+                                                                    )
+                                                                )
+                                                            }
+                                                    } else {
+                                                        result.invoke(UiState.Failure("Answer not found"))
+                                                    }
+                                                } else {
+                                                    result.invoke(UiState.Failure("Confession could not be found"))
+                                                }
+                                            }
+                                    } else {
+                                        result.invoke(UiState.Failure("User could not be found"))
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                }
+                        } else {
+                            result.invoke(UiState.Failure("Confession not found"))
+                        }
+                    }
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
 
     private fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()

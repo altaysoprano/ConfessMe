@@ -42,4 +42,5 @@ interface Repository {
     )
 
     fun favoriteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit)
+    fun deleteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit)
 }
