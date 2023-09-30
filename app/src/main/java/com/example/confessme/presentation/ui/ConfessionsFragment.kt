@@ -40,6 +40,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         confessListAdapter = ConfessionListAdapter(
+            requireContext(),
             mutableListOf(),
             isMyConfessions,
             onAnswerClick = {confessionId, isAnswered, answerText, isFavorited ->

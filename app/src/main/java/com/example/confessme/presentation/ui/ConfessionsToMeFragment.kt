@@ -41,6 +41,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         navRegister = activity as FragmentNavigation
         noConfessFoundBinding = binding.confessionsToMeNoConfessFoundView
         confessListAdapter = ConfessionListAdapter(
+            requireContext(),
             mutableListOf(),
             isMyConfessions,
             onAnswerClick = { confessionId, isAnswered, answerText, isFavorited ->

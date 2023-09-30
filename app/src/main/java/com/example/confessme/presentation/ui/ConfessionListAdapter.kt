@@ -1,17 +1,26 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.appcompat.view.menu.MenuBuilder
+import androidx.appcompat.view.menu.MenuPopupHelper
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,6 +30,7 @@ import com.example.confessme.databinding.ConfessItemBinding
 import com.google.firebase.Timestamp
 
 class ConfessionListAdapter(
+    private val context: Context,
     val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
     private val onAnswerClick: (String, Boolean, String, Boolean) -> Unit,
@@ -105,6 +115,8 @@ class ConfessionListAdapter(
         updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @SuppressLint("RestrictedApi")
     private fun setAnswerAndFavoriteItems(
         confess: Confession,
         binding: ConfessItemBinding,
@@ -137,8 +149,9 @@ class ConfessionListAdapter(
         if (isMyConfession) {
             binding.icFavorite.alpha = 0.5f
             binding.icFavorite.isEnabled = false
+            binding.moreActionButton.visibility = View.VISIBLE
         } else {
-            // Durum 9: Kullanıcı kendi confess'ine sahip değil
+            binding.moreActionButton.visibility = View.GONE
             binding.icFavorite.isEnabled = true
             binding.icAnswer.isEnabled = true
         }
@@ -153,6 +166,34 @@ class ConfessionListAdapter(
             confessFavorite.favorited = !confessFavorite.favorited
             notifyItemChanged(adapterPosition)
             onFavoriteClick(confessFavorite.id)
+        }
+
+        binding.moreActionButton.setOnClickListener { view ->
+            val popupMenu = androidx.appcompat.widget.PopupMenu(view.context, view)
+            popupMenu.menuInflater.inflate(R.menu.confess_item_more_actions_menu, popupMenu.menu)
+            popupMenu.setForceShowIcon(true)
+
+            val positionOfMenuItem = 0
+            val item = popupMenu.menu.getItem(positionOfMenuItem)
+            val s = SpannableString("Delete Confess")
+            s.setSpan(ForegroundColorSpan(Color.RED), 0, s.length, 0)
+            item.title = s
+
+            item.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_delete)
+
+            // Menü öğesinin ikon rengini ayarlayın (örneğin, Color.RED olarak ayarladık).
+            item.icon?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_delete -> {
+
+                        return@setOnMenuItemClickListener true
+                    }
+                    else -> false
+                }
+            }
+            popupMenu.show()
         }
 
         itemView.setOnClickListener {
