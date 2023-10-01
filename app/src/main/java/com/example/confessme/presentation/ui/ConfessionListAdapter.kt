@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -10,17 +11,12 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -34,7 +30,8 @@ class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
     private val onAnswerClick: (String, Boolean, String, Boolean) -> Unit,
-    private val onFavoriteClick: (String) -> Unit
+    private val onFavoriteClick: (String) -> Unit,
+    private val onConfessDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {
@@ -42,6 +39,7 @@ class ConfessionListAdapter(
         return ConfessionViewHolder(binding)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onBindViewHolder(
         holder: ConfessionListAdapter.ConfessionViewHolder,
         position: Int
@@ -61,6 +59,7 @@ class ConfessionListAdapter(
     inner class ConfessionViewHolder(private val binding: ConfessItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        @RequiresApi(Build.VERSION_CODES.Q)
         @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
         fun bind(confess: Confession) {
             binding.apply {
@@ -69,6 +68,7 @@ class ConfessionListAdapter(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun setItems(
         confess: Confession,
         binding: ConfessItemBinding,
@@ -97,7 +97,8 @@ class ConfessionListAdapter(
 
         binding.confessionsScreenUsername.text = confess.fromUserUsername
         binding.confessionsScreenConfession.text = spannable
-        binding.confessionsScreenTimestamp.text = calculateTimeSinceConfession(confess.timestamp as Timestamp)
+        binding.confessionsScreenTimestamp.text =
+            calculateTimeSinceConfession(confess.timestamp as Timestamp)
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
@@ -123,6 +124,17 @@ class ConfessionListAdapter(
         itemView: View,
         adapterPosition: Int
     ) {
+        if (isMyConfession) {
+            binding.icFavorite.alpha = 0.5f
+            binding.icFavorite.isEnabled = false
+            binding.icAnswer.isEnabled = true
+            binding.moreActionButton.visibility = View.VISIBLE
+        } else {
+            binding.moreActionButton.visibility = View.GONE
+            binding.icFavorite.isEnabled = true
+            binding.icAnswer.isEnabled = true
+        }
+
         if (confess.answered) {
             binding.icAnswer.alpha = 1f
             binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
@@ -132,11 +144,12 @@ class ConfessionListAdapter(
         } else {
             binding.icAnswer.alpha = 0.5f
             binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
-            binding.icAnswer.isEnabled = false // Durum 9: Kullanıcı kendi confess'ine sahip ve yanıtlanmadı
+            binding.icAnswer.isEnabled =
+                false // Durum 9: Kullanıcı kendi confess'ine sahip ve yanıtlanmadı
         }
 
         if (confess.favorited) {
-            binding.icFavorite.alpha = 1f
+            binding.icFavorite.alpha = if(isMyConfession) 0.5f else 1f
             binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
         } else if (!isMyConfession) {
             binding.icFavorite.alpha = 1f
@@ -146,19 +159,15 @@ class ConfessionListAdapter(
             binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
         }
 
-        if (isMyConfession) {
-            binding.icFavorite.alpha = 0.5f
-            binding.icFavorite.isEnabled = false
-            binding.moreActionButton.visibility = View.VISIBLE
-        } else {
-            binding.moreActionButton.visibility = View.GONE
-            binding.icFavorite.isEnabled = true
-            binding.icAnswer.isEnabled = true
-        }
-
         binding.icAnswer.setOnClickListener {
+            Log.d("Mesaj: ", "İc answer tıklandı")
             val confessAnswer = confessList[adapterPosition]
-            onAnswerClick(confessAnswer.id, confess.answered, confess.answer.text, confess.answer.favorited)
+            onAnswerClick(
+                confessAnswer.id,
+                confess.answered,
+                confess.answer.text,
+                confess.answer.favorited
+            )
         }
 
         binding.icFavorite.setOnClickListener {
@@ -181,15 +190,15 @@ class ConfessionListAdapter(
 
             item.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_delete)
 
-            // Menü öğesinin ikon rengini ayarlayın (örneğin, Color.RED olarak ayarladık).
             item.icon?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
 
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_delete -> {
-
+                        showDeleteConfessionDialog(itemView.context, adapterPosition)
                         return@setOnMenuItemClickListener true
                     }
+
                     else -> false
                 }
             }
@@ -201,9 +210,32 @@ class ConfessionListAdapter(
         }
     }
 
+    private fun showDeleteConfessionDialog(context: Context, adapterPosition: Int) {
+
+        val alertDialog = AlertDialog.Builder(context)
+            .setTitle("DELETE CONFESSION")
+            .setMessage("Are you sure you really want to delete this confession?")
+            .setPositiveButton("Yes") { _, _ ->
+                val deletedConfession = confessList[adapterPosition]
+                onConfessDeleteClick(deletedConfession.id)
+            }
+            .setNegativeButton("No") { _, _ ->
+                // Silme işlemi iptal edildi.
+            }
+            .create()
+
+        alertDialog.show()
+    }
+
     fun updateItem(position: Int, updatedConfession: Confession) {
         confessList[position] = updatedConfession
         notifyItemChanged(position)
+    }
+
+    fun removeConfession(position: Int) {
+        confessList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyDataSetChanged()
     }
 
     private fun updateTextViewExpansion(textview: TextView, isExpanded: Boolean) {
@@ -232,5 +264,4 @@ class ConfessionListAdapter(
             }
         }
     }
-
 }

@@ -43,7 +43,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
             requireContext(),
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = {confessionId, isAnswered, answerText, isFavorited ->
+            onAnswerClick = { confessionId, isAnswered, answerText, isFavorited ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
                     bundle.putString("confessionId", confessionId)
@@ -59,13 +59,17 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                         .show()
                 }
             },
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onConfessDeleteClick = { confessionId ->
+                viewModel.deleteConfession(confessionId)
+            }
         )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView
 
         viewModel.fetchConfessions(limit, isMyConfessions)
 
-        binding.confessionListRecyclerviewId.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.confessionListRecyclerviewId.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -85,6 +89,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
 
         setupRecyclerView()
         observeFetchConfessions()
+        observeDeleteConfession()
 
         return binding.root
     }
@@ -102,11 +107,13 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                 is UiState.Loading -> {
                     binding.progressBarConfessions.visibility = View.VISIBLE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarConfessions.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarConfessions.visibility = View.GONE
                     if (state.data.isEmpty()) {
@@ -120,6 +127,44 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         }
     }
 
+    private fun observeDeleteConfession() {
+        viewModel.deleteConfessionState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessionsGeneral.visibility = View.VISIBLE
+                }
 
+                is UiState.Failure -> {
+                    binding.progressBarConfessionsGeneral.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessionsGeneral.visibility = View.GONE
+                    val deletedConfession = state.data
+                    val position = deletedConfession?.let { findPositionById(it.id) }
+
+                    if (position != -1) {
+                        if (deletedConfession != null) {
+                            if (position != null) {
+                                confessListAdapter.removeConfession(position)
+                                limit -= 1
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun findPositionById(confessionId: String): Int {
+        for (index in 0 until confessListAdapter.confessList.size) {
+            if (confessListAdapter.confessList[index].id == confessionId) {
+                return index
+            }
+        }
+        return -1
+    }
 
 }

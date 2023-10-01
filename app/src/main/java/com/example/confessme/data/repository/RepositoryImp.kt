@@ -806,6 +806,101 @@ class RepositoryImp(
         }
     }
 
+    override fun deleteConfession(confessionId: String, result: (UiState<Confession?>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            val batch = database.batch()
+
+            val confessionDocRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("my_confessions")
+                .whereEqualTo("id", confessionId)
+
+            confessionDocRef.get()
+                .addOnSuccessListener { confessionQuerySnapshot ->
+                    if (!confessionQuerySnapshot.isEmpty) {
+                        val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
+
+                        val confessionRef = confessionDocumentSnapshot.reference
+                        batch.delete(confessionRef)
+
+                        val username =
+                            confessionDocumentSnapshot.getString("username") ?: ""
+                        val userQuery =
+                            database.collection("users").whereEqualTo("userName", username)
+
+                        userQuery.get()
+                            .addOnSuccessListener { userQuerySnapshot ->
+                                if (!userQuerySnapshot.isEmpty) {
+                                    val userDoc = userQuerySnapshot.documents[0]
+                                    val userUid = userDoc.id
+
+                                    val myConfessionDoc = database.collection("users")
+                                        .document(userUid)
+                                        .collection("confessions_to_me")
+                                        .whereEqualTo("id", confessionId)
+
+                                    myConfessionDoc.get()
+                                        .addOnSuccessListener { myConfessionQuerySnapshot ->
+                                            if (!myConfessionQuerySnapshot.isEmpty) {
+                                                val myConfessionDocumentSnapshot =
+                                                    myConfessionQuerySnapshot.documents[0]
+
+                                                val deletedConfession =
+                                                    myConfessionDocumentSnapshot.toObject(Confession::class.java)
+
+                                                batch.delete(myConfessionDocumentSnapshot.reference)
+
+                                                batch.commit()
+                                                    .addOnSuccessListener {
+                                                        confessionDocRef.get()
+                                                            .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                                                result.invoke(
+                                                                    UiState.Success(
+                                                                        deletedConfession
+                                                                    )
+                                                                )
+                                                            }
+                                                            .addOnFailureListener { exception ->
+                                                                result.invoke(
+                                                                    UiState.Failure(
+                                                                        exception.localizedMessage
+                                                                    )
+                                                                )
+                                                            }
+                                                    }
+                                                    .addOnFailureListener { exception ->
+                                                        result.invoke(
+                                                            UiState.Failure(
+                                                                exception.localizedMessage
+                                                            )
+                                                        )
+                                                    }
+                                            } else {
+                                                result.invoke(UiState.Failure("Confession not found 1"))
+                                            }
+                                        }
+                                } else {
+                                    result.invoke(UiState.Failure("User could not be found"))
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure("Confession not found"))
+                    }
+                }.addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
     private fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
         return passwordRegex.matches(password)

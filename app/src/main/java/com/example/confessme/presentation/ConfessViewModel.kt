@@ -40,6 +40,10 @@ class ConfessViewModel @Inject constructor(
     val deleteAnswerState: LiveData<UiState<Confession?>>
         get() = _deleteAnswerState
 
+    private val _deleteConfessionState = MutableLiveData<UiState<Confession?>>()
+    val deleteConfessionState: LiveData<UiState<Confession?>>
+        get() = _deleteConfessionState
+
     fun addConfession(userName: String, confessionText: String) {
         _addConfessionState.value = UiState.Loading
         repository.addConfession(userName, confessionText) {
@@ -79,6 +83,13 @@ class ConfessViewModel @Inject constructor(
         _deleteAnswerState.value = UiState.Loading
         repository.deleteAnswer(confessionId) {
             _deleteAnswerState.value = it
+        }
+    }
+
+    fun deleteConfession(confessionId: String) {
+        _deleteConfessionState.value = UiState.Loading
+        repository.deleteConfession(confessionId) {
+            _deleteConfessionState.postValue(it)
         }
     }
 }
