@@ -87,8 +87,8 @@ class EditProfileFragment : Fragment() {
         }
 
         binding.saveButton.setOnClickListener {
-            val username = binding.firstNameEt.text.toString()
-            val bio = binding.bioEt.text.toString()
+            val username = binding.firstNameEt.text?.trim().toString()
+            val bio = binding.bioEt.text?.trim().toString()
 
             if (::selectedImg.isInitialized) {
                 viewModel.updateProfile(currentUsername, username, bio, selectedImg)
