@@ -17,4 +17,10 @@ class ProfileSearchSharedViewModel @Inject constructor() : ViewModel() {
         _selectedUserName.value = username
     }
 
+    private var _selectedUserEmail = MutableLiveData("")
+    val selectedUserEmail: LiveData<String> = _selectedUserEmail
+
+    fun setSelectedUserEmail(username: String) {
+        _selectedUserEmail.value = username
+    }
 }

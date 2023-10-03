@@ -3,7 +3,6 @@ package com.example.confessme.presentation.ui
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,13 +14,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessBinding
-import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ProfileSearchSharedViewModel
-import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -104,10 +100,11 @@ class ConfessFragment : Fragment() {
             }
             R.id.action_confess -> {
                 val selectedUserName = sharedViewModel.selectedUserName.value ?: ""
+                val selectedUserEmail = sharedViewModel.selectedUserEmail.value ?: ""
                 val confessionText = binding.confessEditText.text.toString()
 
                 if (confessionText.isNotEmpty()) {
-                    viewModel.addConfession(selectedUserName, confessionText)
+                    viewModel.addConfession(selectedUserName, selectedUserEmail, confessionText)
                 } else {
                     Toast.makeText(requireContext(), "Confession text cannot be left blank", Toast.LENGTH_SHORT).show()
                 }

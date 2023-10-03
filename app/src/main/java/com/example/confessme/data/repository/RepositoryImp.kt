@@ -288,6 +288,7 @@ class RepositoryImp(
 
     override fun addConfession(
         userName: String,
+        userEmail: String,
         confessionText: String,
         result: (UiState<String>) -> Unit
     ) {
@@ -302,9 +303,10 @@ class RepositoryImp(
                     if (currentUserDocument.exists()) {
                         val fromUserImageUrl = currentUserDocument.getString("imageUrl")
                         val fromUserUsername = currentUserDocument.getString("userName")
+                        val fromUserEmail = currentUserDocument.getString("email")
 
                         database.collection("users")
-                            .whereEqualTo("userName", userName)
+                            .whereEqualTo("email", userEmail)
                             .get()
                             .addOnSuccessListener { documents ->
                                 if (!documents.isEmpty) {
@@ -322,7 +324,9 @@ class RepositoryImp(
                                         "id" to newConfessionDocument.id,
                                         "text" to confessionText,
                                         "username" to userName,
+                                        "email" to userEmail,
                                         "imageUrl" to imageUrl,
+                                        "fromUserEmail" to fromUserEmail,
                                         "fromUserUsername" to fromUserUsername,
                                         "fromUserImageUrl" to fromUserImageUrl,
                                         "timestamp" to FieldValue.serverTimestamp()
@@ -393,7 +397,6 @@ class RepositoryImp(
                     for (document in documents) {
                         val confession = document.toObject(Confession::class.java)
                         confessionList.add(confession)
-                        Log.d("Mesaj: ", "isAnswered: ${confession.answered}")
                     }
 
                     result.invoke(UiState.Success(confessionList))
@@ -428,14 +431,18 @@ class RepositoryImp(
 
                         val fromUserUsername = confessionDoc.getString("username") ?: ""
                         val fromUserImageUrl = confessionDoc.getString("imageUrl") ?: ""
+                        val fromUserEmail = confessionDoc.getString("email") ?: ""
                         val username = confessionDoc.getString("fromUserUsername") ?: ""
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
+                        val email = confessionDoc.getString("fromUserEmail") ?: ""
 
                         val answerData = Answer(
                             text = answerText,
                             username = username,
+                            email = email,
                             fromUserUsername = fromUserUsername,
                             fromUserImageUrl = fromUserImageUrl,
+                            fromUserEmail = fromUserEmail,
                             imageUrl = imageUrl,
                             timestamp = FieldValue.serverTimestamp(),
                             isExpanded = false
@@ -450,7 +457,7 @@ class RepositoryImp(
                         batch.set(confessionDoc.reference, answerField, SetOptions.merge())
 
                         val usersCollection = database.collection("users")
-                        val userQuery = usersCollection.whereEqualTo("userName", username)
+                        val userQuery = usersCollection.whereEqualTo("email", email)
                         userQuery.get()
                             .addOnSuccessListener { userQuerySnapshot ->
                                 if (!userQuerySnapshot.isEmpty) {
@@ -518,10 +525,10 @@ class RepositoryImp(
 
                         batch.update(documentRef, updatedData)
 
-                        val username =
-                            confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
+                        val email =
+                            confessionDocumentSnapshot.getString("fromUserEmail") ?: ""
                         val userQuery =
-                            database.collection("users").whereEqualTo("userName", username)
+                            database.collection("users").whereEqualTo("email", email)
 
                         userQuery.get()
                             .addOnSuccessListener { userQuerySnapshot ->
@@ -604,10 +611,10 @@ class RepositoryImp(
                                 mapOf("answer" to answerMap)
                             )
 
-                            val username =
-                                confessionDocumentSnapshot.getString("username") ?: ""
+                            val email =
+                                confessionDocumentSnapshot.getString("email") ?: ""
                             val userQuery =
-                                database.collection("users").whereEqualTo("userName", username)
+                                database.collection("users").whereEqualTo("email", email)
 
                             userQuery.get()
                                 .addOnSuccessListener { userQuerySnapshot ->

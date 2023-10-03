@@ -23,7 +23,7 @@ interface Repository {
     fun followUser(userIdToFollow: String, callback: (UiState<String>) -> Unit)
     fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit)
     fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit)
-    fun addConfession(userName: String, confessionText: String, result: (UiState<String>) -> Unit)
+    fun addConfession(userName: String, userEmail: String, confessionText: String, result: (UiState<String>) -> Unit)
     fun fetchConfessions(
         limit: Long,
         isMyConfessions: Boolean,

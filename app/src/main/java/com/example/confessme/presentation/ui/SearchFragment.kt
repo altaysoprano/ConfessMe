@@ -85,6 +85,7 @@ class SearchFragment : Fragment() {
 
     private fun onItemClick(user: User) {
         sharedViewModel.setSelectedUserName(user.userName)
+        sharedViewModel.setSelectedUserEmail(user.email)
 
         val profileFragment = ProfileFragment()
         navRegister.navigateFrag(profileFragment, true)
