@@ -723,10 +723,10 @@ class RepositoryImp(
                             batch.update(confessionRef, answerFieldUpdate)
                             batch.update(confessionRef, answeredFieldUpdate)
 
-                            val username =
-                                confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
+                            val email =
+                                confessionDocumentSnapshot.getString("fromUserEmail") ?: ""
                             val userQuery =
-                                database.collection("users").whereEqualTo("userName", username)
+                                database.collection("users").whereEqualTo("email", email)
 
                             userQuery.get()
                                 .addOnSuccessListener { userQuerySnapshot ->
@@ -743,7 +743,6 @@ class RepositoryImp(
                                         myConfessionDocRef.get()
                                             .addOnSuccessListener { myConfessionDocumentSnapshot ->
                                                 if (myConfessionDocumentSnapshot.exists()) {
-                                                    Log.d("Mesaj: ", "Document bulundu")
                                                     val answerMap1 =
                                                         myConfessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
 
@@ -834,10 +833,10 @@ class RepositoryImp(
                         val confessionRef = confessionDocumentSnapshot.reference
                         batch.delete(confessionRef)
 
-                        val username =
-                            confessionDocumentSnapshot.getString("username") ?: ""
+                        val email =
+                            confessionDocumentSnapshot.getString("email") ?: ""
                         val userQuery =
-                            database.collection("users").whereEqualTo("userName", username)
+                            database.collection("users").whereEqualTo("email", email)
 
                         userQuery.get()
                             .addOnSuccessListener { userQuerySnapshot ->
