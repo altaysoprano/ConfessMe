@@ -1,7 +1,6 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -11,7 +10,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ConfessItemBinding
+import com.example.confessme.presentation.DialogHelper
 import com.google.firebase.Timestamp
 
 class ConfessionListAdapter(
@@ -33,6 +32,8 @@ class ConfessionListAdapter(
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
+
+    private val dialogHelper = DialogHelper(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {
         val binding = ConfessItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -160,7 +161,6 @@ class ConfessionListAdapter(
         }
 
         binding.icAnswer.setOnClickListener {
-            Log.d("Mesaj: ", "İc answer tıklandı")
             val confessAnswer = confessList[adapterPosition]
             onAnswerClick(
                 confessAnswer.id,
@@ -195,7 +195,8 @@ class ConfessionListAdapter(
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_delete -> {
-                        showDeleteConfessionDialog(itemView.context, adapterPosition)
+                        val confessIdToDelete = confessList[adapterPosition].id
+                        dialogHelper.showDeleteConfessionDialog("confession", {onConfessDeleteClick(confessIdToDelete)})
                         return@setOnMenuItemClickListener true
                     }
 
@@ -208,23 +209,6 @@ class ConfessionListAdapter(
         itemView.setOnClickListener {
 
         }
-    }
-
-    private fun showDeleteConfessionDialog(context: Context, adapterPosition: Int) {
-
-        val alertDialog = AlertDialog.Builder(context)
-            .setTitle("DELETE CONFESSION")
-            .setMessage("Are you sure you really want to delete this confession?")
-            .setPositiveButton("Yes") { _, _ ->
-                val deletedConfession = confessList[adapterPosition]
-                onConfessDeleteClick(deletedConfession.id)
-            }
-            .setNegativeButton("No") { _, _ ->
-                // Silme işlemi iptal edildi.
-            }
-            .create()
-
-        alertDialog.show()
     }
 
     fun updateItem(position: Int, updatedConfession: Confession) {

@@ -3,7 +3,6 @@ package com.example.confessme.presentation.ui
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -13,12 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.ProfileSearchSharedViewModel
+import com.example.confessme.presentation.DialogHelper
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +31,7 @@ class ConfessAnswerFragment : Fragment() {
     private var isMyConfession: Boolean = false
     private var isAnswerFavorited: Boolean = false
     private lateinit var answerText: String
+    private lateinit var dialogHelper: DialogHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +46,7 @@ class ConfessAnswerFragment : Fragment() {
         answerText = arguments?.getString("answerText", "") ?: ""
         isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
+        dialogHelper = DialogHelper(requireContext())
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -130,7 +130,9 @@ class ConfessAnswerFragment : Fragment() {
                 viewModel.addAnswerFavorite(confessionId ?: "")
             }
             R.id.action_delete_answer -> {
-                viewModel.deleteAnswer(confessionId ?: "")
+                dialogHelper.showDeleteConfessionDialog("answer", {
+                    viewModel.deleteAnswer(confessionId ?: "")
+                })
             }
         }
         return false
