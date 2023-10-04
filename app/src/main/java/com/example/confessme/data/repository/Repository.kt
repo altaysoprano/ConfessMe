@@ -18,11 +18,11 @@ interface Repository {
     )
 
     fun fetchUserProfile(result: (UiState<User?>) -> Unit)
-    fun fetchUserProfileByUsername(username: String, result: (UiState<User?>) -> Unit)
+    fun fetchUserProfileByEmail(username: String, result: (UiState<User?>) -> Unit)
     fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
-    fun followUser(userIdToFollow: String, callback: (UiState<String>) -> Unit)
-    fun checkIfUserFollowed(usernameToCheck: String, callback: (UiState<Boolean>) -> Unit)
-    fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit)
+    fun followUser(useremailToFollow: String, callback: (UiState<String>) -> Unit)
+    fun checkIfUserFollowed(useremailToCheck: String, callback: (UiState<Boolean>) -> Unit)
+    fun unfollowUser(useremailToUnfollow: String, callback: (UiState<String>) -> Unit)
     fun addConfession(userName: String, userEmail: String, confessionText: String, result: (UiState<String>) -> Unit)
     fun fetchConfessions(
         limit: Long,

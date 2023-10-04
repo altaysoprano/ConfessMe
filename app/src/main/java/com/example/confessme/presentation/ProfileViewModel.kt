@@ -1,6 +1,5 @@
 package com.example.confessme.presentation
 
-import android.app.AlertDialog
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,8 +10,6 @@ import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -46,20 +43,20 @@ class ProfileViewModel @Inject constructor(
             _updateProfileState.value = it
         }
     }
-    fun fetchUserProfileByUsername(username: String) {
+    fun fetchUserProfileByEmail(useremail: String) {
         _fetchProfileState.value = UiState.Loading
 
-        repository.fetchUserProfileByUsername(username) { result ->
+        repository.fetchUserProfileByEmail(useremail) { result ->
             _fetchProfileState.postValue(result)
         }
     }
 
-    fun followOrUnfollowUser(usernameToFollow: String) {
+    fun followOrUnfollowUser(useremailToFollow: String) {
         _followUserState.value = UiState.Loading
 
-        repository.checkIfUserFollowed(usernameToFollow) { result ->
+        repository.checkIfUserFollowed(useremailToFollow) { result ->
             if (result is UiState.Success && result.data) {
-                repository.unfollowUser(usernameToFollow) { unfollowResult ->
+                repository.unfollowUser(useremailToFollow) { unfollowResult ->
                     if (unfollowResult is UiState.Success) {
                         _followUserState.postValue(unfollowResult)
                     } else {
@@ -67,7 +64,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
             } else {
-                repository.followUser(usernameToFollow) { followResult ->
+                repository.followUser(useremailToFollow) { followResult ->
                     if (followResult is UiState.Success) {
                         _followUserState.postValue(UiState.Success(followResult.data))
                     } else {
@@ -77,10 +74,10 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-    fun checkIfUserFollowed(usernameToCheck: String) {
+    fun checkIfUserFollowed(useremailToCheck: String) {
         _checkFollowingState.value = UiState.Loading
 
-        repository.checkIfUserFollowed(usernameToCheck) { result ->
+        repository.checkIfUserFollowed(useremailToCheck) { result ->
             _checkFollowingState.postValue(result)
         }
     }

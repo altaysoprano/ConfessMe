@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,7 +11,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TableLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
@@ -74,10 +72,10 @@ class ProfileFragment : Fragment() {
             }
         })
 
-        sharedViewModel.selectedUserName.observe(viewLifecycleOwner) { username ->
-            if (!username.isNullOrEmpty()) {
-                viewModel.fetchUserProfileByUsername(username)
-                checkIfUserFollowed(username)
+        sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
+            if (!useremail.isNullOrEmpty()) {
+                viewModel.fetchUserProfileByEmail(useremail)
+                checkIfUserFollowed(useremail)
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
                 binding.profileViewPager.adapter = null
                 binding.profileTabLayout.visibility = View.GONE
@@ -136,6 +134,7 @@ class ProfileFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         sharedViewModel.setSelectedUserName("")
+        sharedViewModel.setSelectedUserEmail("")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -183,9 +182,10 @@ class ProfileFragment : Fragment() {
     }
 
     private fun followOrUnfollowUser() {
-        val selectedUserName = sharedViewModel.selectedUserName.value
-        if (!selectedUserName.isNullOrEmpty()) {
-            viewModel.followOrUnfollowUser(selectedUserName)
+        val selectedUserEmail = sharedViewModel.selectedUserEmail.value
+
+        if (!selectedUserEmail.isNullOrEmpty()) {
+            viewModel.followOrUnfollowUser(selectedUserEmail)
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -200,7 +200,7 @@ class ProfileFragment : Fragment() {
 
                     is UiState.Success -> {
                         binding.progressButtonLayout.progressBarFollowButton.visibility = View.GONE
-                        checkIfUserFollowed(selectedUserName)
+                        checkIfUserFollowed(selectedUserEmail)
                         Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -209,8 +209,8 @@ class ProfileFragment : Fragment() {
     }
 
     @SuppressLint("ResourceAsColor")
-    private fun checkIfUserFollowed(usernameToCheck: String) {
-        viewModel.checkIfUserFollowed(usernameToCheck)
+    private fun checkIfUserFollowed(useremailToCheck: String) {
+        viewModel.checkIfUserFollowed(useremailToCheck)
         viewModel.checkFollowingState.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is UiState.Success -> {

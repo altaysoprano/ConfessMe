@@ -173,9 +173,9 @@ class RepositoryImp(
         }
     }
 
-    override fun fetchUserProfileByUsername(username: String, result: (UiState<User?>) -> Unit) {
+    override fun fetchUserProfileByEmail(useremail: String, result: (UiState<User?>) -> Unit) {
         database.collection("users")
-            .whereEqualTo("userName", username)
+            .whereEqualTo("email", useremail)
             .get()
             .addOnSuccessListener { documents ->
                 if (!documents.isEmpty) {
@@ -225,12 +225,12 @@ class RepositoryImp(
         }
     }
 
-    override fun followUser(userIdToFollow: String, callback: (UiState<String>) -> Unit) {
+    override fun followUser(useremailToFollow: String, callback: (UiState<String>) -> Unit) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
-                .collection("following").document(userIdToFollow)
+                .collection("following").document(useremailToFollow)
 
             followingRef.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
                 .addOnSuccessListener {
@@ -244,12 +244,12 @@ class RepositoryImp(
         }
     }
 
-    override fun unfollowUser(userIdToUnfollow: String, callback: (UiState<String>) -> Unit) {
+    override fun unfollowUser(useremailToUnfollow: String, callback: (UiState<String>) -> Unit) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
-                .collection("following").document(userIdToUnfollow)
+                .collection("following").document(useremailToUnfollow)
 
             followingRef.delete()
                 .addOnSuccessListener {
@@ -264,14 +264,14 @@ class RepositoryImp(
     }
 
     override fun checkIfUserFollowed(
-        usernameToCheck: String,
+        useremailToCheck: String,
         callback: (UiState<Boolean>) -> Unit
     ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
-                .collection("following").document(usernameToCheck)
+                .collection("following").document(useremailToCheck)
 
             followingRef.get()
                 .addOnSuccessListener { documentSnapshot ->
