@@ -7,15 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ProfileSearchSharedViewModel
 import com.example.confessme.util.UiState
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,7 +34,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
     private lateinit var confessListAdapter: ConfessionListAdapter
 
     private val viewModel: ConfessViewModel by viewModels()
-    private val sharedViewModel: ProfileSearchSharedViewModel by viewModels()
+    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +67,14 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
             onFavoriteClick = { confessionId ->
                 viewModel.addFavorite(confessionId)
             },
-            onConfessDeleteClick = {}
+            onConfessDeleteClick = {},
+            onItemPhotoClick = { userEmail ->
+                sharedViewModel.setSelectedUserEmail(userEmail)
+                Log.d("Mesaj: ", sharedViewModel.selectedUserEmail.value.toString())
+
+                val profileFragment = ProfileFragment()
+                navRegister.navigateFrag(profileFragment, true)
+            }
         )
 
         viewModel.fetchConfessions(limit, isMyConfessions)
@@ -165,5 +176,4 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         }
         return -1
     }
-
 }

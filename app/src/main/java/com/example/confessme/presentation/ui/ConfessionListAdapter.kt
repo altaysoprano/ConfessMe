@@ -10,6 +10,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +31,8 @@ class ConfessionListAdapter(
     private val isMyConfession: Boolean,
     private val onAnswerClick: (String, Boolean, String, Boolean) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
-    private val onConfessDeleteClick: (String) -> Unit
+    private val onConfessDeleteClick: (String) -> Unit,
+    private val onItemPhotoClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = DialogHelper(context)
@@ -175,6 +177,13 @@ class ConfessionListAdapter(
             confessFavorite.favorited = !confessFavorite.favorited
             notifyItemChanged(adapterPosition)
             onFavoriteClick(confessFavorite.id)
+        }
+
+        binding.confessionsScreenProfileImage.setOnClickListener {
+            val photoClickedUser = confessList[adapterPosition]
+
+            Log.d("Mesaj: ", "Adapterda email: ${photoClickedUser.fromUserEmail}")
+            onItemPhotoClick(photoClickedUser.fromUserEmail)
         }
 
         binding.moreActionButton.setOnClickListener { view ->

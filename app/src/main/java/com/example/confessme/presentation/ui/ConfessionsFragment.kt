@@ -62,6 +62,9 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
             onFavoriteClick = {},
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
+            },
+            onItemPhotoClick = {
+
             }
         )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView

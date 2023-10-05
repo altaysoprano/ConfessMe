@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -74,6 +75,7 @@ class ProfileFragment : Fragment() {
 
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
             if (!useremail.isNullOrEmpty()) {
+                Log.d("Mesaj: ", "Email boş değil: $useremail")
                 viewModel.fetchUserProfileByEmail(useremail)
                 checkIfUserFollowed(useremail)
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
@@ -81,6 +83,7 @@ class ProfileFragment : Fragment() {
                 binding.profileTabLayout.visibility = View.GONE
                 binding.confessFabButton.visibility = View.VISIBLE
             } else {
+                Log.d("Mesaj: ", "Email boş")
                 viewModel.getProfileData()
                 binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
             }
@@ -140,7 +143,7 @@ class ProfileFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val actionBar = (activity as AppCompatActivity?)?.supportActionBar
 
-        if (!sharedViewModel.selectedUserName.value.isNullOrEmpty()) {
+        if (!sharedViewModel.selectedUserEmail.value.isNullOrEmpty()) {
             actionBar?.setDisplayHomeAsUpEnabled(true)
             actionBar?.setDisplayShowHomeEnabled(true)
             requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
@@ -172,7 +175,7 @@ class ProfileFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if (sharedViewModel.selectedUserName.value.isNullOrEmpty()) {
+        if (sharedViewModel.selectedUserEmail.value.isNullOrEmpty()) {
             requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
                 View.VISIBLE
             (activity as AppCompatActivity?)!!.supportActionBar?.apply {
