@@ -47,8 +47,6 @@ class ProfileFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = "My Profile"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
-        viewPagerAdapter = ProfileViewPagerAdapter(this)
-        binding.profileViewPager.adapter = viewPagerAdapter
 
         binding.profileTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -85,6 +83,10 @@ class ProfileFragment : Fragment() {
             } else {
                 Log.d("Mesaj: ", "Email boş")
                 viewModel.getProfileData()
+                viewPagerAdapter = ProfileViewPagerAdapter(this)
+                binding.profileViewPager.adapter = viewPagerAdapter
+                binding.profileTabLayout.visibility = View.VISIBLE
+                binding.confessFabButton.visibility = View.GONE
                 binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
             }
         }
@@ -93,6 +95,7 @@ class ProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarProfile.visibility = View.VISIBLE
+                    Log.d("Mesaj: ", "fetchProfileState loadingte")
                 }
 
                 is UiState.Failure -> {
@@ -105,14 +108,57 @@ class ProfileFragment : Fragment() {
                     binding.progressBarProfile.visibility = View.GONE
                     val userProfile = state.data
                     if (userProfile != null) {
+                        Log.d("Mesaj: ", "userProfile boş değil")
                         binding.firstNameTv.text = userProfile.userName
                         binding.bioTv.text = userProfile.bio
                         if (userProfile.imageUrl.isNotEmpty()) {
+                            Log.d("Mesaj: ", "pp boş değil. url: ${userProfile.imageUrl}")
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
                                 .into(binding.profileScreenProfileImage)
+                        } else {
+                            Log.d("Mesaj: ", "pp boş")
                         }
+                    } else {
+                        Log.d("Mesaj: ", "userProfile boş")
                     }
+                    Log.d("Mesaj: ", "fetchProfileState successte")
+                }
+            }
+        }
+
+        viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarProfile.visibility = View.VISIBLE
+                    Log.d("Mesaj: ", "getProfileData loadingte")
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    val userProfile = state.data
+                    if (userProfile != null) {
+                        Log.d("Mesaj: ", "my userProfile boş değil")
+                        binding.firstNameTv.text = userProfile.userName
+                        binding.bioTv.text = userProfile.bio
+                        if (userProfile.imageUrl.isNotEmpty()) {
+                            Log.d("Mesaj: ", "my pp boş değil. url: ${userProfile.imageUrl}")
+                            Glide.with(requireContext())
+                                .load(userProfile.imageUrl)
+                                .into(binding.profileScreenProfileImage)
+                        } else {
+                            Log.d("Mesaj: ", "my pp boş")
+                        }
+                    } else {
+                        Log.d("Mesaj: ", "my userProfile boş")
+                    }
+                    Log.d("Mesaj: ", "getProfileData successte")
                 }
             }
         }
@@ -122,15 +168,14 @@ class ProfileFragment : Fragment() {
         }
 
         binding.confessFabButton.setOnClickListener {
-            val selectedUserName = sharedViewModel.selectedUserName.value
-            if (!selectedUserName.isNullOrEmpty()) {
+            val selectedUserEmail = sharedViewModel.selectedUserEmail.value
+            if (!selectedUserEmail.isNullOrEmpty()) {
                 val confessFragment = ConfessFragment()
                 navRegister.navigateFrag(confessFragment, true)
             } else {
                 Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
             }
         }
-
         return binding.root
     }
 
@@ -138,6 +183,12 @@ class ProfileFragment : Fragment() {
         super.onDestroy()
         sharedViewModel.setSelectedUserName("")
         sharedViewModel.setSelectedUserEmail("")
+    }
+
+    fun onBackPressedInProfileFragment() {
+        sharedViewModel.setSelectedUserEmail("")
+        Log.d("Mesaj: ", "onbackpressed çalıştı, email: ${sharedViewModel.selectedUserEmail.value}")
+        requireActivity().onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

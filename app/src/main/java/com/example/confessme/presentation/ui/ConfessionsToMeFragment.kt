@@ -70,7 +70,6 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
             onConfessDeleteClick = {},
             onItemPhotoClick = { userEmail ->
                 sharedViewModel.setSelectedUserEmail(userEmail)
-                Log.d("Mesaj: ", sharedViewModel.selectedUserEmail.value.toString())
 
                 val profileFragment = ProfileFragment()
                 navRegister.navigateFrag(profileFragment, true)

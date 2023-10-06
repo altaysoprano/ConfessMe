@@ -72,4 +72,13 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
 
         transaction.commit()
     }
+
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.profileFragment)
+        if (currentFragment is ProfileFragment) {
+            currentFragment.onBackPressedInProfileFragment()
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

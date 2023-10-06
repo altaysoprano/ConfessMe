@@ -29,6 +29,10 @@ class ProfileViewModel @Inject constructor(
     val fetchProfileState: LiveData<UiState<User?>>
         get() = _fetchProfileState
 
+    private val _getProfileState = MutableLiveData<UiState<User?>>()
+    val getProfileState: LiveData<UiState<User?>>
+        get() = _getProfileState
+
     private val _followUserState = MutableLiveData<UiState<String>>()
     val followUserState: LiveData<UiState<String>>
         get() = _followUserState
@@ -83,10 +87,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun getProfileData() {
-        _fetchProfileState.value = UiState.Loading
+        _getProfileState.value = UiState.Loading
 
         repository.fetchUserProfile() { result ->
-            _fetchProfileState.postValue(result)
+            _getProfileState.postValue(result)
         }
     }
 
