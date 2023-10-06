@@ -74,11 +74,11 @@ class MainActivity : AppCompatActivity(), FragmentNavigation {
     }
 
     override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.profileFragment)
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.coordinator)
         if (currentFragment is ProfileFragment) {
-            currentFragment.onBackPressedInProfileFragment()
-        } else {
-            super.onBackPressed()
+            val profileFragment = currentFragment as ProfileFragment
+            profileFragment.onBackPressedInProfileFragment()
         }
+        super.onBackPressed()
     }
 }

@@ -181,28 +181,33 @@ class ProfileFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        sharedViewModel.setSelectedUserName("")
         sharedViewModel.setSelectedUserEmail("")
     }
 
     fun onBackPressedInProfileFragment() {
         sharedViewModel.setSelectedUserEmail("")
         Log.d("Mesaj: ", "onbackpressed çalıştı, email: ${sharedViewModel.selectedUserEmail.value}")
-        requireActivity().onBackPressed()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val actionBar = (activity as AppCompatActivity?)?.supportActionBar
 
-        if (!sharedViewModel.selectedUserEmail.value.isNullOrEmpty()) {
-            actionBar?.setDisplayHomeAsUpEnabled(true)
-            actionBar?.setDisplayShowHomeEnabled(true)
-            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                View.GONE
-            actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
-            (activity as AppCompatActivity?)!!.title = "Profile"
-        } else {
-            inflater.inflate(R.menu.profile_menu, menu)
+        sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { userEmail ->
+            if (!userEmail.isNullOrEmpty()) {
+                Log.d("Mesaj: ", "Şu an selecteduseremail boş değil, bu yüzden other user menüsü görünüyor")
+                actionBar?.setDisplayHomeAsUpEnabled(true)
+                actionBar?.setDisplayShowHomeEnabled(true)
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                    View.GONE
+                actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
+                (activity as AppCompatActivity?)!!.title = "Profile"
+            } else {
+                Log.d("Mesaj: ", "Şu an selecteduseremail dolu, bu yüzden myprofile menüsü görünüyor")
+                inflater.inflate(R.menu.profile_menu, menu)
+                actionBar?.setDisplayHomeAsUpEnabled(false)
+                actionBar?.setDisplayShowHomeEnabled(false)
+                (activity as AppCompatActivity?)!!.title = "My Profile"
+            }
         }
         return super.onCreateOptionsMenu(menu, inflater)
     }
