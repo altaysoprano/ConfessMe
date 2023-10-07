@@ -73,7 +73,6 @@ class ProfileFragment : Fragment() {
 
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
             if (!useremail.isNullOrEmpty()) {
-                Log.d("Mesaj: ", "Email boş değil: $useremail")
                 viewModel.fetchUserProfileByEmail(useremail)
                 checkIfUserFollowed(useremail)
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
@@ -81,7 +80,6 @@ class ProfileFragment : Fragment() {
                 binding.profileTabLayout.visibility = View.GONE
                 binding.confessFabButton.visibility = View.VISIBLE
             } else {
-                Log.d("Mesaj: ", "Email boş")
                 viewModel.getProfileData()
                 viewPagerAdapter = ProfileViewPagerAdapter(this)
                 binding.profileViewPager.adapter = viewPagerAdapter
@@ -95,7 +93,6 @@ class ProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarProfile.visibility = View.VISIBLE
-                    Log.d("Mesaj: ", "fetchProfileState loadingte")
                 }
 
                 is UiState.Failure -> {
@@ -108,21 +105,14 @@ class ProfileFragment : Fragment() {
                     binding.progressBarProfile.visibility = View.GONE
                     val userProfile = state.data
                     if (userProfile != null) {
-                        Log.d("Mesaj: ", "userProfile boş değil")
                         binding.firstNameTv.text = userProfile.userName
                         binding.bioTv.text = userProfile.bio
                         if (userProfile.imageUrl.isNotEmpty()) {
-                            Log.d("Mesaj: ", "pp boş değil. url: ${userProfile.imageUrl}")
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
                                 .into(binding.profileScreenProfileImage)
-                        } else {
-                            Log.d("Mesaj: ", "pp boş")
                         }
-                    } else {
-                        Log.d("Mesaj: ", "userProfile boş")
                     }
-                    Log.d("Mesaj: ", "fetchProfileState successte")
                 }
             }
         }
@@ -131,7 +121,6 @@ class ProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarProfile.visibility = View.VISIBLE
-                    Log.d("Mesaj: ", "getProfileData loadingte")
                 }
 
                 is UiState.Failure -> {
@@ -152,13 +141,8 @@ class ProfileFragment : Fragment() {
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
                                 .into(binding.profileScreenProfileImage)
-                        } else {
-                            Log.d("Mesaj: ", "my pp boş")
                         }
-                    } else {
-                        Log.d("Mesaj: ", "my userProfile boş")
                     }
-                    Log.d("Mesaj: ", "getProfileData successte")
                 }
             }
         }
@@ -188,7 +172,6 @@ class ProfileFragment : Fragment() {
     fun onBackPressedInProfileFragment() {
         sharedViewModel.setSelectedUserName("")
         sharedViewModel.setSelectedUserEmail("")
-        Log.d("Mesaj: ", "onbackpressed çalıştı, email: ${sharedViewModel.selectedUserEmail.value}")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -196,7 +179,6 @@ class ProfileFragment : Fragment() {
 
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { userEmail ->
             if (!userEmail.isNullOrEmpty()) {
-                Log.d("Mesaj: ", "Şu an selecteduseremail boş değil, bu yüzden other user menüsü görünüyor")
                 actionBar?.setDisplayHomeAsUpEnabled(true)
                 actionBar?.setDisplayShowHomeEnabled(true)
                 requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
@@ -204,7 +186,6 @@ class ProfileFragment : Fragment() {
                 actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
                 (activity as AppCompatActivity?)!!.title = "Profile"
             } else {
-                Log.d("Mesaj: ", "Şu an selecteduseremail dolu, bu yüzden myprofile menüsü görünüyor")
                 inflater.inflate(R.menu.profile_menu, menu)
                 actionBar?.setDisplayHomeAsUpEnabled(false)
                 actionBar?.setDisplayShowHomeEnabled(false)

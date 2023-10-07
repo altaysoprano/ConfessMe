@@ -104,9 +104,6 @@ class ConfessFragment : Fragment() {
                 val selectedUserEmail = sharedViewModel.selectedUserEmail.value ?: ""
                 val confessionText = binding.confessEditText.text.toString()
 
-                Log.d("Mesaj: ", "confess fragmentta selectedusername: $selectedUserName")
-                Log.d("Mesaj: ", "confess fragmentta selecteduseremail: $selectedUserEmail")
-
                 if (confessionText.isNotEmpty()) {
                     viewModel.addConfession(selectedUserEmail, confessionText)
                 } else {

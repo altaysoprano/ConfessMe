@@ -58,7 +58,10 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                     bundle.putBoolean("favorited", isFavorited)
                     val confessAnswerFragment = ConfessAnswerFragment()
                     confessAnswerFragment.arguments = bundle
+                    confessAnswerFragment.show(requireActivity().supportFragmentManager, "ConfessAnswerFragment")
+/*
                     navRegister.navigateFrag(confessAnswerFragment, true)
+*/
                 } else {
                     Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
                         .show()

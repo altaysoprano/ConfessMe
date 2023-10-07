@@ -28,7 +28,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:visibility="gone" />
 
-
     <ProgressBar
         android:id="@+id/progress_bar_confessions_to_me"
         android:layout_width="12dp"

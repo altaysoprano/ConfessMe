@@ -20,8 +20,8 @@ class ConfessViewModel @Inject constructor(
     val addConfessionState: LiveData<UiState<String>>
         get() = _addConfessionState
 
-    private val _addAnswerState = MutableLiveData<UiState<String>>()
-    val addAnswerState: LiveData<UiState<String>>
+    private val _addAnswerState = MutableLiveData<UiState<Confession?>>()
+    val addAnswerState: LiveData<UiState<Confession?>>
         get() = _addAnswerState
 
     private val _addFavoriteState = MutableLiveData<UiState<Confession?>>()

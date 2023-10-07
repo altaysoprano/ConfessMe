@@ -33,7 +33,7 @@ interface Repository {
     fun addAnswer(
         confessionId: String,
         answerText: String,
-        result: (UiState<String>) -> Unit
+        result: (UiState<Confession?>) -> Unit
     )
 
     fun addFavorite(

@@ -413,7 +413,7 @@ class RepositoryImp(
     override fun addAnswer(
         confessionId: String,
         answerText: String,
-        result: (UiState<String>) -> Unit
+        result: (UiState<Confession?>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
 
@@ -479,7 +479,19 @@ class RepositoryImp(
 
                                     batch.commit()
                                         .addOnSuccessListener {
-                                            result.invoke(UiState.Success("Answered successfully"))
+                                            confessionDocRef.get()
+                                                .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                                    result.invoke(
+                                                        UiState.Success(
+                                                            updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                                Confession::class.java
+                                                            )
+                                                        )
+                                                    )
+                                                }
+                                                .addOnFailureListener { exception ->
+                                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                                }
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure(exception.localizedMessage))
