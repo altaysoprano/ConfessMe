@@ -63,7 +63,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
             },
-            onItemPhotoClick = {
+            onItemPhotoClick = { userEmail, userName ->
 
             }
         )

@@ -287,7 +287,6 @@ class RepositoryImp(
     }
 
     override fun addConfession(
-        userName: String,
         userEmail: String,
         confessionText: String,
         result: (UiState<String>) -> Unit
@@ -314,6 +313,8 @@ class RepositoryImp(
                                     val userId = userDocument.id // Bu kullanıcının UID'sini verir
                                     val imageUrl =
                                         userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
+                                    val userName =
+                                        userDocument.getString("userName")
 
                                     val confessionCollection =
                                         database.collection("users").document(currentUserUid)
@@ -352,14 +353,14 @@ class RepositoryImp(
                                             result.invoke(UiState.Failure(exception.localizedMessage))
                                         }
                                 } else {
-                                    result.invoke(UiState.Failure("User with username not found"))
+                                    result.invoke(UiState.Failure("User not found"))
                                 }
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
                             }
                     } else {
-                        result.invoke(UiState.Failure("Current user not found in Firestore"))
+                        result.invoke(UiState.Failure("User not found"))
                     }
                 }
                 .addOnFailureListener { exception ->

@@ -32,7 +32,7 @@ class ConfessionListAdapter(
     private val onAnswerClick: (String, Boolean, String, Boolean) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
-    private val onItemPhotoClick: (String) -> Unit
+    private val onItemPhotoClick: (String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = DialogHelper(context)
@@ -182,8 +182,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenProfileImage.setOnClickListener {
             val photoClickedUser = confessList[adapterPosition]
 
-            Log.d("Mesaj: ", "Adapterda email: ${photoClickedUser.fromUserEmail}")
-            onItemPhotoClick(photoClickedUser.fromUserEmail)
+            onItemPhotoClick(photoClickedUser.fromUserEmail, photoClickedUser.fromUserUsername)
         }
 
         binding.moreActionButton.setOnClickListener { view ->

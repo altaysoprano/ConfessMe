@@ -182,9 +182,11 @@ class ProfileFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         sharedViewModel.setSelectedUserEmail("")
+        sharedViewModel.setSelectedUserName("")
     }
 
     fun onBackPressedInProfileFragment() {
+        sharedViewModel.setSelectedUserName("")
         sharedViewModel.setSelectedUserEmail("")
         Log.d("Mesaj: ", "onbackpressed çalıştı, email: ${sharedViewModel.selectedUserEmail.value}")
     }
