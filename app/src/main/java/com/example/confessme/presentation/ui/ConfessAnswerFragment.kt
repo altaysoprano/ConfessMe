@@ -134,9 +134,17 @@ class ConfessAnswerFragment(
         }
 
         if (isMyConfession) {
+            binding.replyButton.visibility = View.GONE
+            binding.answerIcEdit.visibility = View.GONE
+            binding.answerIcFavorite.visibility = View.VISIBLE
+            binding.answerIcDelete.visibility = View.GONE
+
+            Log.d("Mesaj: ", "Şu an isMyConfesion'a girdi")
             if (isAnswerFavorited) {
+                Log.d("Mesaj: ", "Şu an isAnswerFavorited true")
                 binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
             } else {
+                Log.d("Mesaj: ", "Şu an isAnswerFavorited false")
                 binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
             }
         } else {
@@ -146,6 +154,7 @@ class ConfessAnswerFragment(
             if (isConfessionAnswered == true && !isEditAnswer) {
                 binding.replyButton.visibility = View.GONE
                 binding.answerIcEdit.visibility = View.VISIBLE
+                binding.answerIcFavorite.visibility = View.VISIBLE
                 binding.answerIcDelete.visibility = View.VISIBLE
                 if (isAnswerFavorited) {
                     binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
@@ -155,6 +164,7 @@ class ConfessAnswerFragment(
             } else {
                 binding.replyButton.visibility = View.VISIBLE
                 binding.answerIcEdit.visibility = View.GONE
+                binding.answerIcFavorite.visibility = View.GONE
                 binding.answerIcDelete.visibility = View.GONE
                 binding.replyButton.isEnabled = isAnswerButtonEnabled
                 binding.replyButton.isClickable = isAnswerButtonEnabled
@@ -263,6 +273,23 @@ class ConfessAnswerFragment(
                 is UiState.Success -> {
                     binding.progressBarConfessAnswer.visibility = View.GONE
                     isAnswerFavorited = state.data?.answer?.favorited == true
+                    val updatedConfession = state.data
+
+                    val position = updatedConfession?.let { findItemById(it.id) }
+
+                    if (position != -1) {
+                        if (updatedConfession != null) {
+                            if (position != null) {
+                                onUpdateItem(position, updatedConfession)
+                            }
+                        }
+                    }
+
+                    if (state.data?.answer?.favorited == true) {
+                        binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+                    } else {
+                        binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+                    }
                     requireActivity().invalidateOptionsMenu()
                 }
             }

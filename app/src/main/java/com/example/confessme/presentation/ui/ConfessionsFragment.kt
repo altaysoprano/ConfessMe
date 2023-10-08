@@ -52,15 +52,15 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                     bundle.putBoolean("isMyConfession", isMyConfessions)
                     bundle.putBoolean("favorited", isFavorited)
                     val confessAnswerFragment = ConfessAnswerFragment(
-                        onUpdateItem = { position, updatedConfession ->
-
+                        {position, updatedConfession ->
+                            confessListAdapter.updateItem(position, updatedConfession)
                         },
-                        findItemById = { confessionId ->
+                        { confessionId ->
                             findPositionById(confessionId)
                         }
                     )
                     confessAnswerFragment.arguments = bundle
-                    navRegister.navigateFrag(confessAnswerFragment, true)
+                    confessAnswerFragment.show(requireActivity().supportFragmentManager, "ConfessAnswerFragment")
                 } else {
                     Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
                         .show()
