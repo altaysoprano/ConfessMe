@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,23 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.confessme.R
+import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.ProfileSearchSharedViewModel
+import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.UiState
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment() {
+class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment(), ConfessionUpdateListener {
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -34,7 +33,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
     private lateinit var confessListAdapter: ConfessionListAdapter
 
     private val viewModel: ConfessViewModel by viewModels()
-    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,12 +55,17 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                     bundle.putBoolean("isAnswered", isAnswered)
                     bundle.putString("answerText", answerText)
                     bundle.putBoolean("favorited", isFavorited)
-                    val confessAnswerFragment = ConfessAnswerFragment()
+                    val confessAnswerFragment = ConfessAnswerFragment(
+                        {position, updatedConfession ->
+                            confessListAdapter.updateItem(position, updatedConfession)
+                        },
+                        { confessionId ->
+                            findPositionById(confessionId)
+                        }
+                    )
                     confessAnswerFragment.arguments = bundle
                     confessAnswerFragment.show(requireActivity().supportFragmentManager, "ConfessAnswerFragment")
-/*
-                    navRegister.navigateFrag(confessAnswerFragment, true)
-*/
+
                 } else {
                     Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
                         .show()
@@ -114,6 +118,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
             adapter = confessListAdapter
         }
     }
+
 
     private fun observeFetchConfessions() {
         viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
@@ -171,12 +176,19 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         }
     }
 
-    private fun findPositionById(confessionId: String): Int {
+    override fun findPositionById(confessionId: String): Int {
+        Log.d("Mesaj: ", "findPositionbyid fonksiyonu çalıştı")
         for (index in 0 until confessListAdapter.confessList.size) {
+            Log.d("Mesaj: ", "$index. confession'ın idsi: ${confessListAdapter.confessList[index].id}")
             if (confessListAdapter.confessList[index].id == confessionId) {
                 return index
             }
         }
         return -1
+    }
+
+    override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
+        Log.d("Mesaj: ", "Confessionstomedeki update çalıştı")
+        confessListAdapter.updateItem(position, updatedConfession)
     }
 }

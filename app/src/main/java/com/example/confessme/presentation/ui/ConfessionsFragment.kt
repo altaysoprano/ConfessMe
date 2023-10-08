@@ -51,7 +51,14 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                     bundle.putString("answerText", answerText)
                     bundle.putBoolean("isMyConfession", isMyConfessions)
                     bundle.putBoolean("favorited", isFavorited)
-                    val confessAnswerFragment = ConfessAnswerFragment()
+                    val confessAnswerFragment = ConfessAnswerFragment(
+                        onUpdateItem = { position, updatedConfession ->
+
+                        },
+                        findItemById = { confessionId ->
+                            findPositionById(confessionId)
+                        }
+                    )
                     confessAnswerFragment.arguments = bundle
                     navRegister.navigateFrag(confessAnswerFragment, true)
                 } else {

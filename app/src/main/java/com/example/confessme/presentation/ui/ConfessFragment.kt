@@ -3,7 +3,6 @@ package com.example.confessme.presentation.ui
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -18,7 +17,7 @@ import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.ProfileSearchSharedViewModel
+import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +28,7 @@ class ConfessFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ConfessViewModel by viewModels()
     private var isConfessButtonEnabled = true
-    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

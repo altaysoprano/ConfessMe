@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.confessme.data.model.Confession
+import com.example.confessme.presentation.ui.ConfessionListAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileSearchSharedViewModel @Inject constructor() : ViewModel() {
+class SharedViewModel @Inject constructor() : ViewModel() {
 
     private var _selectedUserName = MutableLiveData("")
     val selectedUserName: LiveData<String> = _selectedUserName
@@ -22,5 +24,10 @@ class ProfileSearchSharedViewModel @Inject constructor() : ViewModel() {
 
     fun setSelectedUserEmail(useremail: String) {
         _selectedUserEmail.value = useremail
+    }
+
+    fun updateItem(position: Int, updatedConfession: Confession, adapter: ConfessionListAdapter) {
+        adapter.confessList[position] = updatedConfession
+        adapter.notifyItemChanged(position)
     }
 }

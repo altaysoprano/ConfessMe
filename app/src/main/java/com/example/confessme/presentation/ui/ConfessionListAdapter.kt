@@ -222,6 +222,8 @@ class ConfessionListAdapter(
     fun updateItem(position: Int, updatedConfession: Confession) {
         confessList[position] = updatedConfession
         notifyItemChanged(position)
+        notifyDataSetChanged()
+        Log.d("Mesaj: ", "$position'daki ${updatedConfession.answer} update edildi")
     }
 
     fun removeConfession(position: Int) {

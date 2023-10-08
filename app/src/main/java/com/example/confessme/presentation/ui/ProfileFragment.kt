@@ -20,7 +20,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
-import com.example.confessme.presentation.ProfileSearchSharedViewModel
+import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ProfileViewPagerAdapter
 import com.example.confessme.util.UiState
@@ -35,7 +35,7 @@ class ProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: ProfileViewPagerAdapter
     private val viewModel: ProfileViewModel by viewModels()
-    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -133,11 +133,9 @@ class ProfileFragment : Fragment() {
                     binding.progressBarProfile.visibility = View.GONE
                     val userProfile = state.data
                     if (userProfile != null) {
-                        Log.d("Mesaj: ", "my userProfile boş değil")
                         binding.firstNameTv.text = userProfile.userName
                         binding.bioTv.text = userProfile.bio
                         if (userProfile.imageUrl.isNotEmpty()) {
-                            Log.d("Mesaj: ", "my pp boş değil. url: ${userProfile.imageUrl}")
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
                                 .into(binding.profileScreenProfileImage)

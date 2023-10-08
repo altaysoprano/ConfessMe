@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
-import com.example.confessme.presentation.ProfileSearchSharedViewModel
+import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -26,7 +26,7 @@ class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: SearchViewModel by viewModels()
-    private val sharedViewModel: ProfileSearchSharedViewModel by activityViewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     private val userListAdapter = UserListAdapter(mutableListOf()) { user ->
         onItemClick(user)
