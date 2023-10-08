@@ -80,11 +80,13 @@ class ConfessAnswerFragment(
                 val currentLength = s?.length ?: 0
                 if (currentLength > maxLength) {
                     binding.confessAnswerEditText.error = "Character limit exceeded"
-                    isAnswerButtonEnabled = false
+                    binding.replyButton.alpha = 0.5f
+                    binding.replyButton.isClickable = false
                     requireActivity().invalidateOptionsMenu()
                 } else {
                     binding.confessAnswerEditText.error = null
-                    isAnswerButtonEnabled = true
+                    binding.replyButton.isClickable = true
+                    binding.replyButton.alpha = 1f
                     requireActivity().invalidateOptionsMenu()
                 }
             }
