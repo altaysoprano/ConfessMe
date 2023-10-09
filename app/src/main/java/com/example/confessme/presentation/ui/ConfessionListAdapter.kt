@@ -67,6 +67,7 @@ class ConfessionListAdapter(
         fun bind(confess: Confession) {
             binding.apply {
                 setItems(confess, binding, itemView, adapterPosition)
+                Log.d("Mesaj: ", "Foto: "  + confessList[0].fromUserImageUrl.toString())
             }
         }
     }
@@ -104,9 +105,13 @@ class ConfessionListAdapter(
             calculateTimeSinceConfession(confess.timestamp as Timestamp)
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
+            Log.d("Mesaj: ", "Confesstext: ${confess.text} ve image: ${confess.fromUserImageUrl}")
             Glide.with(itemView)
                 .load(confess.fromUserImageUrl)
                 .into(binding.confessionsScreenProfileImage)
+        } else {
+            binding.confessionsScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+            Log.d("Mesaj: ", "Confesstext: ${confess.text} ve image boş. URL: ${confess.fromUserImageUrl}")
         }
 
         setAnswerAndFavoriteItems(confess, binding, itemView, adapterPosition)
@@ -148,7 +153,7 @@ class ConfessionListAdapter(
             binding.icAnswer.alpha = 0.5f
             binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
             binding.icAnswer.isEnabled =
-                false // Durum 9: Kullanıcı kendi confess'ine sahip ve yanıtlanmadı
+                false
         }
 
         if (confess.favorited) {
@@ -175,7 +180,7 @@ class ConfessionListAdapter(
         binding.icFavorite.setOnClickListener {
             val confessFavorite = confessList[adapterPosition]
             confessFavorite.favorited = !confessFavorite.favorited
-            notifyItemChanged(adapterPosition)
+            notifyDataSetChanged()
             onFavoriteClick(confessFavorite.id)
         }
 
@@ -222,8 +227,7 @@ class ConfessionListAdapter(
     fun updateItem(position: Int, updatedConfession: Confession) {
         confessList[position] = updatedConfession
         notifyItemChanged(position)
-        notifyDataSetChanged()
-        Log.d("Mesaj: ", "$position'daki ${updatedConfession.answer} update edildi")
+        Log.d("Mesaj: ", "$position'daki ${updatedConfession} update edildi")
     }
 
     fun removeConfession(position: Int) {

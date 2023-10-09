@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -146,11 +147,13 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun observeAddFavorite() {
         viewModel.addFavoriteState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessionsToMe.visibility = View.VISIBLE
+                    Log.d("Mesaj: ", "Şu an fav loadingte")
                 }
 
                 is UiState.Failure -> {
@@ -162,12 +165,13 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMe.visibility = View.GONE
                     val updatedConfession = state.data
+                    Log.d("Mesaj: ", "Şu an fav successte. Foto URL: ${state.data?.fromUserImageUrl}")
 
                     val position = updatedConfession?.let { findPositionById(it.id) }
                     if (position != -1) {
                         if (updatedConfession != null) {
                             if (position != null) {
-                                confessListAdapter.updateItem(position, updatedConfession)
+                                confessListAdapter.notifyDataSetChanged()
                             }
                         }
                     }
