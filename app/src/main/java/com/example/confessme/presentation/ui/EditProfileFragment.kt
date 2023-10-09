@@ -57,7 +57,7 @@ class EditProfileFragment : Fragment() {
 
         viewModel.getProfileData()
 
-        viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
+        viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarEditProfile.visibility = View.VISIBLE

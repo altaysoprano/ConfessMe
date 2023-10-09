@@ -29,7 +29,7 @@ class ConfessionListAdapter(
     private val context: Context,
     val confessList: MutableList<Confession> = mutableListOf(),
     private val isMyConfession: Boolean,
-    private val onAnswerClick: (String, Boolean, String, Boolean) -> Unit,
+    private val onAnswerClick: (String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String) -> Unit
@@ -67,7 +67,7 @@ class ConfessionListAdapter(
         fun bind(confess: Confession) {
             binding.apply {
                 setItems(confess, binding, itemView, adapterPosition)
-                Log.d("Mesaj: ", "Foto: "  + confessList[0].fromUserImageUrl.toString())
+                Log.d("Mesaj: ", "Foto: " + confessList[0].fromUserImageUrl.toString())
             }
         }
     }
@@ -111,7 +111,10 @@ class ConfessionListAdapter(
                 .into(binding.confessionsScreenProfileImage)
         } else {
             binding.confessionsScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
-            Log.d("Mesaj: ", "Confesstext: ${confess.text} ve image boş. URL: ${confess.fromUserImageUrl}")
+            Log.d(
+                "Mesaj: ",
+                "Confesstext: ${confess.text} ve image boş. URL: ${confess.fromUserImageUrl}"
+            )
         }
 
         setAnswerAndFavoriteItems(confess, binding, itemView, adapterPosition)
@@ -157,7 +160,7 @@ class ConfessionListAdapter(
         }
 
         if (confess.favorited) {
-            binding.icFavorite.alpha = if(isMyConfession) 0.5f else 1f
+            binding.icFavorite.alpha = if (isMyConfession) 0.5f else 1f
             binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
         } else if (!isMyConfession) {
             binding.icFavorite.alpha = 1f
@@ -169,11 +172,14 @@ class ConfessionListAdapter(
 
         binding.icAnswer.setOnClickListener {
             val confessAnswer = confessList[adapterPosition]
+            val confessDateTimestamp = confess.answer.timestamp
+
             onAnswerClick(
                 confessAnswer.id,
                 confess.answered,
                 confess.answer.text,
-                confess.answer.favorited
+                confess.answer.favorited,
+                if(confessDateTimestamp != null) calculateTimeSinceConfession(confessDateTimestamp as Timestamp) else ""
             )
         }
 
@@ -209,7 +215,9 @@ class ConfessionListAdapter(
                 when (menuItem.itemId) {
                     R.id.action_delete -> {
                         val confessIdToDelete = confessList[adapterPosition].id
-                        dialogHelper.showDeleteConfessionDialog("confession", {onConfessDeleteClick(confessIdToDelete)})
+                        dialogHelper.showDeleteConfessionDialog(
+                            "confession",
+                            { onConfessDeleteClick(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }
 

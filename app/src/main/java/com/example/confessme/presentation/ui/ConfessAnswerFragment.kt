@@ -23,6 +23,7 @@ import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.DialogHelper
 import com.example.confessme.util.UiState
+import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,6 +39,7 @@ class ConfessAnswerFragment(
     private var isEditAnswer: Boolean = false
     private var isMyConfession: Boolean = false
     private var isAnswerFavorited: Boolean = false
+    private var answerDate: String = ""
     private lateinit var answerText: String
     private lateinit var dialogHelper: DialogHelper
 
@@ -54,6 +56,7 @@ class ConfessAnswerFragment(
         answerText = arguments?.getString("answerText", "") ?: ""
         isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
+        answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = DialogHelper(requireContext())
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
@@ -64,7 +67,9 @@ class ConfessAnswerFragment(
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
+            binding.confessAnswerDate.visibility = View.VISIBLE
             binding.confessAnswerTextView.text = answerText
+            binding.confessAnswerDate.text = "Answered $answerDate"
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
             binding.confessAnswerTextView.visibility = View.GONE
@@ -141,12 +146,9 @@ class ConfessAnswerFragment(
             binding.answerIcFavorite.visibility = View.VISIBLE
             binding.answerIcDelete.visibility = View.GONE
 
-            Log.d("Mesaj: ", "Şu an isMyConfesion'a girdi")
             if (isAnswerFavorited) {
-                Log.d("Mesaj: ", "Şu an isAnswerFavorited true")
                 binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
             } else {
-                Log.d("Mesaj: ", "Şu an isAnswerFavorited false")
                 binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
             }
         } else {
@@ -175,89 +177,6 @@ class ConfessAnswerFragment(
 
         return binding.root
     }
-
-    /*
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-            when (item.itemId) {
-                android.R.id.home -> {
-                    requireActivity().onBackPressed()
-                    return true
-                }
-
-                R.id.action_confess -> {
-                    val answerEditText = binding.confessAnswerEditText.text.toString()
-
-                    if (answerEditText.trim().isNotEmpty()) {
-                        viewModel.addAnswer(confessionId ?: "", answerEditText)
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Your answer cannot be blank",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    return true
-                }
-                R.id.action_edit_answer -> {
-                    (activity as AppCompatActivity?)!!.title = "Edit your answer"
-                    binding.confessAnswerTextView.visibility = View.GONE
-                    binding.confessAnswerEditText.let {
-                        it.visibility = View.VISIBLE
-                        it.setText(answerText)
-                    }
-                    isEditAnswer = true
-                    requireActivity().invalidateOptionsMenu()
-                }
-                R.id.action_fav_answer -> {
-                    viewModel.addAnswerFavorite(confessionId ?: "")
-                }
-                R.id.action_delete_answer -> {
-                    dialogHelper.showDeleteConfessionDialog("answer", {
-                        viewModel.deleteAnswer(confessionId ?: "")
-                    })
-                }
-            }
-            return false
-        }
-    */
-
-    /*
-        override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-            val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
-
-            if(isMyConfession) {
-                inflater.inflate(R.menu.given_answer_menu, menu)
-                (activity as AppCompatActivity?)!!.title = "Answer"
-                val favAnswerMenuItem = menu.findItem(R.id.action_fav_answer)
-
-                if(isAnswerFavorited) {
-                    favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.red))
-                } else {
-                    favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.white))
-                }
-            } else {
-                if (isConfessionAnswered == true && !isEditAnswer) {
-                    inflater.inflate(R.menu.edit_answer_menu, menu)
-                    (activity as AppCompatActivity?)!!.title = "Your Answer"
-                    val favAnswerMenuItem = menu.findItem(R.id.action_fav_answer)
-                    favAnswerMenuItem.isEnabled = false
-
-                    if(isAnswerFavorited) {
-                        favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.red))
-                    } else {
-                        favAnswerMenuItem.icon?.setTint(resources.getColor(R.color.white))
-                    }
-                } else {
-                    inflater.inflate(R.menu.confess_menu, menu)
-                    val confessMenuItem = menu.findItem(R.id.action_confess)
-                    confessMenuItem.isEnabled = isAnswerButtonEnabled
-                }
-            }
-
-            super.onCreateOptionsMenu(menu, inflater)
-        }
-    */
 
     private fun observeFavorite() {
         viewModel.addFavoriteAnswer.observe(viewLifecycleOwner) { state ->

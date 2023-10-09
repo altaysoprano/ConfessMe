@@ -43,7 +43,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
             requireContext(),
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = { confessionId, isAnswered, answerText, isFavorited ->
+            onAnswerClick = { confessionId, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
                     bundle.putString("confessionId", confessionId)
@@ -51,8 +51,9 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                     bundle.putString("answerText", answerText)
                     bundle.putBoolean("isMyConfession", isMyConfessions)
                     bundle.putBoolean("favorited", isFavorited)
+                    bundle.putString("answerDate", answerDate)
                     val confessAnswerFragment = ConfessAnswerFragment(
-                        {position, updatedConfession ->
+                        { position, updatedConfession ->
                             confessListAdapter.updateItem(position, updatedConfession)
                         },
                         { confessionId ->
@@ -60,7 +61,10 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                         }
                     )
                     confessAnswerFragment.arguments = bundle
-                    confessAnswerFragment.show(requireActivity().supportFragmentManager, "ConfessAnswerFragment")
+                    confessAnswerFragment.show(
+                        requireActivity().supportFragmentManager,
+                        "ConfessAnswerFragment"
+                    )
                 } else {
                     Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
                         .show()
@@ -162,6 +166,10 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                                 limit -= 1
                             }
                         }
+                    }
+
+                    if (confessListAdapter.confessList.isEmpty()) {
+                        noConfessFoundBinding.root.visibility = View.VISIBLE
                     }
                 }
             }

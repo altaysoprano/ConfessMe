@@ -49,13 +49,14 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
             requireContext(),
             mutableListOf(),
             isMyConfessions,
-            onAnswerClick = { confessionId, isAnswered, answerText, isFavorited ->
+            onAnswerClick = { confessionId, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
                     bundle.putString("confessionId", confessionId)
                     bundle.putBoolean("isAnswered", isAnswered)
                     bundle.putString("answerText", answerText)
                     bundle.putBoolean("favorited", isFavorited)
+                    bundle.putString("answerDate", answerDate)
                     val confessAnswerFragment = ConfessAnswerFragment(
                         {position, updatedConfession ->
                             confessListAdapter.updateItem(position, updatedConfession)
@@ -192,7 +193,6 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
     }
 
     override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
-        Log.d("Mesaj: ", "Confessionstomedeki update çalıştı")
         confessListAdapter.updateItem(position, updatedConfession)
     }
 }
