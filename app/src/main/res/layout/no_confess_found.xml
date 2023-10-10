@@ -13,6 +13,7 @@
         android:src="@drawable/no_result_found" />
 
     <TextView
+        android:id="@+id/nothing_found_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_confess_found_here"
