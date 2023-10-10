@@ -105,16 +105,11 @@ class ConfessionListAdapter(
             calculateTimeSinceConfession(confess.timestamp as Timestamp)
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
-            Log.d("Mesaj: ", "Confesstext: ${confess.text} ve image: ${confess.fromUserImageUrl}")
             Glide.with(itemView)
                 .load(confess.fromUserImageUrl)
                 .into(binding.confessionsScreenProfileImage)
         } else {
             binding.confessionsScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
-            Log.d(
-                "Mesaj: ",
-                "Confesstext: ${confess.text} ve image boş. URL: ${confess.fromUserImageUrl}"
-            )
         }
 
         setAnswerAndFavoriteItems(confess, binding, itemView, adapterPosition)

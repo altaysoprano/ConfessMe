@@ -18,6 +18,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.SharedViewModel
@@ -93,6 +94,7 @@ class ProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarProfile.visibility = View.VISIBLE
+                    setAllProfileDataDefault()
                 }
 
                 is UiState.Failure -> {
@@ -107,10 +109,13 @@ class ProfileFragment : Fragment() {
                     if (userProfile != null) {
                         binding.firstNameTv.text = userProfile.userName
                         binding.bioTv.text = userProfile.bio
+
                         if (userProfile.imageUrl.isNotEmpty()) {
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
                                 .into(binding.profileScreenProfileImage)
+                        } else {
+                            binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                         }
                     }
                 }
@@ -121,6 +126,7 @@ class ProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarProfile.visibility = View.VISIBLE
+                    setAllProfileDataDefault()
                 }
 
                 is UiState.Failure -> {
@@ -139,6 +145,8 @@ class ProfileFragment : Fragment() {
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
                                 .into(binding.profileScreenProfileImage)
+                        } else {
+                            binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                         }
                     }
                 }
@@ -278,6 +286,12 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setAllProfileDataDefault() {
+        binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+        binding.firstNameTv.text = ""
+        binding.bioTv.text = ""
     }
 
 }

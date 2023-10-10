@@ -120,10 +120,12 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessions.visibility = View.VISIBLE
+                    noConfessFoundBinding.root.visibility = View.GONE
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarConfessions.visibility = View.GONE
+                    noConfessFoundBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -167,10 +169,12 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                             }
                         }
                     }
+/*
 
                     if (confessListAdapter.confessList.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
                     }
+*/
                 }
             }
         }
