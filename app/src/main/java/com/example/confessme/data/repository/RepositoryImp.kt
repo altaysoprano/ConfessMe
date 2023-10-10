@@ -7,6 +7,8 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,15 +26,18 @@ class RepositoryImp(
 ) : Repository {
 
     override fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit) {
-        firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
-            if (it.isSuccessful) {
-                result.invoke(
-                    UiState.Success(it.result.toString())
-                )
+        firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                result.invoke(UiState.Success("Login successful"))
             } else {
-                result.invoke(
-                    UiState.Failure("Kullanıcı yok veya şifre hatalı")
-                )
+                val exception = task.exception
+                if (exception is FirebaseAuthInvalidUserException) {
+                    result.invoke(UiState.Failure("Invalid email."))
+                } else if (exception is FirebaseAuthInvalidCredentialsException) {
+                    result.invoke(UiState.Failure("Invalid password."))
+                } else {
+                    result.invoke(UiState.Failure("An error occurred. Please try again later."))
+                }
             }
         }
     }
@@ -46,7 +51,7 @@ class RepositoryImp(
         if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty()) {
             if (pass == confirmPass) {
                 if (!isValidPassword(pass)) {
-                    result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character and must be at least 8 characters long."))
+                    result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character, and must be at least 8 characters long. It should not contain spaces."))
                     return
                 }
                 val randomUsername = generateRandomUsername(10)
@@ -922,6 +927,9 @@ class RepositoryImp(
 
     private fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
+        if (password.contains(" ")) {
+            return false
+        }
         return passwordRegex.matches(password)
     }
 
