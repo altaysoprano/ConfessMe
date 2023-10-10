@@ -39,6 +39,7 @@ class ConfessAnswerFragment(
     private var isEditAnswer: Boolean = false
     private var isMyConfession: Boolean = false
     private var isAnswerFavorited: Boolean = false
+    private var isConfessionAnswered: Boolean = false
     private var answerDate: String = ""
     private lateinit var answerText: String
     private lateinit var dialogHelper: DialogHelper
@@ -52,7 +53,7 @@ class ConfessAnswerFragment(
         (activity as AppCompatActivity?)!!.title = "Reply To Confession"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
-        val isConfessionAnswered = arguments?.getBoolean("isAnswered", false)
+        isConfessionAnswered = arguments?.getBoolean("isAnswered", false) ?: false
         answerText = arguments?.getString("answerText", "") ?: ""
         isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
@@ -64,116 +65,11 @@ class ConfessAnswerFragment(
             setHomeAsUpIndicator(R.drawable.ic_close)
         }
 
-        if (isConfessionAnswered == true && !isEditAnswer) {
-            binding.confessAnswerEditText.visibility = View.GONE
-            binding.confessAnswerTextView.visibility = View.VISIBLE
-            binding.confessAnswerDate.visibility = View.VISIBLE
-            binding.confessAnswerTextView.text = answerText
-            binding.confessAnswerDate.text = "Answered $answerDate"
-        } else {
-            binding.confessAnswerEditText.visibility = View.VISIBLE
-            binding.confessAnswerTextView.visibility = View.GONE
-        }
-
-        val maxLength = 560
-        binding.confessAnswerEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                val currentLength = s?.length ?: 0
-                if (currentLength > maxLength) {
-                    binding.confessAnswerEditText.error = "Character limit exceeded"
-                    binding.replyButton.alpha = 0.5f
-                    binding.replyButton.isClickable = false
-                    requireActivity().invalidateOptionsMenu()
-                } else {
-                    binding.confessAnswerEditText.error = null
-                    binding.replyButton.isClickable = true
-                    binding.replyButton.alpha = 1f
-                    requireActivity().invalidateOptionsMenu()
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-
+        setTextStates()
+        setFavoriteDeleteEditReplyStates()
         observeAddAnswer()
         observeFavorite()
         observeDeleteAnswer()
-
-        val confessionId = arguments?.getString("confessionId", "")
-
-        binding.replyButton.setOnClickListener {
-            val answerEditText = binding.confessAnswerEditText.text.toString()
-
-            if (answerEditText.trim().isNotEmpty()) {
-                viewModel.addAnswer(confessionId ?: "", answerEditText)
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Your answer cannot be blank",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        binding.answerIcEdit.setOnClickListener {
-            binding.confessAnswerTextView.visibility = View.GONE
-            binding.replyButton.visibility = View.VISIBLE
-            binding.confessAnswerEditText.let {
-                it.visibility = View.VISIBLE
-                it.setText(answerText)
-            }
-            isEditAnswer = true
-        }
-
-        binding.answerIcFavorite.setOnClickListener {
-            viewModel.addAnswerFavorite(confessionId ?: "")
-        }
-
-        binding.answerIcDelete.setOnClickListener {
-            dialogHelper.showDeleteConfessionDialog("answer", {
-                viewModel.deleteAnswer(confessionId ?: "")
-            })
-        }
-
-        if (isMyConfession) {
-            binding.replyButton.visibility = View.GONE
-            binding.answerIcEdit.visibility = View.GONE
-            binding.answerIcFavorite.visibility = View.VISIBLE
-            binding.answerIcDelete.visibility = View.GONE
-
-            if (isAnswerFavorited) {
-                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
-            } else {
-                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-            }
-        } else {
-            binding.answerIcFavorite.isClickable = false
-            binding.answerIcFavorite.isEnabled = false
-
-            if (isConfessionAnswered == true && !isEditAnswer) {
-                binding.replyButton.visibility = View.GONE
-                binding.answerIcEdit.visibility = View.VISIBLE
-                binding.answerIcFavorite.visibility = View.VISIBLE
-                binding.answerIcDelete.visibility = View.VISIBLE
-                if (isAnswerFavorited) {
-                    binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
-                } else {
-                    binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-                }
-            } else {
-                binding.replyButton.visibility = View.VISIBLE
-                binding.answerIcEdit.visibility = View.GONE
-                binding.answerIcFavorite.visibility = View.GONE
-                binding.answerIcDelete.visibility = View.GONE
-                binding.replyButton.isEnabled = isAnswerButtonEnabled
-                binding.replyButton.isClickable = isAnswerButtonEnabled
-            }
-        }
 
         return binding.root
     }
@@ -288,5 +184,119 @@ class ConfessAnswerFragment(
                 }
             }
         }
+    }
+
+    private fun setFavoriteDeleteEditReplyStates() {
+        val confessionId = arguments?.getString("confessionId", "")
+
+        binding.replyButton.setOnClickListener {
+            val answerEditText = binding.confessAnswerEditText.text.toString()
+
+            if (answerEditText.trim().isNotEmpty()) {
+                viewModel.addAnswer(confessionId ?: "", answerEditText)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Your answer cannot be blank",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        binding.answerIcEdit.setOnClickListener {
+            binding.confessAnswerTextView.visibility = View.GONE
+            binding.replyButton.visibility = View.VISIBLE
+            binding.confessAnswerEditText.let {
+                it.visibility = View.VISIBLE
+                it.setText(answerText)
+            }
+            isEditAnswer = true
+        }
+
+        binding.answerIcFavorite.setOnClickListener {
+            viewModel.addAnswerFavorite(confessionId ?: "")
+        }
+
+        binding.answerIcDelete.setOnClickListener {
+            dialogHelper.showDeleteConfessionDialog("answer", {
+                viewModel.deleteAnswer(confessionId ?: "")
+            })
+        }
+
+        if (isMyConfession) {
+            binding.replyButton.visibility = View.GONE
+            binding.answerIcEdit.visibility = View.GONE
+            binding.answerIcFavorite.visibility = View.VISIBLE
+            binding.answerIcDelete.visibility = View.GONE
+
+            if (isAnswerFavorited) {
+                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+            } else {
+                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+            }
+        } else {
+            binding.answerIcFavorite.isClickable = false
+            binding.answerIcFavorite.isEnabled = false
+
+            if (isConfessionAnswered == true && !isEditAnswer) {
+                binding.replyButton.visibility = View.GONE
+                binding.answerIcEdit.visibility = View.VISIBLE
+                binding.answerIcFavorite.visibility = View.VISIBLE
+                binding.answerIcDelete.visibility = View.VISIBLE
+                if (isAnswerFavorited) {
+                    binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+                } else {
+                    binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+                }
+            } else {
+                binding.replyButton.visibility = View.VISIBLE
+                binding.answerIcEdit.visibility = View.GONE
+                binding.answerIcFavorite.visibility = View.GONE
+                binding.answerIcDelete.visibility = View.GONE
+                binding.replyButton.isEnabled = isAnswerButtonEnabled
+                binding.replyButton.isClickable = isAnswerButtonEnabled
+            }
+        }
+    }
+
+    private fun setTextStates() {
+
+        if (isConfessionAnswered == true && !isEditAnswer) {
+            binding.confessAnswerEditText.visibility = View.GONE
+            binding.confessAnswerTextView.visibility = View.VISIBLE
+            binding.confessAnswerDate.visibility = View.VISIBLE
+            binding.confessAnswerTextView.text = answerText
+            binding.confessAnswerDate.text = "Answered $answerDate"
+        } else {
+            binding.confessAnswerEditText.visibility = View.VISIBLE
+            binding.confessAnswerTextView.visibility = View.GONE
+        }
+
+        val maxLength = 560
+        binding.confessAnswerEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val currentLength = s?.length ?: 0
+                if (currentLength > maxLength) {
+                    binding.confessAnswerEditText.error = "Character limit exceeded"
+                    binding.replyButton.alpha = 0.5f
+                    binding.replyButton.isClickable = false
+                } else {
+                    binding.confessAnswerEditText.error = null
+                    binding.replyButton.isClickable = true
+                    binding.replyButton.alpha = 1f
+                }
+
+                if(s.toString() == answerText) {
+                    binding.replyButton.alpha = 0.5f
+                    binding.replyButton.isClickable = false
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
     }
 }

@@ -67,7 +67,6 @@ class ConfessionListAdapter(
         fun bind(confess: Confession) {
             binding.apply {
                 setItems(confess, binding, itemView, adapterPosition)
-                Log.d("Mesaj: ", "Foto: " + confessList[0].fromUserImageUrl.toString())
             }
         }
     }
@@ -230,7 +229,6 @@ class ConfessionListAdapter(
     fun updateItem(position: Int, updatedConfession: Confession) {
         confessList[position] = updatedConfession
         notifyItemChanged(position)
-        Log.d("Mesaj: ", "$position'daki ${updatedConfession} update edildi")
     }
 
     fun removeConfession(position: Int) {

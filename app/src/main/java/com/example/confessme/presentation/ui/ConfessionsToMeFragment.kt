@@ -154,7 +154,6 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessionsToMe.visibility = View.VISIBLE
-                    Log.d("Mesaj: ", "Şu an fav loadingte")
                 }
 
                 is UiState.Failure -> {
@@ -166,7 +165,6 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMe.visibility = View.GONE
                     val updatedConfession = state.data
-                    Log.d("Mesaj: ", "Şu an fav successte. Foto URL: ${state.data?.fromUserImageUrl}")
 
                     val position = updatedConfession?.let { findPositionById(it.id) }
                     if (position != -1) {
@@ -182,9 +180,7 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
     }
 
     override fun findPositionById(confessionId: String): Int {
-        Log.d("Mesaj: ", "findPositionbyid fonksiyonu çalıştı")
         for (index in 0 until confessListAdapter.confessList.size) {
-            Log.d("Mesaj: ", "$index. confession'ın idsi: ${confessListAdapter.confessList[index].id}")
             if (confessListAdapter.confessList[index].id == confessionId) {
                 return index
             }
