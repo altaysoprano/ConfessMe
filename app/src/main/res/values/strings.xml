@@ -10,4 +10,6 @@
     <string name="reply_to_confession" />
     <string name="edit_answer">Edit Answer</string>
     <string name="fav_answer">Fav Answer</string>
+    <string name="save">SAVE</string>
+    <string name="change_password">Change Password</string>
 </resources>

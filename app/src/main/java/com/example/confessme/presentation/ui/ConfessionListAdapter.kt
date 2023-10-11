@@ -118,7 +118,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenUsername.text = confess.fromUserUsername
         binding.confessionsScreenConfession.text = spannable
         binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()
-        binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT // Arka plan rengini temizleyin
+        binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT
         binding.confessionsScreenTimestamp.text =
             calculateTimeSinceConfession(confess.timestamp as Timestamp)
 

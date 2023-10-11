@@ -211,6 +211,10 @@ class ProfileFragment : Fragment() {
                 navRegister.navigateFrag(EditProfileFragment(), true)
             }
 
+            R.id.settings -> {
+                navRegister.navigateFrag(SettingsFragment(), true)
+            }
+
             android.R.id.home -> {
                 requireActivity().onBackPressed()
             }
