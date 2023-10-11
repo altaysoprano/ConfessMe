@@ -6,10 +6,12 @@ import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -83,6 +85,44 @@ class RepositoryImp(
         } else {
             result.invoke(UiState.Failure("Please fill in all fields."))
         }
+    }
+
+    override fun updatePassword(previousPassword: String, newPassword: String, result: (UiState<String>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user == null) {
+            result.invoke(UiState.Failure("User is not signed in."))
+            return
+        }
+
+        if (!isValidPassword(newPassword)) {
+            result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character, and must be at least 8 characters long. It should not contain spaces."))
+            return
+        }
+
+        if (previousPassword == newPassword) {
+            result.invoke(UiState.Failure("New password cannot be the same as the previous password."))
+            return
+        }
+
+        val credential = EmailAuthProvider.getCredential(user.email ?: "", previousPassword)
+
+        user.reauthenticate(credential)
+            .addOnCompleteListener { reauthTask ->
+                if (reauthTask.isSuccessful) {
+                    user.updatePassword(newPassword)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                result.invoke(UiState.Success("Password updated successfully."))
+                            } else {
+                                val exception = task.exception
+                                result.invoke(UiState.Failure("Password update failed: ${exception?.localizedMessage}"))
+                            }
+                        }
+                } else {
+                    result.invoke(UiState.Failure("Reauthentication failed. Make sure you entered the correct current password."))
+                }
+            }
     }
 
     override fun updateProfile(

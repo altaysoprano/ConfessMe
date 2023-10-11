@@ -4,11 +4,15 @@ import android.net.Uri
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 
 interface Repository {
 
     fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit)
     fun signUp(email: String, pass: String, confirmPass: String, result: (UiState<String>) -> Unit)
+    fun updatePassword(previousPassword: String, newPassword: String, result: (UiState<String>) -> Unit)
+
     fun updateProfile(
         previousUserName: String,
         userName: String,
