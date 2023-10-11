@@ -83,6 +83,9 @@ class ConfessionsToMeFragment(private val isMyConfessions: Boolean) : Fragment()
 
                 val profileFragment = ProfileFragment()
                 navRegister.navigateFrag(profileFragment, true)
+            },
+            onUserNameClick =  { userEmail, userName ->
+
             }
         )
 

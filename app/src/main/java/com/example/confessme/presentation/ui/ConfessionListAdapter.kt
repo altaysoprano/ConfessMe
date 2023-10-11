@@ -8,6 +8,9 @@ import android.graphics.Typeface
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.Log
@@ -15,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +36,8 @@ class ConfessionListAdapter(
     private val onAnswerClick: (String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
-    private val onItemPhotoClick: (String, String) -> Unit
+    private val onItemPhotoClick: (String, String) -> Unit,
+    private val onUserNameClick: (String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = DialogHelper(context)
@@ -86,11 +91,23 @@ class ConfessionListAdapter(
         val usernameEnd = toUserName.length
 
         spannable.setSpan(
-            ForegroundColorSpan(usernameColor),
+            object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    val userNameClickedUser = confessList[adapterPosition]
+
+                    onUserNameClick(userNameClickedUser.email, userNameClickedUser.username)
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    ds.color = usernameColor
+                    ds.isUnderlineText = false
+                }
+            },
             usernameStart,
             usernameEnd,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+
         spannable.setSpan(
             StyleSpan(Typeface.BOLD),
             usernameStart,
@@ -100,6 +117,8 @@ class ConfessionListAdapter(
 
         binding.confessionsScreenUsername.text = confess.fromUserUsername
         binding.confessionsScreenConfession.text = spannable
+        binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()
+        binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT // Arka plan rengini temizleyin
         binding.confessionsScreenTimestamp.text =
             calculateTimeSinceConfession(confess.timestamp as Timestamp)
 

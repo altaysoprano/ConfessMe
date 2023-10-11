@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.SearchViewModel
+import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,6 +32,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
     private var limit: Long = 20
 
     private val viewModel: ConfessViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,6 +79,13 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
             },
             onItemPhotoClick = { userEmail, userName ->
 
+            },
+            onUserNameClick =  { userEmail, userName ->
+                sharedViewModel.setSelectedUserEmail(userEmail)
+                sharedViewModel.setSelectedUserName(userName)
+
+                val profileFragment = ProfileFragment()
+                navRegister.navigateFrag(profileFragment, true)
             }
         )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView
