@@ -50,7 +50,6 @@ class ConfessAnswerFragment(
     ): View {
 
         binding = FragmentConfessAnswerBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.title = "Reply To Confession"
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
         isConfessionAnswered = arguments?.getBoolean("isAnswered", false) ?: false
@@ -62,7 +61,7 @@ class ConfessAnswerFragment(
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_close)
+            setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
         setTextStates()

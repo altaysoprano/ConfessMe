@@ -37,12 +37,13 @@ class ConfessFragment : Fragment() {
 
         binding = FragmentConfessBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.title = "Confess"
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.confessToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_close)
+            setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
         val maxLength = 560
