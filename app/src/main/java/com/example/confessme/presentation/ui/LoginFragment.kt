@@ -30,7 +30,6 @@ class LoginFragment : Fragment() {
     ): View {
 
         binding = FragmentLoginBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         navRegister = activity as FragmentNavigation
         isUserLoggedIn = viewModel.isUserLoggedIn
 

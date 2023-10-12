@@ -27,9 +27,14 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         (activity as AppCompatActivity?)!!.title = "Settings"
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.settingsToolbar)
         setHasOptionsMenu(true)
+
+        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_back)
+        }
 
         binding.changePasswordButton.setOnClickListener {
             val changePasswordFragment = ChangePasswordFragment()
@@ -38,19 +43,6 @@ class SettingsFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        val actionBar = (activity as AppCompatActivity?)?.supportActionBar
-
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBar?.setDisplayShowHomeEnabled(true)
-        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-            View.GONE
-        actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
-        (activity as AppCompatActivity?)!!.title = "Settings"
-
-        return super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

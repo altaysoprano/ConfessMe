@@ -39,15 +39,15 @@ class EditProfileFragment : Fragment() {
     ): View {
         binding = FragmentEditProfileBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.title = "Edit Profile"
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.editProfileToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_close) // "X" simgesi olarak kullanılan drawable
+            setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        // Profil fotoğrafı kısmına tıklayınca galeriyi aç
         binding.profileImage.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_GET_CONTENT

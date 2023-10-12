@@ -33,7 +33,6 @@ class ChangePasswordFragment : DialogFragment() {
     ): View {
 
         binding = FragmentChangePasswordBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
 
         binding.saveButton.setOnClickListener {
             val previousPassword = binding.previousPasswordEt.text.toString()

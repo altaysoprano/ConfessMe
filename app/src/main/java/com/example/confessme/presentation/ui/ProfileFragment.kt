@@ -44,8 +44,8 @@ class ProfileFragment : Fragment() {
     ): View {
 
         binding = FragmentProfileBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-        (activity as AppCompatActivity?)!!.title = "My Profile"
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.profileToolbar)
+        (activity as AppCompatActivity?)?.title = ""
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
@@ -190,12 +190,10 @@ class ProfileFragment : Fragment() {
                 requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
                     View.GONE
                 actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
-                (activity as AppCompatActivity?)!!.title = "Profile"
             } else {
                 inflater.inflate(R.menu.profile_menu, menu)
                 actionBar?.setDisplayHomeAsUpEnabled(false)
                 actionBar?.setDisplayShowHomeEnabled(false)
-                (activity as AppCompatActivity?)!!.title = "My Profile"
             }
         }
         return super.onCreateOptionsMenu(menu, inflater)

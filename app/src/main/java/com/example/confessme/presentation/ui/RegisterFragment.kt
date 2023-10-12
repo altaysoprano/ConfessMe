@@ -30,7 +30,6 @@ class RegisterFragment : Fragment() {
     ): View {
 
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         navRegister = activity as FragmentNavigation
 
         binding.textView2.setOnClickListener {

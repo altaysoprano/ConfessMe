@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.Main" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Main" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/confessmered</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>

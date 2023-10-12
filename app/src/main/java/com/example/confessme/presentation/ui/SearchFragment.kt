@@ -38,7 +38,6 @@ class SearchFragment : Fragment() {
     ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         (activity as AppCompatActivity?)!!.title = "Search"
 
         setupRecyclerView()

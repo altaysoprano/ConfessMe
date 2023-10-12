@@ -28,8 +28,8 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
         (activity as AppCompatActivity?)!!.title = "Home"
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.homeToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
