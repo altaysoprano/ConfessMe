@@ -122,6 +122,7 @@
         android:paddingHorizontal="8dp"
         android:paddingVertical="2dp"
         android:text="@string/confess"
+        android:textAlignment="center"
         android:textColor="@color/white"
         android:visibility="gone"
         app:fabSize="normal"></com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
