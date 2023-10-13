@@ -48,7 +48,7 @@ class EditProfileFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        binding.profileImage.setOnClickListener {
+        binding.editButton.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_GET_CONTENT
             intent.type = "image/*"
