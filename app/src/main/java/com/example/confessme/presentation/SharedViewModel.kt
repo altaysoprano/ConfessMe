@@ -25,9 +25,4 @@ class SharedViewModel @Inject constructor() : ViewModel() {
     fun setSelectedUserEmail(useremail: String) {
         _selectedUserEmail.value = useremail
     }
-
-    fun updateItem(position: Int, updatedConfession: Confession, adapter: ConfessionListAdapter) {
-        adapter.confessList[position] = updatedConfession
-        adapter.notifyItemChanged(position)
-    }
 }

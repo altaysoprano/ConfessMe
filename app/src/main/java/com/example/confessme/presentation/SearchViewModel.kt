@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.User
-import com.example.confessme.data.repository.Repository
+import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: UserRepo
 ) : ViewModel() {
 
     private val _searchResults = MutableLiveData<UiState<List<User>>>()

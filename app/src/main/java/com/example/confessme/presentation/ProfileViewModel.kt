@@ -5,7 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.model.User
-import com.example.confessme.data.repository.Repository
+import com.example.confessme.data.repository.ConfessionRepo
+import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.util.UiState
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: UserRepo
 ) : ViewModel() {
 
     private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()

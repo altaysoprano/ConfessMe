@@ -1,7 +1,7 @@
 package com.example.confessme.presentation
 
 import androidx.lifecycle.ViewModel
-import com.example.confessme.data.repository.Repository
+import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.LoginFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: ConfessionRepo
 ) : ViewModel() {
 
     private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()

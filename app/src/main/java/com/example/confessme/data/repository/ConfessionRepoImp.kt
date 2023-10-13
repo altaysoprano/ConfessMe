@@ -1,14 +1,9 @@
 package com.example.confessme.data.repository
 
-import android.net.Uri
-import android.util.Log
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
-import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -21,12 +16,13 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import java.util.Date
 
-class RepositoryImp(
+class ConfessionRepoImp(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseFirestore,
     private val storage: FirebaseStorage
-) : Repository {
+) : ConfessionRepo {
 
+/*
     override fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -124,7 +120,9 @@ class RepositoryImp(
                 }
             }
     }
+*/
 
+/*
     override fun updateProfile(
         previousUserName: String,
         userName: String,
@@ -330,6 +328,7 @@ class RepositoryImp(
             callback.invoke(UiState.Failure("User not authenticated"))
         }
     }
+*/
 
     override fun addConfession(
         userEmail: String,
@@ -965,14 +964,7 @@ class RepositoryImp(
         }
     }
 
-    private fun isValidPassword(password: String): Boolean {
-        val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
-        if (password.contains(" ")) {
-            return false
-        }
-        return passwordRegex.matches(password)
-    }
-
+/*
     private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
         if (userName.contains(" ")) {
             return "Username cannot contain spaces."
@@ -991,11 +983,41 @@ class RepositoryImp(
         }
         return null
     }
+*/
 
-    private fun generateRandomUsername(length: Int): String {
-        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-        return (1..length)
-            .map { allowedChars.random() }
-            .joinToString("")
-    }
+    /*
+        private fun isValidPassword(password: String): Boolean {
+            val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
+            if (password.contains(" ")) {
+                return false
+            }
+            return passwordRegex.matches(password)
+        }
+
+        private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
+            if (userName.contains(" ")) {
+                return "Username cannot contain spaces."
+            }
+            if(userName.isBlank()) {
+                return "Username cannot be blank."
+            }
+            if (userName.length < 3) {
+                return "Username must be at least 3 characters long."
+            }
+            if (userName.length > 30) {
+                return "Username cannot exceed 30 characters."
+            }
+            if (bio.length > 200) {
+                return "Bio cannot exceed 200 characters."
+            }
+            return null
+        }
+
+        private fun generateRandomUsername(length: Int): String {
+            val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+            return (1..length)
+                .map { allowedChars.random() }
+                .joinToString("")
+        }
+    */
 }

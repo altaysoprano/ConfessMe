@@ -3,7 +3,7 @@ package com.example.confessme.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.confessme.data.repository.Repository
+import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val repository: Repository
+    private val authRepo: AuthRepo
 ) : ViewModel() {
 
     private val _signInState = MutableLiveData<UiState<String>>()
@@ -27,7 +27,7 @@ class LoginViewModel @Inject constructor(
 
     fun signIn(email: String, password: String) {
         _signInState.value = UiState.Loading
-        repository.signIn(email, password) {
+        authRepo.signIn(email, password) {
             _signInState.value = it
         }
     }
