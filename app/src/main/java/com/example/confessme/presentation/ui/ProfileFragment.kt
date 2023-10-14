@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
@@ -58,11 +59,11 @@ class ProfileFragment : Fragment() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Bir sekme seçilmemiş durumdayken yapılacak işlemler buraya gelecek
+                // Bir sekme seçilmemiş durumdayken yapılacak işlemler
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler buraya gelecek
+                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
             }
         })
 
@@ -75,16 +76,15 @@ class ProfileFragment : Fragment() {
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
             if (!useremail.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByEmail(useremail)
+                viewPagerAdapter = ProfileViewPagerAdapter(this)
+                binding.profileViewPager.adapter = viewPagerAdapter
                 checkIfUserFollowed(useremail)
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
-                binding.profileViewPager.adapter = null
-                binding.profileTabLayout.visibility = View.GONE
                 binding.confessFabButton.visibility = View.VISIBLE
             } else {
                 viewModel.getProfileData()
                 viewPagerAdapter = ProfileViewPagerAdapter(this)
                 binding.profileViewPager.adapter = viewPagerAdapter
-                binding.profileTabLayout.visibility = View.VISIBLE
                 binding.confessFabButton.visibility = View.GONE
                 binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
             }

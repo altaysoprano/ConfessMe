@@ -5,7 +5,6 @@ import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 
 interface UserRepo {
-
     fun updateProfile(
         previousUserName: String,
         userName: String,

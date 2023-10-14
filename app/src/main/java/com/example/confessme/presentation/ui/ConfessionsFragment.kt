@@ -109,35 +109,6 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                     limit += 10
                     viewModel.fetchConfessions(limit, isMyConfessions)
                 }
-
-                val currentScrollPosition = recyclerView.computeVerticalScrollOffset()
-                val maxHeight = 600 // Profil sayfasının maksimum yüksekliği
-                val minHeight = 200 // Profil sayfasının minimum yüksekliği
-                var lastScrollPosition = 0 // Kaydırma pozisyonunu takip etmek için bir başlangıç değeri
-
-                // Kullanıcı yukarı kaydırıyorsa ve profil sayfasının yüksekliği belli bir sınırın altındaysa
-                if (currentScrollPosition < lastScrollPosition && profileBinding.profileViewPager.height < maxHeight) {
-                    val newHeight = profileBinding.profileViewPager.height + abs(dy)
-                    if (newHeight > maxHeight) {
-                        profileBinding.profileViewPager.layoutParams.height = maxHeight
-                    } else {
-                        profileBinding.profileViewPager.layoutParams.height = newHeight
-                    }
-                    profileBinding.profileViewPager.requestLayout()
-                }
-
-                // Kullanıcı aşağı kaydırıyorsa ve profil sayfasının yüksekliği belli bir sınırın üstündeyse
-                if (currentScrollPosition > lastScrollPosition && profileBinding.profileViewPager.height > minHeight) {
-                    val newHeight = profileBinding.profileViewPager.height - abs(dy)
-                    if (newHeight < minHeight) {
-                        profileBinding.profileViewPager.layoutParams.height = minHeight
-                    } else {
-                        profileBinding.profileViewPager.layoutParams.height = newHeight
-                    }
-                    profileBinding.profileViewPager.requestLayout()
-                }
-
-                lastScrollPosition = currentScrollPosition
             }
         })
 
@@ -209,12 +180,6 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                             }
                         }
                     }
-/*
-
-                    if (confessListAdapter.confessList.isEmpty()) {
-                        noConfessFoundBinding.root.visibility = View.VISIBLE
-                    }
-*/
                 }
             }
         }
