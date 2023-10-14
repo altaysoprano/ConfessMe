@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.ConfessionRepo
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,9 +51,9 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    fun fetchConfessions(limit: Long, isMyConfessions: Boolean = true) {
+    fun fetchConfessions(limit: Long, confessionCategory: ConfessionCategory) {
         _fetchConfessionsState.value = UiState.Loading
-        repository.fetchConfessions(limit, isMyConfessions) { result ->
+        repository.fetchConfessions(limit, confessionCategory) { result ->
             _fetchConfessionsState.postValue(result)
         }
     }

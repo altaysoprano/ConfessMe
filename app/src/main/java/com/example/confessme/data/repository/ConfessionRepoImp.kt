@@ -2,6 +2,7 @@ package com.example.confessme.data.repository
 
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -109,7 +110,7 @@ class ConfessionRepoImp(
 
     override fun fetchConfessions(
         limit: Long,
-        isMyConfessions: Boolean,
+        confessionCategory: ConfessionCategory,
         result: (UiState<List<Confession>>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
@@ -117,12 +118,23 @@ class ConfessionRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
 
-            val confessionCollection = if (isMyConfessions) {
-                database.collection("users").document(currentUserUid)
-                    .collection("my_confessions")
-            } else {
-                database.collection("users").document(currentUserUid)
-                    .collection("confessions_to_me")
+            val confessionCollection = when (confessionCategory) {
+                ConfessionCategory.MY_CONFESSIONS -> {
+                    database.collection("users").document(currentUserUid)
+                        .collection("my_confessions")
+                }
+                ConfessionCategory.CONFESSIONS_TO_ME -> {
+                    database.collection("users").document(currentUserUid)
+                        .collection("confessions_to_me")
+                }
+                ConfessionCategory.OTHER_USER_CONFESSIONS -> {
+                    database.collection("users").document(currentUserUid)
+                        .collection("my_confessions")
+                }
+                ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
+                    database.collection("users").document(currentUserUid)
+                        .collection("confessions_to_me")
+                }
             }
 
             confessionCollection

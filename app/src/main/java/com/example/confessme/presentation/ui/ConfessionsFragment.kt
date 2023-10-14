@@ -18,12 +18,13 @@ import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.presentation.SharedViewModel
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Math.abs
 
 @AndroidEntryPoint
-class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
+class ConfessionsFragment(private val confessionCategory: ConfessionCategory) : Fragment() {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -46,14 +47,14 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         confessListAdapter = ConfessionListAdapter(
             requireContext(),
             mutableListOf(),
-            isMyConfessions,
+            confessionCategory,
             onAnswerClick = { confessionId, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
                     bundle.putString("confessionId", confessionId)
                     bundle.putBoolean("isAnswered", isAnswered)
                     bundle.putString("answerText", answerText)
-                    bundle.putBoolean("isMyConfession", isMyConfessions)
+                    bundle.putSerializable("confessionCategory", confessionCategory)
                     bundle.putBoolean("favorited", isFavorited)
                     bundle.putString("answerDate", answerDate)
                     val confessAnswerFragment = ConfessAnswerFragment(
@@ -91,7 +92,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
         )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView
 
-        viewModel.fetchConfessions(limit, isMyConfessions)
+        viewModel.fetchConfessions(limit, confessionCategory)
 
         binding.confessionListRecyclerviewId.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
@@ -107,7 +108,7 @@ class ConfessionsFragment(private val isMyConfessions: Boolean) : Fragment() {
                     && totalItemCount >= limit
                 ) {
                     limit += 10
-                    viewModel.fetchConfessions(limit, isMyConfessions)
+                    viewModel.fetchConfessions(limit, confessionCategory)
                 }
             }
         })

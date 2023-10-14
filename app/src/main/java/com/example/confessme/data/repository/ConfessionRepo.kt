@@ -1,6 +1,7 @@
 package com.example.confessme.data.repository
 
 import com.example.confessme.data.model.Confession
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 
 interface ConfessionRepo {
@@ -30,7 +31,7 @@ interface ConfessionRepo {
     fun addConfession(userEmail: String, confessionText: String, result: (UiState<String>) -> Unit)
     fun fetchConfessions(
         limit: Long,
-        isMyConfessions: Boolean,
+        confessionCategory: ConfessionCategory,
         result: (UiState<List<Confession>>) -> Unit
     )
 

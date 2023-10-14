@@ -22,6 +22,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.DialogHelper
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +38,7 @@ class ConfessAnswerFragment(
     private val viewModel: ConfessViewModel by viewModels()
     private var isAnswerButtonEnabled = true
     private var isEditAnswer: Boolean = false
-    private var isMyConfession: Boolean = false
+    private var confessionCategory: ConfessionCategory = ConfessionCategory.CONFESSIONS_TO_ME
     private var isAnswerFavorited: Boolean = false
     private var isConfessionAnswered: Boolean = false
     private var answerDate: String = ""
@@ -54,7 +55,8 @@ class ConfessAnswerFragment(
         setHasOptionsMenu(true)
         isConfessionAnswered = arguments?.getBoolean("isAnswered", false) ?: false
         answerText = arguments?.getString("answerText", "") ?: ""
-        isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
+        confessionCategory = arguments?.getSerializable("confessionCategory") as? ConfessionCategory
+            ?: ConfessionCategory.CONFESSIONS_TO_ME
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
         answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = DialogHelper(requireContext())
@@ -222,7 +224,7 @@ class ConfessAnswerFragment(
             })
         }
 
-        if (isMyConfession) {
+        if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) {
             binding.replyButton.visibility = View.GONE
             binding.answerIcEdit.visibility = View.GONE
             binding.answerIcFavorite.visibility = View.VISIBLE

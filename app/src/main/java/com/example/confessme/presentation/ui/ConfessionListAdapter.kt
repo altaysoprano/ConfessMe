@@ -27,12 +27,13 @@ import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.presentation.DialogHelper
+import com.example.confessme.util.ConfessionCategory
 import com.google.firebase.Timestamp
 
 class ConfessionListAdapter(
     private val context: Context,
     val confessList: MutableList<Confession> = mutableListOf(),
-    private val isMyConfession: Boolean,
+    private val confessionCategory: ConfessionCategory,
     private val onAnswerClick: (String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
@@ -148,7 +149,7 @@ class ConfessionListAdapter(
         itemView: View,
         adapterPosition: Int
     ) {
-        if (isMyConfession) {
+        if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) {
             binding.icFavorite.alpha = 0.5f
             binding.icFavorite.isEnabled = false
             binding.icAnswer.isEnabled = true
@@ -162,7 +163,7 @@ class ConfessionListAdapter(
         if (confess.answered) {
             binding.icAnswer.alpha = 1f
             binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
-        } else if (!isMyConfession) {
+        } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
             binding.icAnswer.alpha = 1f
             binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
         } else {
@@ -173,9 +174,9 @@ class ConfessionListAdapter(
         }
 
         if (confess.favorited) {
-            binding.icFavorite.alpha = if (isMyConfession) 0.5f else 1f
+            binding.icFavorite.alpha = if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) 0.5f else 1f
             binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
-        } else if (!isMyConfession) {
+        } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
             binding.icFavorite.alpha = 1f
             binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
         } else {
