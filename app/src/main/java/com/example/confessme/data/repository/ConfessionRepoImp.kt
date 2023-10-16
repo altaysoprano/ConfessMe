@@ -1,5 +1,6 @@
 package com.example.confessme.data.repository
 
+import android.util.Log
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.util.ConfessionCategory
@@ -20,11 +21,10 @@ import java.util.Date
 class ConfessionRepoImp(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseFirestore,
-    private val storage: FirebaseStorage
 ) : ConfessionRepo {
 
     override fun addConfession(
-        userEmail: String,
+        userUid: String,
         confessionText: String,
         result: (UiState<String>) -> Unit
     ) {
@@ -40,18 +40,21 @@ class ConfessionRepoImp(
                         val fromUserImageUrl = currentUserDocument.getString("imageUrl")
                         val fromUserUsername = currentUserDocument.getString("userName")
                         val fromUserEmail = currentUserDocument.getString("email")
+                        val fromUserUid = currentUserDocument.getString("uid")
 
                         database.collection("users")
-                            .whereEqualTo("email", userEmail)
+                            .whereEqualTo("uid", userUid)
                             .get()
                             .addOnSuccessListener { documents ->
                                 if (!documents.isEmpty) {
                                     val userDocument = documents.documents[0]
-                                    val userId = userDocument.id // Bu kullanıcının UID'sini verir
+                                    val userId = userDocument.id
                                     val imageUrl =
-                                        userDocument.getString("imageUrl") // Kullanıcının imageUrl'sini alın
+                                        userDocument.getString("imageUrl")
                                     val userName =
                                         userDocument.getString("userName")
+                                    val userEmail =
+                                        userDocument.getString("email")
 
                                     val confessionCollection =
                                         database.collection("users").document(currentUserUid)
@@ -60,6 +63,8 @@ class ConfessionRepoImp(
 
                                     val confessionData = hashMapOf(
                                         "id" to newConfessionDocument.id,
+                                        "userId" to userUid,
+                                        "fromUserId" to fromUserUid,
                                         "text" to confessionText,
                                         "username" to userName,
                                         "email" to userEmail,
@@ -109,11 +114,13 @@ class ConfessionRepoImp(
     }
 
     override fun fetchConfessions(
+        userUid: String,
         limit: Long,
         confessionCategory: ConfessionCategory,
         result: (UiState<List<Confession>>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
+        Log.d("Mesaj: ", "Repoda userUid: $userUid")
 
         if (user != null) {
             val currentUserUid = user.uid
@@ -128,11 +135,11 @@ class ConfessionRepoImp(
                         .collection("confessions_to_me")
                 }
                 ConfessionCategory.OTHER_USER_CONFESSIONS -> {
-                    database.collection("users").document(currentUserUid)
+                    database.collection("users").document(userUid)
                         .collection("my_confessions")
                 }
                 ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
-                    database.collection("users").document(currentUserUid)
+                    database.collection("users").document(userUid)
                         .collection("confessions_to_me")
                 }
             }

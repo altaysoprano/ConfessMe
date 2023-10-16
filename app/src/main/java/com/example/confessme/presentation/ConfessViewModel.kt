@@ -44,16 +44,16 @@ class ConfessViewModel @Inject constructor(
     val deleteConfessionState: LiveData<UiState<Confession?>>
         get() = _deleteConfessionState
 
-    fun addConfession(userEmail: String, confessionText: String) {
+    fun addConfession(userUid: String, confessionText: String) {
         _addConfessionState.value = UiState.Loading
-        repository.addConfession(userEmail, confessionText) {
+        repository.addConfession(userUid, confessionText) {
             _addConfessionState.value = it
         }
     }
 
-    fun fetchConfessions(limit: Long, confessionCategory: ConfessionCategory) {
+    fun fetchConfessions(userUid: String, limit: Long, confessionCategory: ConfessionCategory) {
         _fetchConfessionsState.value = UiState.Loading
-        repository.fetchConfessions(limit, confessionCategory) { result ->
+        repository.fetchConfessions(userUid, limit, confessionCategory) { result ->
             _fetchConfessionsState.postValue(result)
         }
     }

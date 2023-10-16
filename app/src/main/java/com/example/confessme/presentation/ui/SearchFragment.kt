@@ -90,6 +90,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun onItemClick(user: User) {
+        sharedViewModel.setSelectedUserUid(user.uid)
         sharedViewModel.setSelectedUserName(user.userName)
         sharedViewModel.setSelectedUserEmail(user.email)
 

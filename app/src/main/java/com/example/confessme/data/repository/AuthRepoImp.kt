@@ -1,5 +1,6 @@
 package com.example.confessme.data.repository
 
+import android.util.Log
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.EmailAuthProvider
@@ -49,8 +50,9 @@ class AuthRepoImp(
                             val user = firebaseAuth.currentUser
                             if (user != null) {
                                 val uid = user.uid
+                                Log.d("Mesaj: ", "uid: $uid")
                                 database.collection("users").document(uid)
-                                    .set(User(email, pass, userName = randomUsername))
+                                    .set(User(uid = uid, email = email, password = pass, userName = randomUsername))
                                     .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
                                     .addOnFailureListener { exception ->
                                         result.invoke(UiState.Failure(exception.localizedMessage))

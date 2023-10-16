@@ -22,12 +22,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ProfileViewPagerAdapter
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,6 +39,8 @@ class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: ProfileViewPagerAdapter
+    private lateinit var otherUserPagerAdapter: OtherUserViewPagerAdapter
+    private lateinit var tabLayout: TabLayout
     private val viewModel: ProfileViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
@@ -50,42 +55,69 @@ class ProfileFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
-        binding.profileTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-                tab?.let {
-                    binding.profileViewPager.currentItem = it.position
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Bir sekme seçilmemiş durumdayken yapılacak işlemler
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
-            }
-        })
-
-        binding.profileViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                binding.profileTabLayout.getTabAt(position)?.select()
-            }
-        })
-
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
             if (!useremail.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByEmail(useremail)
-                viewPagerAdapter = ProfileViewPagerAdapter(this)
-                binding.profileViewPager.adapter = viewPagerAdapter
                 checkIfUserFollowed(useremail)
+                binding.profileTabLayout.visibility = View.GONE
+                otherUserPagerAdapter = OtherUserViewPagerAdapter(this)
+                binding.profileViewPager.adapter = otherUserPagerAdapter
+                tabLayout = binding.otherUserTabLayout
+                tabLayout.visibility = View.VISIBLE
+                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                    override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                        tab?.let {
+                            binding.profileViewPager.currentItem = it.position
+                        }
+                    }
+
+                    override fun onTabUnselected(tab: TabLayout.Tab?) {
+                        // Bir sekme seçilmemiş durumdayken yapılacak işlemler
+                    }
+
+                    override fun onTabReselected(tab: TabLayout.Tab?) {
+                        // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
+                    }
+                })
+
+                binding.profileViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        tabLayout.getTabAt(position)?.select()
+                    }
+                })
                 binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
                 binding.confessFabButton.visibility = View.VISIBLE
             } else {
                 viewModel.getProfileData()
+                binding.confessFabButton.visibility = View.GONE
+                binding.otherUserTabLayout.visibility = View.GONE
                 viewPagerAdapter = ProfileViewPagerAdapter(this)
                 binding.profileViewPager.adapter = viewPagerAdapter
-                binding.confessFabButton.visibility = View.GONE
+                tabLayout = binding.profileTabLayout
+                tabLayout.visibility = View.VISIBLE
+                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                    override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                        tab?.let {
+                            binding.profileViewPager.currentItem = it.position
+                        }
+                    }
+
+                    override fun onTabUnselected(tab: TabLayout.Tab?) {
+                        // Bir sekme seçilmemiş durumdayken yapılacak işlemler
+                    }
+
+                    override fun onTabReselected(tab: TabLayout.Tab?) {
+                        // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
+                    }
+                })
+
+                binding.profileViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        tabLayout.getTabAt(position)?.select()
+                    }
+                })
                 binding.progressButtonLayout.followButtonCardview.visibility = View.GONE
             }
         }
@@ -171,11 +203,13 @@ class ProfileFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        sharedViewModel.setSelectedUserUid("")
         sharedViewModel.setSelectedUserEmail("")
         sharedViewModel.setSelectedUserName("")
     }
 
     fun onBackPressedInProfileFragment() {
+        sharedViewModel.setSelectedUserUid("")
         sharedViewModel.setSelectedUserName("")
         sharedViewModel.setSelectedUserEmail("")
     }
@@ -295,5 +329,4 @@ class ProfileFragment : Fragment() {
         binding.firstNameTv.text = ""
         binding.bioTv.text = ""
     }
-
 }

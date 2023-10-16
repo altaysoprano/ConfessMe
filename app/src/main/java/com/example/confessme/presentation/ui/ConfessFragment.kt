@@ -100,12 +100,11 @@ class ConfessFragment : Fragment() {
                 return true
             }
             R.id.action_confess -> {
-                val selectedUserName = sharedViewModel.selectedUserName.value ?: ""
-                val selectedUserEmail = sharedViewModel.selectedUserEmail.value ?: ""
+                val selectedUserUid = sharedViewModel.selectedUserUid.value ?: ""
                 val confessionText = binding.confessEditText.text.toString()
 
                 if (confessionText.isNotEmpty()) {
-                    viewModel.addConfession(selectedUserEmail, confessionText)
+                    viewModel.addConfession(selectedUserUid, confessionText)
                 } else {
                     Toast.makeText(requireContext(), "Confession text cannot be left blank", Toast.LENGTH_SHORT).show()
                 }

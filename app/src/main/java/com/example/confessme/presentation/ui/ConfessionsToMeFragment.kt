@@ -78,19 +78,22 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
                 viewModel.addFavorite(confessionId)
             },
             onConfessDeleteClick = {},
-            onItemPhotoClick = { userEmail, userName ->
+            onItemPhotoClick = { userUid, userEmail, userName ->
+                sharedViewModel.setSelectedUserUid(userUid)
                 sharedViewModel.setSelectedUserEmail(userEmail)
                 sharedViewModel.setSelectedUserName(userName)
 
                 val profileFragment = ProfileFragment()
                 navRegister.navigateFrag(profileFragment, true)
             },
-            onUserNameClick =  { userEmail, userName ->
+            onUserNameClick =  { userUid, userEmail, userName ->
 
             }
         )
+        val selectedUserUid = sharedViewModel.selectedUserUid.value ?: ""
+        Log.d("Mesaj: ", "selectedUserUid: $selectedUserUid")
 
-        viewModel.fetchConfessions(limit, confessionCategory)
+        viewModel.fetchConfessions(selectedUserUid, limit, confessionCategory)
 
         binding.confessionToMeListRecyclerviewId.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
@@ -106,7 +109,7 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
                     && totalItemCount >= limit
                 ) {
                     limit += 10
-                    viewModel.fetchConfessions(limit, confessionCategory)
+                    viewModel.fetchConfessions(selectedUserUid, limit, confessionCategory)
                 }
             }
         })

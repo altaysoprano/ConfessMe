@@ -12,4 +12,6 @@
     <string name="fav_answer">Fav Answer</string>
     <string name="save">SAVE</string>
     <string name="change_password">Change Password</string>
+    <string name="confessed">Confessed</string>
+    <string name="confessions_to_others">Confessions To Others</string>
 </resources>

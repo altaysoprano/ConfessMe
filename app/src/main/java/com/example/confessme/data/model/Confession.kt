@@ -2,6 +2,8 @@ package com.example.confessme.data.model
 
 data class Confession(
     val id: String = "",
+    val userId: String = "",
+    val fromUserId: String = "",
     val text: String = "",
     val username: String = "",
     val fromUserUsername: String = "",

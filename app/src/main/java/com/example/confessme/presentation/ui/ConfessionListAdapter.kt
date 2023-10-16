@@ -37,8 +37,8 @@ class ConfessionListAdapter(
     private val onAnswerClick: (String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
-    private val onItemPhotoClick: (String, String) -> Unit,
-    private val onUserNameClick: (String, String) -> Unit
+    private val onItemPhotoClick: (String, String, String) -> Unit,
+    private val onUserNameClick: (String, String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = DialogHelper(context)
@@ -96,7 +96,7 @@ class ConfessionListAdapter(
                 override fun onClick(widget: View) {
                     val userNameClickedUser = confessList[adapterPosition]
 
-                    onUserNameClick(userNameClickedUser.email, userNameClickedUser.username)
+                    onUserNameClick(userNameClickedUser.userId, userNameClickedUser.email, userNameClickedUser.username)
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
@@ -207,7 +207,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenProfileImage.setOnClickListener {
             val photoClickedUser = confessList[adapterPosition]
 
-            onItemPhotoClick(photoClickedUser.fromUserEmail, photoClickedUser.fromUserUsername)
+            onItemPhotoClick(photoClickedUser.userId, photoClickedUser.fromUserEmail, photoClickedUser.fromUserUsername)
         }
 
         binding.moreActionButton.setOnClickListener { view ->

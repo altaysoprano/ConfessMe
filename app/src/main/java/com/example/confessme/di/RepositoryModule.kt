@@ -23,10 +23,9 @@ object RepositoryModule {
     @Singleton
     fun provideConfessionRepo(
         firebaseAuth: FirebaseAuth,
-        database: FirebaseFirestore,
-        storage: FirebaseStorage
+        database: FirebaseFirestore
     ) : ConfessionRepo {
-        return ConfessionRepoImp(firebaseAuth, database, storage)
+        return ConfessionRepoImp(firebaseAuth, database)
     }
 
     @Provides
