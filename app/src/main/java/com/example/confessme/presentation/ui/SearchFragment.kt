@@ -94,7 +94,13 @@ class SearchFragment : Fragment() {
         sharedViewModel.setSelectedUserName(user.userName)
         sharedViewModel.setSelectedUserEmail(user.email)
 
+        val bundle = Bundle()
+        bundle.putString("userEmail", user.email)
+        bundle.putString("userUid", user.uid)
+
         val profileFragment = OtherUserProfileFragment()
+        profileFragment.arguments = bundle
+
         navRegister.navigateFrag(profileFragment, true)
     }
 

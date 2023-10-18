@@ -36,6 +36,8 @@ class OtherUserProfileFragment : Fragment() {
     private lateinit var binding: FragmentOtherUserProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: OtherUserViewPagerAdapter
+    private lateinit var userUid: String
+    private lateinit var userEmail: String
     private val viewModel: ProfileViewModel by viewModels()
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
@@ -48,6 +50,8 @@ class OtherUserProfileFragment : Fragment() {
         (activity as AppCompatActivity?)?.title = ""
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
+        userEmail = arguments?.getString("userEmail") ?: ""
+        userUid = arguments?.getString("userUid") ?: ""
 
         binding.otherUserProfileTabLayout.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {
@@ -74,13 +78,14 @@ class OtherUserProfileFragment : Fragment() {
             }
         })
 
-        sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
-            if (!useremail.isNullOrEmpty()) {
-                viewModel.fetchUserProfileByEmail(useremail)
-                checkIfUserFollowed(useremail)
-                viewPagerAdapter = OtherUserViewPagerAdapter(this)
-                binding.otherUserProfileViewPager.adapter = viewPagerAdapter
-            }
+        if (!userEmail.isNullOrEmpty()) {
+            viewModel.fetchUserProfileByEmail(userEmail)
+            checkIfUserFollowed(userEmail)
+            viewPagerAdapter = OtherUserViewPagerAdapter(userUid, this)
+            binding.otherUserProfileViewPager.adapter = viewPagerAdapter
+        } else {
+            Toast.makeText(requireContext(), "An error occured. Please try again.", Toast.LENGTH_SHORT)
+                .show()
         }
 
         viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
@@ -116,15 +121,18 @@ class OtherUserProfileFragment : Fragment() {
         }
 
         binding.otherUserProgressButtonLayout.followButtonCardview.setOnClickListener {
-            Log.d("Mesaj: ", "Followa tıklandı")
             followOrUnfollowUser()
         }
 
         binding.otherUserConfessFabButton.setOnClickListener {
-            val selectedUserEmail = sharedViewModel.selectedUserEmail.value
 
-            if (!selectedUserEmail.isNullOrEmpty()) {
+            if (!userUid.isEmpty()) {
+                val bundle = Bundle()
+                bundle.putString("userUid", userUid)
+
                 val confessFragment = ConfessFragment()
+                confessFragment.arguments = bundle
+
                 navRegister.navigateFrag(confessFragment, true)
             } else {
                 Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
@@ -135,10 +143,9 @@ class OtherUserProfileFragment : Fragment() {
     }
 
     private fun followOrUnfollowUser() {
-        val selectedUserEmail = sharedViewModel.selectedUserEmail.value
 
-        if (!selectedUserEmail.isNullOrEmpty()) {
-            viewModel.followOrUnfollowUser(selectedUserEmail)
+        if (!userEmail.isNullOrEmpty()) {
+            viewModel.followOrUnfollowUser(userEmail)
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -156,7 +163,7 @@ class OtherUserProfileFragment : Fragment() {
                     is UiState.Success -> {
                         binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                             View.GONE
-                        checkIfUserFollowed(selectedUserEmail)
+                        checkIfUserFollowed(userEmail)
                         Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
                 }

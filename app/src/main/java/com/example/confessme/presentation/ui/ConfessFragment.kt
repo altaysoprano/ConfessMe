@@ -27,6 +27,7 @@ class ConfessFragment : Fragment() {
     private lateinit var binding: FragmentConfessBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ConfessViewModel by viewModels()
+    private lateinit var userUid: String
     private var isConfessButtonEnabled = true
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
@@ -40,6 +41,7 @@ class ConfessFragment : Fragment() {
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.confessToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
+        userUid = arguments?.getString("userUid") ?: ""
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -100,11 +102,10 @@ class ConfessFragment : Fragment() {
                 return true
             }
             R.id.action_confess -> {
-                val selectedUserUid = sharedViewModel.selectedUserUid.value ?: ""
                 val confessionText = binding.confessEditText.text.toString()
 
                 if (confessionText.isNotEmpty()) {
-                    viewModel.addConfession(selectedUserUid, confessionText)
+                    viewModel.addConfession(userUid, confessionText)
                 } else {
                     Toast.makeText(requireContext(), "Confession text cannot be left blank", Toast.LENGTH_SHORT).show()
                 }

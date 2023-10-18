@@ -58,11 +58,11 @@ class ProfileFragment : Fragment() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Bir sekme seçilmemiş durumdayken yapılacak işlemler buraya gelecek
+                // Bir sekme seçilmemiş durumdayken yapılacak işlemler
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler buraya gelecek
+                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
             }
         })
 
@@ -74,7 +74,7 @@ class ProfileFragment : Fragment() {
         })
 
         viewModel.getProfileData()
-        viewPagerAdapter = ProfileViewPagerAdapter(this)
+        viewPagerAdapter = ProfileViewPagerAdapter( this)
         binding.profileViewPager.adapter = viewPagerAdapter
 
         viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
@@ -153,17 +153,6 @@ class ProfileFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (sharedViewModel.selectedUserEmail.value.isNullOrEmpty()) {
-            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                View.VISIBLE
-            (activity as AppCompatActivity?)!!.supportActionBar?.apply {
-                setDisplayHomeAsUpEnabled(false)
-            }
-        }
     }
 
     private fun setAllProfileDataDefault() {

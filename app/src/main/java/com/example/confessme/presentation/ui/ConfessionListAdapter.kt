@@ -34,6 +34,7 @@ class ConfessionListAdapter(
     private val context: Context,
     val confessList: MutableList<Confession> = mutableListOf(),
     private val confessionCategory: ConfessionCategory,
+    private val currentUserUid: String,
     private val onAnswerClick: (String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
@@ -96,7 +97,13 @@ class ConfessionListAdapter(
                 override fun onClick(widget: View) {
                     val userNameClickedUser = confessList[adapterPosition]
 
-                    onUserNameClick(userNameClickedUser.userId, userNameClickedUser.email, userNameClickedUser.username)
+                    if (currentUserUid != userNameClickedUser.userId) {
+                        onUserNameClick(
+                            userNameClickedUser.userId,
+                            userNameClickedUser.email,
+                            userNameClickedUser.username
+                        )
+                    }
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
@@ -174,7 +181,8 @@ class ConfessionListAdapter(
         }
 
         if (confess.favorited) {
-            binding.icFavorite.alpha = if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) 0.5f else 1f
+            binding.icFavorite.alpha =
+                if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) 0.5f else 1f
             binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
         } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
             binding.icFavorite.alpha = 1f
@@ -193,7 +201,7 @@ class ConfessionListAdapter(
                 confess.answered,
                 confess.answer.text,
                 confess.answer.favorited,
-                if(confessDateTimestamp != null) calculateTimeSinceConfession(confessDateTimestamp as Timestamp) else ""
+                if (confessDateTimestamp != null) calculateTimeSinceConfession(confessDateTimestamp as Timestamp) else ""
             )
         }
 
@@ -207,7 +215,13 @@ class ConfessionListAdapter(
         binding.confessionsScreenProfileImage.setOnClickListener {
             val photoClickedUser = confessList[adapterPosition]
 
-            onItemPhotoClick(photoClickedUser.fromUserId, photoClickedUser.fromUserEmail, photoClickedUser.fromUserUsername)
+            if (currentUserUid != photoClickedUser.fromUserId) {
+                onItemPhotoClick(
+                    photoClickedUser.fromUserId,
+                    photoClickedUser.fromUserEmail,
+                    photoClickedUser.fromUserUsername
+                )
+            }
         }
 
         binding.moreActionButton.setOnClickListener { view ->

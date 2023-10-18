@@ -20,11 +20,15 @@ import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Math.abs
 
 @AndroidEntryPoint
-class ConfessionsFragment(private val confessionCategory: ConfessionCategory) : Fragment() {
+class ConfessionsFragment(
+    private val userUid: String,
+    private val confessionCategory: ConfessionCategory
+    ) : Fragment() {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -44,10 +48,13 @@ class ConfessionsFragment(private val confessionCategory: ConfessionCategory) : 
         binding = FragmentConfessionsBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUserUid = currentUser?.uid ?: ""
         confessListAdapter = ConfessionListAdapter(
             requireContext(),
             mutableListOf(),
             confessionCategory,
+            currentUserUid,
             onAnswerClick = { confessionId, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
@@ -80,23 +87,37 @@ class ConfessionsFragment(private val confessionCategory: ConfessionCategory) : 
                 viewModel.deleteConfession(confessionId)
             },
             onItemPhotoClick = { userUid, userEmail, userName ->
+                sharedViewModel.setSelectedUserUid(userUid)
+                sharedViewModel.setSelectedUserEmail(userEmail)
+                sharedViewModel.setSelectedUserName(userName)
 
+                val bundle = Bundle()
+                bundle.putString("userEmail", userEmail)
+                bundle.putString("userUid", userUid)
+
+                val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
+                navRegister.navigateFrag(profileFragment, true)
             },
             onUserNameClick =  { userUid, userEmail, userName ->
                 sharedViewModel.setSelectedUserEmail(userEmail)
                 sharedViewModel.setSelectedUserName(userName)
                 sharedViewModel.setSelectedUserUid(userUid)
 
+                val bundle = Bundle()
+                bundle.putString("userEmail", userEmail)
+                bundle.putString("userUid", userUid)
+
                 val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
                 navRegister.navigateFrag(profileFragment, true)
             }
         )
         noConfessFoundBinding = binding.confessionsNoConfessFoundView
-        val selectedUserUid = sharedViewModel.selectedUserUid.value ?: ""
 
-        Log.d("Mesaj: ", "confessionsfragmentta selecteduseruid: ${sharedViewModel.selectedUserUid.value}")
-        Log.d("Mesaj: ", "confessionsfragmentta selectedUserEmail: ${sharedViewModel.selectedUserEmail.value}")
-        viewModel.fetchConfessions(selectedUserUid, limit, confessionCategory)
+        viewModel.fetchConfessions(userUid, limit, confessionCategory)
 
         binding.confessionListRecyclerviewId.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
@@ -112,7 +133,7 @@ class ConfessionsFragment(private val confessionCategory: ConfessionCategory) : 
                     && totalItemCount >= limit
                 ) {
                     limit += 10
-                    viewModel.fetchConfessions(selectedUserUid, limit, confessionCategory)
+                    viewModel.fetchConfessions(userUid, limit, confessionCategory)
                 }
 
                 val currentScrollPosition = recyclerView.computeVerticalScrollOffset()
@@ -214,12 +235,6 @@ class ConfessionsFragment(private val confessionCategory: ConfessionCategory) : 
                             }
                         }
                     }
-/*
-
-                    if (confessListAdapter.confessList.isEmpty()) {
-                        noConfessFoundBinding.root.visibility = View.VISIBLE
-                    }
-*/
                 }
             }
         }

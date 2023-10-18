@@ -21,10 +21,14 @@ import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory) : Fragment(), ConfessionUpdateListener {
+class ConfessionsToMeFragment(
+    private val userUid: String,
+    private val confessionCategory: ConfessionCategory
+) : Fragment(), ConfessionUpdateListener {
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -46,10 +50,13 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         noConfessFoundBinding = binding.confessionsToMeNoConfessFoundView
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUserUid = currentUser?.uid ?: ""
         confessListAdapter = ConfessionListAdapter(
             requireContext(),
             mutableListOf(),
             confessionCategory,
+            currentUserUid,
             onAnswerClick = { confessionId, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
@@ -59,7 +66,7 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
                     bundle.putBoolean("favorited", isFavorited)
                     bundle.putString("answerDate", answerDate)
                     val confessAnswerFragment = ConfessAnswerFragment(
-                        {position, updatedConfession ->
+                        { position, updatedConfession ->
                             confessListAdapter.updateItem(position, updatedConfession)
                         },
                         { confessionId ->
@@ -67,7 +74,10 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
                         }
                     )
                     confessAnswerFragment.arguments = bundle
-                    confessAnswerFragment.show(requireActivity().supportFragmentManager, "ConfessAnswerFragment")
+                    confessAnswerFragment.show(
+                        requireActivity().supportFragmentManager,
+                        "ConfessAnswerFragment"
+                    )
 
                 } else {
                     Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
@@ -83,17 +93,32 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
                 sharedViewModel.setSelectedUserEmail(userEmail)
                 sharedViewModel.setSelectedUserName(userName)
 
+                val bundle = Bundle()
+                bundle.putString("userEmail", userEmail)
+                bundle.putString("userUid", userUid)
+
                 val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
                 navRegister.navigateFrag(profileFragment, true)
             },
-            onUserNameClick =  { userUid, userEmail, userName ->
+            onUserNameClick = { userUid, userEmail, userName ->
+                sharedViewModel.setSelectedUserEmail(userEmail)
+                sharedViewModel.setSelectedUserName(userName)
+                sharedViewModel.setSelectedUserUid(userUid)
 
+                val bundle = Bundle()
+                bundle.putString("userEmail", userEmail)
+                bundle.putString("userUid", userUid)
+
+                val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
+                navRegister.navigateFrag(profileFragment, true)
             }
         )
 
-        val selectedUserUid = sharedViewModel.selectedUserUid.value ?: ""
-
-        viewModel.fetchConfessions(selectedUserUid, limit, confessionCategory)
+        viewModel.fetchConfessions(userUid, limit, confessionCategory)
 
         binding.confessionToMeListRecyclerviewId.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
@@ -109,7 +134,7 @@ class ConfessionsToMeFragment(private val confessionCategory: ConfessionCategory
                     && totalItemCount >= limit
                 ) {
                     limit += 10
-                    viewModel.fetchConfessions(selectedUserUid, limit, confessionCategory)
+                    viewModel.fetchConfessions(userUid, limit, confessionCategory)
                 }
             }
         })

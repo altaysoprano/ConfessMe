@@ -14,9 +14,9 @@ class ProfileViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragmen
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> ConfessionsFragment(confessionCategory = ConfessionCategory.MY_CONFESSIONS)
-            1 -> ConfessionsToMeFragment(confessionCategory = ConfessionCategory.CONFESSIONS_TO_ME)
-            else -> ConfessionsFragment(confessionCategory = ConfessionCategory.MY_CONFESSIONS)
+            0 -> ConfessionsFragment("", confessionCategory = ConfessionCategory.MY_CONFESSIONS)
+            1 -> ConfessionsToMeFragment("", confessionCategory = ConfessionCategory.CONFESSIONS_TO_ME)
+            else -> ConfessionsFragment("", confessionCategory = ConfessionCategory.MY_CONFESSIONS)
         }
     }
 }
