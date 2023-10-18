@@ -75,7 +75,6 @@ class OtherUserProfileFragment : Fragment() {
         })
 
         sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
-            Log.d("Mesaj: ", "SelectedEmail: ${sharedViewModel.selectedUserEmail.value}")
             if (!useremail.isNullOrEmpty()) {
                 viewModel.fetchUserProfileByEmail(useremail)
                 checkIfUserFollowed(useremail)

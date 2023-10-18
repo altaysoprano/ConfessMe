@@ -38,7 +38,6 @@ class ConfessionRepoImp(
                 .get()
                 .addOnSuccessListener { currentUserDocument ->
                     if (currentUserDocument.exists()) {
-                        Log.d("Mesaj: " ,"Current user found")
                         val fromUserImageUrl = currentUserDocument.getString("imageUrl")
                         val fromUserUsername = currentUserDocument.getString("userName")
                         val fromUserEmail = currentUserDocument.getString("email")

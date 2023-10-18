@@ -96,7 +96,6 @@ class ConfessionListAdapter(
                 override fun onClick(widget: View) {
                     val userNameClickedUser = confessList[adapterPosition]
 
-                    Log.d("Mesaj: ", "Adapterda userId: ${userNameClickedUser.userId}")
                     onUserNameClick(userNameClickedUser.userId, userNameClickedUser.email, userNameClickedUser.username)
                 }
 
@@ -208,7 +207,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenProfileImage.setOnClickListener {
             val photoClickedUser = confessList[adapterPosition]
 
-            onItemPhotoClick(photoClickedUser.userId, photoClickedUser.fromUserEmail, photoClickedUser.fromUserUsername)
+            onItemPhotoClick(photoClickedUser.fromUserId, photoClickedUser.fromUserEmail, photoClickedUser.fromUserUsername)
         }
 
         binding.moreActionButton.setOnClickListener { view ->

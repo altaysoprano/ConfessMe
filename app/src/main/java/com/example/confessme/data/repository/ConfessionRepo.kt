@@ -6,7 +6,7 @@ import com.example.confessme.util.UiState
 
 interface ConfessionRepo {
 
-    fun addConfession(userEmail: String, confessionText: String, result: (UiState<String>) -> Unit)
+    fun addConfession(userUid: String, confessionText: String, result: (UiState<String>) -> Unit)
     fun fetchConfessions(
         userUid: String,
         limit: Long,

@@ -77,22 +77,6 @@ class ProfileFragment : Fragment() {
         viewPagerAdapter = ProfileViewPagerAdapter(this)
         binding.profileViewPager.adapter = viewPagerAdapter
 
-        /*
-                sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { useremail ->
-                    if (!useremail.isNullOrEmpty()) {
-                        viewModel.fetchUserProfileByEmail(useremail)
-                        checkIfUserFollowed(useremail)
-                        binding.progressButtonLayout.followButtonCardview.visibility = View.VISIBLE
-                        binding.profileViewPager.adapter = null
-                        binding.profileTabLayout.visibility = View.GONE
-                        binding.confessFabButton.visibility = View.VISIBLE
-                    } else {
-        */
-        /*
-                    }
-                }
-        */
-
         viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
@@ -142,24 +126,11 @@ class ProfileFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val actionBar = (activity as AppCompatActivity?)?.supportActionBar
-
-        /*
-                sharedViewModel.selectedUserEmail.observe(viewLifecycleOwner) { userEmail ->
-                    if (!userEmail.isNullOrEmpty()) {
-                        actionBar?.setDisplayHomeAsUpEnabled(true)
-                        actionBar?.setDisplayShowHomeEnabled(true)
-                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                            View.GONE
-                        actionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
-                    } else {
-        */
         inflater.inflate(R.menu.profile_menu, menu)
         actionBar?.setDisplayHomeAsUpEnabled(false)
         actionBar?.setDisplayShowHomeEnabled(false)
-        /*
-                    }
-                }
-        */
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.VISIBLE
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
