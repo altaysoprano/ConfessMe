@@ -1,20 +1,22 @@
 package com.example.confessme.presentation.ui
 
-import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
@@ -22,6 +24,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.DialogHelper
+import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,10 +40,13 @@ class ConfessAnswerFragment(
     private val viewModel: ConfessViewModel by viewModels()
     private var isAnswerButtonEnabled = true
     private var isEditAnswer: Boolean = false
-    private var isMyConfession: Boolean = false
+    private lateinit var currentUserUid: String
+    private lateinit var answerUserUid: String
+    private lateinit var answerFromUserUid: String
     private var isAnswerFavorited: Boolean = false
     private var isConfessionAnswered: Boolean = false
     private var answerDate: String = ""
+    private lateinit var answeredUserName: String
     private lateinit var answerText: String
     private lateinit var dialogHelper: DialogHelper
 
@@ -54,7 +60,10 @@ class ConfessAnswerFragment(
         setHasOptionsMenu(true)
         isConfessionAnswered = arguments?.getBoolean("isAnswered", false) ?: false
         answerText = arguments?.getString("answerText", "") ?: ""
-        isMyConfession = arguments?.getBoolean("isMyConfession", false) ?: false
+        currentUserUid = arguments?.getString("currentUserUid", "") ?: ""
+        answerUserUid = arguments?.getString("answerUserUid", "") ?: ""
+        answerFromUserUid = arguments?.getString("answerFromUserUid", "") ?: ""
+        answeredUserName = arguments?.getString("answeredUserName", "") ?: ""
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
         answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = DialogHelper(requireContext())
@@ -222,6 +231,55 @@ class ConfessAnswerFragment(
             })
         }
 
+        if(currentUserUid == answerFromUserUid) {
+            binding.replyButton.visibility = View.GONE
+            binding.answerIcEdit.visibility = View.GONE
+            binding.answerIcFavorite.visibility = View.VISIBLE
+            binding.answerIcDelete.visibility = View.GONE
+
+            if (isAnswerFavorited) {
+                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+            } else {
+                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+            }
+        } else if(currentUserUid == answerUserUid) {
+            binding.answerIcFavorite.isEnabled = false
+            binding.answerIcFavorite.alpha = 0.5f
+
+            if (isConfessionAnswered == true && !isEditAnswer) {
+                binding.replyButton.visibility = View.GONE
+                binding.answerIcEdit.visibility = View.VISIBLE
+                binding.answerIcFavorite.visibility = View.VISIBLE
+                binding.answerIcDelete.visibility = View.VISIBLE
+                if (isAnswerFavorited) {
+                    binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+                } else {
+                    binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+                }
+            } else {
+                binding.replyButton.visibility = View.VISIBLE
+                binding.answerIcEdit.visibility = View.GONE
+                binding.answerIcFavorite.visibility = View.GONE
+                binding.answerIcDelete.visibility = View.GONE
+                binding.replyButton.isEnabled = isAnswerButtonEnabled
+                binding.replyButton.isClickable = isAnswerButtonEnabled
+            }
+        } else {
+            binding.replyButton.visibility = View.GONE
+            binding.answerIcEdit.visibility = View.GONE
+            binding.answerIcFavorite.visibility = View.VISIBLE
+            binding.answerIcFavorite.alpha = 0.5f
+            binding.answerIcFavorite.isEnabled = false
+            binding.answerIcDelete.visibility = View.GONE
+
+            if (isAnswerFavorited) {
+                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+            } else {
+                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+            }
+        }
+
+/*
         if (isMyConfession) {
             binding.replyButton.visibility = View.GONE
             binding.answerIcEdit.visibility = View.GONE
@@ -256,6 +314,7 @@ class ConfessAnswerFragment(
                 binding.replyButton.isClickable = isAnswerButtonEnabled
             }
         }
+*/
     }
 
     private fun setTextStates() {
@@ -263,9 +322,9 @@ class ConfessAnswerFragment(
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
-            binding.confessAnswerDate.visibility = View.VISIBLE
+            binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
             binding.confessAnswerTextView.text = answerText
-            binding.confessAnswerDate.text = "Answered $answerDate"
+            setUsernameAndDateText()
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
             binding.confessAnswerTextView.visibility = View.GONE
@@ -297,5 +356,15 @@ class ConfessAnswerFragment(
             override fun afterTextChanged(s: Editable?) {
             }
         })
+    }
+
+    private fun setUsernameAndDateText() {
+        val answeredUserNameBold = SpannableString("@$answeredUserName")
+        answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        answeredUserNameBold.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.confessmered)), 0, answeredUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val answerDateBold = SpannableString(answerDate)
+        answerDateBold.setSpan(StyleSpan(Typeface.BOLD), 0, answerDate.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val usernameAndDateText = TextUtils.concat("Answered by ", answeredUserNameBold, " ", answerDateBold)
+        binding.confessAnswerUserNameAndDate.text = usernameAndDateText
     }
 }

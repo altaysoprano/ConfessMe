@@ -35,7 +35,7 @@ class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val confessionCategory: ConfessionCategory,
     private val currentUserUid: String,
-    private val onAnswerClick: (String, Boolean, String, Boolean, String) -> Unit,
+    private val onAnswerClick: (String, String, String, String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String) -> Unit,
@@ -156,41 +156,77 @@ class ConfessionListAdapter(
         itemView: View,
         adapterPosition: Int
     ) {
-        if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) {
+        if(currentUserUid == confessList[adapterPosition].fromUserId) {
             binding.icFavorite.alpha = 0.5f
-            binding.icFavorite.isEnabled = false
-            binding.icAnswer.isEnabled = true
-            binding.moreActionButton.visibility = View.VISIBLE
-        } else {
-            binding.moreActionButton.visibility = View.GONE
-            binding.icFavorite.isEnabled = true
-            binding.icAnswer.isEnabled = true
-        }
-
-        if (confess.answered) {
-            binding.icAnswer.alpha = 1f
-            binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
-        } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
-            binding.icAnswer.alpha = 1f
-            binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
-        } else {
             binding.icAnswer.alpha = 0.5f
-            binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
-            binding.icAnswer.isEnabled =
-                false
-        }
-
-        if (confess.favorited) {
-            binding.icFavorite.alpha =
-                if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) 0.5f else 1f
-            binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
-        } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
+            binding.icFavorite.isEnabled = false
+            binding.icAnswer.isEnabled = false
+            binding.moreActionButton.visibility = View.VISIBLE
+        } else if(currentUserUid == confessList[adapterPosition].userId) {
+            binding.icAnswer.isEnabled = true
+            binding.icFavorite.isEnabled = true
             binding.icFavorite.alpha = 1f
-            binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
+            binding.moreActionButton.visibility = View.GONE
         } else {
             binding.icFavorite.alpha = 0.5f
+            binding.icAnswer.alpha = 0.5f
+            binding.icFavorite.isEnabled = false
+            binding.icAnswer.isEnabled = false
+            binding.moreActionButton.visibility = View.GONE
+        }
+
+        if(confess.answered) {
+            binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
+            binding.icAnswer.isEnabled = true
+            binding.icAnswer.alpha = 1f
+        } else {
+            binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+        }
+
+        if(confess.favorited) {
+            binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
+        } else {
             binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
         }
+
+        /*
+                if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) {
+                    binding.icFavorite.alpha = 0.5f
+                    binding.icFavorite.isEnabled = false
+                    binding.icAnswer.isEnabled = false
+                    binding.moreActionButton.visibility = View.VISIBLE
+                } else {
+                    binding.moreActionButton.visibility = View.GONE
+                    binding.icFavorite.isEnabled = true
+                    binding.icAnswer.isEnabled = true
+                }
+
+                if (confess.answered) {
+                    binding.icAnswer.isEnabled = true
+                    binding.icAnswer.alpha = 1f
+                    binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
+                } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
+                    binding.icAnswer.alpha = 1f
+                    binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+                } else {
+                    binding.icAnswer.alpha = 0.5f
+                    binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+                    binding.icAnswer.isEnabled =
+                        false
+                }
+
+                if (confess.favorited) {
+                    binding.icFavorite.alpha =
+                        if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) 0.5f else 1f
+                    binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
+                } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
+                    binding.icFavorite.alpha = 1f
+                    binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
+                } else {
+                    binding.icFavorite.alpha = 0.5f
+                    binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
+                }
+        */
 
         binding.icAnswer.setOnClickListener {
             val confessAnswer = confessList[adapterPosition]
@@ -198,6 +234,9 @@ class ConfessionListAdapter(
 
             onAnswerClick(
                 confessAnswer.id,
+                confessAnswer.userId,
+                confessAnswer.fromUserId,
+                confess.answer.fromUserUsername,
                 confess.answered,
                 confess.answer.text,
                 confess.answer.favorited,

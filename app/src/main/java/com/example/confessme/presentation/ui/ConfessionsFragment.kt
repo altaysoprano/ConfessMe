@@ -55,13 +55,16 @@ class ConfessionsFragment(
             mutableListOf(),
             confessionCategory,
             currentUserUid,
-            onAnswerClick = { confessionId, isAnswered, answerText, isFavorited, answerDate ->
+            onAnswerClick = { confessionId, userId, fromUserUid, answeredUserName, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()
                     bundle.putString("confessionId", confessionId)
                     bundle.putBoolean("isAnswered", isAnswered)
                     bundle.putString("answerText", answerText)
-                    bundle.putSerializable("confessionCategory", confessionCategory)
+                    bundle.putString("currentUserUid", currentUserUid)
+                    bundle.putString("answerUserUid", userId)
+                    bundle.putString("answeredUserName", answeredUserName)
+                    bundle.putString("answerFromUserUid", fromUserUid)
                     bundle.putBoolean("favorited", isFavorited)
                     bundle.putString("answerDate", answerDate)
                     val confessAnswerFragment = ConfessAnswerFragment(
