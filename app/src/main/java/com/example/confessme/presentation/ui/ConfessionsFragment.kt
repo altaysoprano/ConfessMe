@@ -16,8 +16,6 @@ import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessFoundBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.SearchViewModel
-import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -38,7 +36,6 @@ class ConfessionsFragment(
     private var limit: Long = 20
 
     private val viewModel: ConfessViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,9 +87,6 @@ class ConfessionsFragment(
                 viewModel.deleteConfession(confessionId)
             },
             onItemPhotoClick = { userUid, userEmail, userName ->
-                sharedViewModel.setSelectedUserUid(userUid)
-                sharedViewModel.setSelectedUserEmail(userEmail)
-                sharedViewModel.setSelectedUserName(userName)
 
                 val bundle = Bundle()
                 bundle.putString("userEmail", userEmail)
@@ -104,9 +98,6 @@ class ConfessionsFragment(
                 navRegister.navigateFrag(profileFragment, true)
             },
             onUserNameClick =  { userUid, userEmail, userName ->
-                sharedViewModel.setSelectedUserEmail(userEmail)
-                sharedViewModel.setSelectedUserName(userName)
-                sharedViewModel.setSelectedUserUid(userUid)
 
                 val bundle = Bundle()
                 bundle.putString("userEmail", userEmail)

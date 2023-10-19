@@ -21,7 +21,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
-import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ProfileViewPagerAdapter
 import com.example.confessme.util.UiState
@@ -36,7 +35,6 @@ class ProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: ProfileViewPagerAdapter
     private val viewModel: ProfileViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -109,19 +107,6 @@ class ProfileFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        sharedViewModel.setSelectedUserUid("")
-        sharedViewModel.setSelectedUserEmail("")
-        sharedViewModel.setSelectedUserName("")
-    }
-
-    fun onBackPressedInProfileFragment() {
-        sharedViewModel.setSelectedUserUid("")
-        sharedViewModel.setSelectedUserName("")
-        sharedViewModel.setSelectedUserEmail("")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

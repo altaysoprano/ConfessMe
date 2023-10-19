@@ -23,8 +23,6 @@ import com.example.confessme.databinding.FragmentOtherUserProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
-import com.example.confessme.presentation.ProfileViewPagerAdapter
-import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
@@ -39,7 +37,6 @@ class OtherUserProfileFragment : Fragment() {
     private lateinit var userUid: String
     private lateinit var userEmail: String
     private val viewModel: ProfileViewModel by viewModels()
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

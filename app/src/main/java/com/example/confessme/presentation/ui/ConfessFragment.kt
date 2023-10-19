@@ -17,7 +17,6 @@ import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.SharedViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +28,6 @@ class ConfessFragment : Fragment() {
     private val viewModel: ConfessViewModel by viewModels()
     private lateinit var userUid: String
     private var isConfessButtonEnabled = true
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -77,15 +77,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
         transaction.commit()
     }
 
-    override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.coordinator)
-        if (currentFragment is ProfileFragment) {
-            val profileFragment = currentFragment as ProfileFragment
-            profileFragment.onBackPressedInProfileFragment()
-        }
-        super.onBackPressed()
-    }
-
     override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
         val fragmentManager = supportFragmentManager
         val confessionsToMeFragment = fragmentManager.findFragmentByTag("confessionsToMeFragment") as? ConfessionsToMeFragment
