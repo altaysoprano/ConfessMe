@@ -53,7 +53,6 @@ class ConfessionsToMeFragment(
         confessListAdapter = ConfessionListAdapter(
             requireContext(),
             mutableListOf(),
-            confessionCategory,
             currentUserUid,
             onAnswerClick = { confessionId, userId, fromUserUid, answeredUserName, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {

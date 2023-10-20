@@ -47,7 +47,7 @@ class ConfessionRepoImp(
                             .whereEqualTo("uid", userUid)
                             .get()
                             .addOnSuccessListener { documents ->
-                                Log.d("Mesaj: " ,"Other user found")
+                                Log.d("Mesaj: ", "Other user found")
                                 if (!documents.isEmpty) {
                                     val userDocument = documents.documents[0]
                                     val userId = userDocument.id
@@ -132,14 +132,17 @@ class ConfessionRepoImp(
                     database.collection("users").document(currentUserUid)
                         .collection("my_confessions")
                 }
+
                 ConfessionCategory.CONFESSIONS_TO_ME -> {
                     database.collection("users").document(currentUserUid)
                         .collection("confessions_to_me")
                 }
+
                 ConfessionCategory.OTHER_USER_CONFESSIONS -> {
                     database.collection("users").document(userUid)
                         .collection("my_confessions")
                 }
+
                 ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
                     database.collection("users").document(userUid)
                         .collection("confessions_to_me")
@@ -287,6 +290,8 @@ class ConfessionRepoImp(
                         val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
                         val favorited = confessionDocumentSnapshot.getBoolean("favorited") ?: false
 
+                        Log.d("Mesaj: ", "CONFESSION: Repoda confession favorite işlemden önce: " + favorited)
+
                         val updatedData = mapOf("favorited" to !favorited)
 
                         val documentRef = database.collection("users")
@@ -321,6 +326,11 @@ class ConfessionRepoImp(
                                         .addOnSuccessListener {
                                             confessionDocRef.get()
                                                 .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                                    Log.d("Mesaj: ", "CONFESSION: Repoda confession favorite işlemden sonra " +
+                                                            updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                                Confession::class.java
+                                                            )?.favorited
+                                                    )
                                                     result.invoke(
                                                         UiState.Success(
                                                             updatedConfessionDocumentSnapshot.documents[0].toObject(
@@ -352,7 +362,7 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun favoriteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit) {
+    override fun favoriteAnswer(isFavorited: Boolean, confessionId: String, result: (UiState<Confession?>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -373,9 +383,8 @@ class ConfessionRepoImp(
                         val answerMap =
                             confessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
                         if (answerMap != null) {
-                            val currentFavorited =
-                                answerMap["favorited"] as Boolean
-                            answerMap["favorited"] = !currentFavorited
+
+                            answerMap["favorited"] = isFavorited
 
                             batch.update(
                                 confessionDocumentSnapshot.reference,
@@ -406,9 +415,8 @@ class ConfessionRepoImp(
                                                     val answerMap =
                                                         myConfessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
                                                     if (answerMap != null) {
-                                                        val currentFavorited =
-                                                            answerMap["favorited"] as Boolean
-                                                        answerMap["favorited"] = !currentFavorited
+
+                                                        answerMap["favorited"] = isFavorited
 
                                                         batch.update(
                                                             myConfessionDocumentSnapshot.reference,
@@ -419,6 +427,12 @@ class ConfessionRepoImp(
                                                             .addOnSuccessListener {
                                                                 confessionDocRef.get()
                                                                     .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                                                        Log.d(
+                                                                            "Mesaj: ",
+                                                                            "Repoda favorited: " + updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                                                Confession::class.java
+                                                                            )?.favorited
+                                                                        )
                                                                         result.invoke(
                                                                             UiState.Success(
                                                                                 updatedConfessionDocumentSnapshot.documents[0].toObject(
@@ -678,26 +692,26 @@ class ConfessionRepoImp(
         }
     }
 
-/*
-    private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
-        if (userName.contains(" ")) {
-            return "Username cannot contain spaces."
+    /*
+        private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
+            if (userName.contains(" ")) {
+                return "Username cannot contain spaces."
+            }
+            if(userName.isBlank()) {
+                return "Username cannot be blank."
+            }
+            if (userName.length < 3) {
+                return "Username must be at least 3 characters long."
+            }
+            if (userName.length > 30) {
+                return "Username cannot exceed 30 characters."
+            }
+            if (bio.length > 200) {
+                return "Bio cannot exceed 200 characters."
+            }
+            return null
         }
-        if(userName.isBlank()) {
-            return "Username cannot be blank."
-        }
-        if (userName.length < 3) {
-            return "Username must be at least 3 characters long."
-        }
-        if (userName.length > 30) {
-            return "Username cannot exceed 30 characters."
-        }
-        if (bio.length > 200) {
-            return "Bio cannot exceed 200 characters."
-        }
-        return null
-    }
-*/
+    */
 
     /*
         private fun isValidPassword(password: String): Boolean {

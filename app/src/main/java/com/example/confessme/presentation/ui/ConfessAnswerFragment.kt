@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.TextAppearanceSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -97,8 +98,9 @@ class ConfessAnswerFragment(
 
                 is UiState.Success -> {
                     binding.progressBarConfessAnswer.visibility = View.GONE
-                    isAnswerFavorited = state.data?.answer?.favorited == true
                     val updatedConfession = state.data
+
+                    Log.d("Mesaj: ", "OnSuccesste şu an")
 
                     val position = updatedConfession?.let { findItemById(it.id) }
 
@@ -115,7 +117,6 @@ class ConfessAnswerFragment(
                     } else {
                         binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
                     }
-                    requireActivity().invalidateOptionsMenu()
                 }
             }
         }
@@ -222,7 +223,13 @@ class ConfessAnswerFragment(
         }
 
         binding.answerIcFavorite.setOnClickListener {
-            viewModel.addAnswerFavorite(confessionId ?: "")
+            isAnswerFavorited = !isAnswerFavorited
+            if (isAnswerFavorited) {
+                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+            } else {
+                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+            }
+            viewModel.addAnswerFavorite(isAnswerFavorited, confessionId ?: "")
         }
 
         binding.answerIcDelete.setOnClickListener {
@@ -278,43 +285,6 @@ class ConfessAnswerFragment(
                 binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
             }
         }
-
-/*
-        if (isMyConfession) {
-            binding.replyButton.visibility = View.GONE
-            binding.answerIcEdit.visibility = View.GONE
-            binding.answerIcFavorite.visibility = View.VISIBLE
-            binding.answerIcDelete.visibility = View.GONE
-
-            if (isAnswerFavorited) {
-                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
-            } else {
-                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-            }
-        } else {
-            binding.answerIcFavorite.isClickable = false
-            binding.answerIcFavorite.isEnabled = false
-
-            if (isConfessionAnswered == true && !isEditAnswer) {
-                binding.replyButton.visibility = View.GONE
-                binding.answerIcEdit.visibility = View.VISIBLE
-                binding.answerIcFavorite.visibility = View.VISIBLE
-                binding.answerIcDelete.visibility = View.VISIBLE
-                if (isAnswerFavorited) {
-                    binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
-                } else {
-                    binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-                }
-            } else {
-                binding.replyButton.visibility = View.VISIBLE
-                binding.answerIcEdit.visibility = View.GONE
-                binding.answerIcFavorite.visibility = View.GONE
-                binding.answerIcDelete.visibility = View.GONE
-                binding.replyButton.isEnabled = isAnswerButtonEnabled
-                binding.replyButton.isClickable = isAnswerButtonEnabled
-            }
-        }
-*/
     }
 
     private fun setTextStates() {

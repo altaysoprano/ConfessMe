@@ -1,14 +1,19 @@
 package com.example.confessme.presentation
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,6 +50,8 @@ class ConfessViewModel @Inject constructor(
     val deleteConfessionState: LiveData<UiState<Confession?>>
         get() = _deleteConfessionState
 
+    private var addFavoriteAnswerJob: Job? = null
+
     fun addConfession(userUid: String, confessionText: String) {
         _addConfessionState.value = UiState.Loading
         repository.addConfession(userUid, confessionText) {
@@ -73,10 +80,15 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    fun addAnswerFavorite(confessionId: String) {
+    fun addAnswerFavorite(isFavorited: Boolean, confessionId: String) {
         _addFavoriteAnswer.value = UiState.Loading
-        repository.favoriteAnswer(confessionId) {
-            _addFavoriteAnswer.value = it
+
+        addFavoriteAnswerJob?.cancel()
+
+        addFavoriteAnswerJob = viewModelScope.launch {
+            repository.favoriteAnswer(isFavorited, confessionId) {
+                _addFavoriteAnswer.value = it
+            }
         }
     }
 

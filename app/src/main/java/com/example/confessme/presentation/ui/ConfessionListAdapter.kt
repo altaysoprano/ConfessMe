@@ -33,7 +33,6 @@ import com.google.firebase.Timestamp
 class ConfessionListAdapter(
     private val context: Context,
     val confessList: MutableList<Confession> = mutableListOf(),
-    private val confessionCategory: ConfessionCategory,
     private val currentUserUid: String,
     private val onAnswerClick: (String, String, String, String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (String) -> Unit,
@@ -189,45 +188,6 @@ class ConfessionListAdapter(
             binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
         }
 
-        /*
-                if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) {
-                    binding.icFavorite.alpha = 0.5f
-                    binding.icFavorite.isEnabled = false
-                    binding.icAnswer.isEnabled = false
-                    binding.moreActionButton.visibility = View.VISIBLE
-                } else {
-                    binding.moreActionButton.visibility = View.GONE
-                    binding.icFavorite.isEnabled = true
-                    binding.icAnswer.isEnabled = true
-                }
-
-                if (confess.answered) {
-                    binding.icAnswer.isEnabled = true
-                    binding.icAnswer.alpha = 1f
-                    binding.icAnswer.setColorFilter(Color.parseColor("#BA0000"))
-                } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
-                    binding.icAnswer.alpha = 1f
-                    binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
-                } else {
-                    binding.icAnswer.alpha = 0.5f
-                    binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
-                    binding.icAnswer.isEnabled =
-                        false
-                }
-
-                if (confess.favorited) {
-                    binding.icFavorite.alpha =
-                        if (confessionCategory == ConfessionCategory.MY_CONFESSIONS) 0.5f else 1f
-                    binding.icFavorite.setColorFilter(Color.parseColor("#BA0000"))
-                } else if (confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
-                    binding.icFavorite.alpha = 1f
-                    binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
-                } else {
-                    binding.icFavorite.alpha = 0.5f
-                    binding.icFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
-                }
-        */
-
         binding.icAnswer.setOnClickListener {
             val confessAnswer = confessList[adapterPosition]
             val confessDateTimestamp = confess.answer.timestamp
@@ -246,7 +206,9 @@ class ConfessionListAdapter(
 
         binding.icFavorite.setOnClickListener {
             val confessFavorite = confessList[adapterPosition]
+            Log.d("Mesaj: ", "CONFESSION: Adapterda favorite işlemden önce: ${confessFavorite.favorited}")
             confessFavorite.favorited = !confessFavorite.favorited
+            Log.d("Mesaj: ", "CONFESSION: Adapterda favorite işlemden sonra: ${confessFavorite.favorited}")
             notifyDataSetChanged()
             onFavoriteClick(confessFavorite.id)
         }
