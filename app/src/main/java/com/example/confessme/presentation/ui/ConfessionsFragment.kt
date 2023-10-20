@@ -81,7 +81,9 @@ class ConfessionsFragment(
                         .show()
                 }
             },
-            onFavoriteClick = {},
+            onFavoriteClick = {isFavorited, confessionId ->
+
+            },
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
             },

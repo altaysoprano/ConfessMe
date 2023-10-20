@@ -271,7 +271,7 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun addFavorite(confessionId: String, result: (UiState<Confession?>) -> Unit) {
+    override fun addFavorite(favorited: Boolean, confessionId: String, result: (UiState<Confession?>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -288,11 +288,10 @@ class ConfessionRepoImp(
                 .addOnSuccessListener { confessionQuerySnapshot ->
                     if (!confessionQuerySnapshot.isEmpty) {
                         val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
-                        val favorited = confessionDocumentSnapshot.getBoolean("favorited") ?: false
 
                         Log.d("Mesaj: ", "CONFESSION: Repoda confession favorite işlemden önce: " + favorited)
 
-                        val updatedData = mapOf("favorited" to !favorited)
+                        val updatedData = mapOf("favorited" to favorited)
 
                         val documentRef = database.collection("users")
                             .document(currentUserUid)
@@ -318,7 +317,7 @@ class ConfessionRepoImp(
                                     val myConfessionDocRef =
                                         myConfessionsCollection.document(confessionId)
 
-                                    val updatedData1 = mapOf("favorited" to !favorited)
+                                    val updatedData1 = mapOf("favorited" to favorited)
 
                                     batch.update(myConfessionDocRef, updatedData1)
 
@@ -326,11 +325,6 @@ class ConfessionRepoImp(
                                         .addOnSuccessListener {
                                             confessionDocRef.get()
                                                 .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                    Log.d("Mesaj: ", "CONFESSION: Repoda confession favorite işlemden sonra " +
-                                                            updatedConfessionDocumentSnapshot.documents[0].toObject(
-                                                                Confession::class.java
-                                                            )?.favorited
-                                                    )
                                                     result.invoke(
                                                         UiState.Success(
                                                             updatedConfessionDocumentSnapshot.documents[0].toObject(

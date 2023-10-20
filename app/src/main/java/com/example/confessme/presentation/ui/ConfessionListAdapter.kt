@@ -35,7 +35,7 @@ class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val currentUserUid: String,
     private val onAnswerClick: (String, String, String, String, Boolean, String, Boolean, String) -> Unit,
-    private val onFavoriteClick: (String) -> Unit,
+    private val onFavoriteClick: (Boolean, String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String) -> Unit,
     private val onUserNameClick: (String, String, String) -> Unit
@@ -206,11 +206,9 @@ class ConfessionListAdapter(
 
         binding.icFavorite.setOnClickListener {
             val confessFavorite = confessList[adapterPosition]
-            Log.d("Mesaj: ", "CONFESSION: Adapterda favorite işlemden önce: ${confessFavorite.favorited}")
             confessFavorite.favorited = !confessFavorite.favorited
-            Log.d("Mesaj: ", "CONFESSION: Adapterda favorite işlemden sonra: ${confessFavorite.favorited}")
             notifyDataSetChanged()
-            onFavoriteClick(confessFavorite.id)
+            onFavoriteClick(confessFavorite.favorited, confessFavorite.id)
         }
 
         binding.confessionsScreenProfileImage.setOnClickListener {

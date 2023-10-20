@@ -73,9 +73,9 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    fun addFavorite(confessionId: String) {
+    fun addFavorite(favorited: Boolean, confessionId: String) {
         _addFavoriteState.value = UiState.Loading
-        repository.addFavorite(confessionId) {
+        repository.addFavorite(favorited, confessionId) {
             _addFavoriteState.value = it
         }
     }

@@ -21,6 +21,7 @@ interface ConfessionRepo {
     )
 
     fun addFavorite(
+        favorited: Boolean,
         confessionId: String,
         callback: (UiState<Confession?>) -> Unit
     )

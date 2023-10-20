@@ -85,8 +85,8 @@ class ConfessionsToMeFragment(
                         .show()
                 }
             },
-            onFavoriteClick = { confessionId ->
-                viewModel.addFavorite(confessionId)
+            onFavoriteClick = { isFavorited, confessionId ->
+                viewModel.addFavorite(isFavorited, confessionId)
             },
             onConfessDeleteClick = {},
             onItemPhotoClick = { userUid, userEmail, userName ->
