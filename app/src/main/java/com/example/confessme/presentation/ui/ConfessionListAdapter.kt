@@ -262,6 +262,7 @@ class ConfessionListAdapter(
     fun updateItem(position: Int, updatedConfession: Confession) {
         confessList[position] = updatedConfession
         notifyItemChanged(position)
+        notifyDataSetChanged()
     }
 
     fun removeConfession(position: Int) {

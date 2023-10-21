@@ -35,7 +35,7 @@ class ConfessionsFragment(
     private lateinit var noConfessFoundBinding: NoConfessFoundBinding
     private var limit: Long = 20
 
-    private val viewModel: ConfessViewModel by viewModels()
+    private val viewModel: ConfessViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

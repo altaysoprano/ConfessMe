@@ -82,9 +82,6 @@ class ConfessViewModel @Inject constructor(
 
     fun addAnswerFavorite(isFavorited: Boolean, confessionId: String) {
         _addFavoriteAnswer.value = UiState.Loading
-
-        addFavoriteAnswerJob?.cancel()
-
         addFavoriteAnswerJob = viewModelScope.launch {
             repository.favoriteAnswer(isFavorited, confessionId) {
                 _addFavoriteAnswer.value = it
