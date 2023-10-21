@@ -76,10 +76,9 @@ class SearchFragment : Fragment() {
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
                     if(state.data.isEmpty()) {
-                        binding.searchNoConfessFoundView.nothingFoundText.text = "No User Found"
-                        binding.searchNoConfessFoundView.root.visibility = View.VISIBLE
+                        binding.searchNoUserFoundView.root.visibility = View.VISIBLE
                     } else {
-                        binding.searchNoConfessFoundView.root.visibility = View.GONE
+                        binding.searchNoUserFoundView.root.visibility = View.GONE
                     }
                     userListAdapter.updateList(state.data)
                 }

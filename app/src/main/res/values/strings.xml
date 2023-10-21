@@ -12,4 +12,9 @@
     <string name="fav_answer">Fav Answer</string>
     <string name="save">SAVE</string>
     <string name="change_password">Change Password</string>
+    <string name="nobody_has_opened_up_to_you_just_yet">Nobody has opened up to you just yet</string>
+    <string name="confess_to_someone_let_it_out">Confess to someone, let it out!</string>
+    <string name="share_your_profile_with_your_friends">Share your profile with your friends!</string>
+    <string name="you_haven_t_told_anyone_a_secret_yet">You haven\'t told anyone a secret yet.</string>
+    <string name="no_user_found">No User Found</string>
 </resources>

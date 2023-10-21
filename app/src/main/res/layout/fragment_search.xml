@@ -39,8 +39,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
-        android:id="@+id/searchNoConfessFoundView"
-        layout="@layout/no_confess_found"
+        android:id="@+id/searchNoUserFoundView"
+        layout="@layout/no_user_found"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?android:attr/actionBarSize"

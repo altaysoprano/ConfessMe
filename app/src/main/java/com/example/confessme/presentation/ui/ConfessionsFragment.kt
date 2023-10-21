@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
-import com.example.confessme.databinding.NoConfessFoundBinding
+import com.example.confessme.databinding.YouHaveNoConfessionsBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
@@ -32,7 +32,7 @@ class ConfessionsFragment(
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var confessListAdapter: ConfessionListAdapter
-    private lateinit var noConfessFoundBinding: NoConfessFoundBinding
+    private lateinit var noConfessFoundBinding: YouHaveNoConfessionsBinding
     private var limit: Long = 20
 
     private val viewModel: ConfessViewModel by activityViewModels()
@@ -132,11 +132,10 @@ class ConfessionsFragment(
                 }
 
                 val currentScrollPosition = recyclerView.computeVerticalScrollOffset()
-                val maxHeight = 600 // Profil sayfasının maksimum yüksekliği
-                val minHeight = 200 // Profil sayfasının minimum yüksekliği
-                var lastScrollPosition = 0 // Kaydırma pozisyonunu takip etmek için bir başlangıç değeri
+                val maxHeight = 600
+                val minHeight = 200
+                var lastScrollPosition = 0
 
-                // Kullanıcı yukarı kaydırıyorsa ve profil sayfasının yüksekliği belli bir sınırın altındaysa
                 if (currentScrollPosition < lastScrollPosition && profileBinding.profileViewPager.height < maxHeight) {
                     val newHeight = profileBinding.profileViewPager.height + abs(dy)
                     if (newHeight > maxHeight) {
@@ -147,7 +146,6 @@ class ConfessionsFragment(
                     profileBinding.profileViewPager.requestLayout()
                 }
 
-                // Kullanıcı aşağı kaydırıyorsa ve profil sayfasının yüksekliği belli bir sınırın üstündeyse
                 if (currentScrollPosition > lastScrollPosition && profileBinding.profileViewPager.height > minHeight) {
                     val newHeight = profileBinding.profileViewPager.height - abs(dy)
                     if (newHeight < minHeight) {

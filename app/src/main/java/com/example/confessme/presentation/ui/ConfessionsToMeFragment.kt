@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
-import com.example.confessme.databinding.NoConfessFoundBinding
+import com.example.confessme.databinding.NoConfessionsToYouBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
@@ -32,7 +32,7 @@ class ConfessionsToMeFragment(
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
-    private lateinit var noConfessFoundBinding: NoConfessFoundBinding
+    private lateinit var noConfessFoundBinding: NoConfessionsToYouBinding
     private var limit: Long = 20
 
     private lateinit var confessListAdapter: ConfessionListAdapter

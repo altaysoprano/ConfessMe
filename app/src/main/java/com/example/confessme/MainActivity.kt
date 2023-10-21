@@ -55,13 +55,20 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
     override fun navigateFrag(fragment: Fragment, addToStack: Boolean) {
         val fragmentManager = supportFragmentManager
         val transaction = fragmentManager.beginTransaction()
-            .replace(R.id.coordinator, fragment)
+
+        transaction.setCustomAnimations(
+            R.anim.fade_in,
+            R.anim.fade_out,
+            R.anim.fade_in,
+            R.anim.fade_out
+        )
+
+        transaction.replace(R.id.coordinator, fragment)
 
         when (fragment) {
             is HomeFragment, is ProfileFragment, is SearchFragment -> {
                 binding.bottomNavigationView.visibility = View.VISIBLE
 
-                // Tüm fragmentları geri alırken ilişkilendirilen işlemi de kaldır
                 if (!addToStack) {
                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 }
