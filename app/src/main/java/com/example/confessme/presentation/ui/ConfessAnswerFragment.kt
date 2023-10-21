@@ -39,7 +39,7 @@ class ConfessAnswerFragment(
 
     private lateinit var binding: FragmentConfessAnswerBinding
     private lateinit var navRegister: FragmentNavigation
-    private val viewModel: ConfessViewModel by viewModels()
+    private val viewModel: ConfessViewModel by activityViewModels()
     private var isAnswerButtonEnabled = true
     private var isEditAnswer: Boolean = false
     private lateinit var currentUserUid: String
