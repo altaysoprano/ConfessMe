@@ -92,12 +92,24 @@
             android:src="@drawable/ic_edit"
             app:tint="#B8B8B8" />
 
-        <ImageView
-            android:id="@+id/answer_ic_favorite"
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:src="@drawable/ic_favorite" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/answer_ic_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:src="@drawable/ic_favorite" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar_answer_favorite"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_centerInParent="true"
+                android:indeterminateTint="@color/black"
+                android:visibility="invisible"></ProgressBar>
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/answer_ic_delete"

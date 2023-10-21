@@ -39,7 +39,7 @@ class ConfessAnswerFragment(
 
     private lateinit var binding: FragmentConfessAnswerBinding
     private lateinit var navRegister: FragmentNavigation
-    private val viewModel: ConfessViewModel by activityViewModels()
+    private val viewModel: ConfessViewModel by viewModels()
     private var isAnswerButtonEnabled = true
     private var isEditAnswer: Boolean = false
     private lateinit var currentUserUid: String
@@ -88,19 +88,21 @@ class ConfessAnswerFragment(
         viewModel.addFavoriteAnswer.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                    binding.answerIcFavorite.visibility = View.INVISIBLE
+                    binding.progressBarAnswerFavorite.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    binding.answerIcFavorite.visibility = View.VISIBLE
+                    binding.progressBarAnswerFavorite.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarConfessAnswer.visibility = View.GONE
+                    binding.answerIcFavorite.visibility = View.VISIBLE
+                    binding.progressBarAnswerFavorite.visibility = View.GONE
                     val updatedConfession = state.data
-
                     val position = updatedConfession?.let { findItemById(it.id) }
 
                     if (position != -1) {
@@ -109,6 +111,12 @@ class ConfessAnswerFragment(
                                 onUpdateItem(position, updatedConfession)
                             }
                         }
+                    }
+
+                    if(state.data?.answer?.favorited == true) {
+                        binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+                    } else {
+                        binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
                     }
                 }
             }
@@ -217,11 +225,6 @@ class ConfessAnswerFragment(
 
         binding.answerIcFavorite.setOnClickListener {
             isAnswerFavorited = !isAnswerFavorited
-            if (isAnswerFavorited) {
-                binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
-            } else {
-                binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-            }
             viewModel.addAnswerFavorite(isAnswerFavorited, confessionId ?: "")
         }
 
