@@ -13,10 +13,10 @@
         android:src="@drawable/no_result_found" />
 
     <TextView
-        android:id="@+id/no_confessions_to_you_text"
+        android:id="@+id/no_confessions_here_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/nobody_has_opened_up_to_you_just_yet"
+        android:text="@string/no_confessions_found_here"
         android:textColor="@android:color/black"
         android:textStyle="bold"
         android:alpha="0.5"
@@ -26,7 +26,7 @@
         android:id="@+id/share_your_profile_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/share_your_profile_with_your_friends"
+        android:text="Be the first one to confess!"
         android:textColor="@color/confessmered"
         android:textStyle="bold"
         android:textSize="16sp" />

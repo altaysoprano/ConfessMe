@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center"
+android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:alpha="0.5"
-        android:contentDescription="@string/no_confess_found_description"
-        android:src="@drawable/no_result_found" />
+<ImageView
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:alpha="0.5"
+    android:contentDescription="@string/no_confess_found_description"
+    android:src="@drawable/no_result_found" />
 
-    <TextView
-        android:id="@+id/no_confessions_to_you_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nobody_has_opened_up_to_you_just_yet"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"
-        android:alpha="0.5"
-        android:textSize="16sp" />
+<TextView
+    android:id="@+id/nothing_found_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/you_haven_t_told_anyone_a_secret_yet"
+    android:textColor="@android:color/black"
+    android:textStyle="bold"
+    android:alpha="0.5"
+    android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/share_your_profile_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/share_your_profile_with_your_friends"
-        android:textColor="@color/confessmered"
-        android:textStyle="bold"
-        android:textSize="16sp" />
+<TextView
+    android:id="@+id/confess_someone_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/confess_to_someone_let_it_out"
+    android:textColor="@color/confessmered"
+    android:textStyle="bold"
+    android:textSize="16sp" />
 
 </LinearLayout>

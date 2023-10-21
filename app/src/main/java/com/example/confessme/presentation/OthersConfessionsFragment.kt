@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsBinding
+import com.example.confessme.databinding.FragmentOthersConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.databinding.YouHaveNoConfessionsBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.util.ConfessionCategory
@@ -23,16 +25,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Math.abs
 
 @AndroidEntryPoint
-class ConfessionsFragment(
+class OthersConfessionsFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-    ) : Fragment() {
+) : Fragment() {
 
-    private lateinit var binding: FragmentConfessionsBinding
+    private lateinit var binding: FragmentOthersConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var confessListAdapter: ConfessionListAdapter
-    private lateinit var noConfessFoundBinding: YouHaveNoConfessionsBinding
+    private lateinit var noConfessFoundBinding: NoConfessionsHereBinding
     private var limit: Long = 20
 
     private val viewModel: ConfessViewModel by viewModels()
@@ -42,7 +44,7 @@ class ConfessionsFragment(
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentConfessionsBinding.inflate(inflater, container, false)
+        binding = FragmentOthersConfessionsBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -110,11 +112,11 @@ class ConfessionsFragment(
                 navRegister.navigateFrag(profileFragment, true)
             }
         )
-        noConfessFoundBinding = binding.confessionsNoConfessFoundView
+        noConfessFoundBinding = binding.othersConfessionsNoConfessFoundView
 
         viewModel.fetchConfessions(userUid, limit, confessionCategory)
 
-        binding.confessionListRecyclerviewId.addOnScrollListener(object :
+        binding.othersConfessionsListRecyclerviewId.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -168,7 +170,7 @@ class ConfessionsFragment(
     }
 
     private fun setupRecyclerView() {
-        binding.confessionListRecyclerviewId.apply {
+        binding.othersConfessionsListRecyclerviewId.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = confessListAdapter
         }
@@ -178,19 +180,19 @@ class ConfessionsFragment(
         viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarConfessions.visibility = View.VISIBLE
+                    binding.progressBarOthersConfessions.visibility = View.VISIBLE
                     noConfessFoundBinding.root.visibility = View.GONE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarConfessions.visibility = View.GONE
+                    binding.progressBarOthersConfessions.visibility = View.GONE
                     noConfessFoundBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarConfessions.visibility = View.GONE
+                    binding.progressBarOthersConfessions.visibility = View.GONE
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
                     } else {
@@ -206,17 +208,17 @@ class ConfessionsFragment(
         viewModel.deleteConfessionState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarConfessionsGeneral.visibility = View.VISIBLE
+                    binding.progressBarOthersConfessionsGeneral.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarConfessionsGeneral.visibility = View.GONE
+                    binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarConfessionsGeneral.visibility = View.GONE
+                    binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
                     val deletedConfession = state.data
                     val position = deletedConfession?.let { findPositionById(it.id) }
 
