@@ -22,4 +22,13 @@
         android:alpha="0.5"
         android:textSize="16sp" />
 
+    <TextView
+        android:id="@+id/share_your_profile_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Be the first one to confess!"
+        android:textColor="@color/confessmered"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
 </LinearLayout>

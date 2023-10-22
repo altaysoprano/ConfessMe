@@ -129,6 +129,11 @@ class ConfessedFragment(
             }
         })
 
+        binding.swipeRefreshLayoutConfessed.setOnRefreshListener {
+            viewModel.fetchConfessions(userUid, limit, confessionCategory)
+            confessListAdapter.notifyDataSetChanged()
+        }
+
         setupRecyclerView()
         observeFetchConfessions()
         observeAddFavorite()
@@ -159,6 +164,7 @@ class ConfessedFragment(
 
                 is UiState.Success -> {
                     binding.progressBarConfessed.visibility = View.GONE
+                    binding.swipeRefreshLayoutConfessed.isRefreshing = false
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
                     } else {

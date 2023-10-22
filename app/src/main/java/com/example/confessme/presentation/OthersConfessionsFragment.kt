@@ -15,6 +15,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentOthersConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.databinding.NoConfessionsHereBeTheFirstOneBinding
 import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.databinding.YouHaveNoConfessionsBinding
 import com.example.confessme.presentation.ConfessViewModel
@@ -34,7 +35,7 @@ class OthersConfessionsFragment(
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var confessListAdapter: ConfessionListAdapter
-    private lateinit var noConfessFoundBinding: NoConfessionsHereBinding
+    private lateinit var noConfessFoundBinding: NoConfessionsHereBeTheFirstOneBinding
     private var limit: Long = 20
 
     private val viewModel: ConfessViewModel by viewModels()
@@ -162,6 +163,11 @@ class OthersConfessionsFragment(
             }
         })
 
+        binding.swipeRefreshLayoutOthersConfessions.setOnRefreshListener {
+            viewModel.fetchConfessions(userUid, limit, confessionCategory)
+            confessListAdapter.notifyDataSetChanged()
+        }
+
         setupRecyclerView()
         observeFetchConfessions()
         observeDeleteConfession()
@@ -193,6 +199,7 @@ class OthersConfessionsFragment(
 
                 is UiState.Success -> {
                     binding.progressBarOthersConfessions.visibility = View.GONE
+                    binding.swipeRefreshLayoutOthersConfessions.isRefreshing = false
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
                     } else {
