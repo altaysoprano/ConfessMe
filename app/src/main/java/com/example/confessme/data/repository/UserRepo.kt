@@ -14,10 +14,12 @@ interface UserRepo {
         result: (UiState<String>) -> Unit
     )
     fun fetchUserProfile(result: (UiState<User?>) -> Unit)
-    fun fetchUserProfileByEmail(username: String, result: (UiState<User?>) -> Unit)
+    fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit)
     fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
-    fun followUser(useremailToFollow: String, callback: (UiState<String>) -> Unit)
-    fun checkIfUserFollowed(useremailToCheck: String, callback: (UiState<Boolean>) -> Unit)
-    fun unfollowUser(useremailToUnfollow: String, callback: (UiState<String>) -> Unit)
+    fun getFollowingUsers(userUid: String, result: (UiState<List<User>>) -> Unit)
+    fun getMyFollowingUsers(result: (UiState<List<User>>) -> Unit)
+    fun followUser(userUidToFollow: String, callback: (UiState<String>) -> Unit)
+    fun checkIfUserFollowed(userUidToCheck: String, callback: (UiState<Boolean>) -> Unit)
+    fun unfollowUser(userUidToUnfollow: String, callback: (UiState<String>) -> Unit)
 
 }

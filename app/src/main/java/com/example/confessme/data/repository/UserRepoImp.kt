@@ -1,11 +1,13 @@
 package com.example.confessme.data.repository
 
 import android.net.Uri
+import android.util.Log
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import java.util.Date
 
@@ -107,14 +109,13 @@ class UserRepoImp(
         }
     }
 
-    override fun fetchUserProfileByEmail(useremail: String, result: (UiState<User?>) -> Unit) {
-        database.collection("users")
-            .whereEqualTo("email", useremail)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    val document = documents.documents[0]
-                    val user = document.toObject(User::class.java)
+    override fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit) {
+        val userRef = database.collection("users").document(userUid)
+
+        userRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val user = documentSnapshot.toObject(User::class.java)
                     result.invoke(UiState.Success(user))
                 } else {
                     result.invoke(UiState.Failure("User data not found"))
@@ -159,12 +160,102 @@ class UserRepoImp(
         }
     }
 
-    override fun followUser(useremailToFollow: String, callback: (UiState<String>) -> Unit) {
+    override fun getFollowingUsers(userUid: String, result: (UiState<List<User>>) -> Unit) {
+        val followingRef = database.collection("users").document(userUid)
+            .collection("following")
+
+        followingRef
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { followingDocuments ->
+                val followedUserUids = followingDocuments.documents.map { it.id }
+
+                val followedUserProfiles = mutableListOf<User>()
+
+                for (followedUid in followedUserUids) {
+                    val userRef = database.collection("users").document(followedUid)
+
+                    userRef.get()
+                        .addOnSuccessListener { documentSnapshot ->
+                            if (documentSnapshot.exists()) {
+                                val userProfile = documentSnapshot.toObject(User::class.java)
+                                if (userProfile != null) {
+                                    followedUserProfiles.add(userProfile)
+                                }
+                            }
+                            if (followedUserUids.size == followedUserProfiles.size) {
+                                result.invoke(UiState.Success(followedUserProfiles))
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            result.invoke(UiState.Failure(exception.localizedMessage))
+                        }
+                }
+
+                if (followingDocuments.isEmpty) {
+                    result.invoke(UiState.Success(followedUserProfiles))
+                }
+            }
+            .addOnFailureListener { exception ->
+                result.invoke(UiState.Failure(exception.localizedMessage))
+            }
+    }
+
+    override fun getMyFollowingUsers(result: (UiState<List<User>>) -> Unit) {
+
+        val user = firebaseAuth.currentUser
+        val currentUserUid = user?.uid
+
+        if (currentUserUid != null) {
+            val followingRef = database.collection("users").document(currentUserUid)
+                .collection("following")
+
+            followingRef
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { followingDocuments ->
+                    val followedUserUids = followingDocuments.documents.map { it.id }
+
+                    val followedUserProfiles = mutableListOf<User>()
+
+                    for (followedUid in followedUserUids) {
+                        val userRef = database.collection("users").document(followedUid)
+
+                        userRef.get()
+                            .addOnSuccessListener { documentSnapshot ->
+                                if (documentSnapshot.exists()) {
+                                    val userProfile = documentSnapshot.toObject(User::class.java)
+                                    if (userProfile != null) {
+                                        followedUserProfiles.add(userProfile)
+                                    }
+                                }
+                                if (followedUserUids.size == followedUserProfiles.size) {
+                                    result.invoke(UiState.Success(followedUserProfiles))
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    }
+
+                    if (followingDocuments.isEmpty) {
+                        result.invoke(UiState.Success(followedUserProfiles))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun followUser(userUidToFollow: String, callback: (UiState<String>) -> Unit) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
-                .collection("following").document(useremailToFollow)
+                .collection("following").document(userUidToFollow)
 
             followingRef.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
                 .addOnSuccessListener {
@@ -178,12 +269,12 @@ class UserRepoImp(
         }
     }
 
-    override fun unfollowUser(useremailToUnfollow: String, callback: (UiState<String>) -> Unit) {
+    override fun unfollowUser(userUidToUnfollow: String, callback: (UiState<String>) -> Unit) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
-                .collection("following").document(useremailToUnfollow)
+                .collection("following").document(userUidToUnfollow)
 
             followingRef.delete()
                 .addOnSuccessListener {
@@ -198,14 +289,14 @@ class UserRepoImp(
     }
 
     override fun checkIfUserFollowed(
-        useremailToCheck: String,
+        userUidToCheck: String,
         callback: (UiState<Boolean>) -> Unit
     ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
-                .collection("following").document(useremailToCheck)
+                .collection("following").document(userUidToCheck)
 
             followingRef.get()
                 .addOnSuccessListener { documentSnapshot ->
@@ -224,7 +315,7 @@ class UserRepoImp(
         if (userName.contains(" ")) {
             return "Username cannot contain spaces."
         }
-        if(userName.isBlank()) {
+        if (userName.isBlank()) {
             return "Username cannot be blank."
         }
         if (userName.length < 3) {

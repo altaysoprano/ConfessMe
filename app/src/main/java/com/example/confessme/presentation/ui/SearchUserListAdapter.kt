@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.UserItemBinding
 
@@ -42,6 +43,8 @@ class SearchUserListAdapter(
                     Glide.with(itemView)
                         .load(user.imageUrl)
                         .into(searchScreenProfileImage)
+                } else {
+                    binding.searchScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                 }
 
                 itemView.setOnClickListener {

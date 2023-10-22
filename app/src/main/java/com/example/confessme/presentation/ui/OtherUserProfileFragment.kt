@@ -19,6 +19,7 @@ import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.confessme.R
+import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentOtherUserProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
@@ -75,13 +76,28 @@ class OtherUserProfileFragment : Fragment() {
             }
         })
 
-        if (!userEmail.isNullOrEmpty()) {
-            viewModel.fetchUserProfileByEmail(userEmail)
-            checkIfUserFollowed(userEmail)
+        binding.otherUserFollowingTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("userUid", userUid)
+            bundle.putBoolean("isMyFollowings", false)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+
+        if (!userUid.isNullOrEmpty()) {
+            viewModel.fetchUserProfileByEmail(userUid)
+            checkIfUserFollowed(userUid)
             viewPagerAdapter = OtherUserViewPagerAdapter(userUid, this)
             binding.otherUserProfileViewPager.adapter = viewPagerAdapter
         } else {
-            Toast.makeText(requireContext(), "An error occured. Please try again.", Toast.LENGTH_SHORT)
+            Toast.makeText(
+                requireContext(),
+                "An error occured. Please try again.",
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
 
@@ -141,8 +157,8 @@ class OtherUserProfileFragment : Fragment() {
 
     private fun followOrUnfollowUser() {
 
-        if (!userEmail.isNullOrEmpty()) {
-            viewModel.followOrUnfollowUser(userEmail)
+        if (!userUid.isNullOrEmpty()) {
+            viewModel.followOrUnfollowUser(userUid)
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
                 when (state) {
                     is UiState.Loading -> {
@@ -160,7 +176,7 @@ class OtherUserProfileFragment : Fragment() {
                     is UiState.Success -> {
                         binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                             View.GONE
-                        checkIfUserFollowed(userEmail)
+                        checkIfUserFollowed(userUid)
                         Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -169,8 +185,8 @@ class OtherUserProfileFragment : Fragment() {
     }
 
     @SuppressLint("ResourceAsColor")
-    private fun checkIfUserFollowed(useremailToCheck: String) {
-        viewModel.checkIfUserFollowed(useremailToCheck)
+    private fun checkIfUserFollowed(userUidToCheck: String) {
+        viewModel.checkIfUserFollowed(userUidToCheck)
         viewModel.checkFollowingState.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is UiState.Success -> {

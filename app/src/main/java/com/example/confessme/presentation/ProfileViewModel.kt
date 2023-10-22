@@ -48,20 +48,20 @@ class ProfileViewModel @Inject constructor(
             _updateProfileState.value = it
         }
     }
-    fun fetchUserProfileByEmail(useremail: String) {
+    fun fetchUserProfileByEmail(userUid: String) {
         _fetchProfileState.value = UiState.Loading
 
-        repository.fetchUserProfileByEmail(useremail) { result ->
+        repository.fetchUserProfileByUid(userUid) { result ->
             _fetchProfileState.postValue(result)
         }
     }
 
-    fun followOrUnfollowUser(useremailToFollow: String) {
+    fun followOrUnfollowUser(userUid: String) {
         _followUserState.value = UiState.Loading
 
-        repository.checkIfUserFollowed(useremailToFollow) { result ->
+        repository.checkIfUserFollowed(userUid) { result ->
             if (result is UiState.Success && result.data) {
-                repository.unfollowUser(useremailToFollow) { unfollowResult ->
+                repository.unfollowUser(userUid) { unfollowResult ->
                     if (unfollowResult is UiState.Success) {
                         _followUserState.postValue(unfollowResult)
                     } else {
@@ -69,7 +69,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
             } else {
-                repository.followUser(useremailToFollow) { followResult ->
+                repository.followUser(userUid) { followResult ->
                     if (followResult is UiState.Success) {
                         _followUserState.postValue(UiState.Success(followResult.data))
                     } else {
@@ -79,10 +79,10 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
-    fun checkIfUserFollowed(useremailToCheck: String) {
+    fun checkIfUserFollowed(userUid: String) {
         _checkFollowingState.value = UiState.Loading
 
-        repository.checkIfUserFollowed(useremailToCheck) { result ->
+        repository.checkIfUserFollowed(userUid) { result ->
             _checkFollowingState.postValue(result)
         }
     }

@@ -71,6 +71,16 @@ class ProfileFragment : Fragment() {
             }
         })
 
+        binding.profileFollowingTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putBoolean("isMyFollowings", true)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+
         viewModel.getProfileData()
         viewPagerAdapter = ProfileViewPagerAdapter( this)
         binding.profileViewPager.adapter = viewPagerAdapter
