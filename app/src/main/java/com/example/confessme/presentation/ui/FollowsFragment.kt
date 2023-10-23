@@ -41,11 +41,11 @@ class FollowsFragment : Fragment() {
 
         binding = FragmentFollowsBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
-        (activity as AppCompatActivity?)!!.title = "Following"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.followsToolbar)
         setHasOptionsMenu(true)
         userUid = arguments?.getString("userUid") ?: "Empty Uid"
         followTypeOrdinal = arguments?.getInt("followType") ?: -1
+        setTitle()
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -122,6 +122,17 @@ class FollowsFragment : Fragment() {
                 "An error occured. Please try again.",
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    private fun setTitle() {
+        val followType = FollowType.values()[followTypeOrdinal]
+        if (followType == FollowType.MyFollowers || followType == FollowType.OtherUserFollowers) {
+            (activity as AppCompatActivity?)!!.title = "Followers"
+        } else if (followType == FollowType.MyFollowings || followType == FollowType.OtherUserFollowings) {
+            (activity as AppCompatActivity?)!!.title = "Following"
+        } else {
+            (activity as AppCompatActivity?)!!.title = "Error"
         }
     }
 }
