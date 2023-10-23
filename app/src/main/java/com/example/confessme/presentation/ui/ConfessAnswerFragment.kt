@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
@@ -48,7 +49,9 @@ class ConfessAnswerFragment(
     private var isAnswerFavorited: Boolean = false
     private var isConfessionAnswered: Boolean = false
     private var answerDate: String = ""
+    private lateinit var fromUserImageUrl: String
     private lateinit var answeredUserName: String
+    private lateinit var confessedUserName: String
     private lateinit var answerText: String
     private lateinit var dialogHelper: DialogHelper
 
@@ -65,7 +68,9 @@ class ConfessAnswerFragment(
         currentUserUid = arguments?.getString("currentUserUid", "") ?: ""
         answerUserUid = arguments?.getString("answerUserUid", "") ?: ""
         answerFromUserUid = arguments?.getString("answerFromUserUid", "") ?: ""
+        fromUserImageUrl = arguments?.getString("fromUserImageUrl", "") ?: ""
         answeredUserName = arguments?.getString("answeredUserName", "") ?: ""
+        confessedUserName = arguments?.getString("confessedUserName", "") ?: ""
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
         answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = DialogHelper(requireContext())
@@ -75,6 +80,7 @@ class ConfessAnswerFragment(
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
+        setUserImage()
         setTextStates()
         setFavoriteDeleteEditReplyStates()
         observeAddAnswer()
@@ -82,6 +88,16 @@ class ConfessAnswerFragment(
         observeDeleteAnswer()
 
         return binding.root
+    }
+
+    private fun setUserImage() {
+        if (fromUserImageUrl.isNotEmpty()) {
+            Glide.with(requireContext())
+                .load(fromUserImageUrl)
+                .into(binding.answerScreenProfileImage)
+        } else {
+            binding.answerScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+        }
     }
 
     private fun observeFavorite() {
@@ -215,6 +231,8 @@ class ConfessAnswerFragment(
 
         binding.answerIcEdit.setOnClickListener {
             binding.confessAnswerTextView.visibility = View.GONE
+            binding.answerScreenProfileImage.visibility = View.GONE
+            binding.confessAnswerUserNameAndDate.visibility = View.GONE
             binding.replyButton.visibility = View.VISIBLE
             binding.confessAnswerEditText.let {
                 it.visibility = View.VISIBLE
@@ -289,11 +307,12 @@ class ConfessAnswerFragment(
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
-            binding.confessAnswerTextView.text = answerText
+            setUserNameAndAnswerText()
             setUsernameAndDateText()
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
             binding.confessAnswerTextView.visibility = View.GONE
+            binding.answerScreenProfileImage.visibility = View.GONE
         }
 
         val maxLength = 560
@@ -325,12 +344,18 @@ class ConfessAnswerFragment(
     }
 
     private fun setUsernameAndDateText() {
-        val answeredUserNameBold = SpannableString("@$answeredUserName")
-        answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        answeredUserNameBold.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.confessmered)), 0, answeredUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val answeredUserNameBold = SpannableString(answeredUserName)
+        answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         val answerDateBold = SpannableString(answerDate)
-        answerDateBold.setSpan(StyleSpan(Typeface.BOLD), 0, answerDate.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        val usernameAndDateText = TextUtils.concat("Answered by ", answeredUserNameBold, " ", answerDateBold)
+        val usernameAndDateText = TextUtils.concat(answeredUserNameBold, " · ", answerDateBold)
         binding.confessAnswerUserNameAndDate.text = usernameAndDateText
+    }
+
+    private fun setUserNameAndAnswerText() {
+        val confessedUserNameBold = SpannableString("@$confessedUserName")
+        confessedUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        confessedUserNameBold.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.confessmered)), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        val usernameAndAnswerText = TextUtils.concat(confessedUserNameBold, " ", answerText)
+        binding.confessAnswerTextView.text = usernameAndAnswerText
     }
 }
