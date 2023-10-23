@@ -17,6 +17,7 @@ import com.example.confessme.databinding.FragmentSearchBinding
 import com.example.confessme.presentation.FollowsViewModel
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.SearchViewModel
+import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,7 +27,7 @@ class FollowsFragment : Fragment() {
     private lateinit var binding: FragmentFollowsBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var userUid: String
-    private var isMyFollowings: Boolean = false
+    private var followTypeOrdinal: Int = -1
     private val viewModel: FollowsViewModel by viewModels()
 
     private val userListAdapter = SearchUserListAdapter(mutableListOf()) { user ->
@@ -43,15 +44,15 @@ class FollowsFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = "Following"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.followsToolbar)
         setHasOptionsMenu(true)
-        userUid = arguments?.getString("userUid") ?: ""
-        isMyFollowings = arguments?.getBoolean("isMyFollowings") ?: false
+        userUid = arguments?.getString("userUid") ?: "Empty Uid"
+        followTypeOrdinal = arguments?.getInt("followType") ?: -1
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        getFollowings()
+        getFollowings(followTypeOrdinal)
         setupRecyclerView()
         observeSearchResults()
 
@@ -71,14 +72,16 @@ class FollowsFragment : Fragment() {
                 is UiState.Loading -> {
                     binding.progressBarFollows.visibility = View.VISIBLE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarFollows.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarFollows.visibility = View.GONE
-                    if(state.data.isEmpty()) {
+                    if (state.data.isEmpty()) {
                         binding.followsNoUserFoundView.root.visibility = View.VISIBLE
                     } else {
                         binding.followsNoUserFoundView.root.visibility = View.GONE
@@ -109,14 +112,11 @@ class FollowsFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getFollowings() {
-        if (isMyFollowings == false && !userUid.isEmpty()) {
-            viewModel.getFollowingUsers(userUid)
-        }
-        else if(isMyFollowings) {
-            viewModel.getMyFollowingUsers()
-        }
-        else {
+    private fun getFollowings(followTypeOrdinal: Int) {
+        if (userUid != "Empty Uid" && followTypeOrdinal != -1) {
+            val followType = FollowType.values()[followTypeOrdinal]
+            viewModel.getFollowUsers(userUid, followType)
+        } else {
             Toast.makeText(
                 requireContext(),
                 "An error occured. Please try again.",

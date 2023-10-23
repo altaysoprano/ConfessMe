@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.UserRepo
+import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,21 +21,11 @@ class FollowsViewModel @Inject constructor(
     val followingUsers: LiveData<UiState<List<User>>>
         get() = _followingUsers
 
-    fun getFollowingUsers(userUid: String) {
+    fun getFollowUsers(userUid: String, followType: FollowType) {
         _followingUsers.value = UiState.Loading
 
         viewModelScope.launch {
-            repository.getFollowingUsers(userUid) { result ->
-                _followingUsers.postValue(result)
-            }
-        }
-    }
-
-    fun getMyFollowingUsers() {
-        _followingUsers.value = UiState.Loading
-
-        viewModelScope.launch {
-            repository.getMyFollowingUsers { result ->
+            repository.getFollowersOrFollowing(userUid, followType) { result ->
                 _followingUsers.postValue(result)
             }
         }

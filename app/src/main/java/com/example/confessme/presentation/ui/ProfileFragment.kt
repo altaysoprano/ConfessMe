@@ -23,6 +23,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ProfileViewPagerAdapter
+import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
@@ -73,7 +74,19 @@ class ProfileFragment : Fragment() {
 
         binding.profileFollowingTv.setOnClickListener {
             val bundle = Bundle()
-            bundle.putBoolean("isMyFollowings", true)
+            bundle.putString("userUid", "")
+            bundle.putInt("followType", FollowType.MyFollowings.ordinal)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+
+        binding.profileFollowersTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("userUid", "")
+            bundle.putInt("followType", FollowType.MyFollowers.ordinal)
 
             val followsFragment = FollowsFragment()
             followsFragment.arguments = bundle

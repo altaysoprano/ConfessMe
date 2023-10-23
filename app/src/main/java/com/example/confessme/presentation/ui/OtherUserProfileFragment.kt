@@ -24,6 +24,7 @@ import com.example.confessme.databinding.FragmentOtherUserProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
@@ -51,112 +52,15 @@ class OtherUserProfileFragment : Fragment() {
         userEmail = arguments?.getString("userEmail") ?: ""
         userUid = arguments?.getString("userUid") ?: ""
 
-        binding.otherUserProfileTabLayout.addOnTabSelectedListener(object :
-            TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-                tab?.let {
-                    binding.otherUserProfileViewPager.currentItem = it.position
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Bir sekme seçilmemiş durumdayken yapılacak işlemler
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
-            }
-        })
-
-        binding.otherUserProfileViewPager.registerOnPageChangeCallback(object :
-            ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                binding.otherUserProfileTabLayout.getTabAt(position)?.select()
-            }
-        })
-
-        binding.otherUserFollowingTv.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("userUid", userUid)
-            bundle.putBoolean("isMyFollowings", false)
-
-            val followsFragment = FollowsFragment()
-            followsFragment.arguments = bundle
-
-            navRegister.navigateFrag(followsFragment, true)
-        }
-
-        if (!userUid.isNullOrEmpty()) {
-            viewModel.fetchUserProfileByEmail(userUid)
-            checkIfUserFollowed(userUid)
-            viewPagerAdapter = OtherUserViewPagerAdapter(userUid, this)
-            binding.otherUserProfileViewPager.adapter = viewPagerAdapter
-        } else {
-            Toast.makeText(
-                requireContext(),
-                "An error occured. Please try again.",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-
-        viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.otherUserProgressBarProfile.visibility = View.VISIBLE
-                    setAllProfileDataDefault()
-                }
-
-                is UiState.Failure -> {
-                    binding.otherUserProgressBarProfile.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.otherUserProgressBarProfile.visibility = View.GONE
-                    val userProfile = state.data
-                    if (userProfile != null) {
-                        binding.otherUserFirstNameTv.text = userProfile.userName
-                        binding.otherUserBioTv.text = userProfile.bio
-
-                        if (userProfile.imageUrl.isNotEmpty()) {
-                            Glide.with(requireContext())
-                                .load(userProfile.imageUrl)
-                                .into(binding.otherUserProfileScreenProfileImage)
-                        } else {
-                            binding.otherUserProfileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
-                        }
-                    }
-                }
-            }
-        }
-
-        binding.otherUserProgressButtonLayout.followButtonCardview.setOnClickListener {
-            followOrUnfollowUser()
-        }
-
-        binding.otherUserConfessFabButton.setOnClickListener {
-
-            if (!userUid.isEmpty()) {
-                val bundle = Bundle()
-                bundle.putString("userUid", userUid)
-
-                val confessFragment = ConfessFragment()
-                confessFragment.arguments = bundle
-
-                navRegister.navigateFrag(confessFragment, true)
-            } else {
-                Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
-            }
-        }
+        setTablayoutAndViewPager()
+        setAllClickListeners()
+        fetchUserProfile()
+        observeFetchState()
 
         return binding.root
     }
 
     private fun followOrUnfollowUser() {
-
         if (!userUid.isNullOrEmpty()) {
             viewModel.followOrUnfollowUser(userUid)
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
@@ -176,7 +80,7 @@ class OtherUserProfileFragment : Fragment() {
                     is UiState.Success -> {
                         binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                             View.GONE
-                        checkIfUserFollowed(userUid)
+                        setFollowButton(userUid)
                         Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -185,7 +89,7 @@ class OtherUserProfileFragment : Fragment() {
     }
 
     @SuppressLint("ResourceAsColor")
-    private fun checkIfUserFollowed(userUidToCheck: String) {
+    private fun setFollowButton(userUidToCheck: String) {
         viewModel.checkIfUserFollowed(userUidToCheck)
         viewModel.checkFollowingState.observe(viewLifecycleOwner) { result ->
             when (result) {
@@ -259,6 +163,126 @@ class OtherUserProfileFragment : Fragment() {
         binding.otherUserProfileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
         binding.otherUserFirstNameTv.text = ""
         binding.otherUserBioTv.text = ""
+    }
+
+    private fun setAllClickListeners() {
+        binding.otherUserFollowingTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("userUid", userUid)
+            bundle.putInt("followType", FollowType.OtherUserFollowings.ordinal)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+
+        binding.otherUserFollowersTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("userUid", userUid)
+            bundle.putInt("followType", FollowType.OtherUserFollowers.ordinal)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+
+        binding.otherUserProgressButtonLayout.followButtonCardview.setOnClickListener {
+            followOrUnfollowUser()
+        }
+
+        binding.otherUserConfessFabButton.setOnClickListener {
+
+            if (!userUid.isEmpty()) {
+                val bundle = Bundle()
+                bundle.putString("userUid", userUid)
+
+                val confessFragment = ConfessFragment()
+                confessFragment.arguments = bundle
+
+                navRegister.navigateFrag(confessFragment, true)
+            } else {
+                Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun fetchUserProfile() {
+        if (!userUid.isNullOrEmpty()) {
+            viewModel.fetchUserProfileByEmail(userUid)
+            setFollowButton(userUid)
+            viewPagerAdapter = OtherUserViewPagerAdapter(userUid, this)
+            binding.otherUserProfileViewPager.adapter = viewPagerAdapter
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "An error occured. Please try again.",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+    }
+
+    private fun observeFetchState() {
+        viewModel.fetchProfileState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.otherUserProgressBarProfile.visibility = View.VISIBLE
+                    setAllProfileDataDefault()
+                }
+
+                is UiState.Failure -> {
+                    binding.otherUserProgressBarProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.otherUserProgressBarProfile.visibility = View.GONE
+                    val userProfile = state.data
+                    if (userProfile != null) {
+                        binding.otherUserFirstNameTv.text = userProfile.userName
+                        binding.otherUserBioTv.text = userProfile.bio
+
+                        if (userProfile.imageUrl.isNotEmpty()) {
+                            Glide.with(requireContext())
+                                .load(userProfile.imageUrl)
+                                .into(binding.otherUserProfileScreenProfileImage)
+                        } else {
+                            binding.otherUserProfileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setTablayoutAndViewPager() {
+        binding.otherUserProfileTabLayout.addOnTabSelectedListener(object :
+            TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+
+                tab?.let {
+                    binding.otherUserProfileViewPager.currentItem = it.position
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Bir sekme seçilmemiş durumdayken yapılacak işlemler
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
+            }
+        })
+
+        binding.otherUserProfileViewPager.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                binding.otherUserProfileTabLayout.getTabAt(position)?.select()
+            }
+        })
     }
 
 }
