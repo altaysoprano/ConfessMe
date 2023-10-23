@@ -48,6 +48,81 @@ class ProfileFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
+        setTablayoutAndViewPager()
+        setAllClickListener()
+        fetchUserProfile()
+        observeFetchState()
+
+        return binding.root
+    }
+
+    private fun observeFetchState() {
+        viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarProfile.visibility = View.VISIBLE
+                    setAllProfileDataDefault()
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarProfile.visibility = View.GONE
+                    val userProfile = state.data
+                    if (userProfile != null) {
+                        binding.firstNameTv.text = userProfile.userName
+                        binding.bioTv.text = userProfile.bio
+                        binding.profileFollowingCountTv.text = userProfile.followCount.toString()
+                        binding.profileFollowerCountTv.text = userProfile.followersCount.toString()
+
+                        if (userProfile.imageUrl.isNotEmpty()) {
+                            Glide.with(requireContext())
+                                .load(userProfile.imageUrl)
+                                .into(binding.profileScreenProfileImage)
+                        } else {
+                            binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchUserProfile() {
+        viewModel.getProfileData()
+        viewPagerAdapter = ProfileViewPagerAdapter(this)
+        binding.profileViewPager.adapter = viewPagerAdapter
+    }
+
+    private fun setAllClickListener() {
+        binding.profileFollowingTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("userUid", "")
+            bundle.putInt("followType", FollowType.MyFollowings.ordinal)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+
+        binding.profileFollowersTv.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString("userUid", "")
+            bundle.putInt("followType", FollowType.MyFollowers.ordinal)
+
+            val followsFragment = FollowsFragment()
+            followsFragment.arguments = bundle
+
+            navRegister.navigateFrag(followsFragment, true)
+        }
+    }
+
+    private fun setTablayoutAndViewPager() {
         binding.profileTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
 
@@ -71,65 +146,6 @@ class ProfileFragment : Fragment() {
                 binding.profileTabLayout.getTabAt(position)?.select()
             }
         })
-
-        binding.profileFollowingTv.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("userUid", "")
-            bundle.putInt("followType", FollowType.MyFollowings.ordinal)
-
-            val followsFragment = FollowsFragment()
-            followsFragment.arguments = bundle
-
-            navRegister.navigateFrag(followsFragment, true)
-        }
-
-        binding.profileFollowersTv.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString("userUid", "")
-            bundle.putInt("followType", FollowType.MyFollowers.ordinal)
-
-            val followsFragment = FollowsFragment()
-            followsFragment.arguments = bundle
-
-            navRegister.navigateFrag(followsFragment, true)
-        }
-
-        viewModel.getProfileData()
-        viewPagerAdapter = ProfileViewPagerAdapter( this)
-        binding.profileViewPager.adapter = viewPagerAdapter
-
-        viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.progressBarProfile.visibility = View.VISIBLE
-                    setAllProfileDataDefault()
-                }
-
-                is UiState.Failure -> {
-                    binding.progressBarProfile.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.progressBarProfile.visibility = View.GONE
-                    val userProfile = state.data
-                    if (userProfile != null) {
-                        binding.firstNameTv.text = userProfile.userName
-                        binding.bioTv.text = userProfile.bio
-                        if (userProfile.imageUrl.isNotEmpty()) {
-                            Glide.with(requireContext())
-                                .load(userProfile.imageUrl)
-                                .into(binding.profileScreenProfileImage)
-                        } else {
-                            binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
-                        }
-                    }
-                }
-            }
-        }
-
-        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

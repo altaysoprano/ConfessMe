@@ -244,6 +244,8 @@ class OtherUserProfileFragment : Fragment() {
                     if (userProfile != null) {
                         binding.otherUserFirstNameTv.text = userProfile.userName
                         binding.otherUserBioTv.text = userProfile.bio
+                        binding.otherUserFollowingCountTv.text = userProfile.followCount.toString()
+                        binding.otherUserFollowerCountTv.text = userProfile.followersCount.toString()
 
                         if (userProfile.imageUrl.isNotEmpty()) {
                             Glide.with(requireContext())

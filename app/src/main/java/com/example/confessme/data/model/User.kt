@@ -7,4 +7,6 @@ data class User(
     val bio: String = "",
     val userName: String = "",
     val imageUrl: String = "",
+    val followCount: Int = 0,
+    val followersCount: Int = 0
 )

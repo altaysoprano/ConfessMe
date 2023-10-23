@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presentation.ui.OtherUserProfileFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -67,32 +67,59 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    <TextView
-                        android:id="@+id/otherUserFollowingTv"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginTop="8dp"
-                        android:text="Following"
-                        android:textStyle="bold"
-                        android:textAlignment="center"
-                        android:textColor="#808080"
-                        android:textSize="16sp" />
+                        android:gravity="center_horizontal">
 
-                    <TextView
-                        android:id="@+id/otherUserFollowersTv"
+                        <TextView
+                            android:id="@+id/otherUserFollowingCountTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold"></TextView>
+                        <TextView
+                            android:id="@+id/otherUserFollowingTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:text="Following"
+                            android:textColor="#808080"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginTop="8dp"
-                        android:text="Followers"
-                        android:textStyle="bold"
-                        android:textAlignment="center"
-                        android:textColor="#808080"
-                        android:textSize="16sp" />
+                        android:gravity="center_horizontal">
 
+                        <TextView
+                            android:id="@+id/otherUserFollowerCountTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold"></TextView>
+
+                        <TextView
+                            android:id="@+id/otherUserFollowersTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:text="Followers"
+                            android:textColor="#808080"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
@@ -100,9 +127,8 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/other_user_profile_toolbar"
                 android:layout_width="match_parent"
-                app:layout_collapseMode="pin"
-                android:layout_height="?attr/actionBarSize">
-            </androidx.appcompat.widget.Toolbar>
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"></androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -113,14 +139,16 @@
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
             android:contentDescription=""
-            app:tabMaxWidth="0dp"
             app:tabGravity="fill"
+            app:tabMaxWidth="0dp"
             app:tabMode="fixed"
             app:tabTextAppearance="@style/ProfileTabLayoutText">
+
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Others Confessıons"></com.google.android.material.tabs.TabItem>
+
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
