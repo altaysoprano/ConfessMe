@@ -21,11 +21,11 @@ class FollowsViewModel @Inject constructor(
     val followingUsers: LiveData<UiState<List<User>>>
         get() = _followingUsers
 
-    fun getFollowUsers(userUid: String, followType: FollowType) {
+    fun getFollowUsers(userUid: String, limit: Long, followType: FollowType) {
         _followingUsers.value = UiState.Loading
 
         viewModelScope.launch {
-            repository.getFollowersOrFollowing(userUid, followType) { result ->
+            repository.getFollowersOrFollowing(userUid, limit, followType) { result ->
                 _followingUsers.postValue(result)
             }
         }

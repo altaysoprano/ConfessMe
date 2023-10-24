@@ -160,23 +160,32 @@ class UserRepoImp(
         }
     }
 
-    override fun getFollowersOrFollowing(userUid: String, followType: FollowType, result: (UiState<List<User>>) -> Unit) {
+    override fun getFollowersOrFollowing(
+        userUid: String,
+        limit: Long,
+        followType: FollowType,
+        result: (UiState<List<User>>) -> Unit
+    ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {
             val followingRef = when (followType) {
                 FollowType.MyFollowings -> database.collection("users").document(currentUserUid)
                     .collection("following")
+
                 FollowType.MyFollowers -> database.collection("users").document(currentUserUid)
                     .collection("followers")
+
                 FollowType.OtherUserFollowings -> database.collection("users").document(userUid)
                     .collection("following")
+
                 FollowType.OtherUserFollowers -> database.collection("users").document(userUid)
                     .collection("followers")
             }
 
             followingRef
                 .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(limit)
                 .get()
                 .addOnSuccessListener { followingDocuments ->
                     val followedUserUids = followingDocuments.documents.map { it.id }

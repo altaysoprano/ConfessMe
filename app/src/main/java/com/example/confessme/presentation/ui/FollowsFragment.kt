@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentFollowsBinding
@@ -28,6 +29,7 @@ class FollowsFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var userUid: String
     private var followTypeOrdinal: Int = -1
+    private var limit: Long = 20
     private val viewModel: FollowsViewModel by viewModels()
 
     private val userListAdapter = SearchUserListAdapter(mutableListOf()) { user ->
@@ -64,6 +66,25 @@ class FollowsFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userListAdapter
         }
+
+        binding.followsRecyclerviewId.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                    && firstVisibleItemPosition >= 0
+                    && totalItemCount >= limit
+                ) {
+                    limit += 10
+                    getFollowings(followTypeOrdinal)
+                }
+            }
+        })
     }
 
     private fun observeSearchResults() {
@@ -115,7 +136,7 @@ class FollowsFragment : Fragment() {
     private fun getFollowings(followTypeOrdinal: Int) {
         if (userUid != "Empty Uid" && followTypeOrdinal != -1) {
             val followType = FollowType.values()[followTypeOrdinal]
-            viewModel.getFollowUsers(userUid, followType)
+            viewModel.getFollowUsers(userUid, limit, followType)
         } else {
             Toast.makeText(
                 requireContext(),

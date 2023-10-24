@@ -132,33 +132,6 @@ class ConfessionsFragment(
                     limit += 10
                     viewModel.fetchConfessions(userUid, limit, confessionCategory)
                 }
-
-                val currentScrollPosition = recyclerView.computeVerticalScrollOffset()
-                val maxHeight = 600
-                val minHeight = 200
-                var lastScrollPosition = 0
-
-                if (currentScrollPosition < lastScrollPosition && profileBinding.profileViewPager.height < maxHeight) {
-                    val newHeight = profileBinding.profileViewPager.height + abs(dy)
-                    if (newHeight > maxHeight) {
-                        profileBinding.profileViewPager.layoutParams.height = maxHeight
-                    } else {
-                        profileBinding.profileViewPager.layoutParams.height = newHeight
-                    }
-                    profileBinding.profileViewPager.requestLayout()
-                }
-
-                if (currentScrollPosition > lastScrollPosition && profileBinding.profileViewPager.height > minHeight) {
-                    val newHeight = profileBinding.profileViewPager.height - abs(dy)
-                    if (newHeight < minHeight) {
-                        profileBinding.profileViewPager.layoutParams.height = minHeight
-                    } else {
-                        profileBinding.profileViewPager.layoutParams.height = newHeight
-                    }
-                    profileBinding.profileViewPager.requestLayout()
-                }
-
-                lastScrollPosition = currentScrollPosition
             }
         })
 

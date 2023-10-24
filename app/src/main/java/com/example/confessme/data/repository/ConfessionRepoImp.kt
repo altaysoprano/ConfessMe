@@ -122,7 +122,6 @@ class ConfessionRepoImp(
         result: (UiState<List<Confession>>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
-        Log.d("Mesaj: ", "Repoda userUid: $userUid")
 
         if (user != null) {
             val currentUserUid = user.uid
