@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextPaint
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.TextAppearanceSpan
@@ -81,7 +84,7 @@ class ConfessAnswerFragment(
         }
 
         setUserImage()
-        setTextStates()
+        setImageAndTextStates()
         setFavoriteDeleteEditReplyStates()
         observeAddAnswer()
         observeFavorite()
@@ -301,13 +304,13 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setTextStates() {
+    private fun setImageAndTextStates() {
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
-            setUserNameAndAnswerText()
+            setUserNameProfileImageAndAnswerText()
             setUsernameAndDateText()
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
@@ -351,11 +354,49 @@ class ConfessAnswerFragment(
         binding.confessAnswerUserNameAndDate.text = usernameAndDateText
     }
 
-    private fun setUserNameAndAnswerText() {
+    private fun setUserNameProfileImageAndAnswerText() {
         val confessedUserNameBold = SpannableString("@$confessedUserName")
         confessedUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         confessedUserNameBold.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.confessmered)), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(view: View) {
+                if (currentUserUid != answerFromUserUid) {
+                    val bundle = Bundle()
+                    bundle.putString("userUid", answerFromUserUid)
+
+                    val profileFragment = OtherUserProfileFragment()
+                    profileFragment.arguments = bundle
+
+                    dismiss()
+                    navRegister.navigateFrag(profileFragment, true)
+                }
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = ContextCompat.getColor(requireContext(), R.color.confessmered)
+                ds.isUnderlineText = false
+            }
+        }
+        confessedUserNameBold.setSpan(clickableSpan, 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
         val usernameAndAnswerText = TextUtils.concat(confessedUserNameBold, " ", answerText)
+
         binding.confessAnswerTextView.text = usernameAndAnswerText
+        binding.confessAnswerTextView.movementMethod = LinkMovementMethod.getInstance()
+        binding.confessAnswerTextView.highlightColor = Color.TRANSPARENT
+
+        binding.answerScreenProfileImage.setOnClickListener {
+            if (currentUserUid != answerUserUid) {
+                val bundle = Bundle()
+                bundle.putString("userUid", answerUserUid)
+
+                val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
+                dismiss()
+                navRegister.navigateFrag(profileFragment, true)
+            }
+        }
     }
 }
