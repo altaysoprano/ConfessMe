@@ -270,7 +270,11 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun addFavorite(favorited: Boolean, confessionId: String, result: (UiState<Confession?>) -> Unit) {
+    override fun addFavorite(
+        favorited: Boolean,
+        confessionId: String,
+        result: (UiState<Confession?>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -288,8 +292,6 @@ class ConfessionRepoImp(
                     if (!confessionQuerySnapshot.isEmpty) {
                         val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
 
-                        Log.d("Mesaj: ", "CONFESSION: Repoda confession favorite işlemden önce: " + favorited)
-
                         val updatedData = mapOf("favorited" to favorited)
 
                         val documentRef = database.collection("users")
@@ -299,49 +301,32 @@ class ConfessionRepoImp(
 
                         batch.update(documentRef, updatedData)
 
-                        val email =
-                            confessionDocumentSnapshot.getString("fromUserEmail") ?: ""
-                        val userQuery =
-                            database.collection("users").whereEqualTo("email", email)
+                        val userUid =
+                            confessionDocumentSnapshot.getString("fromUserId") ?: ""
+                        val myConfessionDocumentRef =
+                            database.collection("users").document(userUid)
+                                .collection("my_confessions")
+                                .document(confessionId)
 
-                        userQuery.get()
-                            .addOnSuccessListener { userQuerySnapshot ->
-                                if (!userQuerySnapshot.isEmpty) {
-                                    val userDoc = userQuerySnapshot.documents[0]
-                                    val userUid = userDoc.id
+                        val updatedData1 = mapOf("favorited" to favorited)
 
-                                    val myConfessionsCollection = database.collection("users")
-                                        .document(userUid)
-                                        .collection("my_confessions")
-                                    val myConfessionDocRef =
-                                        myConfessionsCollection.document(confessionId)
+                        batch.update(myConfessionDocumentRef, updatedData1)
 
-                                    val updatedData1 = mapOf("favorited" to favorited)
-
-                                    batch.update(myConfessionDocRef, updatedData1)
-
-                                    batch.commit()
-                                        .addOnSuccessListener {
-                                            confessionDocRef.get()
-                                                .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                    result.invoke(
-                                                        UiState.Success(
-                                                            updatedConfessionDocumentSnapshot.documents[0].toObject(
-                                                                Confession::class.java
-                                                            )
-                                                        )
-                                                    )
-                                                }
-                                                .addOnFailureListener { exception ->
-                                                    result.invoke(UiState.Failure(exception.localizedMessage))
-                                                }
-                                        }
-                                        .addOnFailureListener { exception ->
-                                            result.invoke(UiState.Failure(exception.localizedMessage))
-                                        }
-                                } else {
-                                    result.invoke(UiState.Failure("User could not be found"))
-                                }
+                        batch.commit()
+                            .addOnSuccessListener {
+                                confessionDocRef.get()
+                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                        result.invoke(
+                                            UiState.Success(
+                                                updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                    Confession::class.java
+                                                )
+                                            )
+                                        )
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                    }
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
@@ -355,7 +340,11 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun favoriteAnswer(isFavorited: Boolean, confessionId: String, result: (UiState<Confession?>) -> Unit) {
+    override fun favoriteAnswer(
+        isFavorited: Boolean,
+        confessionId: String,
+        result: (UiState<Confession?>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -685,60 +674,24 @@ class ConfessionRepoImp(
         }
     }
 
-    /*
-        private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
-            if (userName.contains(" ")) {
-                return "Username cannot contain spaces."
-            }
-            if(userName.isBlank()) {
-                return "Username cannot be blank."
-            }
-            if (userName.length < 3) {
-                return "Username must be at least 3 characters long."
-            }
-            if (userName.length > 30) {
-                return "Username cannot exceed 30 characters."
-            }
-            if (bio.length > 200) {
-                return "Bio cannot exceed 200 characters."
-            }
-            return null
-        }
-    */
+    override fun addBookmark(confessionId: String, result: (UiState<String>) -> Unit) {
+        val user = firebaseAuth.currentUser
 
-    /*
-        private fun isValidPassword(password: String): Boolean {
-            val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
-            if (password.contains(" ")) {
-                return false
-            }
-            return passwordRegex.matches(password)
-        }
+        if (user != null) {
+            val currentUserUid = user.uid
 
-        private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
-            if (userName.contains(" ")) {
-                return "Username cannot contain spaces."
-            }
-            if(userName.isBlank()) {
-                return "Username cannot be blank."
-            }
-            if (userName.length < 3) {
-                return "Username must be at least 3 characters long."
-            }
-            if (userName.length > 30) {
-                return "Username cannot exceed 30 characters."
-            }
-            if (bio.length > 200) {
-                return "Bio cannot exceed 200 characters."
-            }
-            return null
-        }
+            val bookmarksCollection = database.collection("users").document(currentUserUid).collection("bookmarks")
+            val newBookmarkDocument = bookmarksCollection.document(confessionId)
 
-        private fun generateRandomUsername(length: Int): String {
-            val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-            return (1..length)
-                .map { allowedChars.random() }
-                .joinToString("")
+            newBookmarkDocument.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
+                .addOnSuccessListener {
+                    result.invoke(UiState.Success("Bookmark added successfully"))
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
         }
-    */
+    }
 }

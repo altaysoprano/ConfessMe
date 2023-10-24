@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_bookmark"
+        android:title="Add To Bookmarks"
+        android:icon="@drawable/ic_bookmark"
+        android:iconTint="@color/red"
+        />
+    <item
         android:id="@+id/action_delete"
         android:title="Delete Confess"
         android:icon="@drawable/ic_answer"

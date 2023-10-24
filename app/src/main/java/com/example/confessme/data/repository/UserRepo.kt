@@ -21,5 +21,4 @@ interface UserRepo {
     fun followUser(userUidToFollow: String, callback: (UiState<String>) -> Unit)
     fun checkIfUserFollowed(userUidToCheck: String, callback: (UiState<Boolean>) -> Unit)
     fun unfollowUser(userUidToUnfollow: String, callback: (UiState<String>) -> Unit)
-
 }

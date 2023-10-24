@@ -92,6 +92,9 @@ class OthersConfessionsFragment(
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
             },
+            onConfessBookmarkClick = { confessionId ->
+                viewModel.addBookmark(confessionId)
+            },
             onItemPhotoClick = { userUid, userEmail, userName ->
 
                 val bundle = Bundle()
@@ -173,6 +176,7 @@ class OthersConfessionsFragment(
         setupRecyclerView()
         observeFetchConfessions()
         observeDeleteConfession()
+        observeAddBookmarks()
 
         return binding.root
     }
@@ -239,6 +243,27 @@ class OthersConfessionsFragment(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun observeAddBookmarks() {
+        viewModel.addBookmarkState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarOthersConfessionsGeneral.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Successfully added to bookmarks", Toast.LENGTH_SHORT).show()
                 }
             }
         }

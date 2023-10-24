@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.confessme.R
@@ -37,6 +38,7 @@ class ConfessionListAdapter(
     private val onAnswerClick: (String, String, String, String, String, String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (Boolean, String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
+    private val onConfessBookmarkClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String) -> Unit,
     private val onUserNameClick: (String, String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
@@ -160,18 +162,15 @@ class ConfessionListAdapter(
             binding.icAnswer.alpha = 0.5f
             binding.icFavorite.isEnabled = false
             binding.icAnswer.isEnabled = false
-            binding.moreActionButton.visibility = View.VISIBLE
         } else if(currentUserUid == confessList[adapterPosition].userId) {
             binding.icAnswer.isEnabled = true
             binding.icFavorite.isEnabled = true
             binding.icFavorite.alpha = 1f
-            binding.moreActionButton.visibility = View.GONE
         } else {
             binding.icFavorite.alpha = 0.5f
             binding.icAnswer.alpha = 0.5f
             binding.icFavorite.isEnabled = false
             binding.icAnswer.isEnabled = false
-            binding.moreActionButton.visibility = View.GONE
         }
 
         if(confess.answered) {
@@ -230,18 +229,30 @@ class ConfessionListAdapter(
             popupMenu.menuInflater.inflate(R.menu.confess_item_more_actions_menu, popupMenu.menu)
             popupMenu.setForceShowIcon(true)
 
-            val positionOfMenuItem = 0
-            val item = popupMenu.menu.getItem(positionOfMenuItem)
+            val bookmarkItem = popupMenu.menu.getItem(0)
+            bookmarkItem.title = "Add to Bookmarks"
+
+            val deleteItem = popupMenu.menu.getItem(1)
             val s = SpannableString("Delete Confess")
             s.setSpan(ForegroundColorSpan(Color.RED), 0, s.length, 0)
-            item.title = s
+            deleteItem.title = s
 
-            item.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_delete)
+            bookmarkItem.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_bookmark)
 
-            item.icon?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+            deleteItem.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_delete)
+            deleteItem.icon?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
+
+            if(currentUserUid != confessList[adapterPosition].fromUserId) {
+                popupMenu.menu.removeItem(R.id.action_delete)
+            }
 
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
+                    R.id.action_bookmark -> {
+                        val confessIdToBookmark = confessList[adapterPosition].id
+                        onConfessBookmarkClick(confessIdToBookmark)
+                        return@setOnMenuItemClickListener true
+                    }
                     R.id.action_delete -> {
                         val confessIdToDelete = confessList[adapterPosition].id
                         dialogHelper.showDeleteConfessionDialog(
