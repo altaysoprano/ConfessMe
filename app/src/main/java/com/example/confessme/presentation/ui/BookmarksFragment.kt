@@ -1,4 +1,4 @@
-package com.example.confessme.presentation
+package com.example.confessme.presentation.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

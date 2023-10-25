@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfessViewModel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
     private val repository: ConfessionRepo
 ) : ViewModel() {
 
