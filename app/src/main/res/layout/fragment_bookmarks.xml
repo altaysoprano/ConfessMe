@@ -24,7 +24,7 @@
 
         <include
             android:id="@+id/no_confessions_here_text"
-            layout="@layout/you_have_no_confessions"
+            layout="@layout/no_confessions_here"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="?android:attr/actionBarSize"

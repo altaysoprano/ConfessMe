@@ -92,8 +92,8 @@ class OthersConfessionsFragment(
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
             },
-            onConfessBookmarkClick = { confessionId ->
-                viewModel.addBookmark(confessionId)
+            onConfessBookmarkClick = { confessionId, userUid ->
+                viewModel.addBookmark(confessionId, userUid)
             },
             onItemPhotoClick = { userUid, userEmail, userName ->
 

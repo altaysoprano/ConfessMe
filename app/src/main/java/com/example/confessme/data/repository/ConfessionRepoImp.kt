@@ -674,7 +674,7 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun addBookmark(confessionId: String, result: (UiState<String>) -> Unit) {
+    override fun addBookmark(confessionId: String, userUid: String, result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -683,7 +683,12 @@ class ConfessionRepoImp(
             val bookmarksCollection = database.collection("users").document(currentUserUid).collection("bookmarks")
             val newBookmarkDocument = bookmarksCollection.document(confessionId)
 
-            newBookmarkDocument.set(mapOf("timestamp" to FieldValue.serverTimestamp()))
+            val data = mapOf(
+                "userUid" to userUid,
+                "timestamp" to FieldValue.serverTimestamp()
+            )
+
+            newBookmarkDocument.set(data)
                 .addOnSuccessListener {
                     result.invoke(UiState.Success("Bookmark added successfully"))
                 }
@@ -691,6 +696,63 @@ class ConfessionRepoImp(
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun fetchBookmarks(limit: Long, result: (UiState<List<Confession>>) -> Unit) {
+
+        val currentUser = firebaseAuth.currentUser
+
+        if(currentUser != null ) {
+            val currentUserUid = currentUser.uid
+
+            val bookmarksCollection =
+                database.collection("users").document(currentUserUid).collection("bookmarks")
+
+            bookmarksCollection
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val bookmarkedConfessions = mutableListOf<Confession>()
+
+                    val bookmarkCount = documents.size()
+
+                    if (bookmarkCount == 0) {
+                        result.invoke(UiState.Success(bookmarkedConfessions))
+                        return@addOnSuccessListener
+                    }
+
+                    for (document in documents) {
+                        val confessionId = document.id
+                        val userUid = document.getString("userUid") ?: ""
+
+                        val myConfessionsCollection = database.collection("users").document(userUid)
+                            .collection("my_confessions")
+                        val myConfessionDocument = myConfessionsCollection.document(confessionId)
+
+                        myConfessionDocument.get()
+                            .addOnSuccessListener { myConfessionSnapshot ->
+                                if (myConfessionSnapshot.exists()) {
+                                    val bookmarkedConfession =
+                                        myConfessionSnapshot.toObject(Confession::class.java)
+                                    if (bookmarkedConfession != null) {
+                                        bookmarkedConfessions.add(bookmarkedConfession)
+                                    }
+                                }
+
+                                if (bookmarkedConfessions.size == bookmarkCount) {
+                                    result.invoke(UiState.Success(bookmarkedConfessions))
+                                }
+                            }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        }
+        else {
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }

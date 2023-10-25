@@ -18,4 +18,5 @@
     <string name="you_haven_t_told_anyone_a_secret_yet">You haven\'t told anyone a secret yet.</string>
     <string name="no_user_found">No User Found</string>
     <string name="no_confessions_found_here">No confessions found here</string>
+    <string name="bookmarks">Bookmarks</string>
 </resources>
