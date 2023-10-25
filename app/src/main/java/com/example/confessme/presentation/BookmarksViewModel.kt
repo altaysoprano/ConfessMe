@@ -16,8 +16,8 @@ class BookmarksViewModel @Inject constructor(
     private val repository: ConfessionRepo
 ) : ViewModel() {
 
-    private val _fetchBookmarksState = MutableLiveData<UiState<List<Confession>>>()
-    val fetchBookmarksState: LiveData<UiState<List<Confession>>>
+    private val _fetchBookmarksState = MutableLiveData<UiState<List<Confession?>>>()
+    val fetchBookmarksState: LiveData<UiState<List<Confession?>>>
         get() = _fetchBookmarksState
 
     fun fetchBookmarks(limit: Long) {

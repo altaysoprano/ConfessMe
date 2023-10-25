@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
+import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentBookmarksBinding
 import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
@@ -173,7 +174,7 @@ class BookmarksFragment() : Fragment() {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
                     } else {
                         noConfessFoundBinding.root.visibility = View.GONE
-                        confessListAdapter.updateList(state.data)
+                        confessListAdapter.updateList(state.data as List<Confession>)
                     }
                 }
             }

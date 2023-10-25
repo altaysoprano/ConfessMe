@@ -30,5 +30,5 @@ interface ConfessionRepo {
     fun deleteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit)
     fun deleteConfession(confessionId: String, result: (UiState<Confession?>) -> Unit)
     fun addBookmark(confessionId: String, userUid: String, result: (UiState<String>) -> Unit)
-    fun fetchBookmarks(limit: Long, result: (UiState<List<Confession>>) -> Unit)
+    fun fetchBookmarks(limit: Long, result: (UiState<List<Confession?>>) -> Unit)
 }

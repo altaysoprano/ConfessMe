@@ -21,7 +21,6 @@ import java.util.Date
 class ConfessionRepoImp(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseFirestore,
-    private val storage: FirebaseStorage
 ) : ConfessionRepo {
 
     override fun addConfession(
@@ -700,22 +699,21 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun fetchBookmarks(limit: Long, result: (UiState<List<Confession>>) -> Unit) {
+    override fun fetchBookmarks(limit: Long, result: (UiState<List<Confession?>>) -> Unit) {
 
-        val currentUser = firebaseAuth.currentUser
+        val userUid = firebaseAuth.currentUser?.uid
 
-        if(currentUser != null ) {
-            val currentUserUid = currentUser.uid
-
+        if(userUid != null) {
+            // Kullanıcının "bookmarks" koleksiyonundan ilk 20 bookmark'ı çekin.
             val bookmarksCollection =
-                database.collection("users").document(currentUserUid).collection("bookmarks")
+                database.collection("users").document(userUid).collection("bookmarks")
 
             bookmarksCollection
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(limit)
                 .get()
                 .addOnSuccessListener { documents ->
-                    val bookmarkedConfessions = mutableListOf<Confession>()
+                    val bookmarkedConfessions = mutableListOf<Confession?>()
 
                     val bookmarkCount = documents.size()
 
@@ -723,6 +721,8 @@ class ConfessionRepoImp(
                         result.invoke(UiState.Success(bookmarkedConfessions))
                         return@addOnSuccessListener
                     }
+
+                    var fetchedConfessionCount = 0
 
                     for (document in documents) {
                         val confessionId = document.id
@@ -737,12 +737,19 @@ class ConfessionRepoImp(
                                 if (myConfessionSnapshot.exists()) {
                                     val bookmarkedConfession =
                                         myConfessionSnapshot.toObject(Confession::class.java)
-                                    if (bookmarkedConfession != null) {
-                                        bookmarkedConfessions.add(bookmarkedConfession)
-                                    }
+                                    bookmarkedConfessions.add(bookmarkedConfession)
                                 }
 
-                                if (bookmarkedConfessions.size == bookmarkCount) {
+                                fetchedConfessionCount++
+
+                                if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
+                                    result.invoke(UiState.Success(bookmarkedConfessions))
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                fetchedConfessionCount++
+
+                                if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
                                     result.invoke(UiState.Success(bookmarkedConfessions))
                                 }
                             }
@@ -751,8 +758,7 @@ class ConfessionRepoImp(
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
-        }
-        else {
+        } else {
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
