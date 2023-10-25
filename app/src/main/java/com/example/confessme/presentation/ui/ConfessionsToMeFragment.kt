@@ -54,6 +54,7 @@ class ConfessionsToMeFragment(
             requireContext(),
             mutableListOf(),
             currentUserUid,
+            false,
             onAnswerClick = { confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate ->
                 if (!confessionId.isNullOrEmpty()) {
                     val bundle = Bundle()

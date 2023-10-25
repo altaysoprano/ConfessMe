@@ -13,28 +13,25 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.presentation.DialogHelper
-import com.example.confessme.util.ConfessionCategory
 import com.google.firebase.Timestamp
 
 class ConfessionListAdapter(
     private val context: Context,
     val confessList: MutableList<Confession> = mutableListOf(),
     private val currentUserUid: String,
+    private val isBookmarks: Boolean,
     private val onAnswerClick: (String, String, String, String, String, String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (Boolean, String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
@@ -139,7 +136,7 @@ class ConfessionListAdapter(
             binding.confessionsScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
         }
 
-        setAnswerAndFavoriteItems(confess, binding, itemView, adapterPosition)
+        setAnswerFavoriteAndMoreActionsItems(confess, binding, itemView, adapterPosition)
 
         binding.confessionsScreenConfession.setOnClickListener {
             confess.isExpanded = !confess.isExpanded
@@ -151,7 +148,7 @@ class ConfessionListAdapter(
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("RestrictedApi")
-    private fun setAnswerAndFavoriteItems(
+    private fun setAnswerFavoriteAndMoreActionsItems(
         confess: Confession,
         binding: ConfessItemBinding,
         itemView: View,
@@ -232,18 +229,27 @@ class ConfessionListAdapter(
             val bookmarkItem = popupMenu.menu.getItem(0)
             bookmarkItem.title = "Add to Bookmarks"
 
-            val deleteItem = popupMenu.menu.getItem(1)
+            val unbookmarkItem = popupMenu.menu.getItem(1)
+            unbookmarkItem.title = "Remove Bookmark"
+
+            val deleteItem = popupMenu.menu.getItem(2)
             val s = SpannableString("Delete Confess")
             s.setSpan(ForegroundColorSpan(Color.RED), 0, s.length, 0)
             deleteItem.title = s
 
             bookmarkItem.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_bookmark)
+            unbookmarkItem.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_unbookmark)
 
             deleteItem.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_delete)
             deleteItem.icon?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
 
             if(currentUserUid != confessList[adapterPosition].fromUserId) {
                 popupMenu.menu.removeItem(R.id.action_delete)
+            }
+            if (isBookmarks) {
+                popupMenu.menu.removeItem(R.id.action_bookmark)
+            } else {
+                popupMenu.menu.removeItem(R.id.action_unbookmark)
             }
 
             popupMenu.setOnMenuItemClickListener { menuItem ->

@@ -20,6 +20,7 @@ import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,6 +29,7 @@ class FollowsFragment : Fragment() {
     private lateinit var binding: FragmentFollowsBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var userUid: String
+    private lateinit var currentUserUid: String
     private var followTypeOrdinal: Int = -1
     private var limit: Long = 20
     private val viewModel: FollowsViewModel by viewModels()
@@ -35,7 +37,6 @@ class FollowsFragment : Fragment() {
     private val userListAdapter = SearchUserListAdapter(mutableListOf()) { user ->
         onItemClick(user)
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,6 +46,8 @@ class FollowsFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.followsToolbar)
         setHasOptionsMenu(true)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUserUid = currentUser?.uid ?: ""
         userUid = arguments?.getString("userUid") ?: "Empty Uid"
         followTypeOrdinal = arguments?.getInt("followType") ?: -1
         setTitle()
@@ -114,14 +117,29 @@ class FollowsFragment : Fragment() {
     }
 
     private fun onItemClick(user: User) {
-        val bundle = Bundle()
-        bundle.putString("userEmail", user.email)
-        bundle.putString("userUid", user.uid)
+/*
+        if (currentUserUid != answerFromUserUid) {
+            val bundle = Bundle()
+            bundle.putString("userUid", answerFromUserUid)
 
-        val profileFragment = OtherUserProfileFragment()
-        profileFragment.arguments = bundle
+            val profileFragment = OtherUserProfileFragment()
+            profileFragment.arguments = bundle
 
-        navRegister.navigateFrag(profileFragment, true)
+            dismiss()
+            navRegister.navigateFrag(profileFragment, true)
+        }
+*/
+
+        if(currentUserUid != user.uid) {
+            val bundle = Bundle()
+            bundle.putString("userEmail", user.email)
+            bundle.putString("userUid", user.uid)
+
+            val profileFragment = OtherUserProfileFragment()
+            profileFragment.arguments = bundle
+
+            navRegister.navigateFrag(profileFragment, true)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
