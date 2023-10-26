@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -673,7 +674,7 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun addBookmark(confessionId: String, userUid: String, result: (UiState<String>) -> Unit) {
+    override fun addBookmark(confessionId: String, timestamp: String, userUid: String, result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
@@ -684,7 +685,7 @@ class ConfessionRepoImp(
 
             val data = mapOf(
                 "userUid" to userUid,
-                "timestamp" to FieldValue.serverTimestamp()
+                "timestamp" to timestamp
             )
 
             newBookmarkDocument.set(data)
@@ -703,8 +704,9 @@ class ConfessionRepoImp(
 
         val userUid = firebaseAuth.currentUser?.uid
 
+        Log.d("Mesaj: ", "Repoda limit: $limit")
         if(userUid != null) {
-            // Kullanıcının "bookmarks" koleksiyonundan ilk 20 bookmark'ı çekin.
+
             val bookmarksCollection =
                 database.collection("users").document(userUid).collection("bookmarks")
 
@@ -716,6 +718,7 @@ class ConfessionRepoImp(
                     val bookmarkedConfessions = mutableListOf<Confession?>()
 
                     val bookmarkCount = documents.size()
+                    Log.d("Mesaj: ", "BookmarkCount: $bookmarkCount")
 
                     if (bookmarkCount == 0) {
                         result.invoke(UiState.Success(bookmarkedConfessions))
@@ -743,17 +746,43 @@ class ConfessionRepoImp(
                                 fetchedConfessionCount++
 
                                 if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
-                                    result.invoke(UiState.Success(bookmarkedConfessions))
+                                    Log.d("Mesaj: ", "Successte fetchedCount: $fetchedConfessionCount")
+                                    Log.d("Mesaj: ", "Successte bookmarkCount: $bookmarkCount")
+                                    Log.d("Mesaj: ", "bookmarkedConfessions.size: ${bookmarkedConfessions.size}")
+                                    val sortedBookmarkedConfessions = bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
+                                    result.invoke(UiState.Success(sortedBookmarkedConfessions))
                                 }
                             }
                             .addOnFailureListener { exception ->
                                 fetchedConfessionCount++
 
                                 if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
-                                    result.invoke(UiState.Success(bookmarkedConfessions))
+                                    val sortedBookmarkedConfessions = bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
+                                    result.invoke(UiState.Success(sortedBookmarkedConfessions))
                                 }
                             }
                     }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun removeBookmark(confessionId: String, result: (UiState<DocumentReference>) -> Unit) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            val bookmarksCollection = database.collection("users").document(currentUserUid).collection("bookmarks")
+            val bookmarkDocument = bookmarksCollection.document(confessionId)
+
+            bookmarkDocument.delete()
+                .addOnSuccessListener {
+                    result.invoke(UiState.Success(bookmarkDocument))
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))

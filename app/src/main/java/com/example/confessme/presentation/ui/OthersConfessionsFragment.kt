@@ -93,9 +93,10 @@ class OthersConfessionsFragment(
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
             },
-            onConfessBookmarkClick = { confessionId, userUid ->
-                viewModel.addBookmark(confessionId, userUid)
+            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
+                viewModel.addBookmark(confessionId, timestamp, userUid)
             },
+            onBookmarkRemoveClick = {confessionId -> },
             onItemPhotoClick = { userUid, userEmail, userName ->
 
                 val bundle = Bundle()

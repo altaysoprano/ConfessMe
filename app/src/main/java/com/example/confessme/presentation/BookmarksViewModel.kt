@@ -5,9 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.ConfessionRepo
-import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -20,10 +19,30 @@ class BookmarksViewModel @Inject constructor(
     val fetchBookmarksState: LiveData<UiState<List<Confession?>>>
         get() = _fetchBookmarksState
 
+    private val _deleteBookmarkState = MutableLiveData<UiState<DocumentReference>>()
+    val removeBookmarkState: LiveData<UiState<DocumentReference>>
+        get() = _deleteBookmarkState
+
+    private val _deleteConfessionState = MutableLiveData<UiState<Confession?>>()
+    val deleteConfessionState: LiveData<UiState<Confession?>>
+        get() = _deleteConfessionState
+
     fun fetchBookmarks(limit: Long) {
         _fetchBookmarksState.value = UiState.Loading
         repository.fetchBookmarks(limit) { result ->
             _fetchBookmarksState.postValue(result)
+        }
+    }
+    fun deleteBookmark(confessionId: String) {
+        _deleteBookmarkState.value = UiState.Loading
+        repository.removeBookmark(confessionId) { result ->
+            _deleteBookmarkState.postValue(result)
+        }
+    }
+    fun deleteConfession(confessionId: String) {
+        _deleteConfessionState.value = UiState.Loading
+        repository.deleteConfession(confessionId) {
+            _deleteConfessionState.postValue(it)
         }
     }
 }

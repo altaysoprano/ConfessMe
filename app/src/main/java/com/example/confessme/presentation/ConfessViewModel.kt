@@ -106,9 +106,9 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    fun addBookmark(confessionId: String, userUid: String) {
+    fun addBookmark(confessionId: String, timestamp: String, userUid: String) {
         _addBookmarkState.value = UiState.Loading
-        repository.addBookmark(confessionId, userUid) {
+        repository.addBookmark(confessionId, timestamp, userUid) {
             _addBookmarkState.postValue(it)
         }
     }

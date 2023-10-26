@@ -35,7 +35,8 @@ class ConfessionListAdapter(
     private val onAnswerClick: (String, String, String, String, String, String, Boolean, String, Boolean, String) -> Unit,
     private val onFavoriteClick: (Boolean, String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
-    private val onConfessBookmarkClick: (String, String) -> Unit,
+    private val onConfessBookmarkClick: (String, String, String) -> Unit,
+    private val onBookmarkRemoveClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String) -> Unit,
     private val onUserNameClick: (String, String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
@@ -257,7 +258,7 @@ class ConfessionListAdapter(
                     R.id.action_bookmark -> {
                         val confessionToBookmark = confessList[adapterPosition]
 
-                        onConfessBookmarkClick(confessionToBookmark.id, confessionToBookmark.fromUserId)
+                        onConfessBookmarkClick(confessionToBookmark.id, confessionToBookmark.timestamp.toString(), confessionToBookmark.fromUserId)
                         return@setOnMenuItemClickListener true
                     }
                     R.id.action_delete -> {
@@ -267,7 +268,11 @@ class ConfessionListAdapter(
                             { onConfessDeleteClick(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }
-
+                    R.id.action_unbookmark -> {
+                        val confessToUnbookmark = confessList[adapterPosition]
+                        onBookmarkRemoveClick(confessToUnbookmark.id)
+                        return@setOnMenuItemClickListener true
+                    }
                     else -> false
                 }
             }

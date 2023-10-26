@@ -92,9 +92,10 @@ class ConfessionsToMeFragment(
                 viewModel.addFavorite(isFavorited, confessionId)
             },
             onConfessDeleteClick = {},
-            onConfessBookmarkClick = { confessionId, userUid ->
-                viewModel.addBookmark(confessionId, userUid)
+            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
+                viewModel.addBookmark(confessionId, timestamp, userUid)
             },
+            onBookmarkRemoveClick = {confessionId -> },
             onItemPhotoClick = { userUid, userEmail, userName ->
                 val bundle = Bundle()
                 bundle.putString("userEmail", userEmail)
