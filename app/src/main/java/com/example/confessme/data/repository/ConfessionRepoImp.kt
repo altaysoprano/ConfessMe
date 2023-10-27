@@ -5,6 +5,7 @@ import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -685,7 +686,7 @@ class ConfessionRepoImp(
 
             val data = mapOf(
                 "userUid" to userUid,
-                "timestamp" to timestamp
+                "timestamp" to FieldValue.serverTimestamp()
             )
 
             newBookmarkDocument.set(data)
@@ -701,14 +702,10 @@ class ConfessionRepoImp(
     }
 
     override fun fetchBookmarks(limit: Long, result: (UiState<List<Confession?>>) -> Unit) {
-
         val userUid = firebaseAuth.currentUser?.uid
 
-        Log.d("Mesaj: ", "Repoda limit: $limit")
-        if(userUid != null) {
-
-            val bookmarksCollection =
-                database.collection("users").document(userUid).collection("bookmarks")
+        if (userUid != null) {
+            val bookmarksCollection = database.collection("users").document(userUid).collection("bookmarks")
 
             bookmarksCollection
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -718,12 +715,13 @@ class ConfessionRepoImp(
                     val bookmarkedConfessions = mutableListOf<Confession?>()
 
                     val bookmarkCount = documents.size()
-                    Log.d("Mesaj: ", "BookmarkCount: $bookmarkCount")
 
                     if (bookmarkCount == 0) {
                         result.invoke(UiState.Success(bookmarkedConfessions))
                         return@addOnSuccessListener
                     }
+
+                    val timestampMap = mutableMapOf<String, Timestamp>() // Map to store timestamps
 
                     var fetchedConfessionCount = 0
 
@@ -741,15 +739,20 @@ class ConfessionRepoImp(
                                     val bookmarkedConfession =
                                         myConfessionSnapshot.toObject(Confession::class.java)
                                     bookmarkedConfessions.add(bookmarkedConfession)
+                                    timestampMap[confessionId] = bookmarkedConfession?.timestamp as Timestamp
+                                    bookmarkedConfession.timestamp = document.getTimestamp("timestamp") as Timestamp // Get the timestamp from the bookmark
                                 }
 
                                 fetchedConfessionCount++
 
                                 if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
-                                    Log.d("Mesaj: ", "Successte fetchedCount: $fetchedConfessionCount")
-                                    Log.d("Mesaj: ", "Successte bookmarkCount: $bookmarkCount")
-                                    Log.d("Mesaj: ", "bookmarkedConfessions.size: ${bookmarkedConfessions.size}")
                                     val sortedBookmarkedConfessions = bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
+
+                                    sortedBookmarkedConfessions.forEach { confession ->
+                                        val originalTimestamp = timestampMap[confession?.id]
+                                        confession?.timestamp = originalTimestamp
+                                    }
+
                                     result.invoke(UiState.Success(sortedBookmarkedConfessions))
                                 }
                             }
@@ -758,6 +761,12 @@ class ConfessionRepoImp(
 
                                 if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
                                     val sortedBookmarkedConfessions = bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
+
+                                    sortedBookmarkedConfessions.forEach { confession ->
+                                        val originalTimestamp = timestampMap[confession?.id]
+                                        confession?.timestamp = originalTimestamp
+                                    }
+
                                     result.invoke(UiState.Success(sortedBookmarkedConfessions))
                                 }
                             }
@@ -789,6 +798,28 @@ class ConfessionRepoImp(
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
+        val currentTime = Timestamp.now()
+        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
+
+        val minutes = timeDifference / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        return when {
+            timeDifference < 60 -> "$timeDifference seconds ago"
+            minutes < 60 -> "$minutes minutes ago"
+            hours < 24 -> "$hours hours ago"
+            else -> {
+                if (days == 1L) {
+                    "1 day ago"
+                } else {
+                    "$days days ago"
+                }
+            }
         }
     }
 }

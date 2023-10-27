@@ -11,7 +11,7 @@ data class Confession(
     val fromUserEmail: String = "",
     val fromUserImageUrl: String = "",
     val imageUrl: String = "",
-    val timestamp: Any? = null,
+    var timestamp: Any? = null,
     var isExpanded: Boolean = false,
     var favorited: Boolean = false,
     var answered: Boolean = false,
