@@ -740,7 +740,9 @@ class ConfessionRepoImp(
                                         myConfessionSnapshot.toObject(Confession::class.java)
                                     bookmarkedConfessions.add(bookmarkedConfession)
                                     timestampMap[confessionId] = bookmarkedConfession?.timestamp as Timestamp
-                                    bookmarkedConfession.timestamp = document.getTimestamp("timestamp") as Timestamp // Get the timestamp from the bookmark
+                                    bookmarkedConfession.timestamp = document.getTimestamp("timestamp") as Timestamp
+                                } else {
+                                    bookmarksCollection.document(confessionId).delete()
                                 }
 
                                 fetchedConfessionCount++
@@ -798,28 +800,6 @@ class ConfessionRepoImp(
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
-        }
-    }
-
-    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
-        val currentTime = Timestamp.now()
-        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
-
-        val minutes = timeDifference / 60
-        val hours = minutes / 60
-        val days = hours / 24
-
-        return when {
-            timeDifference < 60 -> "$timeDifference seconds ago"
-            minutes < 60 -> "$minutes minutes ago"
-            hours < 24 -> "$hours hours ago"
-            else -> {
-                if (days == 1L) {
-                    "1 day ago"
-                } else {
-                    "$days days ago"
-                }
-            }
         }
     }
 }

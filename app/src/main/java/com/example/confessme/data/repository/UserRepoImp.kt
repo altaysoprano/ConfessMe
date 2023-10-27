@@ -1,9 +1,11 @@
 package com.example.confessme.data.repository
 
 import android.net.Uri
+import android.util.Log
 import com.example.confessme.data.model.User
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -188,12 +190,12 @@ class UserRepoImp(
                 .limit(limit)
                 .get()
                 .addOnSuccessListener { followingDocuments ->
-                    val followedUserUids = followingDocuments.documents.map { it.id }
 
                     val followedUserProfiles = mutableListOf<User>()
+                    var counter = 0
 
-                    for (followedUid in followedUserUids) {
-                        val userRef = database.collection("users").document(followedUid)
+                    for (followingDocument in followingDocuments) {
+                        val userRef = database.collection("users").document(followingDocument.id)
 
                         userRef.get()
                             .addOnSuccessListener { documentSnapshot ->
@@ -201,10 +203,38 @@ class UserRepoImp(
                                     val userProfile = documentSnapshot.toObject(User::class.java)
                                     if (userProfile != null) {
                                         followedUserProfiles.add(userProfile)
+                                        userProfile.timestampFollow = followingDocument.getTimestamp("timestamp") as Timestamp
+                                    }
+                                } else {
+                                    val followedUid = followingDocument.id
+                                    followingRef.document(followedUid).delete()
+                                    val batch = database.batch()
+
+                                    val userRef = followingRef.parent
+                                    if (userRef != null) {
+                                        if(followType == FollowType.MyFollowings || followType == FollowType.OtherUserFollowings) {
+                                            batch.update(
+                                                userRef,
+                                                "followCount",
+                                                FieldValue.increment(-1)
+                                            )
+                                            batch.commit()
+                                        } else if(followType == FollowType.MyFollowers || followType == FollowType.OtherUserFollowers) {
+                                            batch.update(
+                                                userRef,
+                                                "followersCount",
+                                                FieldValue.increment(-1)
+                                            )
+                                            batch.commit()
+                                        }
                                     }
                                 }
-                                if (followedUserUids.size == followedUserProfiles.size) {
-                                    result.invoke(UiState.Success(followedUserProfiles))
+
+                                counter++
+
+                                if (counter == followingDocuments.size()) {
+                                    val sortedFollowUserProfiles = followedUserProfiles.sortedByDescending { it.timestampFollow.toString() }
+                                    result.invoke(UiState.Success(sortedFollowUserProfiles))
                                 }
                             }
                             .addOnFailureListener { exception ->

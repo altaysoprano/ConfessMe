@@ -175,7 +175,7 @@ class BookmarksFragment() : Fragment() {
                 is UiState.Success -> {
                     binding.progressBarBookmarks.visibility = View.GONE
                     binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
-                    limit = state.data.size.toLong()
+                    limit = if(state.data.size < 20) 20 else state.data.size.toLong()
 
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE

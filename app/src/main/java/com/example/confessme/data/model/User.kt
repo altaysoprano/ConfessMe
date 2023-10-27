@@ -8,5 +8,6 @@ data class User(
     val userName: String = "",
     val imageUrl: String = "",
     val followCount: Int = 0,
-    val followersCount: Int = 0
+    val followersCount: Int = 0,
+    var timestampFollow: Any? = null
 )
