@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.util.FollowType
@@ -21,6 +22,14 @@ class FollowsViewModel @Inject constructor(
     val followingUsers: LiveData<UiState<List<User>>>
         get() = _followingUsers
 
+    private val _followUserState = MutableLiveData<UiState<FollowUser>>()
+    val followUserState: LiveData<UiState<FollowUser>>
+        get() = _followUserState
+
+    private val _checkFollowingState = MutableLiveData<UiState<FollowUser>>()
+    val checkFollowingState: LiveData<UiState<FollowUser>>
+        get() = _checkFollowingState
+
     fun getFollowUsers(userUid: String, limit: Long, followType: FollowType) {
         _followingUsers.value = UiState.Loading
 
@@ -31,4 +40,27 @@ class FollowsViewModel @Inject constructor(
         }
     }
 
+    fun followOrUnfollowUser(userUid: String) {
+        _followUserState.value = UiState.Loading
+
+        repository.checkIfUserFollowed(userUid) { result ->
+            if (result is UiState.Success && result.data.isFollowed) {
+                repository.unfollowUser(userUid) { unfollowResult ->
+                    if (unfollowResult is UiState.Success) {
+                        _followUserState.postValue(unfollowResult)
+                    } else {
+                        _followUserState.postValue(UiState.Failure(unfollowResult.toString()))
+                    }
+                }
+            } else {
+                repository.followUser(userUid) { followResult ->
+                    if (followResult is UiState.Success) {
+                        _followUserState.postValue(UiState.Success(followResult.data))
+                    } else {
+                        _followUserState.postValue(UiState.Failure(followResult.toString()))
+                    }
+                }
+            }
+        }
+    }
 }

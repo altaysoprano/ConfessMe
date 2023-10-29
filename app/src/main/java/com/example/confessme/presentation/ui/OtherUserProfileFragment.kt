@@ -81,7 +81,6 @@ class OtherUserProfileFragment : Fragment() {
                         binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                             View.GONE
                         setFollowButton(userUid)
-                        Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -94,7 +93,7 @@ class OtherUserProfileFragment : Fragment() {
         viewModel.checkFollowingState.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is UiState.Success -> {
-                    val isFollowing = result.data
+                    val isFollowing = result.data.isFollowed
                     if (isFollowing) {
                         binding.otherUserProgressButtonLayout.followButtonTv.text = "FOLLOWING"
                         binding.otherUserProgressButtonLayout.followButtonLayout.setBackgroundColor(

@@ -1,6 +1,8 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -14,10 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentFollowsBinding
-import com.example.confessme.databinding.FragmentSearchBinding
 import com.example.confessme.presentation.FollowsViewModel
-import com.example.confessme.presentation.OtherUserViewPagerAdapter
-import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -29,14 +28,22 @@ class FollowsFragment : Fragment() {
     private lateinit var binding: FragmentFollowsBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var userUid: String
-    private lateinit var currentUserUid: String
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+    private val currentUserUid = currentUser?.uid ?: ""
     private var followTypeOrdinal: Int = -1
     private var limit: Long = 20
     private val viewModel: FollowsViewModel by viewModels()
 
-    private val userListAdapter = SearchUserListAdapter(mutableListOf()) { user ->
-        onItemClick(user)
-    }
+    private val userListAdapter = SearchUserListAdapter(mutableListOf(),
+        currentUserUid = currentUserUid,
+        onItemClick = { user ->
+            onItemClick(user)
+        },
+        onFollowClick = { userUid ->
+            followOrUnfollowUser(userUid)
+        }
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,8 +53,6 @@ class FollowsFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.followsToolbar)
         setHasOptionsMenu(true)
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        currentUserUid = currentUser?.uid ?: ""
         userUid = arguments?.getString("userUid") ?: "Empty Uid"
         followTypeOrdinal = arguments?.getInt("followType") ?: -1
         setTitle()
@@ -59,7 +64,7 @@ class FollowsFragment : Fragment() {
 
         getFollowings(followTypeOrdinal)
         setupRecyclerView()
-        observeSearchResults()
+        observeFollowsResults()
 
         return binding.root
     }
@@ -90,7 +95,7 @@ class FollowsFragment : Fragment() {
         })
     }
 
-    private fun observeSearchResults() {
+    private fun observeFollowsResults() {
         viewModel.followingUsers.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
@@ -105,6 +110,7 @@ class FollowsFragment : Fragment() {
 
                 is UiState.Success -> {
                     binding.progressBarFollows.visibility = View.GONE
+
                     if (state.data.isEmpty()) {
                         binding.followsNoUserFoundView.root.visibility = View.VISIBLE
                     } else {
@@ -117,20 +123,8 @@ class FollowsFragment : Fragment() {
     }
 
     private fun onItemClick(user: User) {
-/*
-        if (currentUserUid != answerFromUserUid) {
-            val bundle = Bundle()
-            bundle.putString("userUid", answerFromUserUid)
 
-            val profileFragment = OtherUserProfileFragment()
-            profileFragment.arguments = bundle
-
-            dismiss()
-            navRegister.navigateFrag(profileFragment, true)
-        }
-*/
-
-        if(currentUserUid != user.uid) {
+        if (currentUserUid != user.uid) {
             val bundle = Bundle()
             bundle.putString("userEmail", user.email)
             bundle.putString("userUid", user.uid)
@@ -164,6 +158,45 @@ class FollowsFragment : Fragment() {
         }
     }
 
+    private fun followOrUnfollowUser(userUidToFollow: String) {
+        if (!userUidToFollow.isNullOrEmpty()) {
+            viewModel.followOrUnfollowUser(userUidToFollow)
+            viewModel.followUserState.observe(viewLifecycleOwner) { state ->
+                when (state) {
+                    is UiState.Loading -> {
+                        binding.progressBarFollows.visibility =
+                            View.VISIBLE
+                    }
+
+                    is UiState.Failure -> {
+                        binding.progressBarFollows.visibility =
+                            View.GONE
+                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    is UiState.Success -> {
+                        binding.progressBarFollows.visibility =
+                            View.GONE
+
+                        val followUser = state.data
+                        val isFollowing = state.data.isFollowed
+                        val position = followUser.let { findPositionById(it.userUid) }
+
+                        if (position != -1) {
+                            if (followUser != null) {
+                                if (position != null) {
+                                    userListAdapter.userList[position].isFollowing = isFollowing
+                                    userListAdapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun setTitle() {
         val followType = FollowType.values()[followTypeOrdinal]
         if (followType == FollowType.MyFollowers || followType == FollowType.OtherUserFollowers) {
@@ -173,5 +206,14 @@ class FollowsFragment : Fragment() {
         } else {
             (activity as AppCompatActivity?)!!.title = "Error"
         }
+    }
+
+    private fun findPositionById(userId: String): Int {
+        for (index in 0 until userListAdapter.userList.size) {
+            if (userListAdapter.userList[index].uid == userId) {
+                return index
+            }
+        }
+        return -1
     }
 }

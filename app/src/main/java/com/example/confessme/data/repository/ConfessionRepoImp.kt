@@ -48,7 +48,6 @@ class ConfessionRepoImp(
                             .whereEqualTo("uid", userUid)
                             .get()
                             .addOnSuccessListener { documents ->
-                                Log.d("Mesaj: ", "Other user found")
                                 if (!documents.isEmpty) {
                                     val userDocument = documents.documents[0]
                                     val userId = userDocument.id
@@ -410,12 +409,6 @@ class ConfessionRepoImp(
                                                             .addOnSuccessListener {
                                                                 confessionDocRef.get()
                                                                     .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                                        Log.d(
-                                                                            "Mesaj: ",
-                                                                            "Repoda favorited: " + updatedConfessionDocumentSnapshot.documents[0].toObject(
-                                                                                Confession::class.java
-                                                                            )?.favorited
-                                                                        )
                                                                         result.invoke(
                                                                             UiState.Success(
                                                                                 updatedConfessionDocumentSnapshot.documents[0].toObject(

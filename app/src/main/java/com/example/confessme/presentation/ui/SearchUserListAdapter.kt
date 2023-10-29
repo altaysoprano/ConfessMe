@@ -1,6 +1,10 @@
 package com.example.confessme.presentation.ui
 
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -9,8 +13,10 @@ import com.example.confessme.data.model.User
 import com.example.confessme.databinding.UserItemBinding
 
 class SearchUserListAdapter(
-    private val userList: MutableList<User> = mutableListOf(),
-    private val onItemClick: (User) -> Unit
+    val userList: MutableList<User> = mutableListOf(),
+    private val currentUserUid: String,
+    private val onItemClick: (User) -> Unit,
+    private val onFollowClick: (String) -> Unit
 ) :
     RecyclerView.Adapter<SearchUserListAdapter.UserViewHolder>() {
 
@@ -47,8 +53,44 @@ class SearchUserListAdapter(
                     binding.searchScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                 }
 
+                binding.followsProgressButtonLayout.followButtonCardview.setOnClickListener {
+                    val userToFollow = userList[adapterPosition]
+
+                    onFollowClick(userToFollow.uid)
+                }
+
                 itemView.setOnClickListener {
                     onItemClick(user)
+                }
+
+                if(currentUserUid == user.uid) {
+                    binding.followsProgressButtonLayout.followButtonCardview.visibility = View.GONE
+                }
+
+                if (user.isFollowing) {
+                    binding.followsProgressButtonLayout.followButtonTv.text = "FOLLOWING"
+                    binding.followsProgressButtonLayout.followButtonLayout.setBackgroundColor(
+                        Color.WHITE
+                    )
+                    binding.followsProgressButtonLayout.followButtonTv.setTextColor(Color.BLACK)
+                    binding.followsProgressButtonLayout.progressBarFollowButton.indeterminateTintList =
+                        ColorStateList.valueOf(
+                            Color.BLACK
+                        )
+                } else {
+                    binding.followsProgressButtonLayout.followButtonTv.text = "FOLLOW"
+                    binding.followsProgressButtonLayout.followButtonLayout.setBackgroundColor(
+                        Color.parseColor("#cf363c")
+                    )
+                    binding.followsProgressButtonLayout.followButtonTv.setTextColor(
+                        Color.parseColor(
+                            "#ffffff"
+                        )
+                    )
+                    binding.followsProgressButtonLayout.progressBarFollowButton.indeterminateTintList =
+                        ColorStateList.valueOf(
+                            Color.WHITE
+                        )
                 }
             }
         }

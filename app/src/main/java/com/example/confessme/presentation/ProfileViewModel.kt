@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.data.repository.UserRepo
@@ -34,12 +35,12 @@ class ProfileViewModel @Inject constructor(
     val getProfileState: LiveData<UiState<User?>>
         get() = _getProfileState
 
-    private val _followUserState = MutableLiveData<UiState<String>>()
-    val followUserState: LiveData<UiState<String>>
+    private val _followUserState = MutableLiveData<UiState<FollowUser>>()
+    val followUserState: LiveData<UiState<FollowUser>>
         get() = _followUserState
 
-    private val _checkFollowingState = MutableLiveData<UiState<Boolean>>()
-    val checkFollowingState: LiveData<UiState<Boolean>>
+    private val _checkFollowingState = MutableLiveData<UiState<FollowUser>>()
+    val checkFollowingState: LiveData<UiState<FollowUser>>
         get() = _checkFollowingState
 
     fun updateProfile(previousUserName: String, username: String, bio: String, imageUri: Uri) {
@@ -60,7 +61,7 @@ class ProfileViewModel @Inject constructor(
         _followUserState.value = UiState.Loading
 
         repository.checkIfUserFollowed(userUid) { result ->
-            if (result is UiState.Success && result.data) {
+            if (result is UiState.Success && result.data.isFollowed) {
                 repository.unfollowUser(userUid) { unfollowResult ->
                     if (unfollowResult is UiState.Success) {
                         _followUserState.postValue(unfollowResult)

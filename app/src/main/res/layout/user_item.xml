@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -26,5 +27,14 @@
             android:textStyle="bold" />
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/follows_progress_button_layout"
+        layout="@layout/progress_btn_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        />
 
 </RelativeLayout>

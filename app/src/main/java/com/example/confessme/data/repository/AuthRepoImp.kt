@@ -50,7 +50,6 @@ class AuthRepoImp(
                             val user = firebaseAuth.currentUser
                             if (user != null) {
                                 val uid = user.uid
-                                Log.d("Mesaj: ", "uid: $uid")
                                 database.collection("users").document(uid)
                                     .set(User(uid = uid, email = email, password = pass, userName = randomUsername))
                                     .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }

@@ -17,6 +17,7 @@ import com.example.confessme.databinding.FragmentSearchBinding
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,11 +25,19 @@ class SearchFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
     private lateinit var navRegister: FragmentNavigation
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+    private val currentUserUid = currentUser?.uid ?: ""
     private val viewModel: SearchViewModel by viewModels()
 
-    private val userListAdapter = SearchUserListAdapter(mutableListOf()) { user ->
-        onItemClick(user)
-    }
+    private val userListAdapter = SearchUserListAdapter(mutableListOf(),
+        currentUserUid = currentUserUid,
+        onItemClick = { user ->
+            onItemClick(user)
+        },
+        onFollowClick = { userUid ->
+            followOrUnfollowUser(userUid)
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,5 +113,53 @@ class SearchFragment : Fragment() {
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
         }
+    }
+
+    private fun followOrUnfollowUser(userUidToFollow: String) {
+        if (!userUidToFollow.isNullOrEmpty()) {
+            viewModel.followOrUnfollowUser(userUidToFollow)
+            viewModel.followUserState.observe(viewLifecycleOwner) { state ->
+                when (state) {
+                    is UiState.Loading -> {
+                        binding.progressBarSearch.visibility =
+                            View.VISIBLE
+                    }
+
+                    is UiState.Failure -> {
+                        binding.progressBarSearch.visibility =
+                            View.GONE
+                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    is UiState.Success -> {
+                        binding.progressBarSearch.visibility =
+                            View.GONE
+
+                        val followUser = state.data
+                        val isFollowing = state.data.isFollowed
+                        val position = followUser.let { findPositionById(it.userUid) }
+
+                        if (position != -1) {
+                            if (followUser != null) {
+                                if (position != null) {
+                                    userListAdapter.userList[position].isFollowing = isFollowing
+                                    userListAdapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun findPositionById(userId: String): Int {
+        for (index in 0 until userListAdapter.userList.size) {
+            if (userListAdapter.userList[index].uid == userId) {
+                return index
+            }
+        }
+        return -1
     }
 }

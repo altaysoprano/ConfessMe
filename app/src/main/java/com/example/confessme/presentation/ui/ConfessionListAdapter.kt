@@ -84,7 +84,7 @@ class ConfessionListAdapter(
         itemView: View,
         adapterPosition: Int
     ) {
-        val toUserName = "@${confess.username} " // Tousername'i ayarla
+        val toUserName = "@${confess.username} "
         val spannable = SpannableString("$toUserName${confess.text}")
 
         val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)

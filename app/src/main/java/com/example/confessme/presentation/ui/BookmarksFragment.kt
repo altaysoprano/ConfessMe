@@ -140,7 +140,6 @@ class BookmarksFragment() : Fragment() {
             confessListAdapter.notifyDataSetChanged()
         }
 
-        Log.d("Mesaj: ", "Limit: $limit")
 
         setupRecyclerView()
         observeFetchBookmarks()
