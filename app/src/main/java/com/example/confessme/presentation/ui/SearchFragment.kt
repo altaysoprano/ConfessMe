@@ -115,39 +115,34 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollow: String) {
-        if (!userUidToFollow.isNullOrEmpty()) {
-            viewModel.followOrUnfollowUser(userUidToFollow)
+    private fun followOrUnfollowUser(userUid: String) {
+        if (!userUid.isNullOrEmpty()) {
+            val position = findPositionById(userUid)
+
+            if (position != -1) {
+                userListAdapter.userList[position].isFollowingInProgress = true
+                userListAdapter.notifyItemChanged(position)
+            }
+
+            viewModel.followOrUnfollowUser(userUid)
             viewModel.followUserState.observe(viewLifecycleOwner) { state ->
                 when (state) {
                     is UiState.Loading -> {
-                        binding.progressBarSearch.visibility =
-                            View.VISIBLE
-                    }
 
-                    is UiState.Failure -> {
-                        binding.progressBarSearch.visibility =
-                            View.GONE
-                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                            .show()
                     }
-
                     is UiState.Success -> {
-                        binding.progressBarSearch.visibility =
-                            View.GONE
-
-                        val followUser = state.data
-                        val isFollowing = state.data.isFollowed
-                        val position = followUser.let { findPositionById(it.userUid) }
-
                         if (position != -1) {
-                            if (followUser != null) {
-                                if (position != null) {
-                                    userListAdapter.userList[position].isFollowing = isFollowing
-                                    userListAdapter.notifyDataSetChanged()
-                                }
-                            }
+                            userListAdapter.userList[position].isFollowingInProgress = false
+                            userListAdapter.userList[position].isFollowing = state.data.isFollowed
+                            userListAdapter.notifyItemChanged(position)
                         }
+                    }
+                    is UiState.Failure -> {
+                        if (position != -1) {
+                            userListAdapter.userList[position].isFollowingInProgress = false
+                            userListAdapter.notifyItemChanged(position)
+                        }
+                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT).show()
                     }
                 }
             }

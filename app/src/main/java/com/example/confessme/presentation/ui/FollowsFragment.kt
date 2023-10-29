@@ -11,9 +11,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
+import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentFollowsBinding
 import com.example.confessme.presentation.FollowsViewModel
@@ -32,6 +34,7 @@ class FollowsFragment : Fragment() {
     private val currentUserUid = currentUser?.uid ?: ""
     private var followTypeOrdinal: Int = -1
     private var limit: Long = 20
+    private var userFollowStateObserver: Observer<UiState<FollowUser>>? = null
     private val viewModel: FollowsViewModel by viewModels()
 
     private val userListAdapter = SearchUserListAdapter(mutableListOf(),
@@ -123,7 +126,6 @@ class FollowsFragment : Fragment() {
     }
 
     private fun onItemClick(user: User) {
-
         if (currentUserUid != user.uid) {
             val bundle = Bundle()
             bundle.putString("userEmail", user.email)
@@ -158,43 +160,53 @@ class FollowsFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollow: String) {
-        if (!userUidToFollow.isNullOrEmpty()) {
-            viewModel.followOrUnfollowUser(userUidToFollow)
-            viewModel.followUserState.observe(viewLifecycleOwner) { state ->
+    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String) {
+        if (userUidToFollowOrUnfollow.isEmpty()) {
+            return
+        }
+
+        val position = findPositionById(userUidToFollowOrUnfollow)
+        Log.d("Mesaj: ", "FRAGMENT. userUid: $userUidToFollowOrUnfollow")
+        Log.d("Mesaj: ", "FRAGMENT. position: $position")
+
+        viewModel.followUserState.removeObservers(viewLifecycleOwner)
+
+        val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
+            override fun onChanged(state: UiState<FollowUser>) {
+                Log.d("Mesaj: ", "Fragmentta $userUidToFollowOrUnfollow işleme girdi")
                 when (state) {
                     is UiState.Loading -> {
-                        binding.progressBarFollows.visibility =
-                            View.VISIBLE
-                    }
-
-                    is UiState.Failure -> {
-                        binding.progressBarFollows.visibility =
-                            View.GONE
-                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    is UiState.Success -> {
-                        binding.progressBarFollows.visibility =
-                            View.GONE
-
-                        val followUser = state.data
-                        val isFollowing = state.data.isFollowed
-                        val position = followUser.let { findPositionById(it.userUid) }
-
+                        Log.d("Mesaj: ", "Fragmentta $userUidToFollowOrUnfollow işleme girdi")
                         if (position != -1) {
-                            if (followUser != null) {
-                                if (position != null) {
-                                    userListAdapter.userList[position].isFollowing = isFollowing
-                                    userListAdapter.notifyDataSetChanged()
-                                }
-                            }
+                            Log.d("Mesaj: ", "Ifte position: $position")
+                            userListAdapter.userList[position].isFollowingInProgress = true
+                            userListAdapter.notifyItemChanged(position)
                         }
+                    }
+                    is UiState.Success -> {
+                        Log.d("Mesaj: ", "Fragmentta $userUidToFollowOrUnfollow success oldu")
+                        if (position != -1) {
+                            userListAdapter.userList[position].isFollowingInProgress = false
+                            userListAdapter.userList[position].isFollowing = state.data.isFollowed
+                            userListAdapter.notifyItemChanged(position)
+                        }
+                    }
+                    is UiState.Failure -> {
+                        if (position != -1) {
+                            userListAdapter.userList[position].isFollowingInProgress = false
+                            userListAdapter.notifyItemChanged(position)
+                        }
+                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
+
+        viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
+
+        Log.d("Mesaj: ", "FRAGMENT. followOrUnfollowUser'dan önce userUid: $userUidToFollowOrUnfollow")
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
+        Log.d("Mesaj: ", "FRAGMENT. followOrUnfollowUser'dan sonra userUid: $userUidToFollowOrUnfollow")
     }
 
     private fun setTitle() {

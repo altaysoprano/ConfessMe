@@ -10,5 +10,6 @@ data class User(
     val followCount: Int = 0,
     val followersCount: Int = 0,
     var timestampFollow: Any? = null,
-    var isFollowing: Boolean = false
+    var isFollowing: Boolean = false,
+    var isFollowingInProgress: Boolean = false
 )

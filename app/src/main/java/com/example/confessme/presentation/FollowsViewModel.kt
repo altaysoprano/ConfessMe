@@ -1,5 +1,6 @@
 package com.example.confessme.presentation
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,6 +46,7 @@ class FollowsViewModel @Inject constructor(
 
         repository.checkIfUserFollowed(userUid) { result ->
             if (result is UiState.Success && result.data.isFollowed) {
+                Log.d("Mesaj: ", "Viewmodelda ife girdi")
                 repository.unfollowUser(userUid) { unfollowResult ->
                     if (unfollowResult is UiState.Success) {
                         _followUserState.postValue(unfollowResult)
@@ -53,6 +55,7 @@ class FollowsViewModel @Inject constructor(
                     }
                 }
             } else {
+                Log.d("Mesaj: ", "Viewmodelda elsea girdi")
                 repository.followUser(userUid) { followResult ->
                     if (followResult is UiState.Success) {
                         _followUserState.postValue(UiState.Success(followResult.data))
