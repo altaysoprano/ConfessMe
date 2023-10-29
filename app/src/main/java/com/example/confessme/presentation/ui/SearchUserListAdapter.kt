@@ -65,6 +65,8 @@ class SearchUserListAdapter(
 
                 if(currentUserUid == user.uid) {
                     binding.followsProgressButtonLayout.followButtonCardview.visibility = View.GONE
+                } else {
+                    binding.followsProgressButtonLayout.followButtonCardview.visibility = View.VISIBLE
                 }
 
                 if (user.isFollowing) {
