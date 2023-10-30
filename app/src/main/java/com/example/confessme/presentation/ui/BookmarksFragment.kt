@@ -142,11 +142,15 @@ class BookmarksFragment() : Fragment() {
 
 
         setupRecyclerView()
+
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         observeFetchBookmarks()
         observeRemoveBookmark()
         observeDeleteConfession()
-
-        return binding.root
     }
 
     private fun setupRecyclerView() {
@@ -157,7 +161,7 @@ class BookmarksFragment() : Fragment() {
     }
 
     private fun observeFetchBookmarks() {
-        viewModel.fetchBookmarksState.observe(viewLifecycleOwner) { state ->
+        viewModel.fetchBookmarksState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarBookmarks.visibility = View.VISIBLE
@@ -188,7 +192,7 @@ class BookmarksFragment() : Fragment() {
     }
 
     private fun observeDeleteConfession() {
-        viewModel.deleteConfessionState.observe(viewLifecycleOwner) { state ->
+        viewModel.deleteConfessionState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarBookmarksGeneral.visibility = View.VISIBLE
@@ -219,7 +223,7 @@ class BookmarksFragment() : Fragment() {
     }
 
     private fun observeRemoveBookmark() {
-        viewModel.removeBookmarkState.observe(viewLifecycleOwner) { state ->
+        viewModel.removeBookmarkState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarBookmarksGeneral.visibility = View.VISIBLE

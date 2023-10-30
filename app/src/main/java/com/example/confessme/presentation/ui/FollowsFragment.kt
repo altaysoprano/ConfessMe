@@ -34,7 +34,6 @@ class FollowsFragment : Fragment() {
     private val currentUserUid = currentUser?.uid ?: ""
     private var followTypeOrdinal: Int = -1
     private var limit: Long = 20
-    private var userFollowStateObserver: Observer<UiState<FollowUser>>? = null
     private val viewModel: FollowsViewModel by viewModels()
 
     private val userListAdapter = SearchUserListAdapter(mutableListOf(),
@@ -67,9 +66,13 @@ class FollowsFragment : Fragment() {
 
         getFollowings(followTypeOrdinal)
         setupRecyclerView()
-        observeFollowsResults()
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeFollowsResults()
     }
 
     private fun setupRecyclerView() {
@@ -99,7 +102,7 @@ class FollowsFragment : Fragment() {
     }
 
     private fun observeFollowsResults() {
-        viewModel.followingUsers.observe(viewLifecycleOwner) { state ->
+        viewModel.followingUsers.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarFollows.visibility = View.VISIBLE
@@ -197,7 +200,7 @@ class FollowsFragment : Fragment() {
             }
         }
 
-        viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
+        viewModel.followUserState.observe(this, userFollowStateObserver)
     }
 
     private fun setTitle() {

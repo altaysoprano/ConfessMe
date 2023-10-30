@@ -183,10 +183,9 @@ class UserRepoImp(
                 .addOnSuccessListener { documents ->
                     val userList = mutableListOf<User>()
 
-                    val usersProcessed = mutableListOf<Int>() // İşlenmiş kullanıcılar listesi
+                    val usersProcessed = mutableListOf<Int>()
 
                     if (documents.isEmpty()) {
-                        // Hiç sonuç yok, direk success olarak işaretleyebiliriz
                         result.invoke(UiState.Success(userList))
                         return@addOnSuccessListener
                     }
@@ -198,7 +197,6 @@ class UserRepoImp(
                             val user = document.toObject(User::class.java)
                             userList.add(user)
 
-                            // İşlenen her kullanıcı için takip durumunu kontrol et
                             val myFollowingsRef = database.collection("users")
                                 .document(currentUserUid)
                                 .collection("following")
@@ -210,7 +208,6 @@ class UserRepoImp(
                                     "${user.userName} isFollowing: ${user.isFollowing}"
                                 )
 
-                                // Tüm kullanıcılar işlenip işlenmediğini kontrol et
                                 usersProcessed.add(userList.indexOf(user))
                                 if (usersProcessed.size == documents.size() - 1
                                     || usersProcessed.size == documents.size()

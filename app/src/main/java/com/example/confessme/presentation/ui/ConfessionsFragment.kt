@@ -146,8 +146,6 @@ class ConfessionsFragment(
         }
 
         setupRecyclerView()
-        observeFetchConfessions()
-        observeDeleteConfession()
 
         return binding.root
     }
@@ -155,6 +153,8 @@ class ConfessionsFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         observeAddBookmarks()
+        observeFetchConfessions()
+        observeDeleteConfession()
     }
 
     private fun setupRecyclerView() {
@@ -165,7 +165,7 @@ class ConfessionsFragment(
     }
 
     private fun observeFetchConfessions() {
-        viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
+        viewModel.fetchConfessionsState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessions.visibility = View.VISIBLE
@@ -194,7 +194,7 @@ class ConfessionsFragment(
     }
 
     private fun observeDeleteConfession() {
-        viewModel.deleteConfessionState.observe(viewLifecycleOwner) { state ->
+        viewModel.deleteConfessionState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessionsGeneral.visibility = View.VISIBLE

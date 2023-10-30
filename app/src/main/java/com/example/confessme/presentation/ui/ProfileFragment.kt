@@ -30,7 +30,7 @@ import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProfileFragment : Fragment() {
+class ProfileFragment() : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
@@ -54,6 +54,11 @@ class ProfileFragment : Fragment() {
         observeFetchState()
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeFetchState()
     }
 
     private fun observeFetchState() {

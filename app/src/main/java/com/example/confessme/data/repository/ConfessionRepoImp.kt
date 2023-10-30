@@ -647,7 +647,7 @@ class ConfessionRepoImp(
                                                         )
                                                     }
                                             } else {
-                                                result.invoke(UiState.Failure("Confession not found 1"))
+                                                result.invoke(UiState.Failure("Confession not found"))
                                             }
                                         }
                                 } else {

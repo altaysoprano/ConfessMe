@@ -57,35 +57,6 @@ class EditProfileFragment : Fragment() {
 
         viewModel.getProfileData()
 
-        viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.progressBarEditProfile.visibility = View.VISIBLE
-                }
-
-                is UiState.Failure -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
-                    val userProfile = state.data
-                    if (userProfile != null) {
-                        currentUsername = userProfile.userName
-                        binding.firstNameEt.setText(userProfile.userName)
-                        binding.bioEt.setText(userProfile.bio)
-                        if (userProfile.imageUrl.isNotEmpty()) {
-                            Glide.with(requireContext())
-                                .load(userProfile.imageUrl)
-                                .into(binding.profileImage)
-                        }
-                    }
-                }
-            }
-        }
-
         binding.saveButton.setOnClickListener {
             val username = binding.firstNameEt.text?.trim().toString()
             val bio = binding.bioEt.text?.trim().toString()
@@ -128,6 +99,42 @@ class EditProfileFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeGetProfile()
+    }
+
+    private fun observeGetProfile() {
+        viewModel.getProfileState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarEditProfile.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarEditProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarEditProfile.visibility = View.GONE
+                    val userProfile = state.data
+                    if (userProfile != null) {
+                        currentUsername = userProfile.userName
+                        binding.firstNameEt.setText(userProfile.userName)
+                        binding.bioEt.setText(userProfile.bio)
+                        if (userProfile.imageUrl.isNotEmpty()) {
+                            Glide.with(requireContext())
+                                .load(userProfile.imageUrl)
+                                .into(binding.profileImage)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

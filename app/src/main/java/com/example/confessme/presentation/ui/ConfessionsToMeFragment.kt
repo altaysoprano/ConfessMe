@@ -145,8 +145,6 @@ class ConfessionsToMeFragment(
         }
 
         setupRecyclerView()
-        observeFetchConfessions()
-        observeAddFavorite()
 
         return binding.root
     }
@@ -154,6 +152,8 @@ class ConfessionsToMeFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         observeAddBookmarks()
+        observeFetchConfessions()
+        observeAddFavorite()
     }
 
     private fun setupRecyclerView() {
@@ -165,7 +165,7 @@ class ConfessionsToMeFragment(
 
 
     private fun observeFetchConfessions() {
-        viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
+        viewModel.fetchConfessionsState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessionsToMe.visibility = View.VISIBLE
@@ -193,7 +193,7 @@ class ConfessionsToMeFragment(
 
     @SuppressLint("NotifyDataSetChanged")
     private fun observeAddFavorite() {
-        viewModel.addFavoriteState.observe(viewLifecycleOwner) { state ->
+        viewModel.addFavoriteState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessionsToMe.visibility = View.VISIBLE
