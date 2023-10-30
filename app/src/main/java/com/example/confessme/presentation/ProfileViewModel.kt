@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
-import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.LoginFragment
@@ -49,7 +48,7 @@ class ProfileViewModel @Inject constructor(
             _updateProfileState.value = it
         }
     }
-    fun fetchUserProfileByEmail(userUid: String) {
+    fun fetchUserProfileByUserId(userUid: String) {
         _fetchProfileState.value = UiState.Loading
 
         repository.fetchUserProfileByUid(userUid) { result ->

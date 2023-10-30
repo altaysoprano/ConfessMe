@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,16 +13,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.FollowUser
-import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentOtherUserProfileBinding
-import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.FollowType
@@ -222,7 +218,7 @@ class OtherUserProfileFragment : Fragment() {
 
     private fun fetchUserProfile() {
         if (!userUid.isNullOrEmpty()) {
-            viewModel.fetchUserProfileByEmail(userUid)
+            viewModel.fetchUserProfileByUserId(userUid)
             setFollowButton(userUid)
             viewPagerAdapter = OtherUserViewPagerAdapter(userUid, this)
             binding.otherUserProfileViewPager.adapter = viewPagerAdapter

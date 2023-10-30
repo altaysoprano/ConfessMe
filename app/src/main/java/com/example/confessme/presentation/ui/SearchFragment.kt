@@ -125,7 +125,7 @@ class SearchFragment : Fragment() {
 
         val position = findPositionById(userUidToFollowOrUnfollow)
 
-        viewModel.followUserState.removeObservers(viewLifecycleOwner)
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
 
         val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
             override fun onChanged(state: UiState<FollowUser>) {
@@ -142,6 +142,7 @@ class SearchFragment : Fragment() {
                             userListAdapter.userList[position].isFollowing = state.data.isFollowed
                             userListAdapter.notifyItemChanged(position)
                         }
+                        viewModel.followUserState.removeObserver(this)
                     }
                     is UiState.Failure -> {
                         if (position != -1) {
@@ -155,8 +156,6 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
-
-        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
     }
 
     private fun findPositionById(userId: String): Int {

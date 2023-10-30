@@ -92,14 +92,33 @@ class UserRepoImp(
         val user = firebaseAuth.currentUser
         if (user != null) {
             val uid = user.uid
+            val userRef = database.collection("users").document(uid)
 
-            database.collection("users")
-                .document(uid)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        val userProfile = document.toObject(User::class.java)
-                        result.invoke(UiState.Success(userProfile))
+            userRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val userProfile = documentSnapshot.toObject(User::class.java)
+
+                        userRef.collection("followers").get()
+                            .addOnSuccessListener { followersQuerySnapshot ->
+                                val followersCount = followersQuerySnapshot.size()
+
+                                userRef.collection("following").get()
+                                    .addOnSuccessListener { followingQuerySnapshot ->
+                                        val followingCount = followingQuerySnapshot.size()
+
+                                        userProfile?.followCount = followingCount
+                                        userProfile?.followersCount = followersCount
+
+                                        result.invoke(UiState.Success(userProfile))
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure("An error occurred while pulling the following count"))
+                                    }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                            }
                     } else {
                         result.invoke(UiState.Failure("User data not found"))
                     }
@@ -119,7 +138,27 @@ class UserRepoImp(
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
                     val user = documentSnapshot.toObject(User::class.java)
-                    result.invoke(UiState.Success(user))
+
+                    userRef.collection("followers").get()
+                        .addOnSuccessListener { followersQuerySnapshot ->
+                            val followersCount = followersQuerySnapshot.size()
+
+                            userRef.collection("following").get()
+                                .addOnSuccessListener { followingQuerySnapshot ->
+                                    val followingCount = followingQuerySnapshot.size()
+
+                                    user?.followCount = followingCount
+                                    user?.followersCount = followersCount
+
+                                    result.invoke(UiState.Success(user))
+                                }
+                                .addOnFailureListener { exception ->
+                                    result.invoke(UiState.Failure("An error occurred while pulling the following count"))
+                                }
+                        }
+                        .addOnFailureListener { exception ->
+                            result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                        }
                 } else {
                     result.invoke(UiState.Failure("User data not found"))
                 }
@@ -166,13 +205,17 @@ class UserRepoImp(
                                 .document(uid)
                             myFollowingsRef.get().addOnSuccessListener { documentSnapshot ->
                                 user.isFollowing = documentSnapshot.exists()
-                                Log.d("Mesaj: ", "${user.userName} isFollowing: ${user.isFollowing}")
+                                Log.d(
+                                    "Mesaj: ",
+                                    "${user.userName} isFollowing: ${user.isFollowing}"
+                                )
 
                                 // Tüm kullanıcılar işlenip işlenmediğini kontrol et
                                 usersProcessed.add(userList.indexOf(user))
                                 if (usersProcessed.size == documents.size() - 1
                                     || usersProcessed.size == documents.size()
-                                    || documents.size() == 0) {
+                                    || documents.size() == 0
+                                ) {
                                     result.invoke(UiState.Success(userList))
                                 }
                             }
@@ -234,26 +277,6 @@ class UserRepoImp(
                                 } else {
                                     val followedUid = followingDocument.id
                                     followingRef.document(followedUid).delete()
-                                    val batch = database.batch()
-
-                                    val userRefParent = followingRef.parent
-                                    if (userRefParent != null) {
-                                        if (followType == FollowType.MyFollowings || followType == FollowType.OtherUserFollowings) {
-                                            batch.update(
-                                                userRefParent,
-                                                "followCount",
-                                                FieldValue.increment(-1)
-                                            )
-                                            batch.commit()
-                                        } else if (followType == FollowType.MyFollowers || followType == FollowType.OtherUserFollowers) {
-                                            batch.update(
-                                                userRefParent,
-                                                "followersCount",
-                                                FieldValue.increment(-1)
-                                            )
-                                            batch.commit()
-                                        }
-                                    }
                                 }
 
                                 counter++
@@ -264,6 +287,7 @@ class UserRepoImp(
                                     sortedFollowUserProfiles.forEach { user ->
                                         val myFollowingsRef = database.collection("users")
                                             .document(currentUserUid)
+
                                             .collection("following")
                                             .document(user.uid)
                                         myFollowingsRef.get()
@@ -309,13 +333,8 @@ class UserRepoImp(
                 .collection("following").document(userUidToFollow)
             val followersRef = database.collection("users").document(userUidToFollow)
                 .collection("followers").document(currentUserUid)
-            val currentUserRef = database.collection("users").document(currentUserUid)
-            val otherUserRef = database.collection("users").document(userUidToFollow)
 
             val batch = database.batch()
-
-            batch.update(otherUserRef, "followersCount", FieldValue.increment(1))
-            batch.update(currentUserRef, "followCount", FieldValue.increment(1))
 
             batch.set(followingRef, mapOf("timestamp" to FieldValue.serverTimestamp()))
             batch.set(followersRef, mapOf("timestamp" to FieldValue.serverTimestamp()))
@@ -345,13 +364,8 @@ class UserRepoImp(
                 .collection("following").document(userUidToUnfollow)
             val followersRef = database.collection("users").document(userUidToUnfollow)
                 .collection("followers").document(currentUserUid)
-            val currentUserRef = database.collection("users").document(currentUserUid)
-            val otherUserRef = database.collection("users").document(userUidToUnfollow)
 
             val batch = database.batch()
-
-            batch.update(otherUserRef, "followersCount", FieldValue.increment(-1))
-            batch.update(currentUserRef, "followCount", FieldValue.increment(-1))
 
             batch.delete(followingRef)
             batch.delete(followersRef)
