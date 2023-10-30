@@ -201,7 +201,7 @@ class ConfessionRepoImp(
                             .limit(limit)
                             .get()
 
-                        Tasks.whenAllSuccess<List<Confession>>(myConfessionsTask, confessionsToMeTask)
+                        Tasks.whenAllSuccess<QuerySnapshot>(myConfessionsTask, confessionsToMeTask)
                             .continueWith { task ->
                                 val myConfessions =
                                     (task.result?.get(0) as QuerySnapshot).toObjects(Confession::class.java)
@@ -215,7 +215,8 @@ class ConfessionRepoImp(
                     Tasks.whenAllSuccess<List<Confession>>(*tasks.toTypedArray())
                         .addOnSuccessListener { combinedResults ->
                             val combinedConfessions = combinedResults.flatten()
-                            result.invoke(UiState.Success(combinedConfessions))
+                            val sortedConfessions = combinedConfessions.sortedByDescending { it.timestamp.toString() }
+                            result.invoke(UiState.Success(sortedConfessions))
                         }
                         .addOnFailureListener { exception ->
                             result.invoke(UiState.Failure(exception.localizedMessage))

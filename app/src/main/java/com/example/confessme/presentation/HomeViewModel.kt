@@ -11,6 +11,7 @@ import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,10 +26,50 @@ class HomeViewModel @Inject constructor(
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
         get() = _fetchConfessionsState
 
+    private val _deleteAnswerState = MutableLiveData<UiState<Confession?>>()
+    val deleteAnswerState: LiveData<UiState<Confession?>>
+        get() = _deleteAnswerState
+
+    private val _deleteConfessionState = MutableLiveData<UiState<Confession?>>()
+    val deleteConfessionState: LiveData<UiState<Confession?>>
+        get() = _deleteConfessionState
+
+    private val _addAnswerState = MutableLiveData<UiState<Confession?>>()
+    val addAnswerState: LiveData<UiState<Confession?>>
+        get() = _addAnswerState
+
+    private val _addFavoriteState = MutableLiveData<UiState<Confession?>>()
+    val addFavoriteState: LiveData<UiState<Confession?>>
+        get() = _addFavoriteState
+
+    private val _addFavoriteAnswer = MutableLiveData<UiState<Confession?>>()
+    val addFavoriteAnswer: LiveData<UiState<Confession?>>
+        get() = _addFavoriteAnswer
+
+    private val _addBookmarkState = MutableLiveData<UiState<String>>()
+    val addBookmarkState: LiveData<UiState<String>>
+        get() = _addBookmarkState
+
+    private var addFavoriteAnswerJob: Job? = null
+
     fun fetchConfessions(limit: Long) {
         _fetchConfessionsState.value = UiState.Loading
         repository.fetchFollowedUsersConfessions(limit) { result ->
             _fetchConfessionsState.postValue(result)
+        }
+    }
+
+    fun deleteConfession(confessionId: String) {
+        _deleteConfessionState.value = UiState.Loading
+        repository.deleteConfession(confessionId) {
+            _deleteConfessionState.postValue(it)
+        }
+    }
+
+    fun addBookmark(confessionId: String, timestamp: String, userUid: String) {
+        _addBookmarkState.value = UiState.Loading
+        repository.addBookmark(confessionId, timestamp, userUid) {
+            _addBookmarkState.postValue(it)
         }
     }
 
