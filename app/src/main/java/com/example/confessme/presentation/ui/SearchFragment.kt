@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confessme.R
+import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
 import com.example.confessme.presentation.SearchViewModel
@@ -115,20 +118,23 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUid: String) {
-        if (!userUid.isNullOrEmpty()) {
-            val position = findPositionById(userUid)
+    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String) {
+        if (userUidToFollowOrUnfollow.isEmpty()) {
+            return
+        }
 
-            if (position != -1) {
-                userListAdapter.userList[position].isFollowingInProgress = true
-                userListAdapter.notifyItemChanged(position)
-            }
+        val position = findPositionById(userUidToFollowOrUnfollow)
 
-            viewModel.followOrUnfollowUser(userUid)
-            viewModel.followUserState.observe(viewLifecycleOwner) { state ->
+        viewModel.followUserState.removeObservers(viewLifecycleOwner)
+
+        val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
+            override fun onChanged(state: UiState<FollowUser>) {
                 when (state) {
                     is UiState.Loading -> {
-
+                        if (position != -1) {
+                            userListAdapter.userList[position].isFollowingInProgress = true
+                            userListAdapter.notifyItemChanged(position)
+                        }
                     }
                     is UiState.Success -> {
                         if (position != -1) {
@@ -147,6 +153,10 @@ class SearchFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
+
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
     }
 
     private fun findPositionById(userId: String): Int {

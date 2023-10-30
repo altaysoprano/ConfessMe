@@ -166,30 +166,25 @@ class FollowsFragment : Fragment() {
         }
 
         val position = findPositionById(userUidToFollowOrUnfollow)
-        Log.d("Mesaj: ", "FRAGMENT. userUid: $userUidToFollowOrUnfollow")
-        Log.d("Mesaj: ", "FRAGMENT. position: $position")
 
-        viewModel.followUserState.removeObservers(viewLifecycleOwner)
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
 
         val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
             override fun onChanged(state: UiState<FollowUser>) {
-                Log.d("Mesaj: ", "Fragmentta $userUidToFollowOrUnfollow işleme girdi")
                 when (state) {
                     is UiState.Loading -> {
-                        Log.d("Mesaj: ", "Fragmentta $userUidToFollowOrUnfollow işleme girdi")
                         if (position != -1) {
-                            Log.d("Mesaj: ", "Ifte position: $position")
                             userListAdapter.userList[position].isFollowingInProgress = true
                             userListAdapter.notifyItemChanged(position)
                         }
                     }
                     is UiState.Success -> {
-                        Log.d("Mesaj: ", "Fragmentta $userUidToFollowOrUnfollow success oldu")
                         if (position != -1) {
                             userListAdapter.userList[position].isFollowingInProgress = false
                             userListAdapter.userList[position].isFollowing = state.data.isFollowed
                             userListAdapter.notifyItemChanged(position)
                         }
+                        viewModel.followUserState.removeObserver(this)
                     }
                     is UiState.Failure -> {
                         if (position != -1) {
@@ -203,10 +198,6 @@ class FollowsFragment : Fragment() {
         }
 
         viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
-
-        Log.d("Mesaj: ", "FRAGMENT. followOrUnfollowUser'dan önce userUid: $userUidToFollowOrUnfollow")
-        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
-        Log.d("Mesaj: ", "FRAGMENT. followOrUnfollowUser'dan sonra userUid: $userUidToFollowOrUnfollow")
     }
 
     private fun setTitle() {

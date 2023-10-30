@@ -16,9 +16,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.confessme.R
+import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentOtherUserProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
@@ -62,28 +64,39 @@ class OtherUserProfileFragment : Fragment() {
 
     private fun followOrUnfollowUser() {
         if (!userUid.isNullOrEmpty()) {
+
             viewModel.followOrUnfollowUser(userUid)
-            viewModel.followUserState.observe(viewLifecycleOwner) { state ->
-                when (state) {
-                    is UiState.Loading -> {
-                        binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
-                            View.VISIBLE
-                    }
 
-                    is UiState.Failure -> {
-                        binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
-                            View.GONE
-                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                            .show()
-                    }
+            val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
+                override fun onChanged(state: UiState<FollowUser>) {
+                    when (state) {
+                        is UiState.Loading -> {
+                            binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
+                                View.VISIBLE
+                        }
 
-                    is UiState.Success -> {
-                        binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
-                            View.GONE
-                        setFollowButton(userUid)
+                        is UiState.Failure -> {
+                            binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
+                                View.GONE
+                            Toast.makeText(
+                                requireContext(),
+                                state.error.toString(),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+
+                        is UiState.Success -> {
+                            binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
+                                View.GONE
+                            setFollowButton(userUid)
+                            viewModel.followUserState.removeObserver(this)
+                        }
                     }
                 }
             }
+
+            viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
         }
     }
 
