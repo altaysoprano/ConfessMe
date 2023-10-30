@@ -130,7 +130,7 @@ class OthersConfessionsFragment(
                 onItemPhotoClick(photoUserEmail, photoUserUid)
             },
             onUserNameClick = { userNameUserUid, userNameUserEmail, userName ->
-                onUserNameClick(userNameUserUid, userNameUserEmail)
+                onUserNameClick(userNameUserEmail, userNameUserUid)
             }
         )
     }
