@@ -144,9 +144,13 @@ class ConfessedFragment(
         setupRecyclerView()
         observeFetchConfessions()
         observeAddFavorite()
-        observeAddBookmarks()
 
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeAddBookmarks()
     }
 
     private fun setupRecyclerView() {
@@ -216,7 +220,7 @@ class ConfessedFragment(
     }
 
     private fun observeAddBookmarks() {
-        viewModel.addBookmarkState.observe(viewLifecycleOwner) { state ->
+        viewModel.addBookmarkState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessedGeneral.visibility = View.VISIBLE

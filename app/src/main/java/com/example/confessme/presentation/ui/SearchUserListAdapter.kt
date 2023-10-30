@@ -55,15 +55,12 @@ class SearchUserListAdapter(
 
                 if (user.isFollowingInProgress) {
                     binding.followsProgressButtonLayout.progressBarFollowButton.visibility = View.VISIBLE
-                    Log.d("Mesaj: ", "${user.uid} loadinge girdi")
                 } else {
                     binding.followsProgressButtonLayout.progressBarFollowButton.visibility = View.GONE
                 }
 
                 binding.followsProgressButtonLayout.followButtonCardview.setOnClickListener {
-                    Log.d("Mesaj: ", "Tıklandığında adapter position: $adapterPosition")
                     val userToFollow = userList[adapterPosition]
-                    Log.d("Mesaj: ", "Adapterda ${userToFollow.uid} işleme girdi")
                     onFollowClick(userToFollow.uid)
                 }
 
@@ -78,14 +75,12 @@ class SearchUserListAdapter(
                 }
 
                 if (user.isFollowing) {
-                    Log.d("Mesaj: ", "Adapterda ${user.uid} isFollowinge girdi")
                     binding.followsProgressButtonLayout.followButtonTv.text = "FOLLOWING"
                     binding.followsProgressButtonLayout.followButtonLayout.setBackgroundColor(Color.WHITE)
                     binding.followsProgressButtonLayout.followButtonTv.setTextColor(Color.BLACK)
                     binding.followsProgressButtonLayout.progressBarFollowButton.indeterminateTintList =
                         ColorStateList.valueOf(Color.BLACK)
                 } else {
-                    Log.d("Mesaj: ", "Adapterda ${user.uid} isFollowing else'a girdi")
                     binding.followsProgressButtonLayout.followButtonTv.text = "FOLLOW"
                     binding.followsProgressButtonLayout.followButtonLayout.setBackgroundColor(
                         Color.parseColor("#cf363c")
