@@ -56,11 +56,6 @@ class ProfileFragment() : Fragment() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        observeFetchState()
-    }
-
     private fun observeFetchState() {
         viewModel.getProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {

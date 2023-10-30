@@ -5,6 +5,7 @@ import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -14,6 +15,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.firestore.ktx.toObject
@@ -161,6 +163,63 @@ class ConfessionRepoImp(
                     }
 
                     result.invoke(UiState.Success(confessionList))
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun fetchFollowedUsersConfessions(
+        limit: Long,
+        result: (UiState<List<Confession>>) -> Unit
+    ) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val currentUserUid = user.uid
+
+            val followingCollection = database.collection("users").document(currentUserUid)
+                .collection("following")
+
+            followingCollection.get()
+                .addOnSuccessListener { followingDocuments ->
+                    val followingUserUids = followingDocuments.documents.map { it.id }
+
+                    val tasks = followingUserUids.map { followingUid ->
+                        val myConfessionsTask = database.collection("users").document(followingUid)
+                            .collection("my_confessions")
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(limit)
+                            .get()
+
+                        val confessionsToMeTask = database.collection("users").document(followingUid)
+                            .collection("confessions_to_me")
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(limit)
+                            .get()
+
+                        Tasks.whenAllSuccess<List<Confession>>(myConfessionsTask, confessionsToMeTask)
+                            .continueWith { task ->
+                                val myConfessions =
+                                    (task.result?.get(0) as QuerySnapshot).toObjects(Confession::class.java)
+                                val confessionsToMe =
+                                    (task.result?.get(1) as QuerySnapshot).toObjects(Confession::class.java)
+
+                                myConfessions + confessionsToMe
+                            }
+                    }
+
+                    Tasks.whenAllSuccess<List<Confession>>(*tasks.toTypedArray())
+                        .addOnSuccessListener { combinedResults ->
+                            val combinedConfessions = combinedResults.flatten()
+                            result.invoke(UiState.Success(combinedConfessions))
+                        }
+                        .addOnFailureListener { exception ->
+                            result.invoke(UiState.Failure(exception.localizedMessage))
+                        }
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))
@@ -668,13 +727,19 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun addBookmark(confessionId: String, timestamp: String, userUid: String, result: (UiState<String>) -> Unit) {
+    override fun addBookmark(
+        confessionId: String,
+        timestamp: String,
+        userUid: String,
+        result: (UiState<String>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
             val currentUserUid = user.uid
 
-            val bookmarksCollection = database.collection("users").document(currentUserUid).collection("bookmarks")
+            val bookmarksCollection =
+                database.collection("users").document(currentUserUid).collection("bookmarks")
             val newBookmarkDocument = bookmarksCollection.document(confessionId)
 
             val data = mapOf(
@@ -698,7 +763,8 @@ class ConfessionRepoImp(
         val userUid = firebaseAuth.currentUser?.uid
 
         if (userUid != null) {
-            val bookmarksCollection = database.collection("users").document(userUid).collection("bookmarks")
+            val bookmarksCollection =
+                database.collection("users").document(userUid).collection("bookmarks")
 
             bookmarksCollection
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -732,8 +798,10 @@ class ConfessionRepoImp(
                                     val bookmarkedConfession =
                                         myConfessionSnapshot.toObject(Confession::class.java)
                                     bookmarkedConfessions.add(bookmarkedConfession)
-                                    timestampMap[confessionId] = bookmarkedConfession?.timestamp as Timestamp
-                                    bookmarkedConfession.timestamp = document.getTimestamp("timestamp") as Timestamp
+                                    timestampMap[confessionId] =
+                                        bookmarkedConfession?.timestamp as Timestamp
+                                    bookmarkedConfession.timestamp =
+                                        document.getTimestamp("timestamp") as Timestamp
                                 } else {
                                     bookmarksCollection.document(confessionId).delete()
                                 }
@@ -741,7 +809,8 @@ class ConfessionRepoImp(
                                 fetchedConfessionCount++
 
                                 if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
-                                    val sortedBookmarkedConfessions = bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
+                                    val sortedBookmarkedConfessions =
+                                        bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
 
                                     sortedBookmarkedConfessions.forEach { confession ->
                                         val originalTimestamp = timestampMap[confession?.id]
@@ -755,7 +824,8 @@ class ConfessionRepoImp(
                                 fetchedConfessionCount++
 
                                 if (fetchedConfessionCount == bookmarkCount || fetchedConfessionCount == limit.toInt()) {
-                                    val sortedBookmarkedConfessions = bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
+                                    val sortedBookmarkedConfessions =
+                                        bookmarkedConfessions.sortedByDescending { it?.timestamp.toString() }
 
                                     sortedBookmarkedConfessions.forEach { confession ->
                                         val originalTimestamp = timestampMap[confession?.id]
@@ -775,13 +845,17 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun removeBookmark(confessionId: String, result: (UiState<DocumentReference>) -> Unit) {
+    override fun removeBookmark(
+        confessionId: String,
+        result: (UiState<DocumentReference>) -> Unit
+    ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
             val currentUserUid = user.uid
 
-            val bookmarksCollection = database.collection("users").document(currentUserUid).collection("bookmarks")
+            val bookmarksCollection =
+                database.collection("users").document(currentUserUid).collection("bookmarks")
             val bookmarkDocument = bookmarksCollection.document(confessionId)
 
             bookmarkDocument.delete()

@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.presentation.HomeViewModel
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,9 +31,16 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.title = "Home"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.homeToolbar)
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUserUid = currentUser?.uid ?: ""
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
+
+
+        binding.swipeRefreshLayoutHome.setOnRefreshListener {
+
+        }
 
         return binding.root
     }

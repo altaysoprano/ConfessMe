@@ -35,6 +35,7 @@ class OthersConfessionsFragment(
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var confessListAdapter: ConfessionListAdapter
+    private lateinit var currentUserUid: String
     private lateinit var noConfessFoundBinding: NoConfessionsHereBeTheFirstOneBinding
     private var limit: Long = 20
 
@@ -47,135 +48,20 @@ class OthersConfessionsFragment(
 
         binding = FragmentOthersConfessionsBinding.inflate(inflater, container, false)
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        noConfessFoundBinding = binding.othersConfessionsNoConfessFoundView
         navRegister = activity as FragmentNavigation
         val currentUser = FirebaseAuth.getInstance().currentUser
-        val currentUserUid = currentUser?.uid ?: ""
-        confessListAdapter = ConfessionListAdapter(
-            requireContext(),
-            mutableListOf(),
-            currentUserUid,
-            false,
-            onAnswerClick = { confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate ->
-                if (!confessionId.isNullOrEmpty()) {
-                    val bundle = Bundle()
-                    bundle.putString("confessionId", confessionId)
-                    bundle.putBoolean("isAnswered", isAnswered)
-                    bundle.putString("answerText", answerText)
-                    bundle.putString("currentUserUid", currentUserUid)
-                    bundle.putString("answerUserUid", userId)
-                    bundle.putString("fromUserImageUrl", fromUserImageUrl)
-                    bundle.putString("answeredUserName", answeredUserName)
-                    bundle.putString("confessedUserName", confessedUserName)
-                    bundle.putString("answerFromUserUid", fromUserUid)
-                    bundle.putBoolean("favorited", isFavorited)
-                    bundle.putString("answerDate", answerDate)
-                    val confessAnswerFragment = ConfessAnswerFragment(
-                        { position, updatedConfession ->
-                            confessListAdapter.updateItem(position, updatedConfession)
-                        },
-                        { confessionId ->
-                            findPositionById(confessionId)
-                        }
-                    )
-                    confessAnswerFragment.arguments = bundle
-                    confessAnswerFragment.show(
-                        requireActivity().supportFragmentManager,
-                        "ConfessAnswerFragment"
-                    )
-                } else {
-                    Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            },
-            onFavoriteClick = {isFavorited, confessionId ->
+        currentUserUid = currentUser?.uid ?: ""
 
-            },
-            onConfessDeleteClick = { confessionId ->
-                viewModel.deleteConfession(confessionId)
-            },
-            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
-                viewModel.addBookmark(confessionId, timestamp, userUid)
-            },
-            onBookmarkRemoveClick = {confessionId -> },
-            onItemPhotoClick = { userUid, userEmail, userName ->
-
-                val bundle = Bundle()
-                bundle.putString("userEmail", userEmail)
-                bundle.putString("userUid", userUid)
-
-                val profileFragment = OtherUserProfileFragment()
-                profileFragment.arguments = bundle
-
-                navRegister.navigateFrag(profileFragment, true)
-            },
-            onUserNameClick =  { userUid, userEmail, userName ->
-
-                val bundle = Bundle()
-                bundle.putString("userEmail", userEmail)
-                bundle.putString("userUid", userUid)
-
-                val profileFragment = OtherUserProfileFragment()
-                profileFragment.arguments = bundle
-
-                navRegister.navigateFrag(profileFragment, true)
-            }
-        )
-        noConfessFoundBinding = binding.othersConfessionsNoConfessFoundView
+        setConfessionListAdapter()
+        setupRecyclerView()
 
         viewModel.fetchConfessions(userUid, limit, confessionCategory)
-
-        binding.othersConfessionsListRecyclerviewId.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                    && firstVisibleItemPosition >= 0
-                    && totalItemCount >= limit
-                ) {
-                    limit += 10
-                    viewModel.fetchConfessions(userUid, limit, confessionCategory)
-                }
-
-                val currentScrollPosition = recyclerView.computeVerticalScrollOffset()
-                val maxHeight = 600
-                val minHeight = 200
-                var lastScrollPosition = 0
-
-                if (currentScrollPosition < lastScrollPosition && profileBinding.profileViewPager.height < maxHeight) {
-                    val newHeight = profileBinding.profileViewPager.height + abs(dy)
-                    if (newHeight > maxHeight) {
-                        profileBinding.profileViewPager.layoutParams.height = maxHeight
-                    } else {
-                        profileBinding.profileViewPager.layoutParams.height = newHeight
-                    }
-                    profileBinding.profileViewPager.requestLayout()
-                }
-
-                if (currentScrollPosition > lastScrollPosition && profileBinding.profileViewPager.height > minHeight) {
-                    val newHeight = profileBinding.profileViewPager.height - abs(dy)
-                    if (newHeight < minHeight) {
-                        profileBinding.profileViewPager.layoutParams.height = minHeight
-                    } else {
-                        profileBinding.profileViewPager.layoutParams.height = newHeight
-                    }
-                    profileBinding.profileViewPager.requestLayout()
-                }
-
-                lastScrollPosition = currentScrollPosition
-            }
-        })
 
         binding.swipeRefreshLayoutOthersConfessions.setOnRefreshListener {
             viewModel.fetchConfessions(userUid, limit, confessionCategory)
             confessListAdapter.notifyDataSetChanged()
         }
-
-        setupRecyclerView()
 
         return binding.root
     }
@@ -191,7 +77,62 @@ class OthersConfessionsFragment(
         binding.othersConfessionsListRecyclerviewId.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = confessListAdapter
+            this.addOnScrollListener(object :
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= limit
+                    ) {
+                        limit += 10
+                        viewModel.fetchConfessions(userUid, limit, confessionCategory)
+                    }
+                }
+            })
         }
+    }
+
+    private fun setConfessionListAdapter() {
+        confessListAdapter = ConfessionListAdapter(
+            requireContext(),
+            mutableListOf(),
+            currentUserUid,
+            false,
+            onAnswerClick = { confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate ->
+                onAnswerClick(
+                    confessionId,
+                    userId,
+                    fromUserUid,
+                    fromUserImageUrl,
+                    answeredUserName,
+                    confessedUserName,
+                    isAnswered,
+                    answerText,
+                    isFavorited,
+                    answerDate
+                )
+            },
+            onFavoriteClick = { isFavorited, confessionId -> },
+            onConfessDeleteClick = { confessionId ->
+                viewModel.deleteConfession(confessionId)
+            },
+            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
+                viewModel.addBookmark(confessionId, timestamp, userUid)
+            },
+            onBookmarkRemoveClick = { confessionId -> },
+            onItemPhotoClick = { photoUserUid, photoUserEmail, userName ->
+                onItemPhotoClick(photoUserEmail, photoUserUid)
+            },
+            onUserNameClick = { userNameUserUid, userNameUserEmail, userName ->
+                onUserNameClick(userNameUserUid, userNameUserEmail)
+            }
+        )
     }
 
     private fun observeFetchConfessions() {
@@ -269,10 +210,73 @@ class OthersConfessionsFragment(
 
                 is UiState.Success -> {
                     binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Successfully added to bookmarks", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Successfully added to bookmarks",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
+    }
+
+    private fun onAnswerClick(
+        confessionId: String, userId: String, fromUserUid: String, fromUserImageUrl: String,
+        answeredUserName: String, confessedUserName: String,
+        isAnswered: Boolean, answerText: String, isFavorited: Boolean, answerDate: String
+    ) {
+        if (!confessionId.isNullOrEmpty()) {
+            val bundle = Bundle()
+            bundle.putString("confessionId", confessionId)
+            bundle.putBoolean("isAnswered", isAnswered)
+            bundle.putString("answerText", answerText)
+            bundle.putString("currentUserUid", currentUserUid)
+            bundle.putString("answerUserUid", userId)
+            bundle.putString("fromUserImageUrl", fromUserImageUrl)
+            bundle.putString("answeredUserName", answeredUserName)
+            bundle.putString("confessedUserName", confessedUserName)
+            bundle.putString("answerFromUserUid", fromUserUid)
+            bundle.putBoolean("favorited", isFavorited)
+            bundle.putString("answerDate", answerDate)
+            val confessAnswerFragment = ConfessAnswerFragment(
+                { position, updatedConfession ->
+                    confessListAdapter.updateItem(position, updatedConfession)
+                },
+                { confessionId ->
+                    findPositionById(confessionId)
+                }
+            )
+            confessAnswerFragment.arguments = bundle
+            confessAnswerFragment.show(
+                requireActivity().supportFragmentManager,
+                "ConfessAnswerFragment"
+            )
+        } else {
+            Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String) {
+        val bundle = Bundle()
+        bundle.putString("userEmail", photoUserEmail)
+        bundle.putString("userUid", photoUserUid)
+
+        val profileFragment = OtherUserProfileFragment()
+        profileFragment.arguments = bundle
+
+        navRegister.navigateFrag(profileFragment, true)
+    }
+
+    private fun onUserNameClick(userNameUserEmail: String, userNameUserUid: String) {
+        val bundle = Bundle()
+        bundle.putString("userEmail", userNameUserEmail)
+        bundle.putString("userUid", userNameUserUid)
+
+        val profileFragment = OtherUserProfileFragment()
+        profileFragment.arguments = bundle
+
+        navRegister.navigateFrag(profileFragment, true)
     }
 
     private fun findPositionById(confessionId: String): Int {
