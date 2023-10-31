@@ -28,29 +28,25 @@ class HomeViewModel @Inject constructor(
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
         get() = _fetchConfessionsState
 
-    private val _deleteAnswerState = MutableLiveData<UiState<Confession?>>()
-    val deleteAnswerState: LiveData<UiState<Confession?>>
-        get() = _deleteAnswerState
-
     private val _deleteConfessionState = MutableLiveData<UiState<Confession?>>()
     val deleteConfessionState: LiveData<UiState<Confession?>>
         get() = _deleteConfessionState
-
-    private val _addAnswerState = MutableLiveData<UiState<Confession?>>()
-    val addAnswerState: LiveData<UiState<Confession?>>
-        get() = _addAnswerState
 
     private val _addFavoriteState = MutableLiveData<UiState<Confession?>>()
     val addFavoriteState: LiveData<UiState<Confession?>>
         get() = _addFavoriteState
 
-    private val _addFavoriteAnswer = MutableLiveData<UiState<Confession?>>()
-    val addFavoriteAnswer: LiveData<UiState<Confession?>>
-        get() = _addFavoriteAnswer
-
     private val _addBookmarkState = MutableLiveData<UiState<String>>()
     val addBookmarkState: LiveData<UiState<String>>
         get() = _addBookmarkState
+
+    private val _onPagingState = MutableLiveData<UiState<List<Confession>>>()
+    val onPagingState: LiveData<UiState<List<Confession>>>
+        get() = _onPagingState
+
+    private val _onSwipeState = MutableLiveData<UiState<List<Confession>>>()
+    val onSwipeState: LiveData<UiState<List<Confession>>>
+        get() = _onSwipeState
 
     fun fetchConfessions(limit: Long) {
         _fetchConfessionsState.value = UiState.Loading
@@ -77,6 +73,20 @@ class HomeViewModel @Inject constructor(
         _addBookmarkState.value = UiState.Loading
         repository.addBookmark(confessionId, timestamp, userUid) {
             _addBookmarkState.postValue(it)
+        }
+    }
+
+    fun onPaging(limit: Long) {
+        _onPagingState.value = UiState.Loading
+        repository.fetchFollowedUsersConfessions(limit) { result ->
+            _onPagingState.postValue(result)
+        }
+    }
+
+    fun onSwiping(limit: Long) {
+        _onSwipeState.value = UiState.Loading
+        repository.fetchFollowedUsersConfessions(limit) { result ->
+            _onSwipeState.postValue(result)
         }
     }
 

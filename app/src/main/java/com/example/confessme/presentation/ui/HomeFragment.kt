@@ -55,7 +55,7 @@ class HomeFragment : Fragment() {
         viewModel.fetchConfessions(limit)
 
         binding.swipeRefreshLayoutHome.setOnRefreshListener {
-            viewModel.fetchConfessions(limit)
+            viewModel.onSwiping(limit)
             confessListAdapter.notifyDataSetChanged()
         }
 
@@ -68,6 +68,8 @@ class HomeFragment : Fragment() {
         observeFetchConfessions()
         observeDeleteConfession()
         observeAddFavorite()
+        observePaging()
+        observeSwiping()
     }
 
     private fun setupRecyclerView() {
@@ -88,7 +90,7 @@ class HomeFragment : Fragment() {
                         && totalItemCount >= limit
                     ) {
                         limit += 10
-                        viewModel.fetchConfessions(limit)
+                        viewModel.onPaging(limit)
                     }
                 }
             })
@@ -127,20 +129,19 @@ class HomeFragment : Fragment() {
         viewModel.fetchConfessionsState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarHome.visibility = View.VISIBLE
+                    binding.progressBarHomeGeneral.visibility = View.VISIBLE
                     noConfessFoundBinding.root.visibility = View.GONE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarHome.visibility = View.GONE
+                    binding.progressBarHomeGeneral.visibility = View.GONE
                     noConfessFoundBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarHome.visibility = View.GONE
-                    binding.swipeRefreshLayoutHome.isRefreshing = false
+                    binding.progressBarHomeGeneral.visibility = View.GONE
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
                     } else {
@@ -235,6 +236,60 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun observePaging() {
+        viewModel.onPagingState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarHome.visibility = View.VISIBLE
+                    noConfessFoundBinding.root.visibility = View.GONE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarHome.visibility = View.GONE
+                    noConfessFoundBinding.root.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarHome.visibility = View.GONE
+                    if (state.data.isEmpty()) {
+                        noConfessFoundBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noConfessFoundBinding.root.visibility = View.GONE
+                        confessListAdapter.updateList(state.data)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeSwiping() {
+        viewModel.onSwipeState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    noConfessFoundBinding.root.visibility = View.GONE
+                }
+
+                is UiState.Failure -> {
+                    noConfessFoundBinding.root.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.swipeRefreshLayoutHome.isRefreshing = false
+                    if (state.data.isEmpty()) {
+                        noConfessFoundBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noConfessFoundBinding.root.visibility = View.GONE
+                        confessListAdapter.updateList(state.data)
+                    }
+                }
+            }
+        }
+    }
+
     private fun onAnswerClick(confessionId: String, userId: String, fromUserUid: String, fromUserImageUrl: String,
                               answeredUserName: String, confessedUserName: String,
                               isAnswered: Boolean, answerText: String, isFavorited: Boolean, answerDate: String) {
@@ -316,6 +371,4 @@ class HomeFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 }
