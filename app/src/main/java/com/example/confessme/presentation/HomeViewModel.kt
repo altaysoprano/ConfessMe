@@ -3,6 +3,7 @@ package com.example.confessme.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.presentation.ui.FragmentNavigation
@@ -12,6 +13,7 @@ import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,12 +52,17 @@ class HomeViewModel @Inject constructor(
     val addBookmarkState: LiveData<UiState<String>>
         get() = _addBookmarkState
 
-    private var addFavoriteAnswerJob: Job? = null
-
     fun fetchConfessions(limit: Long) {
         _fetchConfessionsState.value = UiState.Loading
         repository.fetchFollowedUsersConfessions(limit) { result ->
             _fetchConfessionsState.postValue(result)
+        }
+    }
+
+    fun addFavorite(favorited: Boolean, confessionId: String) {
+        _addFavoriteState.value = UiState.Loading
+        repository.addFavorite(favorited, confessionId) {
+            _addFavoriteState.value = it
         }
     }
 

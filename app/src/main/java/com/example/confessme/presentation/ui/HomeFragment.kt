@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -20,6 +21,7 @@ import com.example.confessme.databinding.HomeNoConfessFoundViewBinding
 import com.example.confessme.databinding.YouHaveNoConfessionsBinding
 import com.example.confessme.presentation.HomeViewModel
 import com.example.confessme.util.UiState
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -65,6 +67,7 @@ class HomeFragment : Fragment() {
         observeAddBookmarks()
         observeFetchConfessions()
         observeDeleteConfession()
+        observeAddFavorite()
     }
 
     private fun setupRecyclerView() {
@@ -102,7 +105,7 @@ class HomeFragment : Fragment() {
                 onAnswerClick(confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate)
             },
             onFavoriteClick = {isFavorited, confessionId ->
-
+                viewModel.addFavorite(isFavorited, confessionId)
             },
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
@@ -201,6 +204,37 @@ class HomeFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    private fun observeAddFavorite() {
+        viewModel.addFavoriteState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarHome.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarHome.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarHome.visibility = View.GONE
+                    val updatedConfession = state.data
+
+                    val position = updatedConfession?.let { findPositionById(it.id) }
+                    if (position != -1) {
+                        if (updatedConfession != null) {
+                            if (position != null) {
+                                confessListAdapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun onAnswerClick(confessionId: String, userId: String, fromUserUid: String, fromUserImageUrl: String,
                               answeredUserName: String, confessedUserName: String,
                               isAnswered: Boolean, answerText: String, isFavorited: Boolean, answerDate: String) {
@@ -269,6 +303,8 @@ class HomeFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.VISIBLE
         return super.onCreateOptionsMenu(menu, inflater)
     }
 

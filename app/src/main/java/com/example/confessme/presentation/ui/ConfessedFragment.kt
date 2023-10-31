@@ -59,14 +59,13 @@ class ConfessedFragment(
             confessListAdapter.notifyDataSetChanged()
         }
 
-        observeFetchConfessions()
-        observeAddFavorite()
-
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        observeFetchConfessions()
+        observeAddFavorite()
         observeAddBookmarks()
     }
 
@@ -116,13 +115,13 @@ class ConfessedFragment(
                 onItemPhotoClick(photoUserEmail, photoUserUid)
             },
             onUserNameClick = { userNameUserUid, userNameUserEmail, userName ->
-                onUserNameClick(userNameUserUid, userNameUserEmail)
+                onUserNameClick(userNameUserEmail, userNameUserUid)
             }
         )
     }
 
     private fun observeFetchConfessions() {
-        viewModel.fetchConfessionsState.observe(viewLifecycleOwner) { state ->
+        viewModel.fetchConfessionsState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessed.visibility = View.VISIBLE
@@ -150,7 +149,7 @@ class ConfessedFragment(
 
     @SuppressLint("NotifyDataSetChanged")
     private fun observeAddFavorite() {
-        viewModel.addFavoriteState.observe(viewLifecycleOwner) { state ->
+        viewModel.addFavoriteState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessed.visibility = View.VISIBLE

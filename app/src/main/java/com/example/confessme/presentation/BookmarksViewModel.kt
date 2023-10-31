@@ -23,6 +23,10 @@ class BookmarksViewModel @Inject constructor(
     val removeBookmarkState: LiveData<UiState<DocumentReference>>
         get() = _deleteBookmarkState
 
+    private val _addFavoriteState = MutableLiveData<UiState<Confession?>>()
+    val addFavoriteState: LiveData<UiState<Confession?>>
+        get() = _addFavoriteState
+
     private val _deleteConfessionState = MutableLiveData<UiState<Confession?>>()
     val deleteConfessionState: LiveData<UiState<Confession?>>
         get() = _deleteConfessionState
@@ -43,6 +47,13 @@ class BookmarksViewModel @Inject constructor(
         _deleteConfessionState.value = UiState.Loading
         repository.deleteConfession(confessionId) {
             _deleteConfessionState.postValue(it)
+        }
+    }
+
+    fun addFavorite(favorited: Boolean, confessionId: String) {
+        _addFavoriteState.value = UiState.Loading
+        repository.addFavorite(favorited, confessionId) {
+            _addFavoriteState.value = it
         }
     }
 }

@@ -79,7 +79,7 @@ class BookmarksFragment() : Fragment() {
                 }
             },
             onFavoriteClick = {isFavorited, confessionId ->
-
+                viewModel.addFavorite(isFavorited, confessionId)
             },
             onConfessDeleteClick = { confessionId ->
                 viewModel.deleteConfession(confessionId)
