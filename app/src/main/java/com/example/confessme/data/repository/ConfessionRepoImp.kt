@@ -191,13 +191,11 @@ class ConfessionRepoImp(
                     val tasks = followingUserUids.map { followingUid ->
                         val myConfessionsTask = database.collection("users").document(followingUid)
                             .collection("my_confessions")
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
                             .limit(limit)
                             .get()
 
                         val confessionsToMeTask = database.collection("users").document(followingUid)
                             .collection("confessions_to_me")
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
                             .limit(limit)
                             .get()
 
@@ -215,15 +213,17 @@ class ConfessionRepoImp(
                     Tasks.whenAllSuccess<List<Confession>>(*tasks.toTypedArray())
                         .addOnSuccessListener { combinedResults ->
                             val combinedConfessions = combinedResults.flatten()
-                            val sortedConfessions = combinedConfessions.sortedByDescending { it.timestamp.toString() }
+                            val uniqueConfessions = combinedConfessions.distinctBy { it.id }
+                            val sortedConfessions = uniqueConfessions.sortedByDescending { it.timestamp.toString() }
+                            sortedConfessions.map { Log.d("Mesaj: ", "${it.id}") }
                             result.invoke(UiState.Success(sortedConfessions))
                         }
                         .addOnFailureListener { exception ->
-                            result.invoke(UiState.Failure(exception.localizedMessage))
+                            result.invoke(UiState.Failure("An error occurred while loading confessions"))
                         }
                 }
                 .addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure(exception.localizedMessage))
+                    result.invoke(UiState.Failure("An error occurred while loading confessions"))
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
