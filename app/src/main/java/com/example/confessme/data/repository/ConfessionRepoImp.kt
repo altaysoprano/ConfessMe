@@ -191,12 +191,10 @@ class ConfessionRepoImp(
                     val tasks = followingUserUids.map { followingUid ->
                         val myConfessionsTask = database.collection("users").document(followingUid)
                             .collection("my_confessions")
-                            .limit(limit)
                             .get()
 
                         val confessionsToMeTask = database.collection("users").document(followingUid)
                             .collection("confessions_to_me")
-                            .limit(limit)
                             .get()
 
                         Tasks.whenAllSuccess<QuerySnapshot>(myConfessionsTask, confessionsToMeTask)
