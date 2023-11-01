@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -177,6 +178,17 @@ class ConfessionListAdapter(
             binding.icAnswer.alpha = 1f
         } else {
             binding.icAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+            if(currentUserUid == confessList[adapterPosition].fromUserId) {
+                binding.icAnswer.alpha = 0.5f
+                binding.icAnswer.isEnabled = false
+            } else if(currentUserUid == confessList[adapterPosition].userId) {
+                binding.icAnswer.alpha = 1f
+                binding.icAnswer.isEnabled = true
+            }
+            else {
+                binding.icAnswer.alpha = 1f
+                binding.icAnswer.isEnabled = false
+            }
         }
 
         if(confess.favorited) {

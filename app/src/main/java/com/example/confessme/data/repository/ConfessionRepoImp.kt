@@ -215,7 +215,6 @@ class ConfessionRepoImp(
                             val combinedConfessions = combinedResults.flatten()
                             val uniqueConfessions = combinedConfessions.distinctBy { it.id }
                             val sortedConfessions = uniqueConfessions.sortedByDescending { it.timestamp.toString() }
-                            sortedConfessions.map { Log.d("Mesaj: ", "${it.id}") }
                             result.invoke(UiState.Success(sortedConfessions))
                         }
                         .addOnFailureListener { exception ->
