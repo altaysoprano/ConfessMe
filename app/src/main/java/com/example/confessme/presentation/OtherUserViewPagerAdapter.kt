@@ -16,8 +16,8 @@ class OtherUserViewPagerAdapter(private val userUid: String, fragment: Fragment)
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> OthersConfessionsFragment(userUid, confessionCategory = ConfessionCategory.CONFESSIONS_TO_OTHERS)
-            1 -> ConfessedFragment(userUid, confessionCategory = ConfessionCategory.OTHER_USER_CONFESSIONS)
+            0 -> OthersConfessionsFragment(userUid, confessionCategory = ConfessionCategory.OTHER_USER_CONFESSIONS)
+            1 -> ConfessedFragment(userUid, confessionCategory = ConfessionCategory.CONFESSIONS_TO_OTHERS)
             else -> OthersConfessionsFragment(userUid, confessionCategory = ConfessionCategory.CONFESSIONS_TO_OTHERS)
         }
     }

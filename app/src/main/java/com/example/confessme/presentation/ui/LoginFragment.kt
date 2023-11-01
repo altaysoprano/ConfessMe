@@ -50,7 +50,7 @@ class LoginFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Email veya şifre boş bırakılamaz !",
+                    "Email or password cannot be left blank!",
                     Toast.LENGTH_SHORT
                 ).show()
             }

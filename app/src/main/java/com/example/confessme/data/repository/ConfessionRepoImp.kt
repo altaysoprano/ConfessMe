@@ -60,9 +60,8 @@ class ConfessionRepoImp(
                                     val userEmail =
                                         userDocument.getString("email")
 
-                                    val confessionCollection =
-                                        database.collection("users").document(currentUserUid)
-                                            .collection("my_confessions")
+                                    val confessionCollection = database.collection("users").document(currentUserUid)
+                                        .collection("confessions")
                                     val newConfessionDocument = confessionCollection.document()
 
                                     val confessionData = hashMapOf(
@@ -83,9 +82,8 @@ class ConfessionRepoImp(
 
                                     batch.set(newConfessionDocument, confessionData)
 
-                                    val confessionToMeCollection =
-                                        database.collection("users").document(userId)
-                                            .collection("confessions_to_me")
+                                    val confessionToMeCollection = database.collection("users").document(userId)
+                                        .collection("confessions")
                                     val newConfessionToMeDocument =
                                         confessionToMeCollection.document()
 
@@ -127,30 +125,31 @@ class ConfessionRepoImp(
 
         if (user != null) {
             val currentUserUid = user.uid
+            val userRef = if (confessionCategory == ConfessionCategory.MY_CONFESSIONS || confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
+                database.collection("users").document(currentUserUid)
+            } else {
+                database.collection("users").document(userUid)
+            }
 
-            val confessionCollection = when (confessionCategory) {
+            val confessionCollection = userRef.collection("confessions")
+            var query: Query = confessionCollection
+
+            when (confessionCategory) {
                 ConfessionCategory.MY_CONFESSIONS -> {
-                    database.collection("users").document(currentUserUid)
-                        .collection("my_confessions")
+                    query = query.whereEqualTo("fromUserId", currentUserUid)
                 }
-
                 ConfessionCategory.CONFESSIONS_TO_ME -> {
-                    database.collection("users").document(currentUserUid)
-                        .collection("confessions_to_me")
+                    query = query.whereEqualTo("userId", currentUserUid)
                 }
-
                 ConfessionCategory.OTHER_USER_CONFESSIONS -> {
-                    database.collection("users").document(userUid)
-                        .collection("my_confessions")
+                    query = query.whereEqualTo("userId", userUid)
                 }
-
                 ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
-                    database.collection("users").document(userUid)
-                        .collection("confessions_to_me")
+                    query = query.whereEqualTo("fromUserId", userUid)
                 }
             }
 
-            confessionCollection
+            query
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(limit)
                 .get()
@@ -171,6 +170,63 @@ class ConfessionRepoImp(
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
+
+    /*
+        override fun fetchConfessions(
+            userUid: String,
+            limit: Long,
+            confessionCategory: ConfessionCategory,
+            result: (UiState<List<Confession>>) -> Unit
+        ) {
+            val user = firebaseAuth.currentUser
+
+            if (user != null) {
+                val currentUserUid = user.uid
+
+                val confessionCollection = when (confessionCategory) {
+                    ConfessionCategory.MY_CONFESSIONS -> {
+                        database.collection("users").document(currentUserUid)
+                            .collection("my_confessions")
+                    }
+
+                    ConfessionCategory.CONFESSIONS_TO_ME -> {
+                        database.collection("users").document(currentUserUid)
+                            .collection("confessions_to_me")
+                    }
+
+                    ConfessionCategory.OTHER_USER_CONFESSIONS -> {
+                        database.collection("users").document(userUid)
+                            .collection("my_confessions")
+                    }
+
+                    ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
+                        database.collection("users").document(userUid)
+                            .collection("confessions_to_me")
+                    }
+                }
+
+                confessionCollection
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(limit)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        val confessionList = mutableListOf<Confession>()
+
+                        for (document in documents) {
+                            val confession = document.toObject(Confession::class.java)
+                            confessionList.add(confession)
+                        }
+
+                        result.invoke(UiState.Success(confessionList))
+                    }
+                    .addOnFailureListener { exception ->
+                        result.invoke(UiState.Failure(exception.localizedMessage))
+                    }
+            } else {
+                result.invoke(UiState.Failure("User not authenticated"))
+            }
+        }
+    */
 
     override fun fetchFollowedUsersConfessions(
         limit: Long,
@@ -239,7 +295,7 @@ class ConfessionRepoImp(
 
             val confessionDocRef = database.collection("users")
                 .document(currentUserUid)
-                .collection("confessions_to_me")
+                .collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -253,6 +309,7 @@ class ConfessionRepoImp(
                         val username = confessionDoc.getString("fromUserUsername") ?: ""
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
                         val email = confessionDoc.getString("fromUserEmail") ?: ""
+                        val userUid = confessionDoc.getString("fromUserId") ?: ""
 
                         val answerData = Answer(
                             text = answerText,
@@ -275,15 +332,15 @@ class ConfessionRepoImp(
                         batch.set(confessionDoc.reference, answerField, SetOptions.merge())
 
                         val usersCollection = database.collection("users")
-                        val userQuery = usersCollection.whereEqualTo("email", email)
+                        val userQuery = usersCollection.whereEqualTo("uid", userUid)
                         userQuery.get()
                             .addOnSuccessListener { userQuerySnapshot ->
                                 if (!userQuerySnapshot.isEmpty) {
                                     val userDoc = userQuerySnapshot.documents[0]
-                                    val userUid = userDoc.id
+                                    val userUid2 = userDoc.id
 
-                                    val myConfessionsCollection = usersCollection.document(userUid)
-                                        .collection("my_confessions")
+                                    val myConfessionsCollection = usersCollection.document(userUid2)
+                                        .collection("confessions")
 
                                     val confessionDocRef1 =
                                         myConfessionsCollection.document(confessionId)
@@ -341,7 +398,7 @@ class ConfessionRepoImp(
 
             val confessionDocRef = database.collection("users")
                 .document(currentUserUid)
-                .collection("confessions_to_me")
+                .collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -353,7 +410,7 @@ class ConfessionRepoImp(
 
                         val documentRef = database.collection("users")
                             .document(currentUserUid)
-                            .collection("confessions_to_me")
+                            .collection("confessions")
                             .document(confessionQuerySnapshot.documents[0].id)
 
                         batch.update(documentRef, updatedData)
@@ -362,7 +419,7 @@ class ConfessionRepoImp(
                             confessionDocumentSnapshot.getString("fromUserId") ?: ""
                         val myConfessionDocumentRef =
                             database.collection("users").document(userUid)
-                                .collection("my_confessions")
+                                .collection("confessions")
                                 .document(confessionId)
 
                         val updatedData1 = mapOf("favorited" to favorited)
@@ -411,7 +468,7 @@ class ConfessionRepoImp(
 
             val confessionDocRef = database.collection("users")
                 .document(currentUserUid)
-                .collection("my_confessions")
+                .collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -430,20 +487,20 @@ class ConfessionRepoImp(
                                 mapOf("answer" to answerMap)
                             )
 
-                            val email =
-                                confessionDocumentSnapshot.getString("email") ?: ""
+                            val userUid =
+                                confessionDocumentSnapshot.getString("userId") ?: ""
                             val userQuery =
-                                database.collection("users").whereEqualTo("email", email)
+                                database.collection("users").whereEqualTo("uid", userUid)
 
                             userQuery.get()
                                 .addOnSuccessListener { userQuerySnapshot ->
                                     if (!userQuerySnapshot.isEmpty) {
                                         val userDoc = userQuerySnapshot.documents[0]
-                                        val userUid = userDoc.id
+                                        val userUid2 = userDoc.id
 
                                         val myConfessionDoc = database.collection("users")
-                                            .document(userUid)
-                                            .collection("confessions_to_me")
+                                            .document(userUid2)
+                                            .collection("confessions")
                                             .whereEqualTo("id", confessionId)
 
                                         myConfessionDoc.get()
@@ -521,7 +578,7 @@ class ConfessionRepoImp(
 
             val confessionDocRef = database.collection("users")
                 .document(currentUserUid)
-                .collection("confessions_to_me")
+                .collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -541,20 +598,20 @@ class ConfessionRepoImp(
                             batch.update(confessionRef, answerFieldUpdate)
                             batch.update(confessionRef, answeredFieldUpdate)
 
-                            val email =
-                                confessionDocumentSnapshot.getString("fromUserEmail") ?: ""
+                            val userUid =
+                                confessionDocumentSnapshot.getString("fromUserId") ?: ""
                             val userQuery =
-                                database.collection("users").whereEqualTo("email", email)
+                                database.collection("users").whereEqualTo("uid", userUid)
 
                             userQuery.get()
                                 .addOnSuccessListener { userQuerySnapshot ->
                                     if (!userQuerySnapshot.isEmpty) {
                                         val userDoc = userQuerySnapshot.documents[0]
-                                        val userUid = userDoc.id
+                                        val userUid2 = userDoc.id
 
                                         val myConfessionsCollection = database.collection("users")
-                                            .document(userUid)
-                                            .collection("my_confessions")
+                                            .document(userUid2)
+                                            .collection("confessions")
                                         val myConfessionDocRef =
                                             myConfessionsCollection.document(confessionId)
 
@@ -640,7 +697,7 @@ class ConfessionRepoImp(
 
             val confessionDocRef = database.collection("users")
                 .document(currentUserUid)
-                .collection("my_confessions")
+                .collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -651,20 +708,20 @@ class ConfessionRepoImp(
                         val confessionRef = confessionDocumentSnapshot.reference
                         batch.delete(confessionRef)
 
-                        val email =
-                            confessionDocumentSnapshot.getString("email") ?: ""
+                        val userUid =
+                            confessionDocumentSnapshot.getString("userId") ?: ""
                         val userQuery =
-                            database.collection("users").whereEqualTo("email", email)
+                            database.collection("users").whereEqualTo("uid", userUid)
 
                         userQuery.get()
                             .addOnSuccessListener { userQuerySnapshot ->
                                 if (!userQuerySnapshot.isEmpty) {
                                     val userDoc = userQuerySnapshot.documents[0]
-                                    val userUid = userDoc.id
+                                    val userUid2 = userDoc.id
 
                                     val myConfessionDoc = database.collection("users")
-                                        .document(userUid)
-                                        .collection("confessions_to_me")
+                                        .document(userUid2)
+                                        .collection("confessions")
                                         .whereEqualTo("id", confessionId)
 
                                     myConfessionDoc.get()
@@ -787,7 +844,7 @@ class ConfessionRepoImp(
                         val userUid = document.getString("userUid") ?: ""
 
                         val myConfessionsCollection = database.collection("users").document(userUid)
-                            .collection("my_confessions")
+                            .collection("confessions")
                         val myConfessionDocument = myConfessionsCollection.document(confessionId)
 
                         myConfessionDocument.get()
