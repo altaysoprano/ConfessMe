@@ -171,63 +171,6 @@ class ConfessionRepoImp(
         }
     }
 
-    /*
-        override fun fetchConfessions(
-            userUid: String,
-            limit: Long,
-            confessionCategory: ConfessionCategory,
-            result: (UiState<List<Confession>>) -> Unit
-        ) {
-            val user = firebaseAuth.currentUser
-
-            if (user != null) {
-                val currentUserUid = user.uid
-
-                val confessionCollection = when (confessionCategory) {
-                    ConfessionCategory.MY_CONFESSIONS -> {
-                        database.collection("users").document(currentUserUid)
-                            .collection("my_confessions")
-                    }
-
-                    ConfessionCategory.CONFESSIONS_TO_ME -> {
-                        database.collection("users").document(currentUserUid)
-                            .collection("confessions_to_me")
-                    }
-
-                    ConfessionCategory.OTHER_USER_CONFESSIONS -> {
-                        database.collection("users").document(userUid)
-                            .collection("my_confessions")
-                    }
-
-                    ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
-                        database.collection("users").document(userUid)
-                            .collection("confessions_to_me")
-                    }
-                }
-
-                confessionCollection
-                    .orderBy("timestamp", Query.Direction.DESCENDING)
-                    .limit(limit)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        val confessionList = mutableListOf<Confession>()
-
-                        for (document in documents) {
-                            val confession = document.toObject(Confession::class.java)
-                            confessionList.add(confession)
-                        }
-
-                        result.invoke(UiState.Success(confessionList))
-                    }
-                    .addOnFailureListener { exception ->
-                        result.invoke(UiState.Failure(exception.localizedMessage))
-                    }
-            } else {
-                result.invoke(UiState.Failure("User not authenticated"))
-            }
-        }
-    */
-
     override fun fetchFollowedUsersConfessions(
         limit: Long,
         result: (UiState<List<Confession>>) -> Unit
@@ -245,22 +188,14 @@ class ConfessionRepoImp(
                     val followingUserUids = followingDocuments.documents.map { it.id }
 
                     val tasks = followingUserUids.map { followingUid ->
-                        val myConfessionsTask = database.collection("users").document(followingUid)
-                            .collection("my_confessions")
-                            .get()
+                        val confessionsToMeCollection = database.collection("users").document(followingUid)
+                            .collection("confessions")
 
-                        val confessionsToMeTask = database.collection("users").document(followingUid)
-                            .collection("confessions_to_me")
+                        confessionsToMeCollection.limit(limit).orderBy("timestamp", Query.Direction.DESCENDING)
                             .get()
-
-                        Tasks.whenAllSuccess<QuerySnapshot>(myConfessionsTask, confessionsToMeTask)
                             .continueWith { task ->
-                                val myConfessions =
-                                    (task.result?.get(0) as QuerySnapshot).toObjects(Confession::class.java)
-                                val confessionsToMe =
-                                    (task.result?.get(1) as QuerySnapshot).toObjects(Confession::class.java)
-
-                                myConfessions + confessionsToMe
+                                val confessions = task.result?.toObjects(Confession::class.java)
+                                confessions ?: emptyList()
                             }
                     }
 
@@ -268,8 +203,7 @@ class ConfessionRepoImp(
                         .addOnSuccessListener { combinedResults ->
                             val combinedConfessions = combinedResults.flatten()
                             val uniqueConfessions = combinedConfessions.distinctBy { it.id }
-                            val sortedConfessions = uniqueConfessions.sortedByDescending { it.timestamp.toString() }
-                            result.invoke(UiState.Success(sortedConfessions))
+                            result.invoke(UiState.Success(uniqueConfessions))
                         }
                         .addOnFailureListener { exception ->
                             result.invoke(UiState.Failure("An error occurred while loading confessions"))
