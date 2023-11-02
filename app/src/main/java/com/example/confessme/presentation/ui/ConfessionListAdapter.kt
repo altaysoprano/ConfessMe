@@ -186,7 +186,7 @@ class ConfessionListAdapter(
                 binding.icAnswer.isEnabled = true
             }
             else {
-                binding.icAnswer.alpha = 1f
+                binding.icAnswer.alpha = 0.5f
                 binding.icAnswer.isEnabled = false
             }
         }
