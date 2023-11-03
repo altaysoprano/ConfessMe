@@ -13,11 +13,10 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -86,49 +85,111 @@ class ConfessionListAdapter(
         adapterPosition: Int
     ) {
         val toUserName = "@${confess.username} "
-        val spannable = SpannableString("$toUserName${confess.text}")
+        val text = "$toUserName${confess.text}"
 
         val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
         val usernameStart = 0
         val usernameEnd = toUserName.length
 
-        spannable.setSpan(
-            object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    val userNameClickedUser = confessList[adapterPosition]
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val userNameClickedUser = confessList[adapterPosition]
 
-                    if (currentUserUid != userNameClickedUser.userId) {
-                        onUserNameClick(
-                            userNameClickedUser.userId,
-                            userNameClickedUser.email,
-                            userNameClickedUser.username
-                        )
-                    }
+                if (currentUserUid != userNameClickedUser.userId) {
+                    onUserNameClick(
+                        userNameClickedUser.userId,
+                        userNameClickedUser.email,
+                        userNameClickedUser.username
+                    )
                 }
+            }
 
-                override fun updateDrawState(ds: TextPaint) {
-                    ds.color = usernameColor
-                    ds.isUnderlineText = false
-                }
-            },
-            usernameStart,
-            usernameEnd,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+            override fun updateDrawState(ds: TextPaint) {
+                ds.color = usernameColor
+                ds.isUnderlineText = false
+            }
+        }
 
-        spannable.setSpan(
-            StyleSpan(Typeface.BOLD),
-            usernameStart,
-            usernameEnd,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+        val spannable = SpannableString(text)
+        spannable.setSpan(clickableSpan, usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannable.setSpan(StyleSpan(Typeface.BOLD), usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         binding.confessionsScreenUsername.text = confess.fromUserUsername
-        binding.confessionsScreenConfession.text = spannable
-        binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()
-        binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT
-        binding.confessionsScreenTimestamp.text =
-            calculateTimeSinceConfession(confess.timestamp as Timestamp)
+
+        val confessionTextView = binding.confessionsScreenConfession
+
+        confessionTextView.text = spannable
+
+        confessionTextView.movementMethod = LinkMovementMethod.getInstance()
+        confessionTextView.highlightColor = Color.TRANSPARENT
+        binding.confessionsScreenTimestamp.text = calculateTimeSinceConfession(confess.timestamp as Timestamp)
+
+        confessionTextView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val viewTreeObserver = confessionTextView.viewTreeObserver
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                confessionTextView.setOnClickListener {
+                    confess.isExpanded = !confess.isExpanded
+                    notifyItemChanged(adapterPosition)
+                }
+
+                if (confessionTextView.lineCount > 2) {
+                    if(confess.isExpanded) {
+                        val toUserName = "@${confess.username} "
+                        val text = "$toUserName${confess.text}"
+
+                        val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
+                        val usernameStart = 0
+                        val usernameEnd = toUserName.length
+
+                        val clickableSpan = object : ClickableSpan() {
+                            override fun onClick(widget: View) {
+                                val userNameClickedUser = confessList[adapterPosition]
+
+                                if (currentUserUid != userNameClickedUser.userId) {
+                                    onUserNameClick(
+                                        userNameClickedUser.userId,
+                                        userNameClickedUser.email,
+                                        userNameClickedUser.username
+                                    )
+                                }
+                            }
+
+                            override fun updateDrawState(ds: TextPaint) {
+                                ds.color = usernameColor
+                                ds.isUnderlineText = false
+                            }
+                        }
+
+                        val spannable = SpannableString(text)
+                        spannable.setSpan(clickableSpan, usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        spannable.setSpan(StyleSpan(Typeface.BOLD), usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        confessionTextView.text = spannable
+                    } else {
+                        val layout = confessionTextView.layout
+                        val endOfLastLine =
+                            layout.getLineEnd(1)
+                        val newVal = confessionTextView.text.subSequence(0, endOfLastLine - 3)
+                            .toString() + "..."
+                        val spannableLongText = SpannableString(newVal)
+                        spannableLongText.setSpan(
+                            clickableSpan,
+                            usernameStart,
+                            usernameEnd,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                        spannableLongText.setSpan(
+                            StyleSpan(Typeface.BOLD),
+                            usernameStart,
+                            usernameEnd,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                        confessionTextView.text = SpannableString(spannableLongText)
+                    }
+                }
+            }
+        })
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
@@ -139,13 +200,6 @@ class ConfessionListAdapter(
         }
 
         setAnswerFavoriteAndMoreActionsItems(confess, binding, itemView, adapterPosition)
-
-        binding.confessionsScreenConfession.setOnClickListener {
-            confess.isExpanded = !confess.isExpanded
-            updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
-        }
-
-        updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -306,11 +360,6 @@ class ConfessionListAdapter(
         confessList.removeAt(position)
         notifyItemRemoved(position)
         notifyDataSetChanged()
-    }
-
-    private fun updateTextViewExpansion(textview: TextView, isExpanded: Boolean) {
-        val maxLines = if (isExpanded) Int.MAX_VALUE else 2
-        textview.maxLines = maxLines
     }
 
     private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
