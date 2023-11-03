@@ -13,7 +13,6 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -142,10 +141,10 @@ class ConfessionListAdapter(
 
         binding.confessionsScreenConfession.setOnClickListener {
             confess.isExpanded = !confess.isExpanded
-            updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
+            notifyItemChanged(adapterPosition)
         }
 
-        updateTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
+        setTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -308,7 +307,7 @@ class ConfessionListAdapter(
         notifyDataSetChanged()
     }
 
-    private fun updateTextViewExpansion(textview: TextView, isExpanded: Boolean) {
+    private fun setTextViewExpansion(textview: TextView, isExpanded: Boolean) {
         val maxLines = if (isExpanded) Int.MAX_VALUE else 2
         textview.maxLines = maxLines
     }
