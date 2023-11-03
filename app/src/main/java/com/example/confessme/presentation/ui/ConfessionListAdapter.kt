@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -110,18 +111,10 @@ class ConfessionListAdapter(
             }
         }
 
-        val spannable = SpannableString(text)
-        spannable.setSpan(clickableSpan, usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        spannable.setSpan(StyleSpan(Typeface.BOLD), usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        binding.confessionsScreenUsername.text = confess.fromUserUsername
-
         val confessionTextView = binding.confessionsScreenConfession
 
-        confessionTextView.text = spannable
-
-        confessionTextView.movementMethod = LinkMovementMethod.getInstance()
-        confessionTextView.highlightColor = Color.TRANSPARENT
+        confessionTextView.text = text
+        binding.confessionsScreenUsername.text = confess.fromUserUsername
         binding.confessionsScreenTimestamp.text = calculateTimeSinceConfession(confess.timestamp as Timestamp)
 
         confessionTextView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -132,61 +125,48 @@ class ConfessionListAdapter(
                 confessionTextView.setOnClickListener {
                     confess.isExpanded = !confess.isExpanded
                     notifyItemChanged(adapterPosition)
+                    notifyItemRangeChanged(adapterPosition, 1)
                 }
 
                 if (confessionTextView.lineCount > 2) {
+                    if(adapterPosition == 1 || adapterPosition == 0) {
+                        Log.d("Mesaj: ", "position $adapterPosition line count > 2'de, lineCount = ${binding.confessionsScreenConfession.lineCount}")
+                    }
                     if(confess.isExpanded) {
-                        val toUserName = "@${confess.username} "
-                        val text = "$toUserName${confess.text}"
-
-                        val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
-                        val usernameStart = 0
-                        val usernameEnd = toUserName.length
-
-                        val clickableSpan = object : ClickableSpan() {
-                            override fun onClick(widget: View) {
-                                val userNameClickedUser = confessList[adapterPosition]
-
-                                if (currentUserUid != userNameClickedUser.userId) {
-                                    onUserNameClick(
-                                        userNameClickedUser.userId,
-                                        userNameClickedUser.email,
-                                        userNameClickedUser.username
-                                    )
-                                }
-                            }
-
-                            override fun updateDrawState(ds: TextPaint) {
-                                ds.color = usernameColor
-                                ds.isUnderlineText = false
-                            }
+                        if(adapterPosition == 1 || adapterPosition == 0) {
+                            Log.d("Mesaj: ", "position $adapterPosition expandedta")
                         }
-
                         val spannable = SpannableString(text)
                         spannable.setSpan(clickableSpan, usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                         spannable.setSpan(StyleSpan(Typeface.BOLD), usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                         confessionTextView.text = spannable
                     } else {
+                        if(adapterPosition == 1 || adapterPosition == 0) {
+                            Log.d("Mesaj: ", "position $adapterPosition not expandedta")
+                        }
                         val layout = confessionTextView.layout
                         val endOfLastLine =
                             layout.getLineEnd(1)
                         val newVal = confessionTextView.text.subSequence(0, endOfLastLine - 3)
                             .toString() + "..."
                         val spannableLongText = SpannableString(newVal)
-                        spannableLongText.setSpan(
-                            clickableSpan,
-                            usernameStart,
-                            usernameEnd,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        spannableLongText.setSpan(
-                            StyleSpan(Typeface.BOLD),
-                            usernameStart,
-                            usernameEnd,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
+                        spannableLongText.setSpan(clickableSpan, usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        spannableLongText.setSpan(StyleSpan(Typeface.BOLD), usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                         confessionTextView.text = SpannableString(spannableLongText)
                     }
+                    confessionTextView.movementMethod = LinkMovementMethod.getInstance()
+                    confessionTextView.highlightColor = Color.TRANSPARENT
+                } else {
+                    if(adapterPosition == 1 || adapterPosition == 0) {
+                        Log.d("Mesaj: ", "position $adapterPosition line count < 2'de, lineCount = ${binding.confessionsScreenConfession.lineCount}")
+                    }
+                    val spannable = SpannableString(text)
+                    spannable.setSpan(clickableSpan, usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannable.setSpan(StyleSpan(Typeface.BOLD), usernameStart, usernameEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    confessionTextView.text = SpannableString(spannable)
+                    confessionTextView.movementMethod = LinkMovementMethod.getInstance()
+                    confessionTextView.highlightColor = Color.TRANSPARENT
                 }
             }
         })
