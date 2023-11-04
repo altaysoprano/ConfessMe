@@ -63,6 +63,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:clickable="true"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:focusable="true"
                 android:text="confession"
                 android:textStyle="normal" />
@@ -135,6 +137,5 @@
         android:contentDescription="Açılır Menü"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_ellipses" />
-
 
 </RelativeLayout>
