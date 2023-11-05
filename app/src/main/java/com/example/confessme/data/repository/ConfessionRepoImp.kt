@@ -180,34 +180,13 @@ class ConfessionRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
 
-            val followingCollection = database.collection("users").document(currentUserUid)
-                .collection("following")
-
-            followingCollection.get()
-                .addOnSuccessListener { followingDocuments ->
-                    val followingUserUids = followingDocuments.documents.map { it.id }
-
-                    val tasks = followingUserUids.map { followingUid ->
-                        val confessionsToMeCollection = database.collection("users").document(followingUid)
-                            .collection("confessions")
-
-                        confessionsToMeCollection.limit(limit).orderBy("timestamp", Query.Direction.DESCENDING)
-                            .get()
-                            .continueWith { task ->
-                                val confessions = task.result?.toObjects(Confession::class.java)
-                                confessions ?: emptyList()
-                            }
-                    }
-
-                    Tasks.whenAllSuccess<List<Confession>>(*tasks.toTypedArray())
-                        .addOnSuccessListener { combinedResults ->
-                            val combinedConfessions = combinedResults.flatten()
-                            val uniqueConfessions = combinedConfessions.distinctBy { it.id }
-                            result.invoke(UiState.Success(uniqueConfessions))
-                        }
-                        .addOnFailureListener { exception ->
-                            result.invoke(UiState.Failure("An error occurred while loading confessions"))
-                        }
+            val confessionsCollectionGroup = database.collectionGroup("confessions")
+            confessionsCollectionGroup.limit(limit)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    val confessions = querySnapshot.toObjects(Confession::class.java)
+                    result.invoke(UiState.Success(confessions))
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure("An error occurred while loading confessions"))
@@ -216,6 +195,7 @@ class ConfessionRepoImp(
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
+
 
     override fun addAnswer(
         confessionId: String,
