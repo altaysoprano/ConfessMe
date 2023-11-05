@@ -180,16 +180,38 @@ class ConfessionRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
 
-            val confessionsCollectionGroup = database.collectionGroup("confessions")
-            confessionsCollectionGroup.limit(limit)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get()
+            val followingCollection = database.collection("users").document(currentUserUid).collection("following")
+
+            followingCollection.get()
                 .addOnSuccessListener { querySnapshot ->
-                    val confessions = querySnapshot.toObjects(Confession::class.java)
-                    result.invoke(UiState.Success(confessions))
+                    val followedUserIds = querySnapshot.documents.map { it.id }
+
+                    val confessionsList = mutableListOf<Confession>()
+
+                    if (followedUserIds.isNotEmpty()) {
+                        val confessionsCollectionGroup = database.collectionGroup("confessions")
+
+                        confessionsCollectionGroup
+                            .whereIn("fromUserId", followedUserIds)
+                            .limit(limit)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .get()
+                            .addOnSuccessListener { querySnapshot ->
+                                val confessions = querySnapshot.toObjects(Confession::class.java)
+                                confessionsList.addAll(confessions)
+
+                                result.invoke(UiState.Success(confessionsList))
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.d("Mesaj: ", "$exception")
+                                result.invoke(UiState.Failure("An error occurred while loading confessions"))
+                            }
+                    } else {
+                        result.invoke(UiState.Success(confessionsList))
+                    }
                 }
                 .addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure("An error occurred while loading confessions"))
+                    result.invoke(UiState.Failure("An error occurred while fetching followed users"))
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
