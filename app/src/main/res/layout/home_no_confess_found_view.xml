@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:padding="8dp"
     android:orientation="vertical">
 
     <ImageView
@@ -17,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:text="@string/here_the_confessions_of_the_users_you_follow_are_displayed"
+        android:text="@string/the_confessions_received_from_the_people_you_follow_are_visible_here"
         android:textColor="@android:color/black"
         android:textStyle="bold"
         android:alpha="0.5"

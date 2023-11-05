@@ -78,11 +78,6 @@ class ConfessAnswerFragment(
         answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = DialogHelper(requireContext())
 
-        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_back)
-        }
-
         setUserImage()
         setImageAndTextStates()
         setFavoriteDeleteEditReplyStates()
