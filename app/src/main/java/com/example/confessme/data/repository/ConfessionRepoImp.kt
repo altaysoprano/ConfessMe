@@ -198,7 +198,7 @@ class ConfessionRepoImp(
                             .get()
                             .addOnSuccessListener { querySnapshot ->
                                 val confessions = querySnapshot.toObjects(Confession::class.java)
-                                confessionsList.addAll(confessions)
+                                confessionsList.addAll(confessions.distinctBy { it.id })
 
                                 result.invoke(UiState.Success(confessionsList))
                             }
