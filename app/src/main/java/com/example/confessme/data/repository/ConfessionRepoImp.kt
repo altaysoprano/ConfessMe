@@ -192,7 +192,7 @@ class ConfessionRepoImp(
                         val confessionsCollectionGroup = database.collectionGroup("confessions")
 
                         confessionsCollectionGroup
-                            .whereIn("fromUserId", followedUserIds)
+                            .whereIn("userId", followedUserIds)
                             .limit(limit)
                             .orderBy("timestamp", Query.Direction.DESCENDING)
                             .get()
