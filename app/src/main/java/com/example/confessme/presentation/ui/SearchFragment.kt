@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,19 +65,8 @@ class SearchFragment : Fragment() {
 
         setupRecyclerViews()
         viewModel.getSearchHistoryUsers(limit)
+        setSearchText()
 
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                binding.historyTitle.visibility = View.GONE
-                binding.historyResultsRecyclerviewId.visibility = View.GONE
-                viewModel.searchUsers(newText.orEmpty())
-                return true
-            }
-        })
         return binding.root
     }
 
@@ -97,6 +87,28 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun setSearchText() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (!newText.isNullOrBlank()) {
+                    binding.historyTitle.visibility = View.GONE
+                    binding.historyResultsRecyclerviewId.visibility = View.GONE
+                    viewModel.searchUsers(newText)
+                } else {
+                    binding.searchNoUserFoundView.root.visibility = View.GONE
+                    binding.resultsTitle.visibility = View.GONE
+                    binding.searchResultsRecyclerviewId.visibility = View.GONE
+                    viewModel.getSearchHistoryUsers(limit)
+                }
+                return true
+            }
+        })
+    }
+
     private fun observeSearchResults() {
         viewModel.searchResults.observe(this) { state ->
             when (state) {
@@ -111,6 +123,8 @@ class SearchFragment : Fragment() {
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
                     binding.resultsTitle.visibility = View.VISIBLE
+                    binding.searchResultsRecyclerviewId.visibility = View.VISIBLE
+
                     if(state.data.isEmpty()) {
                         binding.searchNoUserFoundView.root.visibility = View.VISIBLE
                     } else {
@@ -123,10 +137,13 @@ class SearchFragment : Fragment() {
     }
 
     private fun observeHistoryResults() {
-        viewModel.getHistoryState.observe(this) { state ->
+        viewModel.historyResults.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
+                    binding.resultsTitle.visibility = View.GONE
+                    binding.searchResultsRecyclerviewId.visibility = View.GONE
                     binding.progressBarSearch.visibility = View.VISIBLE
+                    binding.searchNoUserFoundView.root.visibility = View.GONE
                 }
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
@@ -135,6 +152,10 @@ class SearchFragment : Fragment() {
                 }
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
+                    binding.resultsTitle.visibility = View.GONE
+                    binding.searchResultsRecyclerviewId.visibility = View.GONE
+                    binding.searchNoUserFoundView.root.visibility = View.GONE
+
                     if(state.data.isEmpty()) {
                         binding.historyTitle.visibility = View.GONE
                         binding.historyResultsRecyclerviewId.visibility = View.GONE

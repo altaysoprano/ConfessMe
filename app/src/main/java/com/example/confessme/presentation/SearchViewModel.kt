@@ -1,5 +1,6 @@
 package com.example.confessme.presentation
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,9 +24,9 @@ class SearchViewModel @Inject constructor(
     val searchResults: LiveData<UiState<List<User>>>
         get() = _searchResults
 
-    private val _getHistoryState = MutableLiveData<UiState<List<User>>>()
-    val getHistoryState: LiveData<UiState<List<User>>>
-        get() = _getHistoryState
+    private val _historyResults = MutableLiveData<UiState<List<User>>>()
+    val historyResults: LiveData<UiState<List<User>>>
+        get() = _historyResults
 
     private val _followUserState = MutableLiveData<UiState<FollowUser>>()
     val followUserState: LiveData<UiState<FollowUser>>
@@ -44,11 +45,13 @@ class SearchViewModel @Inject constructor(
 
         searchJob = viewModelScope.launch {
             delay(500)
-            if (query.isNotBlank()) {
+            if (!query.isBlank()) {
+                Log.d("Mesaj: ", "İsblank değil")
                 repository.searchUsers(query) { result ->
                     _searchResults.postValue(result)
                 }
             } else {
+                Log.d("Mesaj: ", "İsblank")
                 _searchResults.postValue(UiState.Success(emptyList()))
             }
         }
@@ -85,10 +88,12 @@ class SearchViewModel @Inject constructor(
     }
 
     fun getSearchHistoryUsers(limit: Long) {
-        _getHistoryState.value = UiState.Loading
+        searchJob?.cancel()
+
+        _historyResults.value = UiState.Loading
         viewModelScope.launch {
             repository.getSearchHistoryUsers(limit) {result ->
-                _getHistoryState.postValue(result)
+                _historyResults.postValue(result)
             }
         }
     }
