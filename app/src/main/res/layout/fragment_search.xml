@@ -29,13 +29,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_toolbar" />
 
+    <TextView
+        android:id="@+id/resultsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RESULTS"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginVertical="8dp"
+        android:textColor="#b8b8b8"
+        android:textSize="12sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchResultsRecyclerviewId"
         android:layout_marginHorizontal="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        app:layout_constraintTop_toBottomOf="@+id/resultsTitle"
         app:layout_constraintStart_toStartOf="parent" />
 
     <include

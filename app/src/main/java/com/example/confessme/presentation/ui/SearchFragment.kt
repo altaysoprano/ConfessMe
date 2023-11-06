@@ -87,6 +87,7 @@ class SearchFragment : Fragment() {
                 }
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
+                    binding.resultsTitle.visibility = View.VISIBLE
                     if(state.data.isEmpty()) {
                         binding.searchNoUserFoundView.root.visibility = View.VISIBLE
                     } else {

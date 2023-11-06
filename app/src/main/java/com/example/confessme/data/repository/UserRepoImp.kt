@@ -192,29 +192,25 @@ class UserRepoImp(
 
                     for (document in documents) {
                         val uid = document.id
+                        val user = document.toObject(User::class.java)
 
                         if (uid != currentUserUid) {
-                            val user = document.toObject(User::class.java)
                             userList.add(user)
+                        }
 
-                            val myFollowingsRef = database.collection("users")
-                                .document(currentUserUid)
-                                .collection("following")
-                                .document(uid)
-                            myFollowingsRef.get().addOnSuccessListener { documentSnapshot ->
-                                user.isFollowing = documentSnapshot.exists()
-                                Log.d(
-                                    "Mesaj: ",
-                                    "${user.userName} isFollowing: ${user.isFollowing}"
-                                )
+                        val myFollowingsRef = database.collection("users")
+                            .document(currentUserUid)
+                            .collection("following")
+                            .document(uid)
+                        myFollowingsRef.get().addOnSuccessListener { documentSnapshot ->
+                            user.isFollowing = documentSnapshot.exists()
 
-                                usersProcessed.add(userList.indexOf(user))
-                                if (usersProcessed.size == documents.size() - 1
-                                    || usersProcessed.size == documents.size()
-                                    || documents.size() == 0
-                                ) {
-                                    result.invoke(UiState.Success(userList))
-                                }
+                            usersProcessed.add(userList.indexOf(user))
+                            if (usersProcessed.size == documents.size() - 1
+                                || usersProcessed.size == documents.size()
+                                || documents.size() == 0
+                            ) {
+                                result.invoke(UiState.Success(userList))
                             }
                         }
                     }
