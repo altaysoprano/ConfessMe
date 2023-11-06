@@ -2,7 +2,6 @@ package com.example.confessme.presentation.ui
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,13 +11,13 @@ import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.UserItemBinding
 
-class SearchUserListAdapter(
+class UserListAdapter(
     val userList: MutableList<User> = mutableListOf(),
     private val currentUserUid: String,
     private val onItemClick: (User) -> Unit,
     private val onFollowClick: (String) -> Unit
 ) :
-    RecyclerView.Adapter<SearchUserListAdapter.UserViewHolder>() {
+    RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding = UserItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

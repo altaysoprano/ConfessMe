@@ -1,8 +1,6 @@
 package com.example.confessme.presentation.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -36,7 +34,7 @@ class FollowsFragment : Fragment() {
     private var limit: Long = 20
     private val viewModel: FollowsViewModel by viewModels()
 
-    private val userListAdapter = SearchUserListAdapter(mutableListOf(),
+    private val userListAdapter = UserListAdapter(mutableListOf(),
         currentUserUid = currentUserUid,
         onItemClick = { user ->
             onItemClick(user)

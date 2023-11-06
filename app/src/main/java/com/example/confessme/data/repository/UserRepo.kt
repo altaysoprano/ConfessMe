@@ -21,4 +21,7 @@ interface UserRepo {
     fun getFollowersOrFollowing(userUid: String, limit: Long, followType: FollowType, result: (UiState<List<User>>) -> Unit)
     fun followUser(userUidToFollow: String, callback: (UiState<FollowUser>) -> Unit)
     fun checkIfUserFollowed(userUidToCheck: String, callback: (UiState<FollowUser>) -> Unit)
-    fun unfollowUser(userUidToUnfollow: String, callback: (UiState<FollowUser>) -> Unit)}
+    fun unfollowUser(userUidToUnfollow: String, callback: (UiState<FollowUser>) -> Unit)
+    fun addSearchToHistory(userUid: String)
+    suspend fun getSearchHistoryUsers(limit: Long, result: (UiState<List<User>>) -> Unit)
+}

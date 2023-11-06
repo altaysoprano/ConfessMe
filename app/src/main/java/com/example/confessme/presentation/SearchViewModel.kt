@@ -23,6 +23,10 @@ class SearchViewModel @Inject constructor(
     val searchResults: LiveData<UiState<List<User>>>
         get() = _searchResults
 
+    private val _getHistoryState = MutableLiveData<UiState<List<User>>>()
+    val getHistoryState: LiveData<UiState<List<User>>>
+        get() = _getHistoryState
+
     private val _followUserState = MutableLiveData<UiState<FollowUser>>()
     val followUserState: LiveData<UiState<FollowUser>>
         get() = _followUserState
@@ -70,6 +74,21 @@ class SearchViewModel @Inject constructor(
                         _followUserState.postValue(UiState.Failure(followResult.toString()))
                     }
                 }
+            }
+        }
+    }
+
+    fun addToSearchHistory(userUid: String) {
+        viewModelScope.launch {
+            repository.addSearchToHistory(userUid)
+        }
+    }
+
+    fun getSearchHistoryUsers(limit: Long) {
+        _getHistoryState.value = UiState.Loading
+        viewModelScope.launch {
+            repository.getSearchHistoryUsers(limit) {result ->
+                _getHistoryState.postValue(result)
             }
         }
     }

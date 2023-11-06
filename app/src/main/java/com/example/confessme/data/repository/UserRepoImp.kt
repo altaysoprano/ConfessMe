@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
 import java.util.Date
 
 class UserRepoImp(
@@ -280,7 +281,6 @@ class UserRepoImp(
                                     sortedFollowUserProfiles.forEach { user ->
                                         val myFollowingsRef = database.collection("users")
                                             .document(currentUserUid)
-
                                             .collection("following")
                                             .document(user.uid)
                                         myFollowingsRef.get()
@@ -401,6 +401,69 @@ class UserRepoImp(
                 }
         } else {
             callback.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    override fun addSearchToHistory(userUid: String) {
+        val currentUserUid = firebaseAuth.currentUser?.uid
+
+        if (currentUserUid != null) {
+            val searchHistoryRef = database.collection("users").document(currentUserUid)
+                .collection("searchHistory")
+
+            searchHistoryRef.document(userUid)
+                .set(mapOf("timestamp" to FieldValue.serverTimestamp()))
+        }
+    }
+
+    override suspend fun getSearchHistoryUsers(limit: Long, result: (UiState<List<User>>) -> Unit) {
+        try {
+            val currentUserUid = firebaseAuth.currentUser?.uid
+
+            if (currentUserUid != null) {
+                val followingRef = database.collection("users")
+                    .document(currentUserUid)
+                    .collection("following")
+
+                val followingQuerySnapshot = followingRef.get().await()
+                val followingUserIds = followingQuerySnapshot.documents.map { it.id }
+
+                val searchHistoryRef = database.collection("users")
+                    .document(currentUserUid)
+                    .collection("searchHistory")
+
+                val querySnapshot = searchHistoryRef
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(limit)
+                    .get()
+                    .await()
+
+                val searchHistoryUsers = mutableListOf<User>()
+
+                for (document in querySnapshot.documents) {
+                    val userUid = document.id
+                    val userDocument = database.collection("users")
+                        .document(userUid)
+                        .get()
+                        .await()
+
+                    if (userDocument.exists()) {
+                        val user = userDocument.toObject(User::class.java)
+                        user?.let {
+                            searchHistoryUsers.add(it)
+
+                            // Kullanıcının takip ettiği listeye göre isFollowing ayarla
+                            it.isFollowing = followingUserIds.contains(userUid)
+                        }
+                    }
+                }
+
+                result(UiState.Success(searchHistoryUsers))
+            } else {
+                result(UiState.Success(emptyList()))
+            }
+        } catch (e: Exception) {
+            result(UiState.Failure(e.localizedMessage))
         }
     }
 
