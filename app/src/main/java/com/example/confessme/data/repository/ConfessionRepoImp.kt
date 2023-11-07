@@ -1,26 +1,16 @@
 package com.example.confessme.data.repository
 
-import android.util.Log
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.getField
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.storage.FirebaseStorage
-import java.util.Date
 
 class ConfessionRepoImp(
     private val firebaseAuth: FirebaseAuth,
@@ -46,50 +36,31 @@ class ConfessionRepoImp(
                         val fromUserEmail = currentUserDocument.getString("email")
                         val fromUserUid = currentUserDocument.getString("uid")
 
-                        database.collection("users")
-                            .document(userUid)
+                        database.collection("users").document(userUid)
                             .get()
                             .addOnSuccessListener { documentSnapshot ->
                                 if (documentSnapshot.exists()) {
                                     val userDocument = documentSnapshot
-                                    val userId = userDocument.id
-                                    val imageUrl =
-                                        userDocument.getString("imageUrl")
-                                    val userName =
-                                        userDocument.getString("userName")
-                                    val userEmail =
-                                        userDocument.getString("email")
 
-                                    val confessionCollection = database.collection("users").document(currentUserUid)
-                                        .collection("confessions")
+                                    val confessionCollection = database.collection("confessions")
                                     val newConfessionDocument = confessionCollection.document()
+                                    val confessionId = newConfessionDocument.id
 
                                     val confessionData = hashMapOf(
-                                        "id" to newConfessionDocument.id,
+                                        "id" to confessionId,
                                         "userId" to userUid,
                                         "fromUserId" to fromUserUid,
                                         "text" to confessionText,
-                                        "username" to userName,
-                                        "email" to userEmail,
-                                        "imageUrl" to imageUrl,
+                                        "username" to userDocument.getString("userName"),
+                                        "email" to userDocument.getString("email"),
+                                        "imageUrl" to userDocument.getString("imageUrl"),
                                         "fromUserEmail" to fromUserEmail,
                                         "fromUserUsername" to fromUserUsername,
                                         "fromUserImageUrl" to fromUserImageUrl,
                                         "timestamp" to FieldValue.serverTimestamp()
                                     )
 
-                                    val batch = database.batch()
-
-                                    batch.set(newConfessionDocument, confessionData)
-
-                                    val confessionToMeCollection = database.collection("users").document(userId)
-                                        .collection("confessions")
-                                    val newConfessionToMeDocument =
-                                        confessionToMeCollection.document()
-
-                                    batch.set(newConfessionToMeDocument, confessionData)
-
-                                    batch.commit()
+                                    newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success("Confession added successfully"))
                                         }
@@ -125,25 +96,23 @@ class ConfessionRepoImp(
 
         if (user != null) {
             val currentUserUid = user.uid
-            val userRef = if (confessionCategory == ConfessionCategory.MY_CONFESSIONS || confessionCategory == ConfessionCategory.CONFESSIONS_TO_ME) {
-                database.collection("users").document(currentUserUid)
-            } else {
-                database.collection("users").document(userUid)
-            }
 
-            val confessionCollection = userRef.collection("confessions")
+            val confessionCollection = database.collection("confessions")
             var query: Query = confessionCollection
 
             when (confessionCategory) {
                 ConfessionCategory.MY_CONFESSIONS -> {
                     query = query.whereEqualTo("fromUserId", currentUserUid)
                 }
+
                 ConfessionCategory.CONFESSIONS_TO_ME -> {
                     query = query.whereEqualTo("userId", currentUserUid)
                 }
+
                 ConfessionCategory.OTHER_USER_CONFESSIONS -> {
                     query = query.whereEqualTo("userId", userUid)
                 }
+
                 ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
                     query = query.whereEqualTo("fromUserId", userUid)
                 }
@@ -180,7 +149,8 @@ class ConfessionRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
 
-            val followingCollection = database.collection("users").document(currentUserUid).collection("following")
+            val followingCollection =
+                database.collection("users").document(currentUserUid).collection("following")
 
             followingCollection.get()
                 .addOnSuccessListener { querySnapshot ->
@@ -189,21 +159,20 @@ class ConfessionRepoImp(
                     val confessionsList = mutableListOf<Confession>()
 
                     if (followedUserIds.isNotEmpty()) {
-                        val confessionsCollectionGroup = database.collectionGroup("confessions")
+                        val confessionsCollection = database.collection("confessions")
 
-                        confessionsCollectionGroup
+                        confessionsCollection
                             .whereIn("userId", followedUserIds)
                             .limit(limit)
                             .orderBy("timestamp", Query.Direction.DESCENDING)
                             .get()
                             .addOnSuccessListener { querySnapshot ->
                                 val confessions = querySnapshot.toObjects(Confession::class.java)
-                                confessionsList.addAll(confessions.distinctBy { it.id })
+                                confessionsList.addAll(confessions)
 
                                 result.invoke(UiState.Success(confessionsList))
                             }
                             .addOnFailureListener { exception ->
-                                Log.d("Mesaj: ", "$exception")
                                 result.invoke(UiState.Failure("An error occurred while loading confessions"))
                             }
                     } else {
@@ -227,11 +196,8 @@ class ConfessionRepoImp(
         val user = firebaseAuth.currentUser
 
         if (user != null) {
-            val currentUserUid = user.uid
 
-            val confessionDocRef = database.collection("users")
-                .document(currentUserUid)
-                .collection("confessions")
+            val confessionDocRef = database.collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -245,7 +211,6 @@ class ConfessionRepoImp(
                         val username = confessionDoc.getString("fromUserUsername") ?: ""
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
                         val email = confessionDoc.getString("fromUserEmail") ?: ""
-                        val userUid = confessionDoc.getString("fromUserId") ?: ""
 
                         val answerData = Answer(
                             text = answerText,
@@ -267,48 +232,21 @@ class ConfessionRepoImp(
                         val answerField = mapOf("answer" to answerData)
                         batch.set(confessionDoc.reference, answerField, SetOptions.merge())
 
-                        val usersCollection = database.collection("users")
-                        val userQuery = usersCollection.document(userUid)
-                        userQuery.get()
-                            .addOnSuccessListener { userQuerySnapshot ->
-                                if (userQuerySnapshot.exists()) {
-                                    val userDoc = userQuerySnapshot
-                                    val userUid2 = userDoc.id
-
-                                    val myConfessionsCollection = usersCollection.document(userUid2)
-                                        .collection("confessions")
-
-                                    val confessionDocRef1 =
-                                        myConfessionsCollection.document(confessionId)
-
-                                    val updatedData1 = mapOf("answered" to true)
-                                    batch.update(confessionDocRef1, updatedData1)
-
-                                    val answerField1 = mapOf("answer" to answerData)
-                                    batch.set(confessionDocRef1, answerField1, SetOptions.merge())
-
-                                    batch.commit()
-                                        .addOnSuccessListener {
-                                            confessionDocRef.get()
-                                                .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                    result.invoke(
-                                                        UiState.Success(
-                                                            updatedConfessionDocumentSnapshot.documents[0].toObject(
-                                                                Confession::class.java
-                                                            )
-                                                        )
-                                                    )
-                                                }
-                                                .addOnFailureListener { exception ->
-                                                    result.invoke(UiState.Failure(exception.localizedMessage))
-                                                }
-                                        }
-                                        .addOnFailureListener { exception ->
-                                            result.invoke(UiState.Failure(exception.localizedMessage))
-                                        }
-                                } else {
-                                    result.invoke(UiState.Failure("User could not be found"))
-                                }
+                        batch.commit()
+                            .addOnSuccessListener {
+                                confessionDocRef.get()
+                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                        result.invoke(
+                                            UiState.Success(
+                                                updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                    Confession::class.java
+                                                )
+                                            )
+                                        )
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                    }
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
@@ -328,41 +266,20 @@ class ConfessionRepoImp(
         val user = firebaseAuth.currentUser
 
         if (user != null) {
-            val currentUserUid = user.uid
 
-            val batch = database.batch()
-
-            val confessionDocRef = database.collection("users")
-                .document(currentUserUid)
-                .collection("confessions")
+            val confessionDocRef = database.collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
                 .addOnSuccessListener { confessionQuerySnapshot ->
                     if (!confessionQuerySnapshot.isEmpty) {
-                        val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
 
                         val updatedData = mapOf("favorited" to favorited)
 
-                        val documentRef = database.collection("users")
-                            .document(currentUserUid)
-                            .collection("confessions")
+                        val documentRef = database.collection("confessions")
                             .document(confessionQuerySnapshot.documents[0].id)
 
-                        batch.update(documentRef, updatedData)
-
-                        val userUid =
-                            confessionDocumentSnapshot.getString("fromUserId") ?: ""
-                        val myConfessionDocumentRef =
-                            database.collection("users").document(userUid)
-                                .collection("confessions")
-                                .document(confessionId)
-
-                        val updatedData1 = mapOf("favorited" to favorited)
-
-                        batch.update(myConfessionDocumentRef, updatedData1)
-
-                        batch.commit()
+                        documentRef.update(updatedData)
                             .addOnSuccessListener {
                                 confessionDocRef.get()
                                     .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
@@ -398,13 +315,8 @@ class ConfessionRepoImp(
         val user = firebaseAuth.currentUser
 
         if (user != null) {
-            val currentUserUid = user.uid
 
-            val batch = database.batch()
-
-            val confessionDocRef = database.collection("users")
-                .document(currentUserUid)
-                .collection("confessions")
+            val confessionDocRef = database.collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -415,89 +327,35 @@ class ConfessionRepoImp(
                         val answerMap =
                             confessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
                         if (answerMap != null) {
-
                             answerMap["favorited"] = isFavorited
 
-                            batch.update(
-                                confessionDocumentSnapshot.reference,
-                                mapOf("answer" to answerMap)
-                            )
-
-                            val userUid =
-                                confessionDocumentSnapshot.getString("userId") ?: ""
-                            val userQuery =
-                                database.collection("users").document(userUid)
-
-                            userQuery.get()
-                                .addOnSuccessListener { userQuerySnapshot ->
-                                    if (userQuerySnapshot.exists()) {
-                                        val userDoc = userQuerySnapshot
-                                        val userUid2 = userDoc.id
-
-                                        val myConfessionDoc = database.collection("users")
-                                            .document(userUid2)
-                                            .collection("confessions")
-                                            .whereEqualTo("id", confessionId)
-
-                                        myConfessionDoc.get()
-                                            .addOnSuccessListener { myConfessionQuerySnapshot ->
-                                                if (!myConfessionQuerySnapshot.isEmpty) {
-                                                    val myConfessionDocumentSnapshot =
-                                                        myConfessionQuerySnapshot.documents[0]
-                                                    val answerMap =
-                                                        myConfessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
-                                                    if (answerMap != null) {
-
-                                                        answerMap["favorited"] = isFavorited
-
-                                                        batch.update(
-                                                            myConfessionDocumentSnapshot.reference,
-                                                            mapOf("answer" to answerMap)
-                                                        )
-
-                                                        batch.commit()
-                                                            .addOnSuccessListener {
-                                                                confessionDocRef.get()
-                                                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                                        result.invoke(
-                                                                            UiState.Success(
-                                                                                updatedConfessionDocumentSnapshot.documents[0].toObject(
-                                                                                    Confession::class.java
-                                                                                )
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                    .addOnFailureListener { exception ->
-                                                                        result.invoke(
-                                                                            UiState.Failure(
-                                                                                exception.localizedMessage
-                                                                            )
-                                                                        )
-                                                                    }
-                                                            }
-                                                            .addOnFailureListener { exception ->
-                                                                result.invoke(
-                                                                    UiState.Failure(
-                                                                        exception.localizedMessage
-                                                                    )
-                                                                )
-                                                            }
-                                                    } else {
-                                                        result.invoke(UiState.Failure("Answer not found"))
-                                                    }
-                                                }
-                                            }
-                                    } else {
-                                        result.invoke(UiState.Failure("User could not be found"))
-                                    }
+                            confessionDocumentSnapshot.reference.update("answer", answerMap)
+                                .addOnSuccessListener {
+                                    confessionDocRef.get()
+                                        .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                            result.invoke(
+                                                UiState.Success(
+                                                    updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                        Confession::class.java
+                                                    )
+                                                )
+                                            )
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                        }
                                 }
                                 .addOnFailureListener { exception ->
                                     result.invoke(UiState.Failure(exception.localizedMessage))
                                 }
                         } else {
-                            result.invoke(UiState.Failure("Confession not found"))
+                            result.invoke(UiState.Failure("Answer not found"))
                         }
+                    } else {
+                        result.invoke(UiState.Failure("Confession not found"))
                     }
+                }.addOnFailureListener {
+                    result.invoke(UiState.Failure("Confession not found"))
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
@@ -508,13 +366,10 @@ class ConfessionRepoImp(
         val user = firebaseAuth.currentUser
 
         if (user != null) {
-            val currentUserUid = user.uid
 
             val batch = database.batch()
 
-            val confessionDocRef = database.collection("users")
-                .document(currentUserUid)
-                .collection("confessions")
+            val confessionDocRef = database.collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -534,89 +389,41 @@ class ConfessionRepoImp(
                             batch.update(confessionRef, answerFieldUpdate)
                             batch.update(confessionRef, answeredFieldUpdate)
 
-                            val userUid =
-                                confessionDocumentSnapshot.getString("fromUserId") ?: ""
-                            val userQuery =
-                                database.collection("users").document(userUid)
-
-                            userQuery.get()
-                                .addOnSuccessListener { userQuerySnapshot ->
-                                    if (userQuerySnapshot.exists()) {
-                                        val userDoc = userQuerySnapshot
-                                        val userUid2 = userDoc.id
-
-                                        val myConfessionsCollection = database.collection("users")
-                                            .document(userUid2)
-                                            .collection("confessions")
-                                        val myConfessionDocRef =
-                                            myConfessionsCollection.document(confessionId)
-
-                                        myConfessionDocRef.get()
-                                            .addOnSuccessListener { myConfessionDocumentSnapshot ->
-                                                if (myConfessionDocumentSnapshot.exists()) {
-                                                    val answerMap1 =
-                                                        myConfessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
-
-                                                    if (answerMap1 != null) {
-                                                        val answerFieldUpdate1 =
-                                                            mapOf("answer" to FieldValue.delete())
-
-                                                        val answeredFieldUpdate1 =
-                                                            mapOf("answered" to false)
-
-                                                        batch.update(
-                                                            myConfessionDocRef,
-                                                            answerFieldUpdate1
-                                                        )
-                                                        batch.update(
-                                                            myConfessionDocRef,
-                                                            answeredFieldUpdate1
-                                                        )
-                                                        batch.commit()
-                                                            .addOnSuccessListener {
-                                                                confessionDocRef.get()
-                                                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                                        result.invoke(
-                                                                            UiState.Success(
-                                                                                updatedConfessionDocumentSnapshot.documents[0].toObject(
-                                                                                    Confession::class.java
-                                                                                )
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                    .addOnFailureListener { exception ->
-                                                                        result.invoke(
-                                                                            UiState.Failure(
-                                                                                exception.localizedMessage
-                                                                            )
-                                                                        )
-                                                                    }
-                                                            }
-                                                            .addOnFailureListener { exception ->
-                                                                result.invoke(
-                                                                    UiState.Failure(
-                                                                        exception.localizedMessage
-                                                                    )
-                                                                )
-                                                            }
-                                                    } else {
-                                                        result.invoke(UiState.Failure("Answer not found"))
-                                                    }
-                                                } else {
-                                                    result.invoke(UiState.Failure("Confession could not be found"))
-                                                }
-                                            }
-                                    } else {
-                                        result.invoke(UiState.Failure("User could not be found"))
-                                    }
+                            batch.commit()
+                                .addOnSuccessListener {
+                                    confessionDocRef.get()
+                                        .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                            result.invoke(
+                                                UiState.Success(
+                                                    updatedConfessionDocumentSnapshot.documents[0].toObject(
+                                                        Confession::class.java
+                                                    )
+                                                )
+                                            )
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(
+                                                UiState.Failure(
+                                                    exception.localizedMessage
+                                                )
+                                            )
+                                        }
                                 }
                                 .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                    result.invoke(
+                                        UiState.Failure(
+                                            exception.localizedMessage
+                                        )
+                                    )
                                 }
                         } else {
-                            result.invoke(UiState.Failure("Confession not found"))
+                            result.invoke(UiState.Failure("Answer not found"))
                         }
+                    } else {
+                        result.invoke(UiState.Failure("Confession not found"))
                     }
+                }.addOnFailureListener {
+                    result.invoke(UiState.Failure("Confession not found"))
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
@@ -627,13 +434,9 @@ class ConfessionRepoImp(
         val user = firebaseAuth.currentUser
 
         if (user != null) {
-            val currentUserUid = user.uid
-
             val batch = database.batch()
 
-            val confessionDocRef = database.collection("users")
-                .document(currentUserUid)
-                .collection("confessions")
+            val confessionDocRef = database.collection("confessions")
                 .whereEqualTo("id", confessionId)
 
             confessionDocRef.get()
@@ -644,74 +447,32 @@ class ConfessionRepoImp(
                         val confessionRef = confessionDocumentSnapshot.reference
                         batch.delete(confessionRef)
 
-                        val userUid =
-                            confessionDocumentSnapshot.getString("userId") ?: ""
-                        val userQuery =
-                            database.collection("users").document(userUid)
+                        val deletedConfession =
+                            confessionDocumentSnapshot.toObject(Confession::class.java)
 
-                        userQuery.get()
-                            .addOnSuccessListener { userQuerySnapshot ->
-                                if (userQuerySnapshot.exists()) {
-                                    val userDoc = userQuerySnapshot
-                                    val userUid2 = userDoc.id
-
-                                    val myConfessionDoc = database.collection("users")
-                                        .document(userUid2)
-                                        .collection("confessions")
-                                        .whereEqualTo("id", confessionId)
-
-                                    myConfessionDoc.get()
-                                        .addOnSuccessListener { myConfessionQuerySnapshot ->
-                                            if (!myConfessionQuerySnapshot.isEmpty) {
-                                                val myConfessionDocumentSnapshot =
-                                                    myConfessionQuerySnapshot.documents[0]
-
-                                                val deletedConfession =
-                                                    myConfessionDocumentSnapshot.toObject(Confession::class.java)
-
-                                                batch.delete(myConfessionDocumentSnapshot.reference)
-
-                                                batch.commit()
-                                                    .addOnSuccessListener {
-                                                        confessionDocRef.get()
-                                                            .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
-                                                                result.invoke(
-                                                                    UiState.Success(
-                                                                        deletedConfession
-                                                                    )
-                                                                )
-                                                            }
-                                                            .addOnFailureListener { exception ->
-                                                                result.invoke(
-                                                                    UiState.Failure(
-                                                                        exception.localizedMessage
-                                                                    )
-                                                                )
-                                                            }
-                                                    }
-                                                    .addOnFailureListener { exception ->
-                                                        result.invoke(
-                                                            UiState.Failure(
-                                                                exception.localizedMessage
-                                                            )
-                                                        )
-                                                    }
-                                            } else {
-                                                result.invoke(UiState.Failure("Confession not found"))
-                                            }
-                                        }
-                                } else {
-                                    result.invoke(UiState.Failure("User could not be found"))
-                                }
+                        batch.commit()
+                            .addOnSuccessListener {
+                                confessionDocRef.get()
+                                    .addOnSuccessListener { updatedConfessionDocumentSnapshot ->
+                                        result.invoke(
+                                            UiState.Success(
+                                                deletedConfession
+                                            )
+                                        )
+                                    }
                             }
                             .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure(exception.localizedMessage))
+                                result.invoke(
+                                    UiState.Failure(
+                                        "Could not be deleted."
+                                    )
+                                )
                             }
                     } else {
                         result.invoke(UiState.Failure("Confession not found"))
                     }
                 }.addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure(exception.localizedMessage))
+                    result.invoke(UiState.Failure("Confession not found"))
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
@@ -771,16 +532,14 @@ class ConfessionRepoImp(
                         return@addOnSuccessListener
                     }
 
-                    val timestampMap = mutableMapOf<String, Timestamp>() // Map to store timestamps
+                    val timestampMap = mutableMapOf<String, Timestamp>()
 
                     var fetchedConfessionCount = 0
 
                     for (document in documents) {
                         val confessionId = document.id
-                        val userUid = document.getString("userUid") ?: ""
 
-                        val myConfessionsCollection = database.collection("users").document(userUid)
-                            .collection("confessions")
+                        val myConfessionsCollection = database.collection("confessions")
                         val myConfessionDocument = myConfessionsCollection.document(confessionId)
 
                         myConfessionDocument.get()
@@ -829,7 +588,7 @@ class ConfessionRepoImp(
                     }
                 }
                 .addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure(exception.localizedMessage))
+                    result.invoke(UiState.Failure("Failed to retrieve bookmarks"))
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
