@@ -88,6 +88,8 @@ class SearchViewModel @Inject constructor(
     }
 
     fun getSearchHistoryUsers(limit: Long) {
+        searchJob?.cancel()
+
         _historyResults.value = UiState.Loading
         getHistoryJob = viewModelScope.launch {
             repository.getSearchHistoryUsers(limit) {result ->
