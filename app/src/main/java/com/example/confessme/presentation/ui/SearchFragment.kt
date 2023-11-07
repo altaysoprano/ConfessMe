@@ -114,6 +114,8 @@ class SearchFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarSearch.visibility = View.VISIBLE
+                    binding.historyTitle.visibility = View.GONE
+                    binding.historyResultsRecyclerviewId.visibility = View.GONE
                 }
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
@@ -122,6 +124,8 @@ class SearchFragment : Fragment() {
                 }
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
+                    binding.historyTitle.visibility = View.GONE
+                    binding.historyResultsRecyclerviewId.visibility = View.GONE
                     binding.resultsTitle.visibility = View.VISIBLE
                     binding.searchResultsRecyclerviewId.visibility = View.VISIBLE
 
