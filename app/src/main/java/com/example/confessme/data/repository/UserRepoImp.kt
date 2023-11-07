@@ -178,6 +178,7 @@ class UserRepoImp(
 
             database.collection("users")
                 .orderBy("userName")
+                .limit(10)
                 .startAt(query)
                 .endAt(query + "\uf8ff")
                 .get()
