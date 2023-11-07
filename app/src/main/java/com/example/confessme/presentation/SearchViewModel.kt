@@ -10,8 +10,12 @@ import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,26 +36,22 @@ class SearchViewModel @Inject constructor(
     val followUserState: LiveData<UiState<FollowUser>>
         get() = _followUserState
 
-    private val _checkFollowingState = MutableLiveData<UiState<FollowUser>>()
-    val checkFollowingState: LiveData<UiState<FollowUser>>
-        get() = _checkFollowingState
-
     private var searchJob: Job? = null
+    private var getHistoryJob: Job? = null
 
     fun searchUsers(query: String) {
         searchJob?.cancel()
+        getHistoryJob?.cancel()
 
         _searchResults.value = UiState.Loading
 
-        searchJob = viewModelScope.launch {
+        searchJob = viewModelScope.safeLaunch {
             delay(500)
             if (!query.isBlank()) {
-                Log.d("Mesaj: ", "İsblank değil")
                 repository.searchUsers(query) { result ->
                     _searchResults.postValue(result)
                 }
             } else {
-                Log.d("Mesaj: ", "İsblank")
                 _searchResults.postValue(UiState.Success(emptyList()))
             }
         }
@@ -88,12 +88,20 @@ class SearchViewModel @Inject constructor(
     }
 
     fun getSearchHistoryUsers(limit: Long) {
-        searchJob?.cancel()
-
         _historyResults.value = UiState.Loading
-        viewModelScope.launch {
+        getHistoryJob = viewModelScope.launch {
             repository.getSearchHistoryUsers(limit) {result ->
                 _historyResults.postValue(result)
+            }
+        }
+    }
+
+    fun CoroutineScope.safeLaunch(block: suspend CoroutineScope.() -> Unit): Job {
+        return this.launch {
+            try {
+                block()
+            } catch (ce: CancellationException) {
+
             }
         }
     }

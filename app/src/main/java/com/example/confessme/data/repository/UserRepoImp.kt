@@ -417,7 +417,7 @@ class UserRepoImp(
     }
 
     override suspend fun getSearchHistoryUsers(limit: Long, result: (UiState<List<User>>) -> Unit) {
-        try {
+
             val currentUserUid = firebaseAuth.currentUser?.uid
 
             if (currentUserUid != null) {
@@ -462,9 +462,6 @@ class UserRepoImp(
             } else {
                 result(UiState.Success(emptyList()))
             }
-        } catch (e: Exception) {
-            result(UiState.Failure(e.localizedMessage))
-        }
     }
 
     private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {

@@ -31,7 +31,7 @@ class SearchFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private val currentUserUid = currentUser?.uid ?: ""
-    private var limit: Long = 20
+    private var limit: Long = 10
     private val viewModel: SearchViewModel by viewModels()
 
     private val userListAdapter = UserListAdapter(mutableListOf(),
@@ -151,6 +151,7 @@ class SearchFragment : Fragment() {
                 }
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
+                    Log.d("Mesaj: ", "History'de: ${state.error.toString()}")
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
