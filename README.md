@@ -15,7 +15,8 @@ https://github.com/altaysoprano/ConfessMe/assets/37440249/6a91acdf-0181-4714-952
 ### Confessing, Favorite, Answering
 
 https://github.com/altaysoprano/ConfessMe/assets/37440249/8505f02f-2058-4832-8dc2-094d2e278d54
-https://github.com/altaysoprano/ConfessMe/assets/37440249/9b6b4621-dfd2-4375-b958-c2eddf5eb776
+
+https://github.com/altaysoprano/ConfessMe/assets/37440249/4160042d-4a79-4052-aeb3-2f1119fc8b85
 
 ### Bookmarking
 
