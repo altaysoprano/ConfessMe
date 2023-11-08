@@ -33,7 +33,8 @@ https://github.com/altaysoprano/ConfessMe/assets/37440249/e46fe671-dbb4-48d0-b57
 ### Following
 
 https://github.com/altaysoprano/ConfessMe/assets/37440249/ecf76cb9-2847-471b-8095-e4a697448276
-https://github.com/altaysoprano/ConfessMe/assets/37440249/a50d5233-df83-434a-b531-9194bf40872d
+
+https://github.com/altaysoprano/ConfessMe/assets/37440249/d21f4dd3-ae2b-48e3-941a-18f76753569f
 
 ### Paging
 
