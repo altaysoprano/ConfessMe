@@ -453,7 +453,6 @@ class UserRepoImp(
                         user?.let {
                             searchHistoryUsers.add(it)
 
-                            // Kullanıcının takip ettiği listeye göre isFollowing ayarla
                             it.isFollowing = followingUserIds.contains(userUid)
                         }
                     }
@@ -463,6 +462,29 @@ class UserRepoImp(
             } else {
                 result(UiState.Success(emptyList()))
             }
+    }
+
+    override suspend fun deleteSearchHistoryCollection(result: (UiState<Boolean>) -> Unit) {
+        val currentUserUid = firebaseAuth.currentUser?.uid
+
+        if (currentUserUid != null) {
+            val searchHistoryRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("searchHistory")
+
+            try {
+                val querySnapshot = searchHistoryRef.get().await()
+                for (document in querySnapshot.documents) {
+                    searchHistoryRef.document(document.id).delete().await()
+                }
+
+                result(UiState.Success(true))
+            } catch (e: Exception) {
+                result.invoke(UiState.Failure("Deletion failed"))
+            }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
     }
 
     private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {

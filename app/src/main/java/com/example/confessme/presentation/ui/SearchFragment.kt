@@ -67,6 +67,10 @@ class SearchFragment : Fragment() {
         viewModel.getSearchHistoryUsers(limit)
         setSearchText()
 
+        binding.deleteAllHistoryTextView.setOnClickListener {
+            viewModel.deleteAllHistory()
+        }
+
         return binding.root
     }
 
@@ -74,6 +78,7 @@ class SearchFragment : Fragment() {
         super.onCreate(savedInstanceState)
         observeSearchResults()
         observeHistoryResults()
+        observeDeleteHistory()
     }
 
     private fun setupRecyclerViews() {
@@ -95,8 +100,9 @@ class SearchFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (!newText.isNullOrBlank()) {
-                    binding.historyTitle.visibility = View.GONE
                     binding.historyResultsRecyclerviewId.visibility = View.GONE
+                    binding.historyTitle.visibility = View.GONE
+                    binding.deleteAllHistoryTextView.visibility = View.GONE
                     viewModel.searchUsers(newText)
                 } else {
                     binding.searchNoUserFoundView.root.visibility = View.GONE
@@ -114,8 +120,9 @@ class SearchFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarSearch.visibility = View.VISIBLE
-                    binding.historyTitle.visibility = View.GONE
                     binding.historyResultsRecyclerviewId.visibility = View.GONE
+                    binding.historyTitle.visibility = View.GONE
+                    binding.deleteAllHistoryTextView.visibility = View.GONE
                 }
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
@@ -124,8 +131,9 @@ class SearchFragment : Fragment() {
                 }
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
-                    binding.historyTitle.visibility = View.GONE
                     binding.historyResultsRecyclerviewId.visibility = View.GONE
+                    binding.historyTitle.visibility = View.GONE
+                    binding.deleteAllHistoryTextView.visibility = View.GONE
                     binding.resultsTitle.visibility = View.VISIBLE
                     binding.searchResultsRecyclerviewId.visibility = View.VISIBLE
 
@@ -162,13 +170,38 @@ class SearchFragment : Fragment() {
                     binding.searchNoUserFoundView.root.visibility = View.GONE
 
                     if(state.data.isEmpty()) {
-                        binding.historyTitle.visibility = View.GONE
                         binding.historyResultsRecyclerviewId.visibility = View.GONE
+                        binding.historyTitle.visibility = View.GONE
+                        binding.deleteAllHistoryTextView.visibility = View.GONE
                     } else {
-                        binding.historyTitle.visibility = View.VISIBLE
                         binding.historyResultsRecyclerviewId.visibility = View.VISIBLE
+                        binding.historyTitle.visibility = View.VISIBLE
+                        binding.deleteAllHistoryTextView.visibility = View.VISIBLE
                     }
                     historyListAdapter.updateList(state.data)
+                }
+            }
+        }
+    }
+
+    private fun observeDeleteHistory() {
+        viewModel.deleteAllHistory.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarSearch.visibility = View.VISIBLE
+                }
+                is UiState.Failure -> {
+                    binding.progressBarSearch.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is UiState.Success -> {
+                    binding.progressBarSearch.visibility = View.GONE
+                    binding.historyResultsRecyclerviewId.visibility = View.GONE
+                    binding.historyTitle.visibility = View.GONE
+                    binding.deleteAllHistoryTextView.visibility = View.GONE
+
+                    historyListAdapter.updateList(emptyList())
                 }
             }
         }

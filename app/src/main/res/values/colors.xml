@@ -10,6 +10,7 @@
 
 
     <color name="confessmered">#cf363c</color>
+    <color name="confessmeredblur">#33cf363c</color>
 
     <color name="green">#008000</color>
     <color name="red">#FF0000</color>

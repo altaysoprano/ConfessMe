@@ -43,16 +43,35 @@
         app:layout_constraintTop_toBottomOf="@+id/searchView"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <TextView
+        android:id="@+id/deleteAllHistoryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/clear_all_history"
+        android:textStyle="bold"
+        android:layout_marginVertical="8dp"
+        android:textColor="@color/confessmered"
+        android:visibility="gone"
+        android:background="@drawable/rounded_background"
+        android:textSize="12sp"
+        android:layout_marginEnd="16dp"
+        android:padding="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        >
+    </TextView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/historyResultsRecyclerviewId"
         android:layout_marginHorizontal="16dp"
         android:layout_width="match_parent"
+        android:layout_marginTop="2dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:layout_marginBottom="?android:attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/historyTitle"
+        app:layout_constraintTop_toBottomOf="@+id/deleteAllHistoryTextView"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView

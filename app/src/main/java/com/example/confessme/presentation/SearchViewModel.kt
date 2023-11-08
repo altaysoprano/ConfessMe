@@ -32,12 +32,17 @@ class SearchViewModel @Inject constructor(
     val historyResults: LiveData<UiState<List<User>>>
         get() = _historyResults
 
+    private val _deleteAllHistory = MutableLiveData<UiState<Boolean>>()
+    val deleteAllHistory: LiveData<UiState<Boolean>>
+        get() = _deleteAllHistory
+
     private val _followUserState = MutableLiveData<UiState<FollowUser>>()
     val followUserState: LiveData<UiState<FollowUser>>
         get() = _followUserState
 
     private var searchJob: Job? = null
     private var getHistoryJob: Job? = null
+    private var deleteHistoryJob: Job? = null
 
     fun searchUsers(query: String) {
         searchJob?.cancel()
@@ -94,6 +99,15 @@ class SearchViewModel @Inject constructor(
         getHistoryJob = viewModelScope.launch {
             repository.getSearchHistoryUsers(limit) {result ->
                 _historyResults.postValue(result)
+            }
+        }
+    }
+
+    fun deleteAllHistory() {
+        _deleteAllHistory.value = UiState.Loading
+        deleteHistoryJob = viewModelScope.launch {
+            repository.deleteSearchHistoryCollection {result ->
+                _deleteAllHistory.postValue(result)
             }
         }
     }
