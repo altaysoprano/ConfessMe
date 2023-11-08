@@ -487,6 +487,26 @@ class UserRepoImp(
         }
     }
 
+    override suspend fun deleteSearchHistoryDocument(documentIdToDelete: String, result: (UiState<String>) -> Unit) {
+        val currentUserUid = firebaseAuth.currentUser?.uid
+
+        if (currentUserUid != null) {
+            val searchHistoryRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("searchHistory")
+
+            try {
+                searchHistoryRef.document(documentIdToDelete).delete().await()
+
+                result(UiState.Success(documentIdToDelete))
+            } catch (e: Exception) {
+                result(UiState.Failure("Deletion failed"))
+            }
+        } else {
+            result(UiState.Failure("User not authenticated"))
+        }
+    }
+
     private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
         if (userName.contains(" ")) {
             return "Username cannot contain spaces."

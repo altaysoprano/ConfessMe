@@ -25,7 +25,6 @@
             android:maxLines="1"
             android:text="username"
             android:textStyle="bold" />
-
     </LinearLayout>
 
     <include

@@ -41,7 +41,8 @@ class FollowsFragment : Fragment() {
         },
         onFollowClick = { userUid ->
             followOrUnfollowUser(userUid)
-        }
+        },
+        onItemLongPress = {}
     )
 
     override fun onCreateView(

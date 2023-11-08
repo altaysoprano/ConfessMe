@@ -278,8 +278,9 @@ class ConfessionListAdapter(
 
                     R.id.action_delete -> {
                         val confessIdToDelete = confessList[adapterPosition].id
-                        dialogHelper.showDeleteConfessionDialog(
-                            "confession",
+                        dialogHelper.showDialog(
+                            "delete confessıon",
+                            "Are you sure you really want to delete this confession?",
                             { onConfessDeleteClick(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }
@@ -310,7 +311,6 @@ class ConfessionListAdapter(
     fun removeConfession(position: Int) {
         confessList.removeAt(position)
         notifyItemRemoved(position)
-        notifyDataSetChanged()
     }
 
     private fun setTextViewExpansion(textview: TextView, isExpanded: Boolean) {

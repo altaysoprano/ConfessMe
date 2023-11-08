@@ -13,16 +13,12 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.text.style.TextAppearanceSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.confessme.R
@@ -30,9 +26,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.DialogHelper
-import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
-import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -245,9 +239,11 @@ class ConfessAnswerFragment(
         }
 
         binding.answerIcDelete.setOnClickListener {
-            dialogHelper.showDeleteConfessionDialog("answer", {
-                viewModel.deleteAnswer(confessionId ?: "")
-            })
+            dialogHelper.showDialog(
+                "delete answer",
+                "Are you sure you really want to delete this answer?",
+                { viewModel.deleteAnswer(confessionId ?: "") }
+            )
         }
 
         if(currentUserUid == answerFromUserUid) {

@@ -12,11 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
+import com.example.confessme.presentation.DialogHelper
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.ListType
 import com.example.confessme.util.UiState
@@ -33,26 +33,9 @@ class SearchFragment : Fragment() {
     private val currentUserUid = currentUser?.uid ?: ""
     private var limit: Long = 10
     private val viewModel: SearchViewModel by viewModels()
-
-    private val userListAdapter = UserListAdapter(mutableListOf(),
-        currentUserUid = currentUserUid,
-        onItemClick = { user ->
-            onItemClick(user)
-        },
-        onFollowClick = { userUid ->
-            followOrUnfollowUser(userUid, ListType.UserList)
-        }
-    )
-
-    private val historyListAdapter = UserListAdapter(mutableListOf(),
-        currentUserUid = currentUserUid,
-        onItemClick = { user ->
-            onItemClick(user)
-        },
-        onFollowClick = { userUid ->
-            followOrUnfollowUser(userUid, ListType.HistoryList)
-        }
-    )
+    private lateinit var dialogHelper: DialogHelper
+    private lateinit var userListAdapter: UserListAdapter
+    private lateinit var historyListAdapter: UserListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +46,7 @@ class SearchFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = "Search"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.searchToolbar)
 
+        setAdapters()
         setupRecyclerViews()
         viewModel.getSearchHistoryUsers(limit)
         setSearchText()
@@ -78,6 +62,7 @@ class SearchFragment : Fragment() {
         super.onCreate(savedInstanceState)
         observeSearchResults()
         observeHistoryResults()
+        observeDeleteAllHistory()
         observeDeleteHistory()
     }
 
@@ -90,6 +75,37 @@ class SearchFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = historyListAdapter
         }
+    }
+
+    private fun setAdapters() {
+        userListAdapter = UserListAdapter(mutableListOf(),
+            currentUserUid = currentUserUid,
+            onItemClick = { user ->
+                onItemClick(user)
+            },
+            onFollowClick = { userUid ->
+                followOrUnfollowUser(userUid, ListType.UserList)
+            },
+            onItemLongPress = {}
+        )
+
+        historyListAdapter = UserListAdapter(mutableListOf(),
+            currentUserUid = currentUserUid,
+            onItemClick = { user ->
+                onItemClick(user)
+            },
+            onFollowClick = { userUid ->
+                followOrUnfollowUser(userUid, ListType.HistoryList)
+            },
+            onItemLongPress = {
+                dialogHelper = DialogHelper(requireContext())
+                dialogHelper.showDialog(
+                    "delete search",
+                    "Are you sure you want to delete the selected search?",
+                    { viewModel.deleteHistoryItem(it.uid) }
+                )
+            }
+        )
     }
 
     private fun setSearchText() {
@@ -184,7 +200,7 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun observeDeleteHistory() {
+    private fun observeDeleteAllHistory() {
         viewModel.deleteAllHistory.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
@@ -202,6 +218,35 @@ class SearchFragment : Fragment() {
                     binding.deleteAllHistoryTextView.visibility = View.GONE
 
                     historyListAdapter.updateList(emptyList())
+                }
+            }
+        }
+    }
+
+    private fun observeDeleteHistory() {
+        viewModel.deleteHistoryItem.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarSearch.visibility = View.VISIBLE
+                }
+                is UiState.Failure -> {
+                    binding.progressBarSearch.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+                is UiState.Success -> {
+                    binding.progressBarSearch.visibility = View.GONE
+
+                    val deletedHistoryId = state.data
+
+                    val position = deletedHistoryId.let { findPositionById(it, historyListAdapter.userList) }
+                    if (position != -1) {
+                        historyListAdapter.removeHistory(position)
+                        if (historyListAdapter.userList.isEmpty()) {
+                            binding.historyTitle.visibility = View.GONE
+                            binding.deleteAllHistoryTextView.visibility = View.GONE
+                        }
+                    }
                 }
             }
         }

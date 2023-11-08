@@ -137,7 +137,6 @@ class BookmarksFragment() : Fragment() {
 
         binding.swipeRefreshLayoutMyConfessions.setOnRefreshListener {
             viewModel.fetchBookmarks(limit)
-            confessListAdapter.notifyDataSetChanged()
         }
 
 
@@ -182,6 +181,7 @@ class BookmarksFragment() : Fragment() {
 
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
+                        confessListAdapter.updateList(state.data as List<Confession>)
                     } else {
                         noConfessFoundBinding.root.visibility = View.GONE
                         confessListAdapter.updateList(state.data as List<Confession>)

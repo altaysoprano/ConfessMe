@@ -36,6 +36,10 @@ class SearchViewModel @Inject constructor(
     val deleteAllHistory: LiveData<UiState<Boolean>>
         get() = _deleteAllHistory
 
+    private val _deleteHistoryItem = MutableLiveData<UiState<String>>()
+    val deleteHistoryItem: LiveData<UiState<String>>
+        get() = _deleteHistoryItem
+
     private val _followUserState = MutableLiveData<UiState<FollowUser>>()
     val followUserState: LiveData<UiState<FollowUser>>
         get() = _followUserState
@@ -110,6 +114,15 @@ class SearchViewModel @Inject constructor(
                 _deleteAllHistory.postValue(result)
             }
         }
+    }
+
+    fun deleteHistoryItem(searchId: String) {
+            _deleteHistoryItem.value = UiState.Loading
+            deleteHistoryJob = viewModelScope.launch {
+                repository.deleteSearchHistoryDocument(searchId) {result ->
+                    _deleteHistoryItem.postValue(result)
+                }
+            }
     }
 
     fun CoroutineScope.safeLaunch(block: suspend CoroutineScope.() -> Unit): Job {

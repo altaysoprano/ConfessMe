@@ -15,7 +15,8 @@ class UserListAdapter(
     val userList: MutableList<User> = mutableListOf(),
     private val currentUserUid: String,
     private val onItemClick: (User) -> Unit,
-    private val onFollowClick: (String) -> Unit
+    private val onFollowClick: (String) -> Unit,
+    private val onItemLongPress: (User) -> Unit
 ) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
 
@@ -90,7 +91,21 @@ class UserListAdapter(
                     binding.followsProgressButtonLayout.progressBarFollowButton.indeterminateTintList =
                         ColorStateList.valueOf(Color.WHITE)
                 }
+
+                itemView.setOnLongClickListener {
+
+                    val userToLongPress = userList[adapterPosition]
+                    onItemLongPress(userToLongPress)
+
+                    true
+                }
+
             }
         }
+    }
+
+    fun removeHistory(position: Int) {
+        userList.removeAt(position)
+        notifyItemRemoved(position)
     }
 }

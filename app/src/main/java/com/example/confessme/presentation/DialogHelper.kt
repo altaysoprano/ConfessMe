@@ -4,10 +4,10 @@ import android.app.AlertDialog
 import android.content.Context
 
 class DialogHelper(private val context: Context?) {
-    fun showDeleteConfessionDialog(itemType: String, onConfirmDelete: () -> Unit) {
+    fun showDialog(title: String, message: String, onConfirmDelete: () -> Unit) {
         val alertDialog = AlertDialog.Builder(context)
-            .setTitle("DELETE ${itemType.uppercase()}")
-            .setMessage("Are you sure you really want to delete this $itemType?")
+            .setTitle(title.toUpperCase())
+            .setMessage(message)
             .setPositiveButton("Yes") { _, _ ->
                 onConfirmDelete()
             }

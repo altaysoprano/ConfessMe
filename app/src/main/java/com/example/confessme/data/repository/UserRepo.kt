@@ -21,4 +21,5 @@ interface UserRepo {
     fun addSearchToHistory(userUid: String)
     suspend fun getSearchHistoryUsers(limit: Long, result: (UiState<List<User>>) -> Unit)
     suspend fun deleteSearchHistoryCollection(result: (UiState<Boolean>) -> Unit)
+    suspend fun deleteSearchHistoryDocument(documentIdToDelete: String, result: (UiState<String>) -> Unit)
 }
