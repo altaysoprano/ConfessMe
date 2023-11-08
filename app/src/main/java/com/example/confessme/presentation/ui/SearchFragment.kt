@@ -52,7 +52,12 @@ class SearchFragment : Fragment() {
         setSearchText()
 
         binding.deleteAllHistoryTextView.setOnClickListener {
-            viewModel.deleteAllHistory()
+            dialogHelper = DialogHelper(requireContext())
+            dialogHelper.showDialog(
+                "delete all hıstory",
+                "Are you sure you want to delete the entire search history?",
+                { viewModel.deleteAllHistory() }
+            )
         }
 
         return binding.root
