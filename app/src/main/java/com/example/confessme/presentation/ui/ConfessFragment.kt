@@ -3,6 +3,7 @@ package com.example.confessme.presentation.ui
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,7 +28,7 @@ class ConfessFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ConfessViewModel by viewModels()
     private lateinit var userUid: String
-    private var isConfessButtonEnabled = true
+    private var isConfessButtonEnabled = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,15 +47,29 @@ class ConfessFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
+        setTextField()
+        observeAddConfession()
+
+        return binding.root
+    }
+
+    private fun setTextField() {
         val maxLength = 560
         binding.confessEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
                 val currentLength = s?.length ?: 0
-                if (currentLength > maxLength) {
+                val isTextEmpty = s?.isEmpty()
+
+                if(isTextEmpty == true) {
+                    Log.d("Mesaj: ", "Text boş (ontextchangedta)")
+                    isConfessButtonEnabled = false
+                    requireActivity().invalidateOptionsMenu()
+                }
+                else if (currentLength > maxLength) {
                     binding.confessEditText.error = "Character limit exceeded"
                     isConfessButtonEnabled = false
                     requireActivity().invalidateOptionsMenu()
@@ -68,7 +83,9 @@ class ConfessFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
             }
         })
+    }
 
+    private fun observeAddConfession() {
         viewModel.addConfessionState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
@@ -89,8 +106,6 @@ class ConfessFragment : Fragment() {
                 }
             }
         }
-
-        return binding.root
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -99,14 +114,10 @@ class ConfessFragment : Fragment() {
                 requireActivity().onBackPressed()
                 return true
             }
+
             R.id.action_confess -> {
                 val confessionText = binding.confessEditText.text.toString()
-
-                if (confessionText.isNotEmpty()) {
-                    viewModel.addConfession(userUid, confessionText)
-                } else {
-                    Toast.makeText(requireContext(), "Confession text cannot be left blank", Toast.LENGTH_SHORT).show()
-                }
+                viewModel.addConfession(userUid, confessionText)
                 return true
             }
         }
@@ -117,6 +128,8 @@ class ConfessFragment : Fragment() {
         inflater.inflate(R.menu.confess_menu, menu)
         val confessMenuItem = menu.findItem(R.id.action_confess)
         confessMenuItem.isEnabled = isConfessButtonEnabled
+        confessMenuItem.icon?.alpha =
+            if (isConfessButtonEnabled) (1f * 255).toInt() else (0.5f * 255).toInt()
         super.onCreateOptionsMenu(menu, inflater)
     }
 
