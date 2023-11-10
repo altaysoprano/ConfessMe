@@ -27,6 +27,7 @@ class BookmarksFragment() : Fragment() {
     private lateinit var confessListAdapter: ConfessionListAdapter
     private lateinit var navRegister: FragmentNavigation
     private lateinit var noConfessFoundBinding: NoConfessionsHereBinding
+    private lateinit var currentUserUid: String
     private val viewModel: BookmarksViewModel by viewModels()
 
     private var limit: Long = 20
@@ -40,7 +41,27 @@ class BookmarksFragment() : Fragment() {
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         val currentUser = FirebaseAuth.getInstance().currentUser
-        val currentUserUid = currentUser?.uid ?: ""
+        currentUserUid = currentUser?.uid ?: ""
+        noConfessFoundBinding = binding.noConfessionsHereText
+
+        setAdapter()
+        setupRecyclerView()
+
+        viewModel.fetchBookmarks(limit)
+
+        setSwiping()
+
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeFetchBookmarks()
+        observeRemoveBookmark()
+        observeDeleteConfession()
+    }
+
+    private fun setAdapter() {
         confessListAdapter = ConfessionListAdapter(
             requireContext(),
             mutableListOf(),
@@ -112,50 +133,36 @@ class BookmarksFragment() : Fragment() {
                 navRegister.navigateFrag(profileFragment, true)
             }
         )
-        noConfessFoundBinding = binding.noConfessionsHereText
-
-        viewModel.fetchBookmarks(limit)
-
-        binding.bookmarkListRecyclerviewId.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                    && firstVisibleItemPosition >= 0
-                    && totalItemCount >= limit
-                ) {
-                    limit += 10
-                    viewModel.fetchBookmarks(limit)
-                }
-            }
-        })
-
-        binding.swipeRefreshLayoutMyConfessions.setOnRefreshListener {
-            viewModel.fetchBookmarks(limit)
-        }
-
-
-        setupRecyclerView()
-
-        return binding.root
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        observeFetchBookmarks()
-        observeRemoveBookmark()
-        observeDeleteConfession()
     }
 
     private fun setupRecyclerView() {
         binding.bookmarkListRecyclerviewId.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = confessListAdapter
+            this.addOnScrollListener(object :
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= limit
+                    ) {
+                        limit += 10
+                        viewModel.fetchBookmarks(limit)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun setSwiping() {
+        binding.swipeRefreshLayoutMyConfessions.setOnRefreshListener {
+            viewModel.fetchBookmarks(limit)
         }
     }
 

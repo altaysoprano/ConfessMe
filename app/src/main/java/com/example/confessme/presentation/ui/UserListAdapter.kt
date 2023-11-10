@@ -107,5 +107,6 @@ class UserListAdapter(
     fun removeHistory(position: Int) {
         userList.removeAt(position)
         notifyItemRemoved(position)
+        notifyItemRangeChanged(position, userList.size)
     }
 }

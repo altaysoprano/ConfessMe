@@ -311,6 +311,7 @@ class ConfessionListAdapter(
     fun removeConfession(position: Int) {
         confessList.removeAt(position)
         notifyItemRemoved(position)
+        notifyItemRangeChanged(position, confessList.size)
     }
 
     private fun setTextViewExpansion(textview: TextView, isExpanded: Boolean) {
