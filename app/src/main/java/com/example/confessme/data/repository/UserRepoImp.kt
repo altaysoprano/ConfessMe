@@ -128,45 +128,55 @@ class UserRepoImp(
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not found"))
+            result.invoke(UiState.Failure("User not authenticated"))
         }
     }
 
     override fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit) {
         val userRef = database.collection("users").document(userUid)
+        val currentUser = firebaseAuth.currentUser
 
-        userRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val user = documentSnapshot.toObject(User::class.java)
+        if (currentUser != null) {
+            val currentUserUid = currentUser.uid
+            userRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val user = documentSnapshot.toObject(User::class.java)
 
-                    userRef.collection("followers").get()
-                        .addOnSuccessListener { followersQuerySnapshot ->
-                            val followersCount = followersQuerySnapshot.size()
+                        userRef.collection("followers").get()
+                            .addOnSuccessListener { followersQuerySnapshot ->
+                                val followersCount = followersQuerySnapshot.size()
 
-                            userRef.collection("following").get()
-                                .addOnSuccessListener { followingQuerySnapshot ->
-                                    val followingCount = followingQuerySnapshot.size()
+                                userRef.collection("following").get()
+                                    .addOnSuccessListener { followingQuerySnapshot ->
+                                        val followingCount = followingQuerySnapshot.size()
 
-                                    user?.followCount = followingCount
-                                    user?.followersCount = followersCount
+                                        val isFollower =
+                                            followingQuerySnapshot.documents.any { it.id == currentUserUid }
+                                        user?.isFollower = isFollower
 
-                                    result.invoke(UiState.Success(user))
-                                }
-                                .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure("An error occurred while pulling the following count"))
-                                }
-                        }
-                        .addOnFailureListener { exception ->
-                            result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
-                        }
-                } else {
-                    result.invoke(UiState.Failure("User data not found"))
+                                        user?.followCount = followingCount
+                                        user?.followersCount = followersCount
+
+                                        result.invoke(UiState.Success(user))
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure("An error occurred while pulling the following count"))
+                                    }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure("User data not found"))
+                    }
                 }
-            }
-            .addOnFailureListener { exception ->
-                result.invoke(UiState.Failure(exception.localizedMessage))
-            }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
     }
 
 
@@ -221,7 +231,7 @@ class UserRepoImp(
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not found"))
+            result.invoke(UiState.Failure("User not authenticated"))
         }
     }
 

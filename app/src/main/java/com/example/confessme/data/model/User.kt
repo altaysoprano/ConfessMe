@@ -11,5 +11,6 @@ data class User(
     var followersCount: Int = 0,
     var timestampFollow: Any? = null,
     var isFollowing: Boolean = false,
+    var isFollower: Boolean = false,
     var isFollowingInProgress: Boolean = false
 )

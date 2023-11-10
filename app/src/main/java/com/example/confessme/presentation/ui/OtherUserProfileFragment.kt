@@ -96,6 +96,10 @@ class OtherUserProfileFragment : Fragment() {
         }
     }
 
+    private fun setFollowingYouTv(isFollower: Boolean) {
+        binding.followingyouTv.visibility = if(isFollower) View.VISIBLE else View.GONE
+    }
+
     @SuppressLint("ResourceAsColor")
     private fun setFollowButton(userUidToCheck: String) {
         viewModel.checkIfUserFollowed(userUidToCheck)
@@ -250,11 +254,6 @@ class OtherUserProfileFragment : Fragment() {
                     binding.otherUserProgressBarProfile.visibility = View.GONE
                     val userProfile = state.data
                     if (userProfile != null) {
-                        binding.otherUserFirstNameTv.text = userProfile.userName
-                        binding.otherUserBioTv.text = userProfile.bio
-                        binding.otherUserFollowingCountTv.text = userProfile.followCount.toString()
-                        binding.otherUserFollowerCountTv.text = userProfile.followersCount.toString()
-
                         if (userProfile.imageUrl.isNotEmpty()) {
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
@@ -262,6 +261,13 @@ class OtherUserProfileFragment : Fragment() {
                         } else {
                             binding.otherUserProfileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                         }
+
+                        binding.otherUserFirstNameTv.text = userProfile.userName
+                        binding.otherUserBioTv.text = userProfile.bio
+                        binding.otherUserFollowingCountTv.text = userProfile.followCount.toString()
+                        binding.otherUserFollowerCountTv.text = userProfile.followersCount.toString()
+
+                        setFollowingYouTv(userProfile.isFollower)
                     }
                 }
             }
