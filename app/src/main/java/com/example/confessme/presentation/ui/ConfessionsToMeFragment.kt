@@ -18,6 +18,7 @@ import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsToYouBinding
 import com.example.confessme.presentation.ConfessViewModel
+import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -27,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ConfessionsToMeFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-) : Fragment(), ConfessionUpdateListener {
+) : Fragment(), ConfessionUpdateListener, ScrollableToTop {
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -271,5 +272,9 @@ class ConfessionsToMeFragment(
 
     override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
         confessListAdapter.updateItem(position, updatedConfession)
+    }
+
+    override fun scrollToTop() {
+        binding.confessionToMeListRecyclerviewId.smoothScrollToPosition(0)
     }
 }

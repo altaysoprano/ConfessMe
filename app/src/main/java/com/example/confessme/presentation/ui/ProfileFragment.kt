@@ -23,6 +23,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ProfileViewPagerAdapter
+import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -94,8 +95,6 @@ class ProfileFragment() : Fragment() {
 
     private fun fetchUserProfile() {
         viewModel.getProfileData()
-        viewPagerAdapter = ProfileViewPagerAdapter(this)
-        binding.profileViewPager.adapter = viewPagerAdapter
     }
 
     private fun setAllClickListener() {
@@ -123,9 +122,11 @@ class ProfileFragment() : Fragment() {
     }
 
     private fun setTablayoutAndViewPager() {
+        viewPagerAdapter = ProfileViewPagerAdapter(this)
+        binding.profileViewPager.adapter = viewPagerAdapter
+
         binding.profileTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-
                 tab?.let {
                     binding.profileViewPager.currentItem = it.position
                 }
@@ -136,7 +137,15 @@ class ProfileFragment() : Fragment() {
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
+                tab?.let {
+                    val fragmentPosition = it.position
+                    val fragmentTag = "f$fragmentPosition"
+
+                    val fragment = childFragmentManager.findFragmentByTag(fragmentTag)
+                    if (fragment != null && fragment is ScrollableToTop) {
+                        fragment.scrollToTop()
+                    }
+                }
             }
         })
 

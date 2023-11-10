@@ -15,12 +15,13 @@ import com.example.confessme.databinding.FragmentBookmarksBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.presentation.BookmarksViewModel
+import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BookmarksFragment() : Fragment() {
+class BookmarksFragment() : Fragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentBookmarksBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -263,5 +264,9 @@ class BookmarksFragment() : Fragment() {
             }
         }
         return -1
+    }
+
+    override fun scrollToTop() {
+        binding.bookmarkListRecyclerviewId.smoothScrollToPosition(0)
     }
 }

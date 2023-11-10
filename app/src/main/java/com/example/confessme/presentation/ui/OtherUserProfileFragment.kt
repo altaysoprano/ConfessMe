@@ -22,6 +22,7 @@ import com.example.confessme.data.model.FollowUser
 import com.example.confessme.databinding.FragmentOtherUserProfileBinding
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -289,7 +290,15 @@ class OtherUserProfileFragment : Fragment() {
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Zaten seçili olan bir sekmeye tekrar tıklanıldığında yapılacak işlemler
+                tab?.let {
+                    val fragmentPosition = it.position
+                    val fragmentTag = "f$fragmentPosition"
+
+                    val fragment = childFragmentManager.findFragmentByTag(fragmentTag)
+                    if (fragment != null && fragment is ScrollableToTop) {
+                        fragment.scrollToTop()
+                    }
+                }
             }
         })
 

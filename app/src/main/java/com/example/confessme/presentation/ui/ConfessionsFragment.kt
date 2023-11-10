@@ -16,6 +16,7 @@ import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.YouHaveNoConfessionsBinding
 import com.example.confessme.presentation.ConfessViewModel
+import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,7 @@ import java.lang.Math.abs
 class ConfessionsFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-    ) : Fragment() {
+    ) : Fragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -268,6 +269,10 @@ class ConfessionsFragment(
             }
         }
         return -1
+    }
+
+    override fun scrollToTop() {
+        binding.confessionListRecyclerviewId.smoothScrollToPosition(0)
     }
 
 }
