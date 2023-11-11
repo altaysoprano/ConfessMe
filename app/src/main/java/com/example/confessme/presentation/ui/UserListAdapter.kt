@@ -2,6 +2,7 @@ package com.example.confessme.presentation.ui
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ class UserListAdapter(
     val userList: MutableList<User> = mutableListOf(),
     private val currentUserUid: String,
     private val onItemClick: (User) -> Unit,
-    private val onFollowClick: (String) -> Unit,
+    private val onFollowClick: (String, Boolean) -> Unit,
     private val onItemLongPress: (User) -> Unit
 ) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
@@ -52,16 +53,20 @@ class UserListAdapter(
                 } else {
                     binding.searchScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                 }
+                Log.d("Mesaj: ", "Adapterda isFollowingInProgress: ${user.isFollowingInProgress}")
+                Log.d("Mesaj: ", "Adapterda isFollowing: ${user.isFollowing}")
 
                 if (user.isFollowingInProgress) {
+                    Log.d("Mesaj: ", "Adapterda progresste")
                     binding.followsProgressButtonLayout.progressBarFollowButton.visibility = View.VISIBLE
                 } else {
+                    Log.d("Mesaj: ", "Adapterda progresste değil")
                     binding.followsProgressButtonLayout.progressBarFollowButton.visibility = View.GONE
                 }
 
                 binding.followsProgressButtonLayout.followButtonCardview.setOnClickListener {
                     val userToFollow = userList[adapterPosition]
-                    onFollowClick(userToFollow.uid)
+                    onFollowClick(userToFollow.uid, userToFollow.isFollowing)
                 }
 
                 itemView.setOnClickListener {

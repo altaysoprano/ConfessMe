@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -39,8 +40,8 @@ class FollowsFragment : Fragment() {
         onItemClick = { user ->
             onItemClick(user)
         },
-        onFollowClick = { userUid ->
-            followOrUnfollowUser(userUid)
+        onFollowClick = { userUid, isFollowing ->
+            followOrUnfollowUser(userUid, isFollowing)
         },
         onItemLongPress = {}
     )
@@ -162,14 +163,14 @@ class FollowsFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String) {
+    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, isFollowing: Boolean) {
         if (userUidToFollowOrUnfollow.isEmpty()) {
             return
         }
 
         val position = findPositionById(userUidToFollowOrUnfollow)
 
-        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow, isFollowing)
 
         val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
             override fun onChanged(state: UiState<FollowUser>) {
@@ -178,6 +179,7 @@ class FollowsFragment : Fragment() {
                         if (position != -1) {
                             userListAdapter.userList[position].isFollowingInProgress = true
                             userListAdapter.notifyItemChanged(position)
+                            Log.d("Mesaj: ", "Follows Fragmentta Loadingte")
                         }
                     }
                     is UiState.Success -> {
@@ -185,6 +187,7 @@ class FollowsFragment : Fragment() {
                             userListAdapter.userList[position].isFollowingInProgress = false
                             userListAdapter.userList[position].isFollowing = state.data.isFollowed
                             userListAdapter.notifyItemChanged(position)
+                            Log.d("Mesaj: ", "Follows Fragmentta Successte: ${state.data.isFollowed}")
                         }
                         viewModel.followUserState.removeObserver(this)
                     }

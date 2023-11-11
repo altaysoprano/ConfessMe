@@ -41,12 +41,10 @@ class FollowsViewModel @Inject constructor(
         }
     }
 
-    fun followOrUnfollowUser(userUid: String) {
+    fun followOrUnfollowUser(userUid: String, isFollowing: Boolean) {
         _followUserState.value = UiState.Loading
 
-        repository.checkIfUserFollowed(userUid) { result ->
-            if (result is UiState.Success && result.data.isFollowed) {
-                Log.d("Mesaj: ", "Viewmodelda ife girdi")
+            if (isFollowing) {
                 repository.unfollowUser(userUid) { unfollowResult ->
                     if (unfollowResult is UiState.Success) {
                         _followUserState.postValue(unfollowResult)
@@ -55,7 +53,6 @@ class FollowsViewModel @Inject constructor(
                     }
                 }
             } else {
-                Log.d("Mesaj: ", "Viewmodelda elsea girdi")
                 repository.followUser(userUid) { followResult ->
                     if (followResult is UiState.Success) {
                         _followUserState.postValue(UiState.Success(followResult.data))
@@ -65,5 +62,4 @@ class FollowsViewModel @Inject constructor(
                 }
             }
         }
-    }
 }

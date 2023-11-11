@@ -88,8 +88,8 @@ class SearchFragment : Fragment() {
             onItemClick = { user ->
                 onItemClick(user)
             },
-            onFollowClick = { userUid ->
-                followOrUnfollowUser(userUid, ListType.UserList)
+            onFollowClick = { userUid, isFollowing ->
+                followOrUnfollowUser(userUid, ListType.UserList, isFollowing)
             },
             onItemLongPress = {}
         )
@@ -99,8 +99,8 @@ class SearchFragment : Fragment() {
             onItemClick = { user ->
                 onItemClick(user)
             },
-            onFollowClick = { userUid ->
-                followOrUnfollowUser(userUid, ListType.HistoryList)
+            onFollowClick = { userUid, isFollowing ->
+                followOrUnfollowUser(userUid, ListType.HistoryList, isFollowing)
             },
             onItemLongPress = {
                 dialogHelper = DialogHelper(requireContext())
@@ -279,7 +279,7 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, listType: ListType) {
+    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, listType: ListType, isFollowing: Boolean) {
         if (userUidToFollowOrUnfollow.isEmpty()) {
             return
         }
@@ -297,7 +297,7 @@ class SearchFragment : Fragment() {
 
         val position = findPositionById(userUidToFollowOrUnfollow, adapter.userList)
 
-        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow)
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow, isFollowing)
 
         val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
             override fun onChanged(state: UiState<FollowUser>) {
@@ -306,6 +306,7 @@ class SearchFragment : Fragment() {
                         if (position != -1) {
                             adapter.userList[position].isFollowingInProgress = true
                             adapter.notifyItemChanged(position)
+                            Log.d("Mesaj: ", "Search Fragmentta Loadingte")
                         }
                     }
                     is UiState.Success -> {
@@ -313,6 +314,7 @@ class SearchFragment : Fragment() {
                             adapter.userList[position].isFollowingInProgress = false
                             adapter.userList[position].isFollowing = state.data.isFollowed
                             adapter.notifyItemChanged(position)
+                            Log.d("Mesaj: ", "Search Fragmentta Successte: ${state.data.isFollowed}")
                         }
                         viewModel.followUserState.removeObserver(this)
                     }
@@ -327,7 +329,7 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.followUserState.observe(viewLifecycleOwner, userFollowStateObserver)
+        viewModel.followUserState.observe(this, userFollowStateObserver)
     }
 
     private fun findPositionById(userId: String, userList: MutableList<User>): Int {

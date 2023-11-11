@@ -66,11 +66,10 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun followOrUnfollowUser(userUid: String) {
+    fun followOrUnfollowUser(userUid: String, isFollowing: Boolean) {
         _followUserState.value = UiState.Loading
 
-        repository.checkIfUserFollowed(userUid) { result ->
-            if (result is UiState.Success && result.data.isFollowed) {
+            if (isFollowing) {
                 repository.unfollowUser(userUid) { unfollowResult ->
                     if (unfollowResult is UiState.Success) {
                         _followUserState.postValue(unfollowResult)
@@ -87,7 +86,6 @@ class SearchViewModel @Inject constructor(
                     }
                 }
             }
-        }
     }
 
     fun addToSearchHistory(userUid: String) {
