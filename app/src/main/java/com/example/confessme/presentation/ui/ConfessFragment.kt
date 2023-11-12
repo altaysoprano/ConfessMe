@@ -65,14 +65,13 @@ class ConfessFragment : Fragment() {
                 val isTextEmpty = s?.isEmpty()
 
                 if(isTextEmpty == true) {
-                    Log.d("Mesaj: ", "Text boş (ontextchangedta)")
                     isConfessButtonEnabled = false
                     requireActivity().invalidateOptionsMenu()
                 }
                 else if (currentLength > maxLength) {
-                    binding.confessEditText.error = "Character limit exceeded"
                     isConfessButtonEnabled = false
                     requireActivity().invalidateOptionsMenu()
+                    binding.confessEditText.error = "Confession is too long (max $maxLength characters)"
                 } else {
                     binding.confessEditText.error = null
                     isConfessButtonEnabled = true
@@ -90,6 +89,8 @@ class ConfessFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfess.visibility = View.VISIBLE
+                    isConfessButtonEnabled = false
+                    requireActivity().invalidateOptionsMenu()
                 }
 
                 is UiState.Failure -> {

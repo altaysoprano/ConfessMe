@@ -100,6 +100,8 @@ class EditProfileFragment : Fragment() {
         viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
+                    binding.saveButton.isEnabled = false
+                    binding.saveButton.alpha = 0.5f
                     binding.progressBarEditProfile.visibility = View.VISIBLE
                 }
 

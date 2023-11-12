@@ -54,11 +54,15 @@ class ConfessViewModel @Inject constructor(
         get() = _addBookmarkState
 
     private var addFavoriteAnswerJob: Job? = null
+    private var addConfessionJob: Job? = null
 
     fun addConfession(userUid: String, confessionText: String) {
+        addConfessionJob?.cancel()
         _addConfessionState.value = UiState.Loading
-        repository.addConfession(userUid, confessionText) {
-            _addConfessionState.value = it
+        addConfessionJob= viewModelScope.launch {
+            repository.addConfession(userUid, confessionText) {
+                _addConfessionState.value = it
+            }
         }
     }
 
