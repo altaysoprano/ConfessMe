@@ -223,19 +223,12 @@ class EditProfileFragment : Fragment() {
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
-                
+
             }
 
             override fun afterTextChanged(s: Editable?) {
             }
         })
-    }
-
-    private fun openImageFiles() {
-        val intent = Intent()
-        intent.action = Intent.ACTION_GET_CONTENT
-        intent.type = "image/*"
-        startActivityForResult(intent, 1)
     }
 
     private fun checkIfUserNameAndBioValid(bioCurrentLength: Int, userNameCurrentLength: Int, userNameMaxLength: Int,
@@ -266,6 +259,13 @@ class EditProfileFragment : Fragment() {
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
+    }
+
+    private fun openImageFiles() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_GET_CONTENT
+        intent.type = "image/*"
+        startActivityForResult(intent, 1)
     }
 
     private fun removeProfilePhoto() {

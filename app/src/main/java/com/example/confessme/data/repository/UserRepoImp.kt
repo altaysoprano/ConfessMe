@@ -34,12 +34,6 @@ class UserRepoImp(
         if (user != null) {
             val uid = user.uid
 
-            val validationError = checkIfUsernameOrBioValid(userName, bio)
-            if (validationError != null) {
-                result.invoke(UiState.Failure(validationError))
-                return
-            }
-
             database.collection("users")
                 .whereEqualTo("userName", userName)
                 .get()
@@ -536,24 +530,5 @@ class UserRepoImp(
         } else {
             result(UiState.Failure("User not authenticated"))
         }
-    }
-
-    private fun checkIfUsernameOrBioValid(userName: String, bio: String): String? {
-        if (userName.contains(" ")) {
-            return "Username cannot contain spaces."
-        }
-        if (userName.isBlank()) {
-            return "Username cannot be blank."
-        }
-        if (userName.length < 3) {
-            return "Username must be at least 3 characters long."
-        }
-        if (userName.length > 30) {
-            return "Username cannot exceed 30 characters."
-        }
-        if (bio.length > 200) {
-            return "Bio cannot exceed 200 characters."
-        }
-        return null
     }
 }
