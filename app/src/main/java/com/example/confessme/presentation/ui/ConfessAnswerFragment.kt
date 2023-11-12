@@ -38,7 +38,7 @@ class ConfessAnswerFragment(
     private lateinit var binding: FragmentConfessAnswerBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ConfessViewModel by viewModels()
-    private var isAnswerButtonEnabled = true
+    private var isAnswerButtonEnabled = false
     private var isEditAnswer: Boolean = false
     private lateinit var currentUserUid: String
     private lateinit var answerUserUid: String
@@ -73,6 +73,7 @@ class ConfessAnswerFragment(
         dialogHelper = DeleteDialog(requireContext())
 
         setUserImage()
+        setSaveButton()
         setImageAndTextStates()
         setFavoriteDeleteEditReplyStates()
         observeAddAnswer()
@@ -135,6 +136,8 @@ class ConfessAnswerFragment(
         viewModel.addAnswerState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
+                    binding.replyButton.isEnabled = false
+                    binding.replyButton.alpha = 0.5f
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
                 }
 
@@ -210,15 +213,7 @@ class ConfessAnswerFragment(
         binding.replyButton.setOnClickListener {
             val answerEditText = binding.confessAnswerEditText.text.toString()
 
-            if (answerEditText.trim().isNotEmpty()) {
-                viewModel.addAnswer(confessionId ?: "", answerEditText)
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Your answer cannot be blank",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+             viewModel.addAnswer(confessionId ?: "", answerEditText)
         }
 
         binding.answerIcEdit.setOnClickListener {
@@ -276,8 +271,7 @@ class ConfessAnswerFragment(
                 binding.answerIcEdit.visibility = View.GONE
                 binding.answerIcFavorite.visibility = View.GONE
                 binding.answerIcDelete.visibility = View.GONE
-                binding.replyButton.isEnabled = isAnswerButtonEnabled
-                binding.replyButton.isClickable = isAnswerButtonEnabled
+                setSaveButton()
             }
         } else {
             binding.replyButton.visibility = View.GONE
@@ -316,25 +310,52 @@ class ConfessAnswerFragment(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
-                if (currentLength > maxLength) {
-                    binding.confessAnswerEditText.error = "Character limit exceeded"
-                    binding.replyButton.alpha = 0.5f
-                    binding.replyButton.isClickable = false
+                val isTextEmpty = s?.trim()?.isEmpty()
+
+                if(isTextEmpty == true) {
+                    isAnswerButtonEnabled = false
+                    setSaveButton()
+                }
+                else if (currentLength > maxLength) {
+                    isAnswerButtonEnabled = false
+                    setSaveButton()
+                    binding.confessAnswerEditText.error = "Confession is too long (max $maxLength characters)"
                 } else {
                     binding.confessAnswerEditText.error = null
-                    binding.replyButton.isClickable = true
-                    binding.replyButton.alpha = 1f
+                    isAnswerButtonEnabled = true
+                    setSaveButton()
                 }
+                /*
+                                if (currentLength > maxLength) {
+                                    binding.confessAnswerEditText.error = "Character limit exceeded"
+                                    binding.replyButton.alpha = 0.5f
+                                    binding.replyButton.isClickable = false
+                                } else {
+                                    binding.confessAnswerEditText.error = null
+                                    binding.replyButton.isClickable = true
+                                    binding.replyButton.alpha = 1f
+                                }
+                */
 
                 if(s.toString() == answerText) {
-                    binding.replyButton.alpha = 0.5f
-                    binding.replyButton.isClickable = false
+                    isAnswerButtonEnabled = false
+                    setSaveButton()
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {
             }
         })
+    }
+
+    private fun setSaveButton() {
+        if(isAnswerButtonEnabled) {
+            binding.replyButton.alpha = 1f
+            binding.replyButton.isClickable = true
+        } else {
+            binding.replyButton.alpha = 0.5f
+            binding.replyButton.isClickable = false
+        }
     }
 
     private fun setUsernameAndDateText() {
