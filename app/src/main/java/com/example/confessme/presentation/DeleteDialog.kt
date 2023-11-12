@@ -3,7 +3,7 @@ package com.example.confessme.presentation
 import android.app.AlertDialog
 import android.content.Context
 
-class DialogHelper(private val context: Context?) {
+class DeleteDialog(private val context: Context?) {
     fun showDialog(title: String, message: String, onConfirmDelete: () -> Unit) {
         val alertDialog = AlertDialog.Builder(context)
             .setTitle(title.toUpperCase())
@@ -12,7 +12,7 @@ class DialogHelper(private val context: Context?) {
                 onConfirmDelete()
             }
             .setNegativeButton("No") { _, _ ->
-                // Silme işlemi iptal edildi.
+
             }
             .create()
 

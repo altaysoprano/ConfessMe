@@ -24,7 +24,7 @@ import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ConfessItemBinding
-import com.example.confessme.presentation.DialogHelper
+import com.example.confessme.presentation.DeleteDialog
 import com.google.firebase.Timestamp
 
 class ConfessionListAdapter(
@@ -41,7 +41,7 @@ class ConfessionListAdapter(
     private val onUserNameClick: (String, String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
-    private val dialogHelper = DialogHelper(context)
+    private val dialogHelper = DeleteDialog(context)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConfessionViewHolder {
         val binding = ConfessItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

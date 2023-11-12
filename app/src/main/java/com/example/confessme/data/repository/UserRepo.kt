@@ -4,13 +4,15 @@ import android.net.Uri
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.util.FollowType
+import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
 
 interface UserRepo {
 
-    fun updateProfile(previousUserName: String, userName: String, bio: String,
-                      imageUri: Uri, result: (UiState<String>) -> Unit)
-    fun fetchUserProfile(result: (UiState<User?>) -> Unit)
+    fun updateProfile(
+        previousUserName: String, userName: String, bio: String, imageUri: Uri,
+        profilePhotoAction: ProfilePhotoAction, result: (UiState<String>) -> Unit
+    )    fun fetchUserProfile(result: (UiState<User?>) -> Unit)
     fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit)
     fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit)
     fun getFollowersOrFollowing(userUid: String, limit: Long, followType: FollowType,

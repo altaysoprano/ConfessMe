@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.util.FollowType
+import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +26,7 @@ class UserRepoImp(
         userName: String,
         bio: String,
         imageUri: Uri,
+        profilePhotoAction: ProfilePhotoAction,
         result: (UiState<String>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
@@ -51,34 +53,80 @@ class UserRepoImp(
                             "userName" to userName,
                             "bio" to bio
                         )
-                        if (imageUri != Uri.EMPTY) {
-                            val reference =
-                                storage.reference.child("Profile").child(Date().time.toString())
-                            reference.putFile(imageUri).addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    reference.downloadUrl.addOnSuccessListener { imageUrl ->
-                                        profileUpdate["imageUrl"] = imageUrl.toString()
-                                        userDocument.update(profileUpdate)
-                                            .addOnSuccessListener {
-                                                result.invoke(UiState.Success("Profile successfully updated"))
+                        when (profilePhotoAction) {
+                            ProfilePhotoAction.CHANGE -> {
+                                    val reference =
+                                        storage.reference.child("Profile")
+                                            .child(Date().time.toString())
+                                    reference.putFile(imageUri).addOnCompleteListener {
+                                        if (it.isSuccessful) {
+                                            reference.downloadUrl.addOnSuccessListener { imageUrl ->
+                                                profileUpdate["imageUrl"] = imageUrl.toString()
+                                                userDocument.update(profileUpdate)
+                                                    .addOnSuccessListener {
+                                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                                    }
+                                                    .addOnFailureListener { exception ->
+                                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                                    }
                                             }
-                                            .addOnFailureListener { exception ->
-                                                result.invoke(UiState.Failure(exception.localizedMessage))
-                                            }
+                                        } else {
+                                            result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
+                                        }
                                     }
-                                } else {
-                                    result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
-                                }
                             }
-                        } else {
-                            userDocument.update(profileUpdate)
-                                .addOnSuccessListener {
-                                    result.invoke(UiState.Success("Profile successfully updated"))
-                                }
-                                .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure(exception.localizedMessage))
-                                }
+
+                            ProfilePhotoAction.REMOVE -> {
+                                profileUpdate["imageUrl"] = ""
+                                userDocument.update(profileUpdate)
+                                    .addOnSuccessListener {
+                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                    }
+                            }
+
+                            ProfilePhotoAction.DO_NOT_CHANGE -> {
+                                userDocument.update(profileUpdate)
+                                    .addOnSuccessListener {
+                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                    }
+                            }
                         }
+                        /*
+                                                if (imageUri != Uri.EMPTY) {
+                                                    val reference =
+                                                        storage.reference.child("Profile").child(Date().time.toString())
+                                                    reference.putFile(imageUri).addOnCompleteListener {
+                                                        if (it.isSuccessful) {
+                                                            reference.downloadUrl.addOnSuccessListener { imageUrl ->
+                                                                profileUpdate["imageUrl"] = imageUrl.toString()
+                                                                userDocument.update(profileUpdate)
+                                                                    .addOnSuccessListener {
+                                                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                                                    }
+                                                                    .addOnFailureListener { exception ->
+                                                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                                                    }
+                                                            }
+                                                        } else {
+                                                            result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
+                                                        }
+                                                    }
+                                                } else {
+                                                    userDocument.update(profileUpdate)
+                                                        .addOnSuccessListener {
+                                                            result.invoke(UiState.Success("Profile successfully updated"))
+                                                        }
+                                                        .addOnFailureListener { exception ->
+                                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                                        }
+                                                }
+                        */
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -88,6 +136,43 @@ class UserRepoImp(
             result.invoke(UiState.Failure("User not found"))
         }
     }
+
+    /*
+        fun removeProfilePhotoFromCurrentUser(result: (UiState<String>) -> Unit) {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+
+            if (currentUser != null) {
+                val uid = currentUser.uid
+                val userDocument = FirebaseFirestore.getInstance().collection("users").document(uid)
+
+                userDocument.get().addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val imageUrl = documentSnapshot.getString("imageUrl")
+
+                        if (!imageUrl.isNullOrEmpty()) {
+                            val profileUpdate = mapOf(
+                                "imageUrl" to null
+                            )
+
+                            userDocument.update(profileUpdate).addOnSuccessListener {
+                                result.invoke(UiState.Success("Profile photo URL successfully removed from user profile"))
+                            }.addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                        } else {
+                            result.invoke(UiState.Failure("User doesn't have a profile photo"))
+                        }
+                    } else {
+                        result.invoke(UiState.Failure("User profile not found"))
+                    }
+                }.addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+            } else {
+                result.invoke(UiState.Failure("User not found"))
+            }
+        }
+    */
 
     override fun fetchUserProfile(result: (UiState<User?>) -> Unit) {
         val user = firebaseAuth.currentUser
@@ -429,49 +514,49 @@ class UserRepoImp(
 
     override suspend fun getSearchHistoryUsers(limit: Long, result: (UiState<List<User>>) -> Unit) {
 
-            val currentUserUid = firebaseAuth.currentUser?.uid
+        val currentUserUid = firebaseAuth.currentUser?.uid
 
-            if (currentUserUid != null) {
-                val followingRef = database.collection("users")
-                    .document(currentUserUid)
-                    .collection("following")
+        if (currentUserUid != null) {
+            val followingRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("following")
 
-                val followingQuerySnapshot = followingRef.get().await()
-                val followingUserIds = followingQuerySnapshot.documents.map { it.id }
+            val followingQuerySnapshot = followingRef.get().await()
+            val followingUserIds = followingQuerySnapshot.documents.map { it.id }
 
-                val searchHistoryRef = database.collection("users")
-                    .document(currentUserUid)
-                    .collection("searchHistory")
+            val searchHistoryRef = database.collection("users")
+                .document(currentUserUid)
+                .collection("searchHistory")
 
-                val querySnapshot = searchHistoryRef
-                    .orderBy("timestamp", Query.Direction.DESCENDING)
-                    .limit(limit)
+            val querySnapshot = searchHistoryRef
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .await()
+
+            val searchHistoryUsers = mutableListOf<User>()
+
+            for (document in querySnapshot.documents) {
+                val userUid = document.id
+                val userDocument = database.collection("users")
+                    .document(userUid)
                     .get()
                     .await()
 
-                val searchHistoryUsers = mutableListOf<User>()
+                if (userDocument.exists()) {
+                    val user = userDocument.toObject(User::class.java)
+                    user?.let {
+                        searchHistoryUsers.add(it)
 
-                for (document in querySnapshot.documents) {
-                    val userUid = document.id
-                    val userDocument = database.collection("users")
-                        .document(userUid)
-                        .get()
-                        .await()
-
-                    if (userDocument.exists()) {
-                        val user = userDocument.toObject(User::class.java)
-                        user?.let {
-                            searchHistoryUsers.add(it)
-
-                            it.isFollowing = followingUserIds.contains(userUid)
-                        }
+                        it.isFollowing = followingUserIds.contains(userUid)
                     }
                 }
-
-                result(UiState.Success(searchHistoryUsers))
-            } else {
-                result(UiState.Success(emptyList()))
             }
+
+            result(UiState.Success(searchHistoryUsers))
+        } else {
+            result(UiState.Success(emptyList()))
+        }
     }
 
     override suspend fun deleteSearchHistoryCollection(result: (UiState<Boolean>) -> Unit) {
@@ -497,7 +582,10 @@ class UserRepoImp(
         }
     }
 
-    override suspend fun deleteSearchHistoryDocument(documentIdToDelete: String, result: (UiState<String>) -> Unit) {
+    override suspend fun deleteSearchHistoryDocument(
+        documentIdToDelete: String,
+        result: (UiState<String>) -> Unit
+    ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
         if (currentUserUid != null) {

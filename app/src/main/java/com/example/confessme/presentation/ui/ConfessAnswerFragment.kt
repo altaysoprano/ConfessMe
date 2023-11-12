@@ -25,7 +25,7 @@ import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.DialogHelper
+import com.example.confessme.presentation.DeleteDialog
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,7 +50,7 @@ class ConfessAnswerFragment(
     private lateinit var answeredUserName: String
     private lateinit var confessedUserName: String
     private lateinit var answerText: String
-    private lateinit var dialogHelper: DialogHelper
+    private lateinit var dialogHelper: DeleteDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,7 +70,7 @@ class ConfessAnswerFragment(
         confessedUserName = arguments?.getString("confessedUserName", "") ?: ""
         isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
         answerDate = arguments?.getString("answerDate", "") ?: ""
-        dialogHelper = DialogHelper(requireContext())
+        dialogHelper = DeleteDialog(requireContext())
 
         setUserImage()
         setImageAndTextStates()

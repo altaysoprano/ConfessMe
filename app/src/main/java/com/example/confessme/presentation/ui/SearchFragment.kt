@@ -16,7 +16,7 @@ import com.example.confessme.R
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
-import com.example.confessme.presentation.DialogHelper
+import com.example.confessme.presentation.DeleteDialog
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.ListType
 import com.example.confessme.util.UiState
@@ -33,7 +33,7 @@ class SearchFragment : Fragment() {
     private val currentUserUid = currentUser?.uid ?: ""
     private var limit: Long = 10
     private val viewModel: SearchViewModel by viewModels()
-    private lateinit var dialogHelper: DialogHelper
+    private lateinit var dialogHelper: DeleteDialog
     private lateinit var userListAdapter: UserListAdapter
     private lateinit var historyListAdapter: UserListAdapter
 
@@ -52,7 +52,7 @@ class SearchFragment : Fragment() {
         setSearchText()
 
         binding.deleteAllHistoryTextView.setOnClickListener {
-            dialogHelper = DialogHelper(requireContext())
+            dialogHelper = DeleteDialog(requireContext())
             dialogHelper.showDialog(
                 "delete all hıstory",
                 "Are you sure you want to delete the entire search history?",
@@ -103,7 +103,7 @@ class SearchFragment : Fragment() {
                 followOrUnfollowUser(userUid, ListType.HistoryList, isFollowing)
             },
             onItemLongPress = {
-                dialogHelper = DialogHelper(requireContext())
+                dialogHelper = DeleteDialog(requireContext())
                 dialogHelper.showDialog(
                     "delete search",
                     "Are you sure you want to delete the selected search?",

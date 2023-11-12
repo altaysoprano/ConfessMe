@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,7 +13,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -21,6 +24,7 @@ import com.example.confessme.databinding.FragmentEditProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,6 +36,7 @@ class EditProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private var isProfilePhotoRemoved: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,55 +53,9 @@ class EditProfileFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
-        binding.editButton.setOnClickListener {
-            val intent = Intent()
-            intent.action = Intent.ACTION_GET_CONTENT
-            intent.type = "image/*"
-            startActivityForResult(intent, 1)
-        }
-
+        setOnClickListeners()
         viewModel.getProfileData()
-
-        binding.saveButton.setOnClickListener {
-            val username = binding.firstNameEt.text?.trim().toString()
-            val bio = binding.bioEt.text?.trim().toString()
-
-            if (::selectedImg.isInitialized) {
-                viewModel.updateProfile(currentUsername, username, bio, selectedImg)
-            } else {
-                viewModel.updateProfile(
-                    currentUsername,
-                    username,
-                    bio,
-                    Uri.EMPTY
-                )
-            }
-        }
-
-        viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.progressBarEditProfile.visibility = View.VISIBLE
-                }
-
-                is UiState.Failure -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
-                    val fragmentManager = parentFragmentManager
-                    for (i in 0 until fragmentManager.backStackEntryCount) {
-                        fragmentManager.popBackStack()
-                    }
-                    fragmentManager.beginTransaction()
-                        .replace(R.id.coordinator, ProfileFragment())
-                        .commit()
-                }
-            }
-        }
+        observeUpdateProfile()
 
         return binding.root
     }
@@ -137,14 +96,102 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    private fun observeUpdateProfile() {
+        viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarEditProfile.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarEditProfile.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarEditProfile.visibility = View.GONE
+                    val fragmentManager = parentFragmentManager
+                    for (i in 0 until fragmentManager.backStackEntryCount) {
+                        fragmentManager.popBackStack()
+                    }
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.coordinator, ProfileFragment())
+                        .commit()
+                }
+            }
+        }
+    }
+
+    private fun setOnClickListeners() {
+        binding.saveButton.setOnClickListener {
+            val username = binding.firstNameEt.text?.trim().toString()
+            val bio = binding.bioEt.text?.trim().toString()
+
+            if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
+                viewModel.updateProfile(currentUsername, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
+            } else if (isProfilePhotoRemoved) {
+                viewModel.updateProfile(
+                    currentUsername,
+                    username,
+                    bio,
+                    Uri.EMPTY,
+                    ProfilePhotoAction.REMOVE
+                )
+            } else {
+                viewModel.updateProfile(
+                    currentUsername,
+                    username,
+                    bio,
+                    Uri.EMPTY,
+                    ProfilePhotoAction.DO_NOT_CHANGE
+                )
+            }
+        }
+
+        binding.editButton.setOnClickListener {
+            onEditProfilePhotoClick()
+        }
+    }
+
+    private fun onEditProfilePhotoClick() {
+        val options = arrayOf("Remove Profile Photo", "Edit Profile Photo")
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setItems(options) { _, which ->
+            when (which) {
+                0 -> {
+                    removeProfilePhoto()
+                }
+                1 -> {
+                    openImageFiles()
+                }
+            }
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun openImageFiles() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_GET_CONTENT
+        intent.type = "image/*"
+        startActivityForResult(intent, 1)
+    }
+
+    private fun removeProfilePhoto() {
+        val defaultImageResource = R.drawable.empty_profile_photo
+        binding.profileImage.setImageResource(defaultImageResource)
+        selectedImg = Uri.EMPTY
+        isProfilePhotoRemoved = true
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (data != null) {
-
             if (data.data != null) {
                 selectedImg = data.data!!
-
                 binding.profileImage.setImageURI(selectedImg)
             }
         }

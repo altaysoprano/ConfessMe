@@ -9,6 +9,7 @@ import com.example.confessme.data.model.User
 import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.LoginFragment
+import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,10 @@ class ProfileViewModel @Inject constructor(
     val updateProfileState: LiveData<UiState<String>>
         get() = _updateProfileState
 
+    private val _deleteProfilePhotoState = MutableLiveData<UiState<String>>()
+    val deleteProfilePhotoState: LiveData<UiState<String>>
+        get() = _deleteProfilePhotoState
+
     private val _fetchProfileState = MutableLiveData<UiState<User?>>()
     val fetchProfileState: LiveData<UiState<User?>>
         get() = _fetchProfileState
@@ -42,9 +47,10 @@ class ProfileViewModel @Inject constructor(
     val checkFollowingState: LiveData<UiState<FollowUser>>
         get() = _checkFollowingState
 
-    fun updateProfile(previousUserName: String, username: String, bio: String, imageUri: Uri) {
+    fun updateProfile(previousUserName: String, username: String, bio: String,
+                      imageUri: Uri, profilePhotoAction: ProfilePhotoAction) {
         _updateProfileState.value = UiState.Loading
-        repository.updateProfile(previousUserName, username, bio, imageUri) {
+        repository.updateProfile(previousUserName, username, bio, imageUri, profilePhotoAction) {
             _updateProfileState.value = it
         }
     }

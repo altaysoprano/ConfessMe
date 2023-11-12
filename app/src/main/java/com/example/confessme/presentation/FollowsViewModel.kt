@@ -44,22 +44,22 @@ class FollowsViewModel @Inject constructor(
     fun followOrUnfollowUser(userUid: String, isFollowing: Boolean) {
         _followUserState.value = UiState.Loading
 
-            if (isFollowing) {
-                repository.unfollowUser(userUid) { unfollowResult ->
-                    if (unfollowResult is UiState.Success) {
-                        _followUserState.postValue(unfollowResult)
-                    } else {
-                        _followUserState.postValue(UiState.Failure(unfollowResult.toString()))
-                    }
+        if (isFollowing) {
+            repository.unfollowUser(userUid) { unfollowResult ->
+                if (unfollowResult is UiState.Success) {
+                    _followUserState.postValue(unfollowResult)
+                } else {
+                    _followUserState.postValue(UiState.Failure(unfollowResult.toString()))
                 }
-            } else {
-                repository.followUser(userUid) { followResult ->
-                    if (followResult is UiState.Success) {
-                        _followUserState.postValue(UiState.Success(followResult.data))
-                    } else {
-                        _followUserState.postValue(UiState.Failure(followResult.toString()))
-                    }
+            }
+        } else {
+            repository.followUser(userUid) { followResult ->
+                if (followResult is UiState.Success) {
+                    _followUserState.postValue(UiState.Success(followResult.data))
+                } else {
+                    _followUserState.postValue(UiState.Failure(followResult.toString()))
                 }
             }
         }
+    }
 }
