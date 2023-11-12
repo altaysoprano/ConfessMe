@@ -169,10 +169,6 @@ class ProfileFragment() : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.sign_out -> {
-                viewModel.signOut(activity as FragmentNavigation)
-            }
-
             R.id.edit_profile -> {
                 navRegister.navigateFrag(EditProfileFragment(), true)
             }
