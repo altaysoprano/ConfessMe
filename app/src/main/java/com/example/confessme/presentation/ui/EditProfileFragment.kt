@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -56,6 +58,7 @@ class EditProfileFragment : Fragment() {
         setOnClickListeners()
         viewModel.getProfileData()
         observeUpdateProfile()
+        setUserNameAndBioTv()
 
         return binding.root
     }
@@ -107,6 +110,8 @@ class EditProfileFragment : Fragment() {
 
                 is UiState.Failure -> {
                     binding.progressBarEditProfile.visibility = View.GONE
+                    binding.saveButton.isEnabled = true
+                    binding.saveButton.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -128,7 +133,7 @@ class EditProfileFragment : Fragment() {
     private fun setOnClickListeners() {
         binding.saveButton.setOnClickListener {
             val username = binding.firstNameEt.text?.trim().toString()
-            val bio = binding.bioEt.text?.trim().toString()
+            val bio = binding.bioEt.text.toString()
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
                 viewModel.updateProfile(currentUsername, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
@@ -174,11 +179,93 @@ class EditProfileFragment : Fragment() {
         dialog.show()
     }
 
+    private fun setUserNameAndBioTv() {
+        val userNameMaxLength = 30
+        val userNameMinLength = 3
+        val bioMaxLength = 200
+        var userNameCurrentLength = 0
+        var userName = ""
+        var bioCurrentLength = 0
+        var isUserNameEmpty: Boolean? = false
+
+        binding.firstNameEt.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                isUserNameEmpty = s?.isEmpty()
+                userNameCurrentLength = s?.length ?: 0
+                userName = s.toString()
+
+                binding.saveButton.isEnabled = true
+                binding.saveButton.alpha = 1f
+
+                checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+
+        binding.bioEt.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                bioCurrentLength = s?.length ?: 0
+
+                binding.saveButton.isEnabled = true
+                binding.saveButton.alpha = 1f
+
+                checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
+                
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+    }
+
     private fun openImageFiles() {
         val intent = Intent()
         intent.action = Intent.ACTION_GET_CONTENT
         intent.type = "image/*"
         startActivityForResult(intent, 1)
+    }
+
+    private fun checkIfUserNameAndBioValid(bioCurrentLength: Int, userNameCurrentLength: Int, userNameMaxLength: Int,
+                                           userNameMinLength: Int, isUserNameEmpty: Boolean?, bioMaxLength: Int,
+                                            userName: String?) {
+        if (userNameCurrentLength > userNameMaxLength) {
+            binding.firstNameEt.error = "Username can be up to 30 characters long."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
+        if(userNameCurrentLength < userNameMinLength) {
+            binding.firstNameEt.error = "Username must be more than 3 characters."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
+        if(isUserNameEmpty == true) {
+            binding.firstNameEt.error = "Username cannot be empty."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
+        if(userName?.contains(" ") == true) {
+            binding.firstNameEt.error = "Username cannot contain spaces."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
+        if (bioCurrentLength > bioMaxLength) {
+            binding.bioEt.error = "Bio can be up to 200 characters long."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
     }
 
     private fun removeProfilePhoto() {

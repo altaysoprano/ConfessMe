@@ -65,7 +65,7 @@ class ConfessionRepoImp(
                                             result.invoke(UiState.Success("Confession added successfully"))
                                         }
                                         .addOnFailureListener { exception ->
-                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                            result.invoke(UiState.Failure("Could not confess"))
                                         }
                                 } else {
                                     result.invoke(UiState.Failure("User not found"))
@@ -249,12 +249,14 @@ class ConfessionRepoImp(
                                     }
                             }
                             .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure(exception.localizedMessage))
+                                result.invoke(UiState.Failure("Unable to send response"))
                             }
                     } else {
-                        result.invoke(UiState.Failure("User not authenticated"))
+                        result.invoke(UiState.Failure("Confession not found"))
                     }
                 }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
         }
     }
 

@@ -142,6 +142,8 @@ class ConfessAnswerFragment(
                 }
 
                 is UiState.Failure -> {
+                    binding.replyButton.isEnabled = true
+                    binding.replyButton.alpha = 1f
                     binding.progressBarConfessAnswer.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()

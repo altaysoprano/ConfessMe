@@ -97,36 +97,6 @@ class UserRepoImp(
                                     }
                             }
                         }
-                        /*
-                                                if (imageUri != Uri.EMPTY) {
-                                                    val reference =
-                                                        storage.reference.child("Profile").child(Date().time.toString())
-                                                    reference.putFile(imageUri).addOnCompleteListener {
-                                                        if (it.isSuccessful) {
-                                                            reference.downloadUrl.addOnSuccessListener { imageUrl ->
-                                                                profileUpdate["imageUrl"] = imageUrl.toString()
-                                                                userDocument.update(profileUpdate)
-                                                                    .addOnSuccessListener {
-                                                                        result.invoke(UiState.Success("Profile successfully updated"))
-                                                                    }
-                                                                    .addOnFailureListener { exception ->
-                                                                        result.invoke(UiState.Failure(exception.localizedMessage))
-                                                                    }
-                                                            }
-                                                        } else {
-                                                            result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
-                                                        }
-                                                    }
-                                                } else {
-                                                    userDocument.update(profileUpdate)
-                                                        .addOnSuccessListener {
-                                                            result.invoke(UiState.Success("Profile successfully updated"))
-                                                        }
-                                                        .addOnFailureListener { exception ->
-                                                            result.invoke(UiState.Failure(exception.localizedMessage))
-                                                        }
-                                                }
-                        */
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -136,43 +106,6 @@ class UserRepoImp(
             result.invoke(UiState.Failure("User not found"))
         }
     }
-
-    /*
-        fun removeProfilePhotoFromCurrentUser(result: (UiState<String>) -> Unit) {
-            val currentUser = FirebaseAuth.getInstance().currentUser
-
-            if (currentUser != null) {
-                val uid = currentUser.uid
-                val userDocument = FirebaseFirestore.getInstance().collection("users").document(uid)
-
-                userDocument.get().addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        val imageUrl = documentSnapshot.getString("imageUrl")
-
-                        if (!imageUrl.isNullOrEmpty()) {
-                            val profileUpdate = mapOf(
-                                "imageUrl" to null
-                            )
-
-                            userDocument.update(profileUpdate).addOnSuccessListener {
-                                result.invoke(UiState.Success("Profile photo URL successfully removed from user profile"))
-                            }.addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure(exception.localizedMessage))
-                            }
-                        } else {
-                            result.invoke(UiState.Failure("User doesn't have a profile photo"))
-                        }
-                    } else {
-                        result.invoke(UiState.Failure("User profile not found"))
-                    }
-                }.addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure(exception.localizedMessage))
-                }
-            } else {
-                result.invoke(UiState.Failure("User not found"))
-            }
-        }
-    */
 
     override fun fetchUserProfile(result: (UiState<User?>) -> Unit) {
         val user = firebaseAuth.currentUser

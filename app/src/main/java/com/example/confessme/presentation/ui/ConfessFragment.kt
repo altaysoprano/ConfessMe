@@ -95,6 +95,7 @@ class ConfessFragment : Fragment() {
 
                 is UiState.Failure -> {
                     binding.progressBarConfess.visibility = View.GONE
+                    isConfessButtonEnabled = true
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
