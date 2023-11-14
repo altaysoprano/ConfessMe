@@ -1,5 +1,7 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -15,19 +17,19 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
-import com.example.confessme.presentation.DeleteDialog
+import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,8 +48,9 @@ class ConfessAnswerFragment(
     private lateinit var currentUserUid: String
     private lateinit var confessionId: String
     private lateinit var answerDate: String
-    private lateinit var dialogHelper: DeleteDialog
+    private lateinit var dialogHelper: ConfessMeDialog
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,11 +62,16 @@ class ConfessAnswerFragment(
         confessionId = arguments?.getString("confessionId", "") ?: ""
         currentUserUid = arguments?.getString("currentUserUid", "") ?: ""
         answerDate = arguments?.getString("answerDate", "") ?: ""
-        dialogHelper = DeleteDialog(requireContext())
+        dialogHelper = ConfessMeDialog(requireContext())
 
         getConfession(confessionId)
 
         return binding.root
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        Log.d("Mesaj: ", "OnCancel tıklandı")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,10 +87,11 @@ class ConfessAnswerFragment(
             when(state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
-                    binding.answerIcFavorite.visibility = View.GONE
-                    binding.answerIcDelete.visibility = View.GONE
-                    binding.answerIcEdit.visibility = View.GONE
-                    binding.replyButton.visibility = View.GONE
+                    binding.answerIcFavorite.visibility = View.INVISIBLE
+                    binding.answerIcDelete.visibility = View.INVISIBLE
+                    binding.answerIcEdit.visibility = View.INVISIBLE
+                    binding.replyButton.visibility = View.INVISIBLE
+                    binding.answerScreenProfileImage.visibility = View.INVISIBLE
                 }
 
                 is UiState.Failure -> {
@@ -329,6 +338,7 @@ class ConfessAnswerFragment(
                                       confessedUserName: String) {
 
         if (isConfessionAnswered == true && !isEditAnswer) {
+            binding.answerScreenProfileImage.visibility = View.VISIBLE
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
