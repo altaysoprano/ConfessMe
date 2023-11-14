@@ -107,16 +107,6 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
-    fun cancelFavoriteAnswer() {
-        addFavoriteAnswerJob?.let {
-            if (it.isActive) {
-                it.cancel()
-            } else {
-                Log.d("Mesaj: ", "Active değil")
-            }
-        }
-    }
-
     fun deleteAnswer(confessionId: String) {
         _deleteAnswerState.value = UiState.Loading
         repository.deleteAnswer(confessionId) {

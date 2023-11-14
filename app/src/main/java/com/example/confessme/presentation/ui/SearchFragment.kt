@@ -180,7 +180,6 @@ class SearchFragment : Fragment() {
                 }
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
-                    Log.d("Mesaj: ", "History'de: ${state.error.toString()}")
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -306,7 +305,6 @@ class SearchFragment : Fragment() {
                         if (position != -1) {
                             adapter.userList[position].isFollowingInProgress = true
                             adapter.notifyItemChanged(position)
-                            Log.d("Mesaj: ", "Search Fragmentta Loadingte")
                         }
                     }
                     is UiState.Success -> {
@@ -314,7 +312,6 @@ class SearchFragment : Fragment() {
                             adapter.userList[position].isFollowingInProgress = false
                             adapter.userList[position].isFollowing = state.data.isFollowed
                             adapter.notifyItemChanged(position)
-                            Log.d("Mesaj: ", "Search Fragmentta Successte: ${state.data.isFollowed}")
                         }
                         viewModel.followUserState.removeObserver(this)
                     }

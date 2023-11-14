@@ -361,7 +361,6 @@ class ConfessionRepoImp(
                                                     )
                                                 )
                                             )
-                                            Log.d("Mesaj: ", "Şu an repo favorite answerda her şey bitti")
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure(exception.localizedMessage))

@@ -179,7 +179,6 @@ class FollowsFragment : Fragment() {
                         if (position != -1) {
                             userListAdapter.userList[position].isFollowingInProgress = true
                             userListAdapter.notifyItemChanged(position)
-                            Log.d("Mesaj: ", "Follows Fragmentta Loadingte")
                         }
                     }
                     is UiState.Success -> {
@@ -187,7 +186,6 @@ class FollowsFragment : Fragment() {
                             userListAdapter.userList[position].isFollowingInProgress = false
                             userListAdapter.userList[position].isFollowing = state.data.isFollowed
                             userListAdapter.notifyItemChanged(position)
-                            Log.d("Mesaj: ", "Follows Fragmentta Successte: ${state.data.isFollowed}")
                         }
                         viewModel.followUserState.removeObserver(this)
                     }

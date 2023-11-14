@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.confessme.R
@@ -234,10 +235,8 @@ class ConfessAnswerFragment(
 
     private fun setFavorite(favorited: Boolean?) {
         if(favorited == true) {
-            Log.d("Mesaj: ", "set favoritede true")
             binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
         } else {
-            Log.d("Mesaj: ", "set favoritede false")
             binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
         }
     }
@@ -265,7 +264,6 @@ class ConfessAnswerFragment(
         }
 
         binding.answerIcFavorite.setOnClickListener {
-            Log.d("Mesaj: ", "setOnClickte !isAnswerFavorited: ${!isAnswerFavorited}")
             isAnswerFavorited = !isAnswerFavorited
             viewModel.addAnswerFavorite(isAnswerFavorited, confessionId ?: "")
         }

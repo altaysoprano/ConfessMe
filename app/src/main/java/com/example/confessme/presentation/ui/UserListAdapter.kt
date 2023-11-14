@@ -53,14 +53,10 @@ class UserListAdapter(
                 } else {
                     binding.searchScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                 }
-                Log.d("Mesaj: ", "Adapterda isFollowingInProgress: ${user.isFollowingInProgress}")
-                Log.d("Mesaj: ", "Adapterda isFollowing: ${user.isFollowing}")
 
                 if (user.isFollowingInProgress) {
-                    Log.d("Mesaj: ", "Adapterda progresste")
                     binding.followsProgressButtonLayout.progressBarFollowButton.visibility = View.VISIBLE
                 } else {
-                    Log.d("Mesaj: ", "Adapterda progresste değil")
                     binding.followsProgressButtonLayout.progressBarFollowButton.visibility = View.GONE
                 }
 
