@@ -41,6 +41,10 @@ class ConfessViewModel @Inject constructor(
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
         get() = _fetchConfessionsState
 
+    private val _getConfessionState = MutableLiveData<UiState<Confession?>>()
+    val getConfessionState: LiveData<UiState<Confession?>>
+        get() = _getConfessionState
+
     private val _deleteAnswerState = MutableLiveData<UiState<Confession?>>()
     val deleteAnswerState: LiveData<UiState<Confession?>>
         get() = _deleteAnswerState
@@ -73,6 +77,13 @@ class ConfessViewModel @Inject constructor(
         }
     }
 
+    fun getConfession(confessionId: String) {
+        _getConfessionState.value = UiState.Loading
+        repository.getConfession(confessionId) {result ->
+            _getConfessionState.postValue(result)
+        }
+    }
+
     fun addAnswer(confessionId: String, answerText: String) {
         _addAnswerState.value = UiState.Loading
         repository.addAnswer(confessionId, answerText) {
@@ -88,10 +99,20 @@ class ConfessViewModel @Inject constructor(
     }
 
     fun addAnswerFavorite(isFavorited: Boolean, confessionId: String) {
-        _addFavoriteAnswer.value = UiState.Loading
         addFavoriteAnswerJob = viewModelScope.launch {
+            _addFavoriteAnswer.value = UiState.Loading
             repository.favoriteAnswer(isFavorited, confessionId) {
                 _addFavoriteAnswer.value = it
+            }
+        }
+    }
+
+    fun cancelFavoriteAnswer() {
+        addFavoriteAnswerJob?.let {
+            if (it.isActive) {
+                it.cancel()
+            } else {
+                Log.d("Mesaj: ", "Active değil")
             }
         }
     }

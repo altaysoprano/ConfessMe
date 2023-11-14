@@ -102,8 +102,8 @@ class ConfessionsFragment(
             mutableListOf(),
             currentUserUid,
             false,
-            onAnswerClick = { confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate ->
-                onAnswerClick(confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate)
+            onAnswerClick = { confessionId, answerDate ->
+                onAnswerClick(confessionId, answerDate)
             },
             onFavoriteClick = {isFavorited, confessionId ->
 
@@ -205,21 +205,11 @@ class ConfessionsFragment(
         }
     }
 
-    private fun onAnswerClick(confessionId: String, userId: String, fromUserUid: String, fromUserImageUrl: String,
-                              answeredUserName: String, confessedUserName: String,
-                              isAnswered: Boolean, answerText: String, isFavorited: Boolean, answerDate: String) {
+    private fun onAnswerClick(confessionId: String, answerDate: String) {
         if (!confessionId.isNullOrEmpty()) {
             val bundle = Bundle()
             bundle.putString("confessionId", confessionId)
-            bundle.putBoolean("isAnswered", isAnswered)
-            bundle.putString("answerText", answerText)
             bundle.putString("currentUserUid", currentUserUid)
-            bundle.putString("answerUserUid", userId)
-            bundle.putString("fromUserImageUrl", fromUserImageUrl)
-            bundle.putString("answeredUserName", answeredUserName)
-            bundle.putString("confessedUserName", confessedUserName)
-            bundle.putString("answerFromUserUid", fromUserUid)
-            bundle.putBoolean("favorited", isFavorited)
             bundle.putString("answerDate", answerDate)
             val confessAnswerFragment = ConfessAnswerFragment(
                 { position, updatedConfession ->

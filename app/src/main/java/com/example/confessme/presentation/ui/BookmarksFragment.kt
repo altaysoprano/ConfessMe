@@ -68,37 +68,8 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
             mutableListOf(),
             currentUserUid,
             true,
-            onAnswerClick = { confessionId, userId, fromUserUid, fromUserImageUrl, answeredUserName, confessedUserName, isAnswered, answerText, isFavorited, answerDate ->
-                if (!confessionId.isNullOrEmpty()) {
-                    val bundle = Bundle()
-                    bundle.putString("confessionId", confessionId)
-                    bundle.putBoolean("isAnswered", isAnswered)
-                    bundle.putString("answerText", answerText)
-                    bundle.putString("currentUserUid", currentUserUid)
-                    bundle.putString("answerUserUid", userId)
-                    bundle.putString("fromUserImageUrl", fromUserImageUrl)
-                    bundle.putString("answeredUserName", answeredUserName)
-                    bundle.putString("confessedUserName", confessedUserName)
-                    bundle.putString("answerFromUserUid", fromUserUid)
-                    bundle.putBoolean("favorited", isFavorited)
-                    bundle.putString("answerDate", answerDate)
-                    val confessAnswerFragment = ConfessAnswerFragment(
-                        { position, updatedConfession ->
-                            confessListAdapter.updateItem(position, updatedConfession)
-                        },
-                        { confessionId ->
-                            findPositionById(confessionId)
-                        }
-                    )
-                    confessAnswerFragment.arguments = bundle
-                    confessAnswerFragment.show(
-                        requireActivity().supportFragmentManager,
-                        "ConfessAnswerFragment"
-                    )
-                } else {
-                    Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
-                        .show()
-                }
+            onAnswerClick = { confessionId, answerDate ->
+                onAnswerClick(confessionId, answerDate)
             },
             onFavoriteClick = {isFavorited, confessionId ->
                 viewModel.addFavorite(isFavorited, confessionId)
@@ -254,6 +225,31 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                     }
                 }
             }
+        }
+    }
+
+    private fun onAnswerClick(confessionId: String, answerDate: String) {
+        if (!confessionId.isNullOrEmpty()) {
+            val bundle = Bundle()
+            bundle.putString("confessionId", confessionId)
+            bundle.putString("currentUserUid", currentUserUid)
+            bundle.putString("answerDate", answerDate)
+            val confessAnswerFragment = ConfessAnswerFragment(
+                { position, updatedConfession ->
+                    confessListAdapter.updateItem(position, updatedConfession)
+                },
+                { confessionId ->
+                    findPositionById(confessionId)
+                }
+            )
+            confessAnswerFragment.arguments = bundle
+            confessAnswerFragment.show(
+                requireActivity().supportFragmentManager,
+                "ConfessAnswerFragment"
+            )
+        } else {
+            Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 

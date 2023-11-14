@@ -14,6 +14,7 @@ interface ConfessionRepo {
         confessionCategory: ConfessionCategory,
         result: (UiState<List<Confession>>) -> Unit
     )
+    fun getConfession(confessionId: String, result: (UiState<Confession?>) -> Unit)
     fun addAnswer(
         confessionId: String,
         answerText: String,
@@ -24,7 +25,7 @@ interface ConfessionRepo {
         confessionId: String,
         callback: (UiState<Confession?>) -> Unit
     )
-    fun favoriteAnswer(isFavorited: Boolean, confessionId: String, result: (UiState<Confession?>) -> Unit)
+    suspend fun favoriteAnswer(isFavorited: Boolean, confessionId: String, result: (UiState<Confession?>) -> Unit)
     fun deleteAnswer(confessionId: String, result: (UiState<Confession?>) -> Unit)
     fun deleteConfession(confessionId: String, result: (UiState<Confession?>) -> Unit)
     fun addBookmark(confessionId: String, timestamp: String, userUid: String, result: (UiState<String>) -> Unit)

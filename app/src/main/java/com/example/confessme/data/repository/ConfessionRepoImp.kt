@@ -1,5 +1,7 @@
 package com.example.confessme.data.repository
 
+import android.util.Log
+import android.widget.Toast
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.util.ConfessionCategory
@@ -138,6 +140,23 @@ class ConfessionRepoImp(
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
         }
+    }
+
+    override fun getConfession(confessionId: String, result: (UiState<Confession?>) -> Unit) {
+        val confessionDocument = database.collection("confessions").document(confessionId)
+
+        confessionDocument.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val confession = documentSnapshot.toObject(Confession::class.java)
+                    result.invoke(UiState.Success(confession))
+                } else {
+                    result.invoke(UiState.Failure("Confession not found"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                result.invoke(UiState.Failure(exception.localizedMessage))
+            }
     }
 
     override fun fetchFollowedUsersConfessions(
@@ -309,7 +328,7 @@ class ConfessionRepoImp(
         }
     }
 
-    override fun favoriteAnswer(
+    override suspend fun favoriteAnswer(
         isFavorited: Boolean,
         confessionId: String,
         result: (UiState<Confession?>) -> Unit
@@ -342,13 +361,14 @@ class ConfessionRepoImp(
                                                     )
                                                 )
                                             )
+                                            Log.d("Mesaj: ", "Şu an repo favorite answerda her şey bitti")
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure(exception.localizedMessage))
                                         }
                                 }
                                 .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                    result.invoke(UiState.Failure("The like couldn't be completed. Please try again."))
                                 }
                         } else {
                             result.invoke(UiState.Failure("Answer not found"))

@@ -32,7 +32,7 @@ class ConfessionListAdapter(
     val confessList: MutableList<Confession> = mutableListOf(),
     private val currentUserUid: String,
     private val isBookmarks: Boolean,
-    private val onAnswerClick: (String, String, String, String, String, String, Boolean, String, Boolean, String) -> Unit,
+    private val onAnswerClick: (String, String) -> Unit,
     private val onFavoriteClick: (Boolean, String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
     private val onConfessBookmarkClick: (String, String, String) -> Unit,
@@ -201,14 +201,6 @@ class ConfessionListAdapter(
 
             onAnswerClick(
                 confessAnswer.id,
-                confessAnswer.userId,
-                confessAnswer.fromUserId,
-                confess.answer.fromUserImageUrl,
-                confess.answer.fromUserUsername,
-                confess.answer.username,
-                confess.answered,
-                confess.answer.text,
-                confess.answer.favorited,
                 if (confessDateTimestamp != null) calculateTimeSinceConfession(confessDateTimestamp as Timestamp) else ""
             )
         }

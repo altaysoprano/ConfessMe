@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,16 +41,10 @@ class ConfessAnswerFragment(
     private val viewModel: ConfessViewModel by viewModels()
     private var isAnswerButtonEnabled = false
     private var isEditAnswer: Boolean = false
-    private lateinit var currentUserUid: String
-    private lateinit var answerUserUid: String
-    private lateinit var answerFromUserUid: String
     private var isAnswerFavorited: Boolean = false
-    private var isConfessionAnswered: Boolean = false
-    private var answerDate: String = ""
-    private lateinit var fromUserImageUrl: String
-    private lateinit var answeredUserName: String
-    private lateinit var confessedUserName: String
-    private lateinit var answerText: String
+    private lateinit var currentUserUid: String
+    private lateinit var confessionId: String
+    private lateinit var answerDate: String
     private lateinit var dialogHelper: DeleteDialog
 
     override fun onCreateView(
@@ -60,41 +55,68 @@ class ConfessAnswerFragment(
         binding = FragmentConfessAnswerBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
-        isConfessionAnswered = arguments?.getBoolean("isAnswered", false) ?: false
-        answerText = arguments?.getString("answerText", "") ?: ""
+        confessionId = arguments?.getString("confessionId", "") ?: ""
         currentUserUid = arguments?.getString("currentUserUid", "") ?: ""
-        answerUserUid = arguments?.getString("answerUserUid", "") ?: ""
-        answerFromUserUid = arguments?.getString("answerFromUserUid", "") ?: ""
-        fromUserImageUrl = arguments?.getString("fromUserImageUrl", "") ?: ""
-        answeredUserName = arguments?.getString("answeredUserName", "") ?: ""
-        confessedUserName = arguments?.getString("confessedUserName", "") ?: ""
-        isAnswerFavorited = arguments?.getBoolean("favorited", false) ?: false
         answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = DeleteDialog(requireContext())
 
-        setUserImage()
-        setSaveButton()
-        setImageAndTextStates()
-        setFavoriteDeleteEditReplyStates()
-        observeAddAnswer()
-        observeFavorite()
-        observeDeleteAnswer()
+        getConfession(confessionId)
 
         return binding.root
     }
 
-    private fun setUserImage() {
-        if (fromUserImageUrl.isNotEmpty()) {
-            Glide.with(requireContext())
-                .load(fromUserImageUrl)
-                .into(binding.answerScreenProfileImage)
-        } else {
-            binding.answerScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeGetConfession()
+        observeAddAnswer()
+        observeFavorite()
+        observeDeleteAnswer()
+    }
+
+    private fun observeGetConfession() {
+        viewModel.getConfessionState.observe(this) { state->
+            when(state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                    binding.answerIcFavorite.visibility = View.GONE
+                    binding.answerIcDelete.visibility = View.GONE
+                    binding.answerIcEdit.visibility = View.GONE
+                    binding.replyButton.visibility = View.GONE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessAnswer.visibility = View.GONE
+
+                    val answerText = state.data?.answer?.text ?: ""
+                    isAnswerFavorited = state.data?.answer?.favorited ?: false
+                    val answerFromUserUid = state.data?.fromUserId ?: ""
+                    val answerUserUid = state.data?.userId ?: ""
+                    val isConfessionAnswered = state.data?.answered ?: false
+                    val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
+                    val confessedUserName = state.data?.answer?.username ?: ""
+
+                    setUserImage(state.data?.answer?.fromUserImageUrl)
+                    setSaveButton()
+                    setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
+                        answerDate, answerUserUid, answerFromUserUid,
+                        confessedUserName)
+                    setFavoriteDeleteEditReplyStates(
+                        answerText,
+                        answerFromUserUid,
+                        answerUserUid,
+                        isConfessionAnswered)
+                    setFavorite(isAnswerFavorited)
+                }
+            }
         }
     }
 
     private fun observeFavorite() {
-        viewModel.addFavoriteAnswer.observe(viewLifecycleOwner) { state ->
+        viewModel.addFavoriteAnswer.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.answerIcFavorite.visibility = View.INVISIBLE
@@ -112,28 +134,19 @@ class ConfessAnswerFragment(
                     binding.answerIcFavorite.visibility = View.VISIBLE
                     binding.progressBarAnswerFavorite.visibility = View.GONE
                     val updatedConfession = state.data
-                    val position = updatedConfession?.let { findItemById(it.id) }
 
-                    if (position != -1) {
-                        if (updatedConfession != null) {
-                            if (position != null) {
-                                onUpdateItem(position, updatedConfession)
-                            }
-                        }
-                    }
-
-                    if(state.data?.answer?.favorited == true) {
-                        binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
-                    } else {
-                        binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
-                    }
+                    setFavorite(updatedConfession?.answer?.favorited)
                 }
             }
         }
     }
 
+    private fun getConfession(confessionId: String) {
+        viewModel.getConfession(confessionId)
+    }
+
     private fun observeAddAnswer() {
-        viewModel.addAnswerState.observe(viewLifecycleOwner) { state ->
+        viewModel.addAnswerState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.replyButton.isEnabled = false
@@ -171,7 +184,7 @@ class ConfessAnswerFragment(
     }
 
     private fun observeDeleteAnswer() {
-        viewModel.deleteAnswerState.observe(viewLifecycleOwner) { state ->
+        viewModel.deleteAnswerState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
@@ -209,7 +222,28 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setFavoriteDeleteEditReplyStates() {
+    private fun setUserImage(fromUserImageUrl: String?) {
+        if (fromUserImageUrl?.isNotEmpty() == true) {
+            Glide.with(requireContext())
+                .load(fromUserImageUrl)
+                .into(binding.answerScreenProfileImage)
+        } else {
+            binding.answerScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+        }
+    }
+
+    private fun setFavorite(favorited: Boolean?) {
+        if(favorited == true) {
+            Log.d("Mesaj: ", "set favoritede true")
+            binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+        } else {
+            Log.d("Mesaj: ", "set favoritede false")
+            binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+        }
+    }
+
+    private fun setFavoriteDeleteEditReplyStates(answerText: String, answerFromUserUid: String,
+                                                    answerUserUid: String, isConfessionAnswered: Boolean) {
         val confessionId = arguments?.getString("confessionId", "")
 
         binding.replyButton.setOnClickListener {
@@ -231,6 +265,7 @@ class ConfessAnswerFragment(
         }
 
         binding.answerIcFavorite.setOnClickListener {
+            Log.d("Mesaj: ", "setOnClickte !isAnswerFavorited: ${!isAnswerFavorited}")
             isAnswerFavorited = !isAnswerFavorited
             viewModel.addAnswerFavorite(isAnswerFavorited, confessionId ?: "")
         }
@@ -291,14 +326,16 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setImageAndTextStates() {
+    private fun setImageAndTextStates(isConfessionAnswered: Boolean, answerText: String, answeredUserName: String,
+                                        answerDate: String, answerUserUid: String, answerFromUserUid: String,
+                                      confessedUserName: String) {
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
-            setUserNameProfileImageAndAnswerText()
-            setUsernameAndDateText()
+            setUserNameProfileImageAndAnswerText(answerUserUid, answerFromUserUid, confessedUserName, answerText)
+            setUsernameAndDateText(answeredUserName, answerDate)
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
             binding.confessAnswerTextView.visibility = View.GONE
@@ -327,17 +364,6 @@ class ConfessAnswerFragment(
                     isAnswerButtonEnabled = true
                     setSaveButton()
                 }
-                /*
-                                if (currentLength > maxLength) {
-                                    binding.confessAnswerEditText.error = "Character limit exceeded"
-                                    binding.replyButton.alpha = 0.5f
-                                    binding.replyButton.isClickable = false
-                                } else {
-                                    binding.confessAnswerEditText.error = null
-                                    binding.replyButton.isClickable = true
-                                    binding.replyButton.alpha = 1f
-                                }
-                */
 
                 if(s.toString() == answerText) {
                     isAnswerButtonEnabled = false
@@ -360,7 +386,7 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setUsernameAndDateText() {
+    private fun setUsernameAndDateText(answeredUserName: String, answerDate: String) {
         val answeredUserNameBold = SpannableString(answeredUserName)
         answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         val answerDateBold = SpannableString(answerDate)
@@ -368,7 +394,8 @@ class ConfessAnswerFragment(
         binding.confessAnswerUserNameAndDate.text = usernameAndDateText
     }
 
-    private fun setUserNameProfileImageAndAnswerText() {
+    private fun setUserNameProfileImageAndAnswerText(answerUserUid: String, answerFromUserUid: String,
+                                                     confessedUserName: String, answerText: String) {
         val confessedUserNameBold = SpannableString("@$confessedUserName")
         confessedUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         confessedUserNameBold.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.confessmered)), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
