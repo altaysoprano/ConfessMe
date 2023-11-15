@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
@@ -65,13 +66,44 @@ class ConfessAnswerFragment(
         dialogHelper = ConfessMeDialog(requireContext())
 
         getConfession(confessionId)
+        setOutsideTouchListener()
 
         return binding.root
     }
 
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-        Log.d("Mesaj: ", "OnCancel tıklandı")
+    private fun showConfirmationDialog() {
+        clearOutSideTouchListener()
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage("Are you sure you want to exit without saving?")
+            .setPositiveButton("Yes") { _, _ ->
+                dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+
+                setOutsideTouchListener()
+            }
+
+        val dialog = builder.create()
+        dialog.setOnCancelListener {
+            setOutsideTouchListener()
+        }
+
+        dialog.show()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOutsideTouchListener() {
+        val outsideTouchListener = View.OnTouchListener { _, _ ->
+            showConfirmationDialog()
+            true
+        }
+        dialog?.window?.decorView?.setOnTouchListener(outsideTouchListener)
+    }
+
+    private fun clearOutSideTouchListener() {
+        dialog?.window?.decorView?.setOnTouchListener(null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
