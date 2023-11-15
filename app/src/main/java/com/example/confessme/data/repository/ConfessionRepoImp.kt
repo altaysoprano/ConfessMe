@@ -100,27 +100,27 @@ class ConfessionRepoImp(
             val currentUserUid = user.uid
 
             val confessionCollection = database.collection("confessions")
-            var query: Query = confessionCollection
+            var confessionQuery: Query = confessionCollection
 
             when (confessionCategory) {
                 ConfessionCategory.MY_CONFESSIONS -> {
-                    query = query.whereEqualTo("fromUserId", currentUserUid)
+                    confessionQuery = confessionQuery.whereEqualTo("fromUserId", currentUserUid)
                 }
 
                 ConfessionCategory.CONFESSIONS_TO_ME -> {
-                    query = query.whereEqualTo("userId", currentUserUid)
+                    confessionQuery = confessionQuery.whereEqualTo("userId", currentUserUid)
                 }
 
                 ConfessionCategory.OTHER_USER_CONFESSIONS -> {
-                    query = query.whereEqualTo("userId", userUid)
+                    confessionQuery = confessionQuery.whereEqualTo("userId", userUid)
                 }
 
                 ConfessionCategory.CONFESSIONS_TO_OTHERS -> {
-                    query = query.whereEqualTo("fromUserId", userUid)
+                    confessionQuery = confessionQuery.whereEqualTo("fromUserId", userUid)
                 }
             }
 
-            query
+            confessionQuery
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(limit)
                 .get()

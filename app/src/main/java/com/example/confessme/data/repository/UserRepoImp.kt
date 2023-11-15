@@ -58,7 +58,13 @@ class UserRepoImp(
                                                 profileUpdate["imageUrl"] = imageUrl.toString()
                                                 userDocument.update(profileUpdate)
                                                     .addOnSuccessListener {
-                                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                                        updateConfessionsUsernames(previousUserName, userName) { success ->
+                                                            if (success) {
+                                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                                            } else {
+                                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                            }
+                                                        }
                                                     }
                                                     .addOnFailureListener { exception ->
                                                         result.invoke(UiState.Failure(exception.localizedMessage))
@@ -74,7 +80,13 @@ class UserRepoImp(
                                 profileUpdate["imageUrl"] = ""
                                 userDocument.update(profileUpdate)
                                     .addOnSuccessListener {
-                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                        updateConfessionsUsernames(previousUserName, userName) { success ->
+                                            if (success) {
+                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                            } else {
+                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                            }
+                                        }
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(UiState.Failure(exception.localizedMessage))
@@ -84,7 +96,13 @@ class UserRepoImp(
                             ProfilePhotoAction.DO_NOT_CHANGE -> {
                                 userDocument.update(profileUpdate)
                                     .addOnSuccessListener {
-                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                        updateConfessionsUsernames(previousUserName, userName) { success ->
+                                            if (success) {
+                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                            } else {
+                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                            }
+                                        }
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(UiState.Failure(exception.localizedMessage))
@@ -142,6 +160,66 @@ class UserRepoImp(
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
         }
+    }
+
+    fun updateConfessionsUsernames(previousUsername: String, newUsername: String, callback: (Boolean) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val confessionsRef = db.collection("confessions")
+
+        confessionsRef.whereEqualTo("fromUserUsername", previousUsername)
+            .get()
+            .addOnSuccessListener { documents ->
+                val batch = db.batch()
+                documents.forEach { document ->
+                    val docRef = confessionsRef.document(document.id)
+                    val answerMap = document.get("answer") as? HashMap<String, Any> ?: hashMapOf()
+                    val newAnswerMap = answerMap.mapValues { (key, value) ->
+                        if (key == "username" && value == previousUsername) {
+                            newUsername
+                        } else if (key == "fromUserUsername" && value == previousUsername) {
+                            newUsername
+                        } else {
+                            value
+                        }
+                    }
+                    batch.update(docRef, "answer", newAnswerMap)
+                    batch.update(docRef, "fromUserUsername", newUsername)
+                }
+
+                confessionsRef.whereEqualTo("username", previousUsername)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        documents.forEach { document ->
+                            val docRef = confessionsRef.document(document.id)
+                            val answerMap = document.get("answer") as? HashMap<String, Any> ?: hashMapOf()
+                            val newAnswerMap = answerMap.mapValues { (key, value) ->
+                                if (key == "username" && value == previousUsername) {
+                                    newUsername
+                                } else if (key == "fromUserUsername" && value == previousUsername) {
+                                    newUsername
+                                } else {
+                                    value
+                                }
+                            }
+                            batch.update(docRef, "answer", newAnswerMap)
+                            batch.update(docRef, "username", newUsername)
+                        }
+
+                        batch.commit()
+                            .addOnSuccessListener {
+                                callback.invoke(true)
+                            }
+                            .addOnFailureListener { exception ->
+                                callback.invoke(false)
+                            }
+                    }
+                    .addOnFailureListener { exception ->
+                        callback.invoke(false)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                callback.invoke(false)
+            }
     }
 
     override fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit) {

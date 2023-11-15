@@ -78,7 +78,11 @@
 
     <style name="BoldTextAppearance">
         <item name="android:textStyle">bold</item>
-        <!-- Diğer stil özelliklerini burada ayarlayabilirsiniz -->
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
     </style>
 
 </resources>
