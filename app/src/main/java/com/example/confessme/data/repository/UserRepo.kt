@@ -10,7 +10,7 @@ import com.example.confessme.util.UiState
 interface UserRepo {
 
     fun updateProfile(
-        previousUserName: String, userName: String, bio: String, imageUri: Uri,
+        previousUserName: String, previousImageUrl: String, userName: String, bio: String, imageUri: Uri,
         profilePhotoAction: ProfilePhotoAction, result: (UiState<String>) -> Unit
     )    fun fetchUserProfile(result: (UiState<User?>) -> Unit)
     fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit)

@@ -47,10 +47,10 @@ class ProfileViewModel @Inject constructor(
     val checkFollowingState: LiveData<UiState<FollowUser>>
         get() = _checkFollowingState
 
-    fun updateProfile(previousUserName: String, username: String, bio: String,
+    fun updateProfile(previousUserName: String, previousImageUrl: String, username: String, bio: String,
                       imageUri: Uri, profilePhotoAction: ProfilePhotoAction) {
         _updateProfileState.value = UiState.Loading
-        repository.updateProfile(previousUserName, username, bio, imageUri, profilePhotoAction) {
+        repository.updateProfile(previousUserName, previousImageUrl, username, bio, imageUri, profilePhotoAction) {
             _updateProfileState.value = it
         }
     }

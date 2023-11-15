@@ -23,6 +23,7 @@ class UserRepoImp(
 ) : UserRepo {
     override fun updateProfile(
         previousUserName: String,
+        previousImageUrl: String,
         userName: String,
         bio: String,
         imageUri: Uri,
@@ -49,38 +50,39 @@ class UserRepoImp(
                         )
                         when (profilePhotoAction) {
                             ProfilePhotoAction.CHANGE -> {
-                                    val reference =
-                                        storage.reference.child("Profile")
-                                            .child(Date().time.toString())
-                                    reference.putFile(imageUri).addOnCompleteListener {
-                                        if (it.isSuccessful) {
-                                            reference.downloadUrl.addOnSuccessListener { imageUrl ->
-                                                profileUpdate["imageUrl"] = imageUrl.toString()
-                                                userDocument.update(profileUpdate)
-                                                    .addOnSuccessListener {
-                                                        updateConfessionsUsernames(previousUserName, userName) { success ->
-                                                            if (success) {
-                                                                result.invoke(UiState.Success("Profile successfully updated"))
-                                                            } else {
-                                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
-                                                            }
+                                val reference =
+                                    storage.reference.child("Profile")
+                                        .child(Date().time.toString())
+                                reference.putFile(imageUri).addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        reference.downloadUrl.addOnSuccessListener { imageUrl ->
+                                            val newImageUrl = imageUrl.toString()
+                                            profileUpdate["imageUrl"] = newImageUrl
+                                            userDocument.update(profileUpdate)
+                                                .addOnSuccessListener {
+                                                    updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, newImageUrl) { success ->
+                                                        if (success) {
+                                                            result.invoke(UiState.Success("Profile successfully updated"))
+                                                        } else {
+                                                            result.invoke(UiState.Failure("An error occurred while updating profile"))
                                                         }
                                                     }
-                                                    .addOnFailureListener { exception ->
-                                                        result.invoke(UiState.Failure(exception.localizedMessage))
-                                                    }
-                                            }
-                                        } else {
-                                            result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
+                                                }
+                                                .addOnFailureListener { exception ->
+                                                    result.invoke(UiState.Failure(exception.localizedMessage))
+                                                }
                                         }
+                                    } else {
+                                        result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
                                     }
+                                }
                             }
 
                             ProfilePhotoAction.REMOVE -> {
                                 profileUpdate["imageUrl"] = ""
                                 userDocument.update(profileUpdate)
                                     .addOnSuccessListener {
-                                        updateConfessionsUsernames(previousUserName, userName) { success ->
+                                        updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, "") { success ->
                                             if (success) {
                                                 result.invoke(UiState.Success("Profile successfully updated"))
                                             } else {
@@ -119,47 +121,68 @@ class UserRepoImp(
         }
     }
 
-    override fun fetchUserProfile(result: (UiState<User?>) -> Unit) {
-        val user = firebaseAuth.currentUser
-        if (user != null) {
-            val uid = user.uid
-            val userRef = database.collection("users").document(uid)
+    fun updateConfessionsUsernamesAndImageUrls(previousUsername: String, previousImageUrl: String, newUsername: String, newImageUrl: String, callback: (Boolean) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val confessionsRef = db.collection("confessions")
 
-            userRef.get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        val userProfile = documentSnapshot.toObject(User::class.java)
+        confessionsRef.whereEqualTo("fromUserUsername", previousUsername)
+            .get()
+            .addOnSuccessListener { documents ->
+                val batch = db.batch()
+                documents.forEach { document ->
+                    val docRef = confessionsRef.document(document.id)
+                    val answerMap = document.get("answer") as? HashMap<String, Any> ?: hashMapOf()
+                    val newAnswerMap = answerMap.mapValues { (key, value) ->
+                        when (key) {
+                            "username", "fromUserUsername" -> if (value == previousUsername) newUsername else value
+                            "fromUserImageUrl" -> {
+                                val newValue = if (value == previousImageUrl || value == "") newImageUrl else value
+                                newValue
+                            }
+                            else -> value
+                        }
+                    }
+                    batch.update(docRef, "answer", newAnswerMap)
+                    batch.update(docRef, "fromUserUsername", newUsername)
+                    batch.update(docRef, "fromUserImageUrl", newImageUrl)
+                }
 
-                        userRef.collection("followers").get()
-                            .addOnSuccessListener { followersQuerySnapshot ->
-                                val followersCount = followersQuerySnapshot.size()
-
-                                userRef.collection("following").get()
-                                    .addOnSuccessListener { followingQuerySnapshot ->
-                                        val followingCount = followingQuerySnapshot.size()
-
-                                        userProfile?.followCount = followingCount
-                                        userProfile?.followersCount = followersCount
-
-                                        result.invoke(UiState.Success(userProfile))
+                confessionsRef.whereEqualTo("username", previousUsername)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        documents.forEach { document ->
+                            val docRef = confessionsRef.document(document.id)
+                            val answerMap = document.get("answer") as? HashMap<String, Any> ?: hashMapOf()
+                            val newAnswerMap = answerMap.mapValues { (key, value) ->
+                                when (key) {
+                                    "username", "fromUserUsername" -> if (value == previousUsername) newUsername else value
+                                    "fromUserImageUrl" -> {
+                                        val newValue = if (value == previousImageUrl || value == "") newImageUrl else value
+                                        newValue
                                     }
-                                    .addOnFailureListener { exception ->
-                                        result.invoke(UiState.Failure("An error occurred while pulling the following count"))
-                                    }
+                                    else -> value
+                                }
+                            }
+                            batch.update(docRef, "answer", newAnswerMap)
+                            batch.update(docRef, "username", newUsername)
+                            batch.update(docRef, "imageUrl", newImageUrl)
+                        }
+
+                        batch.commit()
+                            .addOnSuccessListener {
+                                callback.invoke(true)
                             }
                             .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                                callback.invoke(false)
                             }
-                    } else {
-                        result.invoke(UiState.Failure("User data not found"))
                     }
-                }
-                .addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure(exception.localizedMessage))
-                }
-        } else {
-            result.invoke(UiState.Failure("User not authenticated"))
-        }
+                    .addOnFailureListener { exception ->
+                        callback.invoke(false)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                callback.invoke(false)
+            }
     }
 
     fun updateConfessionsUsernames(previousUsername: String, newUsername: String, callback: (Boolean) -> Unit) {
@@ -222,6 +245,49 @@ class UserRepoImp(
             }
     }
 
+    override fun fetchUserProfile(result: (UiState<User?>) -> Unit) {
+        val user = firebaseAuth.currentUser
+        if (user != null) {
+            val uid = user.uid
+            val userRef = database.collection("users").document(uid)
+
+            userRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val userProfile = documentSnapshot.toObject(User::class.java)
+
+                        userRef.collection("followers").get()
+                            .addOnSuccessListener { followersQuerySnapshot ->
+                                val followersCount = followersQuerySnapshot.size()
+
+                                userRef.collection("following").get()
+                                    .addOnSuccessListener { followingQuerySnapshot ->
+                                        val followingCount = followingQuerySnapshot.size()
+
+                                        userProfile?.followCount = followingCount
+                                        userProfile?.followersCount = followersCount
+
+                                        result.invoke(UiState.Success(userProfile))
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure("An error occurred while pulling the following count"))
+                                    }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure("User data not found"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage))
+                }
+        } else {
+            result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
     override fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit) {
         val userRef = database.collection("users").document(userUid)
         val currentUser = firebaseAuth.currentUser
@@ -268,7 +334,6 @@ class UserRepoImp(
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
-
 
     override fun searchUsers(query: String, result: (UiState<List<User>>) -> Unit) {
         val user = firebaseAuth.currentUser

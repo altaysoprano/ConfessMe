@@ -38,6 +38,7 @@ class EditProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
 
     override fun onCreateView(
@@ -86,6 +87,7 @@ class EditProfileFragment : Fragment() {
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
+                        currentImageUrl = userProfile.imageUrl
                         binding.firstNameEt.setText(userProfile.userName)
                         binding.bioEt.setText(userProfile.bio)
                         if (userProfile.imageUrl.isNotEmpty()) {
@@ -136,10 +138,11 @@ class EditProfileFragment : Fragment() {
             val bio = binding.bioEt.text.toString()
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
-                viewModel.updateProfile(currentUsername, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
+                viewModel.updateProfile(currentUsername, currentImageUrl, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
             } else if (isProfilePhotoRemoved) {
                 viewModel.updateProfile(
                     currentUsername,
+                    currentImageUrl,
                     username,
                     bio,
                     Uri.EMPTY,
@@ -148,6 +151,7 @@ class EditProfileFragment : Fragment() {
             } else {
                 viewModel.updateProfile(
                     currentUsername,
+                    currentImageUrl,
                     username,
                     bio,
                     Uri.EMPTY,
