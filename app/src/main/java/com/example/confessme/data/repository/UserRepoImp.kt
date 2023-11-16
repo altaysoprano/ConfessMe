@@ -182,7 +182,7 @@ class UserRepoImp(
                     val newAnswerMap = answerMap.mapValues { (key, value) ->
                         when (key) {
                             "username", "fromUserUsername" -> if (value == previousUsername) newUsername else value
-                            "fromUserImageUrl" -> {
+                            "imageUrl" -> {
                                 val newValue = if (value == previousImageUrl || value == "") newImageUrl else value
                                 newValue
                             }
