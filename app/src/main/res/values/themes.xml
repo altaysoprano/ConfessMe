@@ -85,4 +85,10 @@
         <item name="android:windowActionBar">false</item>
     </style>
 
+    <style name="SwitchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlActivated">@color/confessmered</item>
+        <item name="colorSwitchThumbNormal">@color/grey300</item>
+        <item name="android:colorForeground">@color/grey600</item>
+    </style>
+
 </resources>

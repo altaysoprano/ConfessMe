@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
@@ -47,6 +48,7 @@ class ConfessFragment : Fragment() {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
+        setAnonymitySwitch()
         setTextField()
         observeAddConfession()
 
@@ -124,6 +126,20 @@ class ConfessFragment : Fragment() {
             }
         }
         return false
+    }
+
+    private fun setAnonymitySwitch() {
+        binding.anonymitySwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.anonymitySwitch.text = "anonymously"
+                binding.anonymitySwitch.setTextColor(ContextCompat.getColor(requireContext(), R.color.confessmered))
+                binding.anonymitySwitch.alpha = 1f
+            } else {
+                binding.anonymitySwitch.text = "openly"
+                binding.anonymitySwitch.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                binding.anonymitySwitch.alpha = 0.5f
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
