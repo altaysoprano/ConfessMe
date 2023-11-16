@@ -53,24 +53,51 @@ class UserRepoImp(
                                 val reference =
                                     storage.reference.child("Profile")
                                         .child(Date().time.toString())
-                                reference.putFile(imageUri).addOnCompleteListener {
-                                    if (it.isSuccessful) {
+                                reference.putFile(imageUri).addOnCompleteListener { uploadTask ->
+                                    if (uploadTask.isSuccessful) {
                                         reference.downloadUrl.addOnSuccessListener { imageUrl ->
                                             val newImageUrl = imageUrl.toString()
                                             profileUpdate["imageUrl"] = newImageUrl
-                                            userDocument.update(profileUpdate)
-                                                .addOnSuccessListener {
-                                                    updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, newImageUrl) { success ->
-                                                        if (success) {
-                                                            result.invoke(UiState.Success("Profile successfully updated"))
-                                                        } else {
-                                                            result.invoke(UiState.Failure("An error occurred while updating profile"))
+
+                                            // eğer previousImageUrl boş değilse önceki profil resmini siliyoruz
+                                            if (previousImageUrl.isNotEmpty()) {
+                                                val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(previousImageUrl)
+                                                storageRef.delete().addOnSuccessListener {
+                                                    // userdaki resmi güncelliyoruz
+                                                    userDocument.update(profileUpdate)
+                                                        .addOnSuccessListener {
+                                                            // confessionları güncelliyoruz
+                                                            updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, newImageUrl) { success ->
+                                                                if (success) {
+                                                                    result.invoke(UiState.Success("Profile successfully updated"))
+                                                                } else {
+                                                                    result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                                }
+                                                            }
                                                         }
-                                                    }
-                                                }
-                                                .addOnFailureListener { exception ->
+                                                        .addOnFailureListener { exception ->
+                                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                                        }
+                                                }.addOnFailureListener { exception ->
                                                     result.invoke(UiState.Failure(exception.localizedMessage))
                                                 }
+                                            } else {
+                                                // eğer previousImageUrl boşsa userın pp'yi güncelliyoruz
+                                                userDocument.update(profileUpdate)
+                                                    .addOnSuccessListener {
+                                                        // confessionları güncelliyoruz
+                                                        updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, newImageUrl) { success ->
+                                                            if (success) {
+                                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                                            } else {
+                                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                            }
+                                                        }
+                                                    }
+                                                    .addOnFailureListener { exception ->
+                                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                                    }
+                                            }
                                         }
                                     } else {
                                         result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
@@ -80,13 +107,33 @@ class UserRepoImp(
 
                             ProfilePhotoAction.REMOVE -> {
                                 profileUpdate["imageUrl"] = ""
+
+                                // users güncelleme
                                 userDocument.update(profileUpdate)
                                     .addOnSuccessListener {
-                                        updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, "") { success ->
-                                            if (success) {
-                                                result.invoke(UiState.Success("Profile successfully updated"))
-                                            } else {
-                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                        // Eğer previousImageUrl boş değilse storage'ten fotoğrafı siliyoruz
+                                        if (previousImageUrl.isNotEmpty()) {
+                                            val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(previousImageUrl)
+                                            storageRef.delete().addOnSuccessListener {
+                                                // confessionsları güncelleme
+                                                updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, "") { success ->
+                                                    if (success) {
+                                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                                    } else {
+                                                        result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                    }
+                                                }
+                                            }.addOnFailureListener { exception ->
+                                                result.invoke(UiState.Failure(exception.localizedMessage))
+                                            }
+                                        } else {
+                                            // eğer previousImageUrl boşsa doğrudan confessionsları güncelleme işlemine geçiyoruz
+                                            updateConfessionsUsernamesAndImageUrls(previousUserName, previousImageUrl, userName, "") { success ->
+                                                if (success) {
+                                                    result.invoke(UiState.Success("Profile successfully updated"))
+                                                } else {
+                                                    result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                }
                                             }
                                         }
                                     }
