@@ -30,6 +30,7 @@ class ConfessFragment : Fragment() {
     private val viewModel: ConfessViewModel by viewModels()
     private lateinit var userUid: String
     private var isConfessButtonEnabled = false
+    private var isAnonymous = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,7 +122,7 @@ class ConfessFragment : Fragment() {
 
             R.id.action_confess -> {
                 val confessionText = binding.confessEditText.text.toString()
-                viewModel.addConfession(userUid, confessionText)
+                viewModel.addConfession(userUid, confessionText, isAnonymous)
                 return true
             }
         }
@@ -134,10 +135,12 @@ class ConfessFragment : Fragment() {
                 binding.anonymitySwitch.text = "anonymously"
                 binding.anonymitySwitch.setTextColor(ContextCompat.getColor(requireContext(), R.color.confessmered))
                 binding.anonymitySwitch.alpha = 1f
+                isAnonymous = true
             } else {
                 binding.anonymitySwitch.text = "openly"
                 binding.anonymitySwitch.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
                 binding.anonymitySwitch.alpha = 0.5f
+                isAnonymous = false
             }
         }
     }

@@ -406,7 +406,7 @@ class ConfessAnswerFragment(
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(view: View) {
-                if (currentUserUid != answerFromUserUid) {
+                if (currentUserUid != answerFromUserUid && answerFromUserUid != "") {
                     val bundle = Bundle()
                     bundle.putString("userUid", answerFromUserUid)
 

@@ -215,7 +215,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenProfileImage.setOnClickListener {
             val photoClickedUser = confessList[adapterPosition]
 
-            if (currentUserUid != photoClickedUser.fromUserId) {
+            if (currentUserUid != photoClickedUser.fromUserId && photoClickedUser.fromUserId != "") {
                 onItemPhotoClick(
                     photoClickedUser.fromUserId,
                     photoClickedUser.fromUserEmail,

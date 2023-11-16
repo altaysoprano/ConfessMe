@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentReference
 
 interface ConfessionRepo {
 
-    fun addConfession(userUid: String, confessionText: String, result: (UiState<String>) -> Unit)
+    fun addConfession(userUid: String, confessionText: String, isAnonymous: Boolean, result: (UiState<String>) -> Unit)
     fun fetchConfessions(
         userUid: String,
         limit: Long,

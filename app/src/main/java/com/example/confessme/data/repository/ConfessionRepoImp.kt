@@ -22,6 +22,7 @@ class ConfessionRepoImp(
     override fun addConfession(
         userUid: String,
         confessionText: String,
+        isAnonymous: Boolean,
         result: (UiState<String>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
@@ -51,14 +52,14 @@ class ConfessionRepoImp(
                                     val confessionData = hashMapOf(
                                         "id" to confessionId,
                                         "userId" to userUid,
-                                        "fromUserId" to fromUserUid,
+                                        "fromUserId" to if(isAnonymous) "" else fromUserUid,
                                         "text" to confessionText,
                                         "username" to userDocument.getString("userName"),
                                         "email" to userDocument.getString("email"),
                                         "imageUrl" to userDocument.getString("imageUrl"),
                                         "fromUserEmail" to fromUserEmail,
-                                        "fromUserUsername" to fromUserUsername,
-                                        "fromUserImageUrl" to fromUserImageUrl,
+                                        "fromUserUsername" to if(isAnonymous) "Anonymous" else fromUserUsername,
+                                        "fromUserImageUrl" to if(isAnonymous) "" else fromUserImageUrl,
                                         "timestamp" to FieldValue.serverTimestamp()
                                     )
 
@@ -205,7 +206,6 @@ class ConfessionRepoImp(
             result.invoke(UiState.Failure("User not authenticated"))
         }
     }
-
 
     override fun addAnswer(
         confessionId: String,
