@@ -134,6 +134,7 @@ class ConfessionsFragment(
 
                 is UiState.Failure -> {
                     binding.progressBarConfessions.visibility = View.GONE
+                    binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
                     noConfessFoundBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()

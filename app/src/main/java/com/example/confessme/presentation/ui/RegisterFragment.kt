@@ -32,10 +32,14 @@ class RegisterFragment : Fragment() {
         binding = FragmentRegisterBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
 
-        binding.textView2.setOnClickListener {
-            navRegister.navigateFrag(LoginFragment(), false)
-        }
+        setSignInTvClickListener()
+        setSignUpButtonClickListener()
+        observeSignUp()
 
+        return binding.root
+    }
+
+    private fun setSignUpButtonClickListener() {
         binding.button.setOnClickListener {
             val email = binding.emailEt.text.toString().trim()
             val pass = binding.passwordEt.text.toString()
@@ -43,15 +47,21 @@ class RegisterFragment : Fragment() {
 
             viewModel.signUp(email, pass, confirmPass)
         }
+    }
 
+    private fun observeSignUp() {
         viewModel.signUpState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarSignUp.visibility = View.VISIBLE
+                    binding.button.isEnabled = false
+                    binding.button.alpha = 0.5f
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSignUp.visibility = View.GONE
+                    binding.button.isEnabled = true
+                    binding.button.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -67,8 +77,12 @@ class RegisterFragment : Fragment() {
                 }
             }
         }
+    }
 
-        return binding.root
+    private fun setSignInTvClickListener() {
+        binding.textView2.setOnClickListener {
+            navRegister.navigateFrag(LoginFragment(), false)
+        }
     }
 
 }

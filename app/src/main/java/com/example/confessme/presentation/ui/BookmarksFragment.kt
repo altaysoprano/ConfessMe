@@ -148,6 +148,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
 
                 is UiState.Failure -> {
                     binding.progressBarBookmarks.visibility = View.GONE
+                    binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
                     noConfessFoundBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()

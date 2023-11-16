@@ -273,6 +273,7 @@ class HomeFragment : Fragment() {
 
                 is UiState.Failure -> {
                     noConfessFoundBinding.root.visibility = View.GONE
+                    binding.swipeRefreshLayoutHome.isRefreshing = false
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }

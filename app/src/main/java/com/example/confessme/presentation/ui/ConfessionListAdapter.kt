@@ -208,7 +208,7 @@ class ConfessionListAdapter(
         binding.icFavorite.setOnClickListener {
             val confessFavorite = confessList[adapterPosition]
             confessFavorite.favorited = !confessFavorite.favorited
-            notifyDataSetChanged()
+            notifyItemChanged(adapterPosition)
             onFavoriteClick(confessFavorite.favorited, confessFavorite.id)
         }
 
@@ -297,7 +297,6 @@ class ConfessionListAdapter(
     fun updateItem(position: Int, updatedConfession: Confession) {
         confessList[position] = updatedConfession
         notifyItemChanged(position)
-        notifyDataSetChanged()
     }
 
     fun removeConfession(position: Int) {

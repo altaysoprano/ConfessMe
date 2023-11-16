@@ -37,10 +37,39 @@ class LoginFragment : Fragment() {
             navRegister.navigateFrag(HomeFragment(), false)
         }
 
-        binding.textView2.setOnClickListener {
-            navRegister.navigateFrag(RegisterFragment(), false)
-        }
+        setRegisterTvClickListener()
+        setSignInClickListener()
+        observeSignIn()
 
+        return binding.root
+    }
+
+    private fun observeSignIn() {
+        viewModel.signInState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarSignIn.visibility = View.VISIBLE
+                    binding.button.isEnabled = false
+                    binding.button.alpha = 0.5f
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarSignIn.visibility = View.GONE
+                    binding.button.isEnabled = true
+                    binding.button.alpha = 1f
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarSignIn.visibility = View.GONE
+                    navRegister.navigateFrag(HomeFragment(), false)
+                }
+            }
+        }
+    }
+
+    private fun setSignInClickListener() {
         binding.button.setOnClickListener {
             val email = binding.emailEt.text.toString()
             val pass = binding.passET.text.toString()
@@ -55,27 +84,12 @@ class LoginFragment : Fragment() {
                 ).show()
             }
         }
+    }
 
-        viewModel.signInState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is UiState.Loading -> {
-                    binding.progressBarSignIn.visibility = View.VISIBLE
-                }
-
-                is UiState.Failure -> {
-                    binding.progressBarSignIn.visibility = View.GONE
-                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                is UiState.Success -> {
-                    binding.progressBarSignIn.visibility = View.GONE
-                    navRegister.navigateFrag(HomeFragment(), false)
-                }
-            }
+    private fun setRegisterTvClickListener() {
+        binding.textView2.setOnClickListener {
+            navRegister.navigateFrag(RegisterFragment(), false)
         }
-
-        return binding.root
     }
 
 }
