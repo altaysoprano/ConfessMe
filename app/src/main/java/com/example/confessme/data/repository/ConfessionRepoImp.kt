@@ -54,6 +54,7 @@ class ConfessionRepoImp(
                                         "userId" to userUid,
                                         "fromUserId" to if(isAnonymous) "" else fromUserUid,
                                         "text" to confessionText,
+                                        "anonymousId" to if(isAnonymous) fromUserUid else "",
                                         "username" to userDocument.getString("userName"),
                                         "email" to userDocument.getString("email"),
                                         "imageUrl" to userDocument.getString("imageUrl"),

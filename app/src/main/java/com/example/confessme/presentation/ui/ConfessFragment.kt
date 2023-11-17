@@ -65,7 +65,7 @@ class ConfessFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
-                val isTextEmpty = s?.isEmpty()
+                val isTextEmpty = s?.trim()?.isEmpty()
 
                 if(isTextEmpty == true) {
                     isConfessButtonEnabled = false

@@ -4,6 +4,7 @@ data class Confession(
     val id: String = "",
     val userId: String = "",
     val fromUserId: String = "",
+    val anonymousId: String = "",
     val text: String = "",
     val username: String = "",
     val fromUserUsername: String = "",

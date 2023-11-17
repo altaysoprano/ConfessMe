@@ -104,17 +104,15 @@ class ConfessAnswerFragment(
                     val isConfessionAnswered = state.data?.answered ?: false
                     val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
                     val confessedUserName = state.data?.answer?.username ?: ""
+                    val anonymousId = state.data?.anonymousId ?: ""
 
                     setUserImage(state.data?.answer?.fromUserImageUrl)
                     setSaveButton()
                     setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
                         answerDate, answerUserUid, answerFromUserUid,
                         confessedUserName)
-                    setFavoriteDeleteEditReplyStates(
-                        answerText,
-                        answerFromUserUid,
-                        answerUserUid,
-                        isConfessionAnswered)
+                    setFavoriteDeleteEditReplyStates(answerText, answerFromUserUid,
+                                                    answerUserUid, anonymousId, isConfessionAnswered)
                     setFavorite(isAnswerFavorited)
                 }
             }
@@ -247,7 +245,8 @@ class ConfessAnswerFragment(
     }
 
     private fun setFavoriteDeleteEditReplyStates(answerText: String, answerFromUserUid: String,
-                                                    answerUserUid: String, isConfessionAnswered: Boolean) {
+                                                    answerUserUid: String, anonymousId: String,
+                                                    isConfessionAnswered: Boolean) {
         val confessionId = arguments?.getString("confessionId", "")
 
         binding.replyButton.setOnClickListener {
@@ -281,7 +280,7 @@ class ConfessAnswerFragment(
             )
         }
 
-        if(currentUserUid == answerFromUserUid) {
+        if(currentUserUid == answerFromUserUid || currentUserUid == anonymousId) {
             binding.replyButton.visibility = View.GONE
             binding.answerIcEdit.visibility = View.GONE
             binding.answerIcFavorite.visibility = View.VISIBLE

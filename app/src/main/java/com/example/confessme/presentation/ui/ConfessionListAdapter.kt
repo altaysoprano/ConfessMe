@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -246,7 +247,11 @@ class ConfessionListAdapter(
             deleteItem.icon = ContextCompat.getDrawable(view.context, R.drawable.ic_delete)
             deleteItem.icon?.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN)
 
-            if (currentUserUid != confessList[adapterPosition].fromUserId) {
+            val confession = confessList[adapterPosition]
+
+            Log.d("Mesaj: ", "CurrentUserUid: $currentUserUid, \n anonymousId: ${confession.anonymousId}, \n FromUserUid: ${confession.fromUserId}")
+
+            if (currentUserUid != confession.fromUserId && currentUserUid != confession.anonymousId) {
                 popupMenu.menu.removeItem(R.id.action_delete)
             }
             if (isBookmarks) {
