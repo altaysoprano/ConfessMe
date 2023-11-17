@@ -123,7 +123,13 @@ class ConfessionListAdapter(
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
 
-        binding.confessionsScreenUsername.text = confess.fromUserUsername
+        val usernameTv = binding.confessionsScreenUsername
+        usernameTv.text = confess.fromUserUsername
+        if (confess.fromUserUsername.equals("Anonymous")) {
+            usernameTv.setBackgroundResource(R.drawable.anonymous_username_background)
+        } else {
+            usernameTv.setBackgroundColor(Color.parseColor("#FFFFFF"))
+        }
         binding.confessionsScreenConfession.text = spannable
         binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()
         binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT
