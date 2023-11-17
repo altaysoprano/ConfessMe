@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ActivityMainBinding
+import com.example.confessme.presentation.ui.ConfessFragment
 import com.example.confessme.presentation.ui.ConfessionUpdateListener
 import com.example.confessme.presentation.ui.ConfessionsToMeFragment
 import com.example.confessme.presentation.ui.FragmentNavigation

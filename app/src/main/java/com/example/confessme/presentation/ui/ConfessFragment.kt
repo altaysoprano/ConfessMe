@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,13 +12,16 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessBinding
+import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +35,9 @@ class ConfessFragment : Fragment() {
     private lateinit var userUid: String
     private var isConfessButtonEnabled = false
     private var isAnonymous = false
+    private var confessText = ""
+    private lateinit var dialogHelper: ConfessMeDialog
+    private var callback: OnBackPressedCallback? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +50,7 @@ class ConfessFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
         userUid = arguments?.getString("userUid") ?: ""
+        dialogHelper = ConfessMeDialog(requireContext())
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -66,15 +74,16 @@ class ConfessFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
                 val isTextEmpty = s?.trim()?.isEmpty()
+                confessText = s?.toString() ?: ""
 
-                if(isTextEmpty == true) {
+                if (isTextEmpty == true) {
                     isConfessButtonEnabled = false
                     requireActivity().invalidateOptionsMenu()
-                }
-                else if (currentLength > maxLength) {
+                } else if (currentLength > maxLength) {
                     isConfessButtonEnabled = false
                     requireActivity().invalidateOptionsMenu()
-                    binding.confessEditText.error = "Confession is too long (max $maxLength characters)"
+                    binding.confessEditText.error =
+                        "Confession is too long (max $maxLength characters)"
                 } else {
                     binding.confessEditText.error = null
                     isConfessButtonEnabled = true
@@ -93,6 +102,8 @@ class ConfessFragment : Fragment() {
                 is UiState.Loading -> {
                     binding.progressBarConfess.visibility = View.VISIBLE
                     isConfessButtonEnabled = false
+                    callback?.isEnabled = false
+                    callback = null
                     requireActivity().invalidateOptionsMenu()
                 }
 
@@ -133,12 +144,22 @@ class ConfessFragment : Fragment() {
         binding.anonymitySwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 binding.anonymitySwitch.text = "anonymously"
-                binding.anonymitySwitch.setTextColor(ContextCompat.getColor(requireContext(), R.color.confessmered))
+                binding.anonymitySwitch.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.confessmered
+                    )
+                )
                 binding.anonymitySwitch.alpha = 1f
                 isAnonymous = true
             } else {
                 binding.anonymitySwitch.text = "openly"
-                binding.anonymitySwitch.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                binding.anonymitySwitch.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        android.R.color.black
+                    )
+                )
                 binding.anonymitySwitch.alpha = 0.5f
                 isAnonymous = false
             }
@@ -152,6 +173,45 @@ class ConfessFragment : Fragment() {
         confessMenuItem.icon?.alpha =
             if (isConfessButtonEnabled) (1f * 255).toInt() else (0.5f * 255).toInt()
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!confessText.isEmpty()) {
+                    dialogHelper.showDialog(
+                        "confırm exıt",
+                        "Do you want to exit without sending the confession?"
+                    ) {
+                        isEnabled = false
+                        hideKeyboard()
+                        requireActivity().onBackPressed()
+                    }
+                } else {
+                    isEnabled = false
+                    hideKeyboard()
+                    requireActivity().onBackPressed()
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback!!)
+    }
+
+    override fun onDestroyView() {
+        callback?.isEnabled = false
+        callback = null
+        super.onDestroyView()
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusedView = requireActivity().currentFocus
+        if (currentFocusedView != null) {
+            imm.hideSoftInputFromWindow(currentFocusedView.windowToken, 0)
+        }
     }
 
 }
