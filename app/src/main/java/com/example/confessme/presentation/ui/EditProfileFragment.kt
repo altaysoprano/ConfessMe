@@ -263,6 +263,11 @@ class EditProfileFragment : Fragment() {
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
+        if(userName == "Anonymous") {
+            binding.firstNameEt.error = "Username cannot be \"Anonymous\"."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
     }
 
     private fun openImageFiles() {

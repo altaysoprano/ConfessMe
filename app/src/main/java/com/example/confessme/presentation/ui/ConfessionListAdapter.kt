@@ -249,8 +249,6 @@ class ConfessionListAdapter(
 
             val confession = confessList[adapterPosition]
 
-            Log.d("Mesaj: ", "CurrentUserUid: $currentUserUid, \n anonymousId: ${confession.anonymousId}, \n FromUserUid: ${confession.fromUserId}")
-
             if (currentUserUid != confession.fromUserId && currentUserUid != confession.anonymousId) {
                 popupMenu.menu.removeItem(R.id.action_delete)
             }
