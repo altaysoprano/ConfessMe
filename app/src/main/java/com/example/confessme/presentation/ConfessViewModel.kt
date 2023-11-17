@@ -72,15 +72,19 @@ class ConfessViewModel @Inject constructor(
 
     fun fetchConfessions(userUid: String, limit: Long, confessionCategory: ConfessionCategory) {
         _fetchConfessionsState.value = UiState.Loading
-        repository.fetchConfessions(userUid, limit, confessionCategory) { result ->
-            _fetchConfessionsState.postValue(result)
+        viewModelScope.launch {
+            repository.fetchConfessions(userUid, limit, confessionCategory) { result ->
+                _fetchConfessionsState.postValue(result)
+            }
         }
     }
 
     fun getConfession(confessionId: String) {
         _getConfessionState.value = UiState.Loading
-        repository.getConfession(confessionId) {result ->
-            _getConfessionState.postValue(result)
+        viewModelScope.launch {
+            repository.getConfession(confessionId) {result ->
+                _getConfessionState.postValue(result)
+            }
         }
     }
 
