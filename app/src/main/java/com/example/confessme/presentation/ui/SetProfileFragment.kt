@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
-
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
@@ -24,16 +25,18 @@ import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentEditProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.databinding.FragmentSetProfileBinding
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
+import com.google.common.collect.ComparisonChain.start
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class EditProfileFragment : Fragment() {
+class SetProfileFragment : Fragment() {
 
-    private lateinit var binding: FragmentEditProfileBinding
+    private lateinit var binding: FragmentSetProfileBinding
     private lateinit var selectedImg: Uri
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
@@ -45,17 +48,13 @@ class EditProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentEditProfileBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.title = "Edit Profile"
-        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.editProfileToolbar)
+        binding = FragmentSetProfileBinding.inflate(inflater, container, false)
+        (activity as AppCompatActivity?)!!.title = "Set Your Profile"
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.setProfileToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
-        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_back)
-        }
-
+        setWelcomeAnimation()
         setOnClickListeners()
         viewModel.getProfileData()
         observeUpdateProfile()
@@ -73,27 +72,27 @@ class EditProfileFragment : Fragment() {
         viewModel.getProfileState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarEditProfile.visibility = View.VISIBLE
+                    binding.progressBarSetProfile.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
+                    binding.progressBarSetProfile.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
+                    binding.progressBarSetProfile.visibility = View.GONE
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
                         currentImageUrl = userProfile.imageUrl
-                        binding.firstNameEt.setText(userProfile.userName)
-                        binding.bioEt.setText(userProfile.bio)
+                        binding.setFirstNameEt.setText(userProfile.userName)
+                        binding.setBioEt.setText(userProfile.bio)
                         if (userProfile.imageUrl.isNotEmpty()) {
                             Glide.with(requireContext())
                                 .load(userProfile.imageUrl)
-                                .into(binding.profileImage)
+                                .into(binding.setProfileImage)
                         }
                     }
                 }
@@ -105,39 +104,43 @@ class EditProfileFragment : Fragment() {
         viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.saveButton.isEnabled = false
-                    binding.saveButton.alpha = 0.5f
-                    binding.editButton.isEnabled = false
-                    binding.editButton.alpha = 0.5f
-                    binding.firstNameEt.isEnabled = false
-                    binding.firstNameEt.alpha = 0.5f
-                    binding.bioEt.isEnabled = false
-                    binding.bioEt.alpha = 0.5f
-                    binding.progressBarEditProfile.visibility = View.VISIBLE
+                    binding.setSaveButton.isEnabled = false
+                    binding.setSaveButton.alpha = 0.5f
+                    binding.setSkipButton.isEnabled = false
+                    binding.setSkipButton.alpha = 0.5f
+                    binding.setButton.isEnabled = false
+                    binding.setButton.alpha = 0.5f
+                    binding.setFirstNameEt.isEnabled = false
+                    binding.setFirstNameEt.alpha = 0.5f
+                    binding.setBioEt.isEnabled = false
+                    binding.setBioEt.alpha = 0.5f
+                    binding.progressBarSetProfile.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
-                    binding.saveButton.isEnabled = true
-                    binding.saveButton.alpha = 1f
-                    binding.editButton.isEnabled = true
-                    binding.editButton.alpha = 1f
-                    binding.firstNameEt.isEnabled = true
-                    binding.firstNameEt.alpha = 1f
-                    binding.bioEt.isEnabled = true
-                    binding.bioEt.alpha = 1f
+                    binding.progressBarSetProfile.visibility = View.GONE
+                    binding.setSaveButton.isEnabled = true
+                    binding.setSaveButton.alpha = 1f
+                    binding.setSkipButton.isEnabled = true
+                    binding.setSkipButton.alpha = 1f
+                    binding.setButton.isEnabled = true
+                    binding.setButton.alpha = 1f
+                    binding.setFirstNameEt.isEnabled = true
+                    binding.setFirstNameEt.alpha = 1f
+                    binding.setBioEt.isEnabled = true
+                    binding.setBioEt.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarEditProfile.visibility = View.GONE
+                    binding.progressBarSetProfile.visibility = View.GONE
                     val fragmentManager = parentFragmentManager
                     for (i in 0 until fragmentManager.backStackEntryCount) {
                         fragmentManager.popBackStack()
                     }
                     fragmentManager.beginTransaction()
-                        .replace(R.id.coordinator, ProfileFragment())
+                        .replace(R.id.coordinator, HomeFragment())
                         .commit()
                 }
             }
@@ -145,9 +148,9 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun setOnClickListeners() {
-        binding.saveButton.setOnClickListener {
-            val username = binding.firstNameEt.text?.trim().toString()
-            val bio = binding.bioEt.text.toString()
+        binding.setSaveButton.setOnClickListener {
+            val username = binding.setFirstNameEt.text?.trim().toString()
+            val bio = binding.setBioEt.text.toString()
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
                 viewModel.updateProfile(currentUsername, currentImageUrl, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
@@ -172,8 +175,18 @@ class EditProfileFragment : Fragment() {
             }
         }
 
-        binding.editButton.setOnClickListener {
+        binding.setButton.setOnClickListener {
             onEditProfilePhotoClick()
+        }
+
+        binding.setSkipButton.setOnClickListener {
+            val fragmentManager = parentFragmentManager
+            for (i in 0 until fragmentManager.backStackEntryCount) {
+                fragmentManager.popBackStack()
+            }
+            fragmentManager.beginTransaction()
+                .replace(R.id.coordinator, HomeFragment())
+                .commit()
         }
     }
 
@@ -204,7 +217,7 @@ class EditProfileFragment : Fragment() {
         var bioCurrentLength = 0
         var isUserNameEmpty: Boolean? = false
 
-        binding.firstNameEt.addTextChangedListener(object : TextWatcher {
+        binding.setFirstNameEt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -214,8 +227,8 @@ class EditProfileFragment : Fragment() {
                 userNameCurrentLength = s?.length ?: 0
                 userName = s.toString()
 
-                binding.saveButton.isEnabled = true
-                binding.saveButton.alpha = 1f
+                binding.setSaveButton.isEnabled = true
+                binding.setSaveButton.alpha = 1f
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
@@ -226,7 +239,7 @@ class EditProfileFragment : Fragment() {
             }
         })
 
-        binding.bioEt.addTextChangedListener(object : TextWatcher {
+        binding.setBioEt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -234,8 +247,8 @@ class EditProfileFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 bioCurrentLength = s?.length ?: 0
 
-                binding.saveButton.isEnabled = true
-                binding.saveButton.alpha = 1f
+                binding.setSaveButton.isEnabled = true
+                binding.setSaveButton.alpha = 1f
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
@@ -249,36 +262,36 @@ class EditProfileFragment : Fragment() {
 
     private fun checkIfUserNameAndBioValid(bioCurrentLength: Int, userNameCurrentLength: Int, userNameMaxLength: Int,
                                            userNameMinLength: Int, isUserNameEmpty: Boolean?, bioMaxLength: Int,
-                                            userName: String?) {
+                                           userName: String?) {
         if (userNameCurrentLength > userNameMaxLength) {
-            binding.firstNameEt.error = "Username can be up to 30 characters long."
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.setFirstNameEt.error = "Username can be up to 30 characters long."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
         }
         if(userNameCurrentLength < userNameMinLength) {
-            binding.firstNameEt.error = "Username must be more than 3 characters."
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.setFirstNameEt.error = "Username must be more than 3 characters."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
         }
         if(isUserNameEmpty == true) {
-            binding.firstNameEt.error = "Username cannot be empty."
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.setFirstNameEt.error = "Username cannot be empty."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
         }
         if(userName?.contains(" ") == true) {
-            binding.firstNameEt.error = "Username cannot contain spaces."
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.setFirstNameEt.error = "Username cannot contain spaces."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
         }
         if (bioCurrentLength > bioMaxLength) {
-            binding.bioEt.error = "Bio can be up to 200 characters long."
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.setBioEt.error = "Bio can be up to 200 characters long."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
         }
         if(userName == "Anonymous") {
-            binding.firstNameEt.error = "Username cannot be \"Anonymous\"."
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.setFirstNameEt.error = "Username cannot be \"Anonymous\"."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
         }
     }
 
@@ -291,9 +304,27 @@ class EditProfileFragment : Fragment() {
 
     private fun removeProfilePhoto() {
         val defaultImageResource = R.drawable.empty_profile_photo
-        binding.profileImage.setImageResource(defaultImageResource)
+        binding.setProfileImage.setImageResource(defaultImageResource)
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
+    }
+
+    private fun setWelcomeAnimation() {
+        val welcomeTextView = binding.welcomeTextview
+        val confessMeTextView = binding.confessmeTextview
+
+        val animDuration = 1000L
+
+        val animSet = AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(welcomeTextView, "translationX", -100f, 0f),
+                ObjectAnimator.ofFloat(confessMeTextView, "translationX", -100f, 0f),
+                ObjectAnimator.ofFloat(welcomeTextView, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(confessMeTextView, "alpha", 0f, 1f)
+            )
+            duration = animDuration
+            start()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -302,19 +333,8 @@ class EditProfileFragment : Fragment() {
         if (data != null) {
             if (data.data != null) {
                 selectedImg = data.data!!
-                binding.profileImage.setImageURI(selectedImg)
+                binding.setProfileImage.setImageURI(selectedImg)
             }
         }
     }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                requireActivity().onBackPressed()
-                return true
-            }
-        }
-        return false
-    }
-
 }

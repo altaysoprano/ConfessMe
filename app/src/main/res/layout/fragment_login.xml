@@ -71,6 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:background="@color/confessmered"
+        android:elevation="4dp"
         android:text="SIGN IN"
         android:textColor="@color/white"
         android:textStyle="bold"

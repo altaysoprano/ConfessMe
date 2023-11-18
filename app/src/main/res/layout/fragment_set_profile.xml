@@ -4,30 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.EditProfileFragment">
+    tools:context=".presentation.ui.SetProfileFragment">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/edit_profile_toolbar"
+        android:id="@+id/set_profile_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.Toolbar>
+        app:layout_constraintTop_toTopOf="parent">
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/welcome_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to "
+        android:textSize="24sp"
+        android:layout_marginTop="24dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/set_profile_toolbar"/>
+    <TextView
+        android:id="@+id/confessme_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ConfessMe!"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="@color/confessmered"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_textview"
+        app:layout_constraintBottom_toTopOf="@id/set_profile_image"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/set_profile_image"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="24dp"
         android:src="@drawable/empty_profile_photo"
         app:civ_border_color="#FF000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/confessme_textview" />
 
     <ImageButton
-        android:id="@+id/edit_button"
+        android:id="@+id/set_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
@@ -35,13 +60,13 @@
         android:elevation="8dp"
         android:layout_gravity="bottom|end"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_image"
-        app:layout_constraintEnd_toEndOf="@+id/profile_image"
+        app:layout_constraintBottom_toBottomOf="@+id/set_profile_image"
+        app:layout_constraintEnd_toEndOf="@+id/set_profile_image"
         android:background="@drawable/edit_pp_button_background"
         android:src="@drawable/ic_edit" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tvFirstName"
+        android:id="@+id/setTvFirstName"
         style="@style/LoginTextInputOuterFieldStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,10 +78,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image">
+        app:layout_constraintTop_toBottomOf="@+id/set_profile_image">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/firstNameEt"
+            android:id="@+id/setFirstNameEt"
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +90,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tvBio"
+        android:id="@+id/setTvBio"
         style="@style/LoginTextInputOuterFieldStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,10 +101,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvFirstName">
+        app:layout_constraintTop_toBottomOf="@+id/setTvFirstName">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/bioEt"
+            android:id="@+id/setBioEt"
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,23 +113,39 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/saveButton"
+        android:id="@+id/setSaveButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:background="@color/confessmered"
         android:elevation="4dp"
-        android:text="SAVE"
+        android:layout_marginTop="36dp"
+        android:text="SAVE AND PROCEED"
         android:textColor="@color/white"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvBio" />
+        app:layout_constraintTop_toBottomOf="@+id/setTvBio" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/setSkipButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:text="SKIP"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/setSaveButton" />
 
     <ProgressBar
-        android:id="@+id/progress_bar_edit_profile"
+        android:id="@+id/progress_bar_set_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminateTint="@color/black"

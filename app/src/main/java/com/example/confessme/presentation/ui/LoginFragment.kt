@@ -51,12 +51,24 @@ class LoginFragment : Fragment() {
                     binding.progressBarSignIn.visibility = View.VISIBLE
                     binding.button.isEnabled = false
                     binding.button.alpha = 0.5f
+                    binding.emailEt.isEnabled = false
+                    binding.emailEt.alpha = 0.5f
+                    binding.passET.isEnabled = false
+                    binding.passET.alpha = 0.5f
+                    binding.textView2.isEnabled = false
+                    binding.textView2.alpha = 0.5f
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSignIn.visibility = View.GONE
                     binding.button.isEnabled = true
                     binding.button.alpha = 1f
+                    binding.emailEt.isEnabled = true
+                    binding.emailEt.alpha = 1f
+                    binding.passET.isEnabled = true
+                    binding.passET.alpha = 1f
+                    binding.textView2.isEnabled = true
+                    binding.textView2.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }

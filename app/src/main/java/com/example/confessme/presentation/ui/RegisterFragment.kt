@@ -56,12 +56,28 @@ class RegisterFragment : Fragment() {
                     binding.progressBarSignUp.visibility = View.VISIBLE
                     binding.button.isEnabled = false
                     binding.button.alpha = 0.5f
+                    binding.emailEt.isEnabled = false
+                    binding.emailEt.alpha = 0.5f
+                    binding.passwordEt.isEnabled = false
+                    binding.passwordEt.alpha = 0.5f
+                    binding.passwordAgainEt.isEnabled = false
+                    binding.passwordAgainEt.alpha = 0.5f
+                    binding.textView2.isEnabled = false
+                    binding.textView2.alpha = 0.5f
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSignUp.visibility = View.GONE
                     binding.button.isEnabled = true
                     binding.button.alpha = 1f
+                    binding.emailEt.isEnabled = true
+                    binding.emailEt.alpha = 1f
+                    binding.passwordEt.isEnabled = true
+                    binding.passwordEt.alpha = 1f
+                    binding.passwordAgainEt.isEnabled = true
+                    binding.passwordAgainEt.alpha = 1f
+                    binding.textView2.isEnabled = true
+                    binding.textView2.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -70,7 +86,7 @@ class RegisterFragment : Fragment() {
                     binding.progressBarSignUp.visibility = View.GONE
                     Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT)
                         .show()
-                    navRegister.navigateFrag(LoginFragment(), false)
+                    navRegister.navigateFrag(SetProfileFragment(), false)
                 }
 
                 else -> {
