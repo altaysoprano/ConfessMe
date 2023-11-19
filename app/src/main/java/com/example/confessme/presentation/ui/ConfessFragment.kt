@@ -104,12 +104,16 @@ class ConfessFragment : Fragment() {
                     isConfessButtonEnabled = false
                     callback?.isEnabled = false
                     callback = null
+                    binding.anonymitySwitch.isEnabled = false
+                    binding.anonymitySwitch.alpha = 0.5f
                     requireActivity().invalidateOptionsMenu()
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarConfess.visibility = View.GONE
                     isConfessButtonEnabled = true
+                    binding.anonymitySwitch.isEnabled = true
+                    binding.anonymitySwitch.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
