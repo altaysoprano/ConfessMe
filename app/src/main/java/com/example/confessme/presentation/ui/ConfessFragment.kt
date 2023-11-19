@@ -106,6 +106,8 @@ class ConfessFragment : Fragment() {
                     callback = null
                     binding.anonymitySwitch.isEnabled = false
                     binding.anonymitySwitch.alpha = 0.5f
+                    binding.confessEditText.isEnabled = false
+                    binding.confessEditText.alpha = 0.5f
                     requireActivity().invalidateOptionsMenu()
                 }
 
@@ -114,6 +116,10 @@ class ConfessFragment : Fragment() {
                     isConfessButtonEnabled = true
                     binding.anonymitySwitch.isEnabled = true
                     binding.anonymitySwitch.alpha = 1f
+                    binding.confessEditText.isEnabled = true
+                    binding.confessEditText.alpha = 1f
+                    setOnBackPressed()
+                    requireActivity().invalidateOptionsMenu()
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -182,6 +188,10 @@ class ConfessFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setOnBackPressed()
+    }
+
+    private fun setOnBackPressed() {
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (!confessText.isEmpty()) {
