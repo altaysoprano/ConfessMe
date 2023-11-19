@@ -1,7 +1,9 @@
 package com.example.confessme.presentation.ui
+import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -20,6 +22,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.confessme.R
@@ -43,6 +47,7 @@ class SetProfileFragment : Fragment() {
     private lateinit var currentUsername: String
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
+    private val READ_STORAGE_PERMISSION_CODE = 101
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -200,7 +205,7 @@ class SetProfileFragment : Fragment() {
                     removeProfilePhoto()
                 }
                 1 -> {
-                    openImageFiles()
+                    checkPermission()
                 }
             }
         }
@@ -300,6 +305,38 @@ class SetProfileFragment : Fragment() {
         intent.action = Intent.ACTION_GET_CONTENT
         intent.type = "image/*"
         startActivityForResult(intent, 1)
+    }
+
+    private fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                READ_STORAGE_PERMISSION_CODE
+            )
+        } else {
+            openImageFiles()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            READ_STORAGE_PERMISSION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openImageFiles()
+                } else {
+                    Toast.makeText(requireContext(), "Access to files denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun removeProfilePhoto() {
