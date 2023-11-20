@@ -17,7 +17,23 @@ class AuthRepoImp(
     override fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                result.invoke(UiState.Success("Login successful"))
+                val user = firebaseAuth.currentUser
+                user?.getIdToken(true)?.addOnSuccessListener { tokenResult ->
+                    val uid = user.uid
+                    // token'ı veritabanına kaydet
+                    database.collection("users").document(uid)
+                        .update("token", tokenResult.token)
+                        .addOnSuccessListener {
+                            result.invoke(UiState.Success("Login successful"))
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.d("Mesaj: ", "Token update failed")
+                            result.invoke(UiState.Failure(exception.localizedMessage ?: "Token update failed"))
+                        }
+                }?.addOnFailureListener { exception ->
+                    Log.d("Mesaj: ", "Token retrieval failed")
+                    result.invoke(UiState.Failure(exception.localizedMessage ?: "Token retrieval failed"))
+                }
             } else {
                 val exception = task.exception
                 if (exception is FirebaseAuthInvalidUserException) {
@@ -50,30 +66,12 @@ class AuthRepoImp(
                             val user = firebaseAuth.currentUser
                             if (user != null) {
                                 val uid = user.uid
-                                // token al
-                                user.getIdToken(true).addOnSuccessListener { tokenResult ->
-                                    val token = tokenResult.token
-                                    if(token != null) {
-                                        database.collection("users").document(uid)
-                                            .set(
-                                                User(
-                                                    uid = uid,
-                                                    email = email,
-                                                    password = pass,
-                                                    userName = randomUsername,
-                                                    token = token
-                                                )
-                                            )
-                                            .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
-                                            .addOnFailureListener { exception ->
-                                                result.invoke(UiState.Failure("An error occurred while registering. Please try again."))
-                                            }
-                                    } else {
-                                        result.invoke(UiState.Failure("An error occurred while registering. Please try again."))
+                                database.collection("users").document(uid)
+                                    .set(User(uid = uid, email = email, password = pass, userName = randomUsername))
+                                    .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(UiState.Failure(exception.localizedMessage))
                                     }
-                                }.addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure("An error occurred while registering. Please try again."))
-                                }
                             }
                         } else {
                             val exception = authTask.exception
