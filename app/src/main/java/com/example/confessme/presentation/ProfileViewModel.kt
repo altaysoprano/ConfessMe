@@ -100,11 +100,4 @@ class ProfileViewModel @Inject constructor(
             _getProfileState.postValue(result)
         }
     }
-
-    fun signOut(activity: FragmentNavigation) {
-        navRegister = activity as FragmentNavigation
-        firebaseAuth.signOut()
-        navRegister.navigateFrag(LoginFragment(), false)
-    }
-
 }

@@ -23,8 +23,6 @@ class HomeViewModel @Inject constructor(
     private val authRepo: AuthRepo
 ) : ViewModel() {
 
-    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-
     private val _fetchConfessionsState = MutableLiveData<UiState<List<Confession>>>()
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
         get() = _fetchConfessionsState

@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -108,7 +109,7 @@ class HomeFragment : Fragment() {
             onAnswerClick = { confessionId, answerDate ->
                 onAnswerClick(confessionId, answerDate)
             },
-            onFavoriteClick = {isFavorited, confessionId ->
+            onFavoriteClick = { isFavorited, confessionId ->
                 viewModel.addFavorite(isFavorited, confessionId)
             },
             onConfessDeleteClick = { confessionId ->
@@ -117,11 +118,11 @@ class HomeFragment : Fragment() {
             onConfessBookmarkClick = { confessionId, timestamp, userUid ->
                 viewModel.addBookmark(confessionId, timestamp, userUid)
             },
-            onBookmarkRemoveClick = {confessionId -> },
+            onBookmarkRemoveClick = { confessionId -> },
             onItemPhotoClick = { photoUserUid, photoUserEmail, userName ->
                 onItemPhotoClick(photoUserEmail, photoUserUid)
             },
-            onUserNameClick =  { userNameUserUid, userNameUserEmail, userName ->
+            onUserNameClick = { userNameUserUid, userNameUserEmail, userName ->
                 onUserNameClick(userNameUserEmail, userNameUserUid)
             }
         )
@@ -201,7 +202,11 @@ class HomeFragment : Fragment() {
 
                 is UiState.Success -> {
                     binding.progressBarHomeGeneral.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Successfully added to bookmarks", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Successfully added to bookmarks",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -342,6 +347,25 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setOnBackPressed() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.signOutState.value is UiState.Loading) {
+                    return
+                }
+                isEnabled = false
+                requireActivity().onBackPressed()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setOnBackPressed()
+    }
+
     private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String) {
         val bundle = Bundle()
         bundle.putString("userEmail", photoUserEmail)
@@ -387,37 +411,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun findPositionById(confessionId: String): Int {
-        for (index in 0 until confessListAdapter.confessList.size) {
-            if (confessListAdapter.confessList[index].id == confessionId) {
-                return index
-            }
-        }
-        return -1
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
-        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-            View.VISIBLE
-
-        return super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.sign_out -> {
-                signOut()
-            }
-            R.id.ic_notifications -> {
-                val notificationsFragment = NotificationsFragment()
-
-                navRegister.navigateFrag(notificationsFragment, true)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is BottomNavBarControl) {
@@ -440,5 +433,37 @@ class HomeFragment : Fragment() {
 
     fun signOut() {
         viewModel.signOut()
+    }
+
+    private fun findPositionById(confessionId: String): Int {
+        for (index in 0 until confessListAdapter.confessList.size) {
+            if (confessListAdapter.confessList[index].id == confessionId) {
+                return index
+            }
+        }
+        return -1
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.VISIBLE
+
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.sign_out -> {
+                signOut()
+            }
+
+            R.id.ic_notifications -> {
+                val notificationsFragment = NotificationsFragment()
+
+                navRegister.navigateFrag(notificationsFragment, true)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

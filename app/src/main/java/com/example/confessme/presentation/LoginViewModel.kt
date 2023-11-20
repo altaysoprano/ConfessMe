@@ -19,10 +19,6 @@ class LoginViewModel @Inject constructor(
     val signInState: LiveData<UiState<String>>
         get() = _signInState
 
-    private val _signOutState = MutableLiveData<UiState<String>>()
-    val signOutState: LiveData<UiState<String>>
-        get() = _signOutState
-
     var isUserLoggedIn = false
 
     init {
@@ -33,13 +29,6 @@ class LoginViewModel @Inject constructor(
         _signInState.value = UiState.Loading
         authRepo.signIn(email, password) {
             _signInState.value = it
-        }
-    }
-
-    fun signOut() {
-        _signOutState.value = UiState.Loading
-        authRepo.signOut {
-            _signOutState.value = it
         }
     }
 
