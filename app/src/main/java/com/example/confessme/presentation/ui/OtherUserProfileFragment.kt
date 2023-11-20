@@ -57,7 +57,6 @@ class OtherUserProfileFragment : Fragment() {
         setAllClickListeners()
         fetchUserProfile()
         observeFetchState()
-        setConfessButtonAnimation()
 
         return binding.root
     }
@@ -320,7 +319,7 @@ class OtherUserProfileFragment : Fragment() {
             var swayCount = 0
             var distance = 20f
             var isReturning = false
-            var finalPosition = 0f 
+            var finalPosition = 0f
 
             override fun run() {
                 if (isReturning) {
@@ -353,5 +352,10 @@ class OtherUserProfileFragment : Fragment() {
         }
 
         handler.postDelayed(swayRunnable, 3000)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setConfessButtonAnimation()
     }
 }

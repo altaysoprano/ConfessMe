@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/ic_notifications"
-        android:icon="@drawable/ic_notifications_blur"
+        android:icon="@drawable/ic_notifications"
         app:showAsAction="always"
         android:title="Notifications" />
     <item

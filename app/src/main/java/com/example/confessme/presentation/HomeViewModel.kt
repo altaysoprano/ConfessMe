@@ -22,7 +22,6 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private lateinit var navRegister: FragmentNavigation
 
     private val _fetchConfessionsState = MutableLiveData<UiState<List<Confession>>>()
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
@@ -90,10 +89,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun signOut(activity: FragmentNavigation) {
-        navRegister = activity as FragmentNavigation
+    fun signOut() {
         firebaseAuth.signOut()
-        navRegister.navigateFrag(LoginFragment(), false)
     }
 
 }

@@ -50,12 +50,30 @@ class AuthRepoImp(
                             val user = firebaseAuth.currentUser
                             if (user != null) {
                                 val uid = user.uid
-                                database.collection("users").document(uid)
-                                    .set(User(uid = uid, email = email, password = pass, userName = randomUsername))
-                                    .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
-                                    .addOnFailureListener { exception ->
-                                        result.invoke(UiState.Failure(exception.localizedMessage))
+                                // token al
+                                user.getIdToken(true).addOnSuccessListener { tokenResult ->
+                                    val token = tokenResult.token
+                                    if(token != null) {
+                                        database.collection("users").document(uid)
+                                            .set(
+                                                User(
+                                                    uid = uid,
+                                                    email = email,
+                                                    password = pass,
+                                                    userName = randomUsername,
+                                                    token = token
+                                                )
+                                            )
+                                            .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
+                                            .addOnFailureListener { exception ->
+                                                result.invoke(UiState.Failure("An error occurred while registering. Please try again."))
+                                            }
+                                    } else {
+                                        result.invoke(UiState.Failure("An error occurred while registering. Please try again."))
                                     }
+                                }.addOnFailureListener { exception ->
+                                    result.invoke(UiState.Failure("An error occurred while registering. Please try again."))
+                                }
                             }
                         } else {
                             val exception = authTask.exception

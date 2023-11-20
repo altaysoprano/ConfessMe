@@ -351,15 +351,27 @@ class HomeFragment : Fragment() {
         inflater.inflate(R.menu.main_menu, menu)
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.VISIBLE
+
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.sign_out -> {
-                viewModel.signOut(activity as FragmentNavigation)
+                signOut()
+            }
+            R.id.ic_notifications -> {
+                val notificationsFragment = NotificationsFragment()
+
+                navRegister.navigateFrag(notificationsFragment, true)
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun signOut() {
+        navRegister = activity as FragmentNavigation
+        viewModel.signOut()
+        navRegister.navigateFrag(LoginFragment(), false)
     }
 }

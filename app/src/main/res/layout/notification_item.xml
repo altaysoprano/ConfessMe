@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/notificationScreenProfileImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/empty_profile_photo" />
+
+        <TextView
+            android:id="@+id/notificationScreenUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:layout_marginHorizontal="4dp"
+            android:text="username"
+            android:layout_gravity="center_vertical"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/notificationsScreenNotification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:focusable="true"
+            android:text="notification"
+            android:textStyle="normal" />
+    </LinearLayout>
+
+</RelativeLayout>
