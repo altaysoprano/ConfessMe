@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 
 class AuthRepoImp(
     private val firebaseAuth: FirebaseAuth,
@@ -17,22 +18,20 @@ class AuthRepoImp(
     override fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val user = firebaseAuth.currentUser
-                user?.getIdToken(true)?.addOnSuccessListener { tokenResult ->
-                    val uid = user.uid
-                    // token'ı veritabanına kaydet
+                FirebaseMessaging.getInstance().token.addOnSuccessListener { fcmToken ->
+                    val user = firebaseAuth.currentUser
+                    val uid = user?.uid ?: return@addOnSuccessListener
+
                     database.collection("users").document(uid)
-                        .update("token", tokenResult.token)
+                        .update("token", fcmToken)
                         .addOnSuccessListener {
                             result.invoke(UiState.Success("Login successful"))
                         }
                         .addOnFailureListener { exception ->
-                            Log.d("Mesaj: ", "Token update failed")
                             result.invoke(UiState.Failure(exception.localizedMessage ?: "Token update failed"))
                         }
-                }?.addOnFailureListener { exception ->
-                    Log.d("Mesaj: ", "Token retrieval failed")
-                    result.invoke(UiState.Failure(exception.localizedMessage ?: "Token retrieval failed"))
+                }.addOnFailureListener { exception ->
+                    result.invoke(UiState.Failure(exception.localizedMessage ?: "FCM Token retrieval failed"))
                 }
             } else {
                 val exception = task.exception
