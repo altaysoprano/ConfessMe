@@ -1,7 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.ViewModelProvider
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.databinding.HomeNoConfessFoundViewBinding
-import com.example.confessme.databinding.YouHaveNoConfessionsBinding
+import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.HomeViewModel
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -34,6 +34,7 @@ class HomeFragment : Fragment() {
     private lateinit var currentUserUid: String
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var navRegister: FragmentNavigation
+    private var bottomNavBarControl: BottomNavBarControl? = null
     private var limit: Long = 20
 
     override fun onCreateView(
@@ -70,6 +71,7 @@ class HomeFragment : Fragment() {
         observeAddFavorite()
         observePaging()
         observeSwiping()
+        observeSignOut()
     }
 
     private fun setupRecyclerView() {
@@ -291,6 +293,30 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun observeSignOut() {
+        viewModel.signOutState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarHomeGeneral.visibility = View.VISIBLE
+                    setHomeScreenDisabled(true)
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarHomeGeneral.visibility = View.GONE
+                    setHomeScreenDisabled(false)
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarHomeGeneral.visibility = View.GONE
+                    setHomeScreenDisabled(false)
+                    navRegister.navigateFrag(LoginFragment(), false)
+                }
+            }
+        }
+    }
+
     private fun onAnswerClick(confessionId: String, answerDate: String) {
         if (!confessionId.isNullOrEmpty()) {
             val bundle = Bundle()
@@ -338,6 +364,29 @@ class HomeFragment : Fragment() {
         navRegister.navigateFrag(profileFragment, true)
     }
 
+    private fun setHomeScreenDisabled(disabled: Boolean) {
+        if (disabled) {
+            disableBottomNavigationBarInActivity()
+            binding.root.alpha = 0.5f
+            enableDisableViewGroup(requireView() as ViewGroup, false)
+        } else {
+            enableBottomNavigationBarInActivity()
+            binding.root.alpha = 1f
+            enableDisableViewGroup(requireView() as ViewGroup, true)
+        }
+    }
+
+    fun enableDisableViewGroup(viewGroup: ViewGroup, enabled: Boolean) {
+        val childCount = viewGroup.childCount
+        for (i in 0 until childCount) {
+            val view = viewGroup.getChildAt(i)
+            view.isEnabled = enabled
+            if (view is ViewGroup) {
+                enableDisableViewGroup(view, enabled)
+            }
+        }
+    }
+
     private fun findPositionById(confessionId: String): Int {
         for (index in 0 until confessListAdapter.confessList.size) {
             if (confessListAdapter.confessList[index].id == confessionId) {
@@ -369,9 +418,27 @@ class HomeFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BottomNavBarControl) {
+            bottomNavBarControl = context
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        bottomNavBarControl = null
+    }
+
+    private fun disableBottomNavigationBarInActivity() {
+        bottomNavBarControl?.disableBottomNavigationBar()
+    }
+
+    private fun enableBottomNavigationBarInActivity() {
+        bottomNavBarControl?.enableBottomNavigationBar()
+    }
+
     fun signOut() {
-        navRegister = activity as FragmentNavigation
         viewModel.signOut()
-        navRegister.navigateFrag(LoginFragment(), false)
     }
 }

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ActivityMainBinding
+import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.ui.ConfessFragment
 import com.example.confessme.presentation.ui.ConfessionUpdateListener
 import com.example.confessme.presentation.ui.ConfessionsToMeFragment
@@ -19,7 +20,8 @@ import com.example.confessme.presentation.ui.SearchFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateListener {
+class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateListener,
+    BottomNavBarControl {
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,5 +97,19 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
         val fragmentManager = supportFragmentManager
         val confessionsToMeFragment = fragmentManager.findFragmentByTag("confessionsToMeFragment") as? ConfessionsToMeFragment
         return confessionsToMeFragment?.findPositionById(confessionId) ?: -1
+    }
+
+    override fun disableBottomNavigationBar() {
+        binding.bottomNavigationView.alpha = 0.5f
+        for (i in 0 until binding.bottomNavigationView.menu.size()) {
+            binding.bottomNavigationView.menu.getItem(i).isEnabled = false
+        }
+    }
+
+    override fun enableBottomNavigationBar() {
+        binding.bottomNavigationView.alpha = 1.0f
+        for (i in 0 until binding.bottomNavigationView.menu.size()) {
+            binding.bottomNavigationView.menu.getItem(i).isEnabled = true
+        }
     }
 }
