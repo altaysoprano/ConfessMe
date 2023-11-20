@@ -19,8 +19,6 @@ class NotificationsViewModel @Inject constructor(
     private val authRepo: AuthRepo
 ) : ViewModel() {
 
-    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-
     private val _signOutState = MutableLiveData<UiState<String>>()
     val signOutState: LiveData<UiState<String>>
         get() = _signOutState

@@ -5,6 +5,7 @@ import android.widget.Toast
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.util.ConfessionCategory
+import com.example.confessme.util.Constants
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -13,6 +14,17 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.google.rpc.context.AttributeContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 
 class ConfessionRepoImp(
     private val firebaseAuth: FirebaseAuth,
@@ -34,10 +46,11 @@ class ConfessionRepoImp(
                 .get()
                 .addOnSuccessListener { currentUserDocument ->
                     if (currentUserDocument.exists()) {
-                        val fromUserImageUrl = currentUserDocument.getString("imageUrl")
-                        val fromUserUsername = currentUserDocument.getString("userName")
+                        val fromUserImageUrl = if(isAnonymous) "" else currentUserDocument.getString("imageUrl")
+                        val fromUserUsername = if(isAnonymous) "Anonymous" else currentUserDocument.getString("userName")
                         val fromUserEmail = currentUserDocument.getString("email")
-                        val fromUserUid = currentUserDocument.getString("uid")
+                        val anonymousId = if(isAnonymous) currentUserDocument.getString("uid") else ""
+                        val fromUserUid = if(isAnonymous) "" else currentUserDocument.getString("uid")
 
                         database.collection("users").document(userUid)
                             .get()
@@ -52,21 +65,32 @@ class ConfessionRepoImp(
                                     val confessionData = hashMapOf(
                                         "id" to confessionId,
                                         "userId" to userUid,
-                                        "fromUserId" to if(isAnonymous) "" else fromUserUid,
+                                        "fromUserId" to fromUserUid,
                                         "text" to confessionText,
-                                        "anonymousId" to if(isAnonymous) fromUserUid else "",
+                                        "anonymousId" to anonymousId,
                                         "username" to userDocument.getString("userName"),
                                         "email" to userDocument.getString("email"),
                                         "imageUrl" to userDocument.getString("imageUrl"),
                                         "fromUserEmail" to fromUserEmail,
-                                        "fromUserUsername" to if(isAnonymous) "Anonymous" else fromUserUsername,
-                                        "fromUserImageUrl" to if(isAnonymous) "" else fromUserImageUrl,
+                                        "fromUserUsername" to fromUserUsername,
+                                        "fromUserImageUrl" to fromUserImageUrl,
                                         "timestamp" to FieldValue.serverTimestamp()
                                     )
+
+                                    val fcmToken = userDocument.getString("token")
 
                                     newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success("Confession added successfully"))
+                                            if(fcmToken != "" && fcmToken != null) {
+                                                Log.d("Mesaj: ", "fcmToken boş değil: $fcmToken")
+                                                sendNotification(
+                                                    "$fromUserUsername confessed",
+                                                    confessionText,
+                                                    currentUserUid,
+                                                    fcmToken
+                                                )
+                                            }
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure("Could not confess"))
@@ -640,5 +664,55 @@ class ConfessionRepoImp(
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
         }
+    }
+
+    private fun sendNotification(title: String, message: String, currentUserId: String, token: String) {
+
+        try {
+            val jsonObject = JSONObject()
+
+            val notificationObject = JSONObject()
+
+            notificationObject.put("title", title)
+            notificationObject.put("body", message)
+
+            val dataObject = JSONObject()
+            dataObject.put("userId", currentUserId)
+
+            jsonObject.put("notification", notificationObject)
+            jsonObject.put("data", dataObject)
+            jsonObject.put("to", token)
+
+            callApi(jsonObject)
+        } catch (e: Exception) {
+
+        }
+    }
+
+    private fun callApi(jsonObject: JSONObject) {
+        val JSON: MediaType = "application/json; charset=UTF-8".toMediaType()
+        val client = OkHttpClient()
+        val url = "https://fcm.googleapis.com/fcm/send"
+        val body: RequestBody = RequestBody.create(JSON, jsonObject.toString())
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .header("Authorization", "Bearer ${Constants.FCM_TOKEN}")
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) {
+
+                    } else {
+
+                    }
+                }
+            }
+        })
+
     }
 }

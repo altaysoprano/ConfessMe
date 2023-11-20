@@ -90,6 +90,9 @@ dependencies {
     // Swipe to Refresh
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
     // Read More Text
     implementation 'kr.co.prnd:readmore-textview:1.0.0'
 
