@@ -119,11 +119,13 @@ class OthersConfessionsFragment(
                 viewModel.addBookmark(confessionId, timestamp, userUid)
             },
             onBookmarkRemoveClick = { confessionId -> },
-            onItemPhotoClick = { photoUserUid, photoUserEmail, userName ->
-                onItemPhotoClick(photoUserEmail, photoUserUid)
+            onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserName, photoUserToken ->
+                Log.d("Mesaj: ", "(OthersConfessions photo click) userNameUserUid $photoUserUid \n userNameUserName: $photoUserName \n userNameUserToken $photoUserToken")
+                onItemPhotoClick(photoUserEmail, photoUserUid, photoUserName, photoUserToken)
             },
-            onUserNameClick =  { userNameUserUid, userNameUserEmail, userName ->
-                onUserNameClick(userNameUserEmail, userNameUserUid)
+            onUserNameClick =  { userNameUserUid, userNameUserEmail, userNameUserName, userNameUserToken ->
+                Log.d("Mesaj: ", "(OthersConfessions username click) userNameUserUid $userNameUserUid \n userNameUserName: $userNameUserName \n userNameUserToken $userNameUserToken")
+                onUserNameClick(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken)
             }
         )
     }
@@ -241,10 +243,13 @@ class OthersConfessionsFragment(
         }
     }
 
-    private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String) {
+    private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String,
+                                 photoUserName: String, photoUserToken: String) {
         val bundle = Bundle()
         bundle.putString("userEmail", photoUserEmail)
         bundle.putString("userUid", photoUserUid)
+        bundle.putString("userName", photoUserName)
+        bundle.putString("userToken", photoUserToken)
 
         val profileFragment = OtherUserProfileFragment()
         profileFragment.arguments = bundle
@@ -252,10 +257,13 @@ class OthersConfessionsFragment(
         navRegister.navigateFrag(profileFragment, true)
     }
 
-    private fun onUserNameClick(userNameUserEmail: String, userNameUserUid: String) {
+    private fun onUserNameClick(userNameUserEmail: String, userNameUserUid: String,
+                                userNameUserName: String, userNameUserToken: String) {
         val bundle = Bundle()
         bundle.putString("userEmail", userNameUserEmail)
         bundle.putString("userUid", userNameUserUid)
+        bundle.putString("userName", userNameUserName)
+        bundle.putString("userToken", userNameUserToken)
 
         val profileFragment = OtherUserProfileFragment()
         profileFragment.arguments = bundle

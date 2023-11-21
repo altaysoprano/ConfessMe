@@ -40,8 +40,8 @@ class FollowsFragment : Fragment() {
         onItemClick = { user ->
             onItemClick(user)
         },
-        onFollowClick = { userUid, isFollowing ->
-            followOrUnfollowUser(userUid, isFollowing)
+        onFollowClick = { userUid, userName, userToken, isFollowing ->
+            followOrUnfollowUser(userUid, userName, userToken, isFollowing)
         },
         onItemLongPress = {}
     )
@@ -133,6 +133,8 @@ class FollowsFragment : Fragment() {
             val bundle = Bundle()
             bundle.putString("userEmail", user.email)
             bundle.putString("userUid", user.uid)
+            bundle.putString("userName", user.userName)
+            bundle.putString("userToken", user.token)
 
             val profileFragment = OtherUserProfileFragment()
             profileFragment.arguments = bundle
@@ -163,14 +165,14 @@ class FollowsFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, isFollowing: Boolean) {
+    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, userName: String, userToken: String, isFollowing: Boolean) {
         if (userUidToFollowOrUnfollow.isEmpty()) {
             return
         }
 
         val position = findPositionById(userUidToFollowOrUnfollow)
 
-        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow, isFollowing)
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow, userName, userToken, isFollowing)
 
         val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
             override fun onChanged(state: UiState<FollowUser>) {

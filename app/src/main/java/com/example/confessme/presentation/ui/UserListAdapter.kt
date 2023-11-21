@@ -16,7 +16,7 @@ class UserListAdapter(
     val userList: MutableList<User> = mutableListOf(),
     private val currentUserUid: String,
     private val onItemClick: (User) -> Unit,
-    private val onFollowClick: (String, Boolean) -> Unit,
+    private val onFollowClick: (String, String, String, Boolean) -> Unit,
     private val onItemLongPress: (User) -> Unit
 ) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
@@ -62,7 +62,7 @@ class UserListAdapter(
 
                 binding.followsProgressButtonLayout.followButtonCardview.setOnClickListener {
                     val userToFollow = userList[adapterPosition]
-                    onFollowClick(userToFollow.uid, userToFollow.isFollowing)
+                    onFollowClick(userToFollow.uid, userToFollow.userName, userToFollow.token, userToFollow.isFollowing)
                 }
 
                 itemView.setOnClickListener {

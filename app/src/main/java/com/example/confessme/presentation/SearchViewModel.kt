@@ -66,7 +66,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun followOrUnfollowUser(userUid: String, isFollowing: Boolean) {
+    fun followOrUnfollowUser(userUid: String, userName: String, userToken: String, isFollowing: Boolean) {
         _followUserState.value = UiState.Loading
 
             if (isFollowing) {
@@ -78,7 +78,7 @@ class SearchViewModel @Inject constructor(
                     }
                 }
             } else {
-                repository.followUser(userUid) { followResult ->
+                repository.followUser(userUid, userName, userToken) { followResult ->
                     if (followResult is UiState.Success) {
                         _followUserState.postValue(UiState.Success(followResult.data))
                     } else {

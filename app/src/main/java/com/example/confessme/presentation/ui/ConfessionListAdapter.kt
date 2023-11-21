@@ -38,8 +38,8 @@ class ConfessionListAdapter(
     private val onConfessDeleteClick: (String) -> Unit,
     private val onConfessBookmarkClick: (String, String, String) -> Unit,
     private val onBookmarkRemoveClick: (String) -> Unit,
-    private val onItemPhotoClick: (String, String, String) -> Unit,
-    private val onUserNameClick: (String, String, String) -> Unit
+    private val onItemPhotoClick: (String, String, String, String) -> Unit,
+    private val onUserNameClick: (String, String, String, String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = ConfessMeDialog(context)
@@ -101,6 +101,7 @@ class ConfessionListAdapter(
                         onUserNameClick(
                             userNameClickedUser.userId,
                             userNameClickedUser.email,
+                            userNameClickedUser.userToken,
                             userNameClickedUser.username
                         )
                     }
@@ -226,6 +227,7 @@ class ConfessionListAdapter(
                 onItemPhotoClick(
                     photoClickedUser.fromUserId,
                     photoClickedUser.fromUserEmail,
+                    photoClickedUser.userToken,
                     photoClickedUser.fromUserUsername
                 )
             }

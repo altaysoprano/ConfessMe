@@ -82,22 +82,26 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
             onBookmarkRemoveClick = {confessionId ->
                 viewModel.deleteBookmark(confessionId)
             },
-            onItemPhotoClick = { userUid, userEmail, userName ->
+            onItemPhotoClick = { userUid, userEmail, userToken, userName ->
 
                 val bundle = Bundle()
                 bundle.putString("userEmail", userEmail)
                 bundle.putString("userUid", userUid)
+                bundle.putString("userName", userName)
+                bundle.putString("userToken", userToken)
 
                 val profileFragment = OtherUserProfileFragment()
                 profileFragment.arguments = bundle
 
                 navRegister.navigateFrag(profileFragment, true)
             },
-            onUserNameClick =  { userUid, userEmail, userName ->
+            onUserNameClick =  { userUid, userEmail, userToken, userName ->
 
                 val bundle = Bundle()
                 bundle.putString("userEmail", userEmail)
                 bundle.putString("userUid", userUid)
+                bundle.putString("userName", userName)
+                bundle.putString("userToken", userToken)
 
                 val profileFragment = OtherUserProfileFragment()
                 profileFragment.arguments = bundle

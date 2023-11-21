@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
+import com.example.confessme.util.Constants
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
@@ -14,6 +15,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 import java.util.Date
 
 class UserRepoImp(
@@ -530,6 +541,8 @@ class UserRepoImp(
 
     override fun followUser(
         userUidToFollow: String,
+        userName: String,
+        userToken: String,
         callback: (UiState<FollowUser>) -> Unit
     ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
@@ -539,6 +552,7 @@ class UserRepoImp(
                 .collection("following").document(userUidToFollow)
             val followersRef = database.collection("users").document(userUidToFollow)
                 .collection("followers").document(currentUserUid)
+            val fcmToken = userToken
 
             val batch = database.batch()
 
@@ -550,6 +564,11 @@ class UserRepoImp(
                     val followUser =
                         FollowUser(userUid = followingRef.id, isFollowed = true)
                     callback.invoke(UiState.Success(followUser))
+                    database.collection("users").document(currentUserUid).get()
+                        .addOnSuccessListener {
+                            val username = it.getString("userName") ?: ""
+                            sendNotification("$username followed you", "", userUidToFollow, fcmToken)
+                        }
                 }
                 .addOnFailureListener { exception ->
                     callback.invoke(UiState.Failure(exception.localizedMessage))
@@ -720,5 +739,55 @@ class UserRepoImp(
         } else {
             result(UiState.Failure("User not authenticated"))
         }
+    }
+
+    private fun sendNotification(title: String, message: String, currentUserId: String, token: String) {
+
+        try {
+            val jsonObject = JSONObject()
+
+            val notificationObject = JSONObject()
+
+            notificationObject.put("title", title)
+            notificationObject.put("body", message)
+
+            val dataObject = JSONObject()
+            dataObject.put("userId", currentUserId)
+
+            jsonObject.put("notification", notificationObject)
+            jsonObject.put("data", dataObject)
+            jsonObject.put("to", token)
+
+            callApi(jsonObject)
+        } catch (e: Exception) {
+
+        }
+    }
+
+    private fun callApi(jsonObject: JSONObject) {
+        val JSON: MediaType = "application/json; charset=UTF-8".toMediaType()
+        val client = OkHttpClient()
+        val url = "https://fcm.googleapis.com/fcm/send"
+        val body: RequestBody = RequestBody.create(JSON, jsonObject.toString())
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .header("Authorization", "Bearer ${Constants.FCM_TOKEN}")
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) {
+
+                    } else {
+
+                    }
+                }
+            }
+        })
+
     }
 }

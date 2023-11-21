@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -38,6 +39,8 @@ class OtherUserProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: OtherUserViewPagerAdapter
     private lateinit var userUid: String
+    private lateinit var userName: String
+    private lateinit var userToken: String
     private lateinit var userEmail: String
     private val viewModel: ProfileViewModel by viewModels()
 
@@ -51,7 +54,9 @@ class OtherUserProfileFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
         userEmail = arguments?.getString("userEmail") ?: ""
+        userName = arguments?.getString("userName") ?: ""
         userUid = arguments?.getString("userUid") ?: ""
+        userToken = arguments?.getString("userToken") ?: ""
 
         setTablayoutAndViewPager()
         setAllClickListeners()
@@ -64,7 +69,8 @@ class OtherUserProfileFragment : Fragment() {
     private fun followOrUnfollowUser() {
         if (!userUid.isNullOrEmpty()) {
 
-            viewModel.followOrUnfollowUser(userUid)
+            Log.d("Mesaj: ", "other followda usertoken: $userToken")
+            viewModel.followOrUnfollowUser(userUid, userName, userToken)
 
             val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
                 override fun onChanged(state: UiState<FollowUser>) {

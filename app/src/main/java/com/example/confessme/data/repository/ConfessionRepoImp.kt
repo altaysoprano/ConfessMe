@@ -61,11 +61,15 @@ class ConfessionRepoImp(
                                     val confessionCollection = database.collection("confessions")
                                     val newConfessionDocument = confessionCollection.document()
                                     val confessionId = newConfessionDocument.id
+                                    val toFcmToken = userDocument.getString("token")
+                                    val fromFcmToken = currentUserDocument.getString("token")
 
                                     val confessionData = hashMapOf(
                                         "id" to confessionId,
                                         "userId" to userUid,
                                         "fromUserId" to fromUserUid,
+                                        "userToken" to toFcmToken,
+                                        "fromUserToken" to fromFcmToken,
                                         "text" to confessionText,
                                         "anonymousId" to anonymousId,
                                         "username" to userDocument.getString("userName"),
@@ -77,18 +81,15 @@ class ConfessionRepoImp(
                                         "timestamp" to FieldValue.serverTimestamp()
                                     )
 
-                                    val fcmToken = userDocument.getString("token")
-
                                     newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success("Confession added successfully"))
-                                            if(fcmToken != "" && fcmToken != null) {
-                                                Log.d("Mesaj: ", "fcmToken boş değil: $fcmToken")
+                                            if(toFcmToken != "" && toFcmToken != null) {
                                                 sendNotification(
                                                     "$fromUserUsername confessed",
                                                     confessionText,
-                                                    currentUserUid,
-                                                    fcmToken
+                                                    userUid,
+                                                    toFcmToken
                                                 )
                                             }
                                         }
@@ -250,11 +251,15 @@ class ConfessionRepoImp(
                         val confessionDoc = confessionQuerySnapshot.documents[0]
 
                         val fromUserUsername = confessionDoc.getString("username") ?: ""
+                        val fromUserUserId = confessionDoc.getString("fromUserId") ?: ""
                         val fromUserImageUrl = confessionDoc.getString("imageUrl") ?: ""
                         val fromUserEmail = confessionDoc.getString("email") ?: ""
+                        val fromUserToken = confessionDoc.getString("fromUserToken") ?: ""
+                        val fcmToken = fromUserToken
                         val username = confessionDoc.getString("fromUserUsername") ?: ""
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
                         val email = confessionDoc.getString("fromUserEmail") ?: ""
+                        val confessionText = confessionDoc.getString("text") ?: ""
 
                         val answerData = Answer(
                             text = answerText,
@@ -287,6 +292,7 @@ class ConfessionRepoImp(
                                                 )
                                             )
                                         )
+                                        sendNotification("$fromUserUsername replied to this confession:", confessionText, fromUserUserId, fcmToken)
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(UiState.Failure(exception.localizedMessage))
@@ -319,6 +325,11 @@ class ConfessionRepoImp(
             confessionDocRef.get()
                 .addOnSuccessListener { confessionQuerySnapshot ->
                     if (!confessionQuerySnapshot.isEmpty) {
+                        val confessionDoc = confessionQuerySnapshot.documents[0]
+                        val fcmToken = confessionDoc.getString("fromUserToken") ?: ""
+                        val fromUserId = confessionDoc.getString("fromUserId") ?: ""
+                        val username = confessionDoc.getString("username") ?: ""
+                        val confessionText = confessionDoc.getString("text") ?: ""
 
                         val updatedData = mapOf("favorited" to favorited)
 
@@ -336,6 +347,14 @@ class ConfessionRepoImp(
                                                 )
                                             )
                                         )
+                                        if(favorited) {
+                                            sendNotification(
+                                                "$username liked this confession:",
+                                                confessionText,
+                                                fromUserId,
+                                                fcmToken
+                                            )
+                                        }
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(UiState.Failure(exception.localizedMessage))
@@ -370,10 +389,17 @@ class ConfessionRepoImp(
                     if (!confessionQuerySnapshot.isEmpty) {
                         val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
 
+                        val fromUserUsername = confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
+                        val userId = confessionDocumentSnapshot.getString("userId") ?: ""
+                        val userToken = confessionDocumentSnapshot.getString("userToken") ?: ""
+                        val fcmToken = userToken
+
                         val answerMap =
                             confessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
                         if (answerMap != null) {
                             answerMap["favorited"] = isFavorited
+
+                            val answerText = answerMap.get("text") as? String
 
                             confessionDocumentSnapshot.reference.update("answer", answerMap)
                                 .addOnSuccessListener {
@@ -386,6 +412,14 @@ class ConfessionRepoImp(
                                                     )
                                                 )
                                             )
+                                            if(isFavorited) {
+                                                sendNotification(
+                                                    "$fromUserUsername liked this answer:",
+                                                    "$answerText",
+                                                    userId,
+                                                    fcmToken
+                                                )
+                                            }
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure(exception.localizedMessage))

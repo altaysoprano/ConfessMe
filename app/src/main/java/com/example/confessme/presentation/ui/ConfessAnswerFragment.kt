@@ -101,17 +101,24 @@ class ConfessAnswerFragment(
                     val answerText = state.data?.answer?.text ?: ""
                     isAnswerFavorited = state.data?.answer?.favorited ?: false
                     val answerFromUserUid = state.data?.fromUserId ?: ""
+                    val answerFromUsername = state.data?.fromUserUsername ?: ""
+                    val answerUserName = state.data?.username ?: ""
+                    val userToken = state.data?.fromUserToken ?: ""
+                    val fromUserToken = state.data?.userToken ?: ""
                     val answerUserUid = state.data?.userId ?: ""
                     val isConfessionAnswered = state.data?.answered ?: false
                     val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
 
+                    Log.d("Mesaj: ", "ConfessAnswerFragmentta getConfession successte. userToken $userToken, fromUserToken $fromUserToken")
+
                     setUserImage(state.data?.answer?.fromUserImageUrl)
                     setSaveButton()
                     setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
                         answerDate, answerUserUid, answerFromUserUid,
-                        confessedUserName)
+                        answerFromUsername, answerUserName, userToken,
+                        fromUserToken, confessedUserName)
                     setFavoriteDeleteEditReplyStates(answerText, answerFromUserUid,
                                                     answerUserUid, anonymousId, isConfessionAnswered)
                     setFavorite(isAnswerFavorited)
@@ -331,14 +338,17 @@ class ConfessAnswerFragment(
 
     private fun setImageAndTextStates(isConfessionAnswered: Boolean, answerText: String, answeredUserName: String,
                                         answerDate: String, answerUserUid: String, answerFromUserUid: String,
-                                      confessedUserName: String) {
+                                      answerFromUsername: String, answerUserName: String, userToken: String,
+                                      fromUserToken: String, confessedUserName: String) {
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
             binding.confessAnswerEditText.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
-            setUserNameProfileImageAndAnswerText(answerUserUid, answerFromUserUid, confessedUserName, answerText)
+            setUserNameProfileImageAndAnswerText(
+                answerUserUid, answerFromUserUid, answerFromUsername, answerUserName,
+                userToken, fromUserToken, confessedUserName, answerText)
             setUsernameAndDateText(answeredUserName, answerDate)
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
@@ -399,6 +409,8 @@ class ConfessAnswerFragment(
     }
 
     private fun setUserNameProfileImageAndAnswerText(answerUserUid: String, answerFromUserUid: String,
+                                                     answerFromUsername: String, answerUserName: String,
+                                                     userToken: String, fromUserToken: String,
                                                      confessedUserName: String, answerText: String) {
         val confessedUserNameBold = SpannableString("@$confessedUserName")
         confessedUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -409,7 +421,10 @@ class ConfessAnswerFragment(
                 if (currentUserUid != answerFromUserUid && answerFromUserUid != "") {
                     val bundle = Bundle()
                     bundle.putString("userUid", answerFromUserUid)
+                    bundle.putString("userName", answerUserName)
+                    bundle.putString("userToken", userToken)
 
+                    Log.d("Mesaj: ", "answerFromUsername: $answerFromUsername answerFromUserUid: $answerFromUserUid userToken: $userToken")
                     val profileFragment = OtherUserProfileFragment()
                     profileFragment.arguments = bundle
 
@@ -434,7 +449,11 @@ class ConfessAnswerFragment(
         binding.answerScreenProfileImage.setOnClickListener {
             if (currentUserUid != answerUserUid) {
                 val bundle = Bundle()
+                Log.d("Mesaj: ", "(profile screene tıkladıktan sonra) answerFromUsername: $answerFromUsername answerFromUserUid: $answerFromUserUid userToken: $userToken")
+
                 bundle.putString("userUid", answerUserUid)
+                bundle.putString("userName", answerFromUsername)
+                bundle.putString("userToken", fromUserToken)
 
                 val profileFragment = OtherUserProfileFragment()
                 profileFragment.arguments = bundle

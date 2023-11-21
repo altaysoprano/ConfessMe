@@ -87,8 +87,8 @@ class SearchFragment : Fragment() {
             onItemClick = { user ->
                 onItemClick(user)
             },
-            onFollowClick = { userUid, isFollowing ->
-                followOrUnfollowUser(userUid, ListType.UserList, isFollowing)
+            onFollowClick = { userUid, userName, userToken, isFollowing ->
+                followOrUnfollowUser(userUid, userName, userToken, ListType.UserList, isFollowing)
             },
             onItemLongPress = {}
         )
@@ -98,8 +98,8 @@ class SearchFragment : Fragment() {
             onItemClick = { user ->
                 onItemClick(user)
             },
-            onFollowClick = { userUid, isFollowing ->
-                followOrUnfollowUser(userUid, ListType.HistoryList, isFollowing)
+            onFollowClick = { userUid, userName, userToken, isFollowing ->
+                followOrUnfollowUser(userUid, userName, userToken, ListType.HistoryList, isFollowing)
             },
             onItemLongPress = {
                 dialogHelper = ConfessMeDialog(requireContext())
@@ -259,6 +259,8 @@ class SearchFragment : Fragment() {
         val bundle = Bundle()
         bundle.putString("userEmail", user.email)
         bundle.putString("userUid", user.uid)
+        bundle.putString("userName", user.userName)
+        bundle.putString("userToken", user.token)
 
         val profileFragment = OtherUserProfileFragment()
         profileFragment.arguments = bundle
@@ -277,7 +279,7 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, listType: ListType, isFollowing: Boolean) {
+    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, userName: String, userToken: String, listType: ListType, isFollowing: Boolean) {
         if (userUidToFollowOrUnfollow.isEmpty()) {
             return
         }
@@ -295,7 +297,7 @@ class SearchFragment : Fragment() {
 
         val position = findPositionById(userUidToFollowOrUnfollow, adapter.userList)
 
-        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow, isFollowing)
+        viewModel.followOrUnfollowUser(userUidToFollowOrUnfollow, userName, userToken, isFollowing)
 
         val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
             override fun onChanged(state: UiState<FollowUser>) {
