@@ -120,7 +120,7 @@ class HomeFragment : Fragment() {
                 viewModel.addBookmark(confessionId, timestamp, userUid)
             },
             onBookmarkRemoveClick = { confessionId -> },
-            onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserName, photoUserToken ->
+            onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, photoUserName ->
                 onItemPhotoClick(photoUserEmail, photoUserUid, photoUserName, photoUserToken)
             },
             onUserNameClick = { userNameUserUid, userNameUserEmail, userNameUserToken, userNameUserName ->

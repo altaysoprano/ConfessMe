@@ -73,19 +73,28 @@ class AuthRepoImp(
                             val user = firebaseAuth.currentUser
                             if (user != null) {
                                 val uid = user.uid
-                                database.collection("users").document(uid)
-                                    .set(
-                                        User(
-                                            uid = uid,
-                                            email = email,
-                                            password = pass,
-                                            userName = randomUsername
+                                FirebaseMessaging.getInstance().token.addOnSuccessListener { fcmToken ->
+                                    database.collection("users").document(uid)
+                                        .set(
+                                            User(
+                                                uid = uid,
+                                                email = email,
+                                                password = pass,
+                                                userName = randomUsername,
+                                                token = fcmToken
+                                            )
+                                        )
+                                        .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(UiState.Failure(exception.localizedMessage))
+                                        }
+                                }.addOnFailureListener { exception ->
+                                    result.invoke(
+                                        UiState.Failure(
+                                            exception.localizedMessage ?: "FCM Token retrieval failed"
                                         )
                                     )
-                                    .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
-                                    .addOnFailureListener { exception ->
-                                        result.invoke(UiState.Failure(exception.localizedMessage))
-                                    }
+                                }
                             }
                         } else {
                             val exception = authTask.exception

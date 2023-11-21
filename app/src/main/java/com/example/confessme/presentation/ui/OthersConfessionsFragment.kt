@@ -119,12 +119,10 @@ class OthersConfessionsFragment(
                 viewModel.addBookmark(confessionId, timestamp, userUid)
             },
             onBookmarkRemoveClick = { confessionId -> },
-            onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserName, photoUserToken ->
-                Log.d("Mesaj: ", "(OthersConfessions photo click) userNameUserUid $photoUserUid \n userNameUserName: $photoUserName \n userNameUserToken $photoUserToken")
+            onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, photoUserName ->
                 onItemPhotoClick(photoUserEmail, photoUserUid, photoUserName, photoUserToken)
             },
-            onUserNameClick =  { userNameUserUid, userNameUserEmail, userNameUserName, userNameUserToken ->
-                Log.d("Mesaj: ", "(OthersConfessions username click) userNameUserUid $userNameUserUid \n userNameUserName: $userNameUserName \n userNameUserToken $userNameUserToken")
+            onUserNameClick =  { userNameUserUid, userNameUserEmail, userNameUserToken, userNameUserName ->
                 onUserNameClick(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken)
             }
         )
