@@ -3,6 +3,7 @@ package com.example.confessme.data.repository
 import android.net.Uri
 import android.util.Log
 import com.example.confessme.data.model.FollowUser
+import com.example.confessme.data.model.Notification
 import com.example.confessme.data.model.User
 import com.example.confessme.util.Constants
 import com.example.confessme.util.FollowType
@@ -567,7 +568,16 @@ class UserRepoImp(
                     database.collection("users").document(currentUserUid).get()
                         .addOnSuccessListener {
                             val username = it.getString("userName") ?: ""
-                            sendNotification("$username followed you", "", userUidToFollow, fcmToken)
+                            val fromUserImageUrl = it.getString("imageUrl") ?: ""
+                            if (fcmToken != "") {
+                                sendNotification(
+                                    "$username followed you",
+                                    "",
+                                    userUidToFollow,
+                                    fcmToken
+                                )
+                            }
+                            addNotificationToUser(userUidToFollow, currentUserUid, "", username, fromUserImageUrl, "", "followed you")
                         }
                 }
                 .addOnFailureListener { exception ->
@@ -788,6 +798,38 @@ class UserRepoImp(
                 }
             }
         })
+    }
 
+    private fun addNotificationToUser(
+        userId: String,
+        fromUserId: String,
+        confessionText: String,
+        fromUserUsername: String,
+        fromUserImageUrl: String,
+        confessionId: String,
+        description: String
+    ) {
+        val notificationsCollection = database.collection("users").document(userId)
+            .collection("notifications")
+
+        val notification = Notification(
+            confessionId = confessionId,
+            userId = userId,
+            fromUserId = fromUserId,
+            text = confessionText,
+            fromUserUsername = fromUserUsername,
+            fromUserImageUrl = fromUserImageUrl,
+            description = " $description",
+            timestamp = FieldValue.serverTimestamp()
+        )
+
+        notificationsCollection.add(notification)
+            .addOnSuccessListener { documentReference ->
+                val notificationId = documentReference.id
+                val updatedNotification = notification.copy(id = notificationId)
+
+                notificationsCollection.document(notificationId)
+                    .set(updatedNotification)
+            }
     }
 }

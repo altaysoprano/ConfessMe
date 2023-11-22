@@ -11,17 +11,27 @@
         android:src="@drawable/empty_profile_photo" />
 
     <LinearLayout
-        android:id="@+id/notificationScreenUsernameDescLayout"
+        android:id="@+id/notificationsScreenGeneralLinearLayout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_marginStart="4dp"
         android:layout_toEndOf="@id/notificationScreenProfileImage"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp">
 
-        <TextView
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:id="@+id/notificationScreenUsernameDescLayout"
+            >
+            <TextView
             android:id="@+id/notificationScreenUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:layout_marginHorizontal="4dp"
             android:text="username"
             android:layout_gravity="center_vertical"
             android:textStyle="bold" />
@@ -38,21 +48,18 @@
             android:focusable="true"
             android:text="description"
             android:textStyle="normal" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/notificationsScreenConfession"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:focusable="true"
+            android:text="confession"
+            android:textStyle="normal" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/notificationsScreenConfession"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:clickable="true"
-        android:layout_gravity="center_vertical"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:focusable="true"
-        android:layout_toEndOf="@id/notificationScreenProfileImage"
-        android:layout_below="@id/notificationScreenUsernameDescLayout"
-        android:text="confession"
-        android:textStyle="normal" />
 
 </RelativeLayout>

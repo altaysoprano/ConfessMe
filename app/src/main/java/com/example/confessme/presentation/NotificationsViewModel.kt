@@ -31,6 +31,14 @@ class NotificationsViewModel @Inject constructor(
     val fetchNotificationsState: LiveData<UiState<List<Notification>>>
         get() = _fetchNotificationsState
 
+    private val _onPagingState = MutableLiveData<UiState<List<Notification>>>()
+    val onPagingState: LiveData<UiState<List<Notification>>>
+        get() = _onPagingState
+
+    private val _onSwipeState = MutableLiveData<UiState<List<Notification>>>()
+    val onSwipeState: LiveData<UiState<List<Notification>>>
+        get() = _onSwipeState
+
     fun signOut() {
         _signOutState.value = UiState.Loading
         authRepo.signOut {
@@ -38,10 +46,24 @@ class NotificationsViewModel @Inject constructor(
         }
     }
 
-    fun fetchNotifications() {
+    fun fetchNotifications(limit: Long) {
         _fetchNotificationsState.value = UiState.Loading
-        notificationRepo.fetchNotificationsForUser {
+        notificationRepo.fetchNotificationsForUser(limit) {
             _fetchNotificationsState.value = it
+        }
+    }
+
+    fun onPaging(limit: Long) {
+        _onPagingState.value = UiState.Loading
+        notificationRepo.fetchNotificationsForUser(limit) { result ->
+            _onPagingState.postValue(result)
+        }
+    }
+
+    fun onSwiping(limit: Long) {
+        _onSwipeState.value = UiState.Loading
+        notificationRepo.fetchNotificationsForUser(limit) { result ->
+            _onSwipeState.postValue(result)
         }
     }
 }

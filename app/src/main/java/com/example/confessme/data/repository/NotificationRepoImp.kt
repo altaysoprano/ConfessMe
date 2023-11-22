@@ -12,6 +12,7 @@ class NotificationRepoImp(
 ): NotificationRepo {
 
     override fun fetchNotificationsForUser(
+        limit: Long,
         result: (UiState<List<Notification>>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
@@ -23,6 +24,7 @@ class NotificationRepoImp(
                 .collection("notifications")
 
             notificationsCollection
+                .limit(limit)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener { documents ->

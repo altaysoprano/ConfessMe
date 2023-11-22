@@ -1,7 +1,9 @@
 package com.example.confessme.presentation.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.confessme.R
@@ -34,11 +36,26 @@ class NotificationsAdapter(
 
     inner class NotificationViewHolder(private val binding: NotificationItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        val context = binding.root.context
+
+        val height50dp = context.resources.getDimensionPixelSize(R.dimen.height_50dp)
+
         fun bind(notification: Notification) {
             binding.apply {
                 notificationScreenUsername.text = notification.fromUserUsername
                 notificationsScreenConfession.text = notification.text
                 notificationsScreenNotification.text = notification.description
+
+                if (notificationsScreenConfession.text.isBlank()) {
+                    notificationsScreenConfession.visibility = View.GONE
+                    notificationsScreenGeneralLinearLayout.layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+                    notificationsScreenGeneralLinearLayout.layoutParams.height = height50dp
+                } else {
+                    notificationsScreenConfession.visibility = View.VISIBLE
+                    notificationsScreenGeneralLinearLayout.layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
+                    notificationsScreenGeneralLinearLayout.layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
+                }
 
                 if (notification.fromUserImageUrl.isNotEmpty()) {
                     Glide.with(itemView)

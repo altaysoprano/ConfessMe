@@ -15,9 +15,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentNotificationsBinding
 import com.example.confessme.databinding.FragmentOtherUserProfileBinding
+import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.NotificationsViewModel
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
@@ -30,16 +32,20 @@ import dagger.hilt.android.AndroidEntryPoint
 class NotificationsFragment : Fragment() {
 
     private lateinit var binding: FragmentNotificationsBinding
+    private lateinit var noNotificationsBinding: NoConfessionsHereBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: NotificationsViewModel by viewModels()
     private lateinit var notificationsListAdapter: NotificationsAdapter
     private var bottomNavBarControl: BottomNavBarControl? = null
+    private var limit: Long = 20
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        noNotificationsBinding = binding.noConfessionsHereText
+        noNotificationsBinding.noConfessionsHereText.text = "No notifications found here"
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.title = "Notifications"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.notificationsToolbar)
@@ -47,7 +53,12 @@ class NotificationsFragment : Fragment() {
         setupRecyclerView()
         setHasOptionsMenu(true)
 
-        viewModel.fetchNotifications()
+        viewModel.fetchNotifications(limit)
+
+        binding.swipeRefreshLayoutNotifications.setOnRefreshListener {
+            viewModel.onSwiping(limit)
+            notificationsListAdapter.notifyDataSetChanged()
+        }
 
         return binding.root
     }
@@ -56,12 +67,32 @@ class NotificationsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         observeSignOut()
         observeFetchNotifications()
+        observePaging()
+        observeSwiping()
     }
 
     private fun setupRecyclerView() {
         binding.notificationsRecyclerviewId.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = notificationsListAdapter
+            this.addOnScrollListener(object :
+                RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val visibleItemCount = layoutManager.childCount
+                    val totalItemCount = layoutManager.itemCount
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= limit
+                    ) {
+                        limit += 10
+                        viewModel.onPaging(limit)
+                    }
+                }
+            })
         }
     }
 
@@ -70,29 +101,81 @@ class NotificationsFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarNotifications.visibility = View.VISIBLE
-                    // noConfessFoundBinding.root.visibility = View.GONE
+                    noNotificationsBinding.root.visibility = View.GONE
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarNotifications.visibility = View.GONE
-                    // binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
-                    // noConfessFoundBinding.root.visibility = View.GONE
+                    binding.swipeRefreshLayoutNotifications.isRefreshing = false
+                    noNotificationsBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
                     binding.progressBarNotifications.visibility = View.GONE
-                    // binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
-                    /*
+                    binding.swipeRefreshLayoutNotifications.isRefreshing = false
                     if (state.data.isEmpty()) {
-                        noConfessFoundBinding.root.visibility = View.VISIBLE
+                        noNotificationsBinding.root.visibility = View.VISIBLE
                     } else {
-                        noConfessFoundBinding.root.visibility = View.GONE
-                        confessListAdapter.updateList(state.data)
+                        noNotificationsBinding.root.visibility = View.GONE
+                        notificationsListAdapter.updateList(state.data)
                     }
-*/
-                    notificationsListAdapter.updateList(state.data)
+                }
+            }
+        }
+    }
+
+    private fun observePaging() {
+        viewModel.onPagingState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarNotifications.visibility = View.VISIBLE
+                    noNotificationsBinding.root.visibility = View.GONE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarNotifications.visibility = View.GONE
+                    noNotificationsBinding.root.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarNotifications.visibility = View.GONE
+                    if (state.data.isEmpty()) {
+                        noNotificationsBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noNotificationsBinding.root.visibility = View.GONE
+                        notificationsListAdapter.updateList(state.data)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeSwiping() {
+        viewModel.onSwipeState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    noNotificationsBinding.root.visibility = View.GONE
+                }
+
+                is UiState.Failure -> {
+                    noNotificationsBinding.root.visibility = View.GONE
+                    binding.swipeRefreshLayoutNotifications.isRefreshing = false
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.swipeRefreshLayoutNotifications.isRefreshing = false
+                    if (state.data.isEmpty()) {
+                        noNotificationsBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noNotificationsBinding.root.visibility = View.GONE
+                        notificationsListAdapter.updateList(state.data)
+                    }
                 }
             }
         }
@@ -102,19 +185,19 @@ class NotificationsFragment : Fragment() {
         viewModel.signOutState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarNotifications.visibility = View.VISIBLE
+                    binding.progressBarNotificationsGeneral.visibility = View.VISIBLE
                     setHomeScreenDisabled(true)
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarNotifications.visibility = View.GONE
+                    binding.progressBarNotificationsGeneral.visibility = View.GONE
                     setHomeScreenDisabled(false)
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarNotifications.visibility = View.GONE
+                    binding.progressBarNotificationsGeneral.visibility = View.GONE
                     setHomeScreenDisabled(false)
                     val fragmentManager = parentFragmentManager
                     for (i in 0 until fragmentManager.backStackEntryCount) {
