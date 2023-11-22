@@ -92,6 +92,8 @@ class ConfessionRepoImp(
                                                     toFcmToken
                                                 )
                                             }
+                                            addNotificationToUser(userUid, fromUserUid ?: "", confessionText, fromUserUsername ?: "",
+                                                fromUserImageUrl ?: "", confessionId)
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure("Could not confess"))
@@ -747,6 +749,29 @@ class ConfessionRepoImp(
                 }
             }
         })
-
     }
+
+    private fun addNotificationToUser(
+        userId: String,
+        fromUserId: String,
+        confessionText: String,
+        fromUserUsername: String,
+        fromUserImageUrl: String,
+        confessionId: String
+    ) {
+        val notificationsCollection = database.collection("users").document(userId)
+            .collection("notifications")
+        val notificationData = hashMapOf(
+            "fromUserId" to fromUserId,
+            "userId" to userId,
+            "confessionText" to confessionText,
+            "fromUserUsername" to fromUserUsername,
+            "fromUserImageUrl" to fromUserImageUrl,
+            "confessionId" to confessionId,
+            "timestamp" to FieldValue.serverTimestamp()
+        )
+
+        notificationsCollection.add(notificationData)
+    }
+
 }
