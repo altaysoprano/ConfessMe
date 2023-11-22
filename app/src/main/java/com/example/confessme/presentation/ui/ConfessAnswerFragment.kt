@@ -111,8 +111,6 @@ class ConfessAnswerFragment(
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
 
-                    Log.d("Mesaj: ", "ConfessAnswerFragmentta getConfession successte. userToken $userToken, fromUserToken $fromUserToken")
-
                     setUserImage(state.data?.answer?.fromUserImageUrl)
                     setSaveButton()
                     setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
