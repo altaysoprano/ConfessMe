@@ -4,6 +4,8 @@ import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.data.repository.AuthRepoImp
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.data.repository.ConfessionRepoImp
+import com.example.confessme.data.repository.NotificationRepo
+import com.example.confessme.data.repository.NotificationRepoImp
 import com.example.confessme.data.repository.UserRepo
 import com.example.confessme.data.repository.UserRepoImp
 import com.google.firebase.auth.FirebaseAuth
@@ -23,9 +25,18 @@ object RepositoryModule {
     @Singleton
     fun provideConfessionRepo(
         firebaseAuth: FirebaseAuth,
-        database: FirebaseFirestore,
+        database: FirebaseFirestore
     ) : ConfessionRepo {
         return ConfessionRepoImp(firebaseAuth, database)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepo(
+        firebaseAuth: FirebaseAuth,
+        database: FirebaseFirestore
+    ) : NotificationRepo {
+        return NotificationRepoImp(firebaseAuth, database)
     }
 
     @Provides

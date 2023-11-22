@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentNotificationsBinding
 import com.example.confessme.databinding.FragmentOtherUserProfileBinding
@@ -31,6 +32,7 @@ class NotificationsFragment : Fragment() {
     private lateinit var binding: FragmentNotificationsBinding
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: NotificationsViewModel by viewModels()
+    private lateinit var notificationsListAdapter: NotificationsAdapter
     private var bottomNavBarControl: BottomNavBarControl? = null
 
     override fun onCreateView(
@@ -41,7 +43,11 @@ class NotificationsFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.title = "Notifications"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.notificationsToolbar)
+        notificationsListAdapter = NotificationsAdapter()
+        setupRecyclerView()
         setHasOptionsMenu(true)
+
+        viewModel.fetchNotifications()
 
         return binding.root
     }
@@ -49,6 +55,47 @@ class NotificationsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         observeSignOut()
+        observeFetchNotifications()
+    }
+
+    private fun setupRecyclerView() {
+        binding.notificationsRecyclerviewId.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = notificationsListAdapter
+        }
+    }
+
+    private fun observeFetchNotifications() {
+        viewModel.fetchNotificationsState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarNotifications.visibility = View.VISIBLE
+                    // noConfessFoundBinding.root.visibility = View.GONE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarNotifications.visibility = View.GONE
+                    // binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
+                    // noConfessFoundBinding.root.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarNotifications.visibility = View.GONE
+                    // binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
+                    /*
+                    if (state.data.isEmpty()) {
+                        noConfessFoundBinding.root.visibility = View.VISIBLE
+                    } else {
+                        noConfessFoundBinding.root.visibility = View.GONE
+                        confessListAdapter.updateList(state.data)
+                    }
+*/
+                    notificationsListAdapter.updateList(state.data)
+                }
+            }
+        }
     }
 
     private fun observeSignOut() {
@@ -91,6 +138,7 @@ class NotificationsFragment : Fragment() {
             R.id.sign_out -> {
                 signOut()
             }
+
             R.id.ic_notifications -> {
                 requireActivity().onBackPressed()
             }

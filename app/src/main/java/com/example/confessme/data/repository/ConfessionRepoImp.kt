@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
+import com.example.confessme.data.model.Notification
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.Constants
 import com.example.confessme.util.UiState
@@ -46,11 +47,15 @@ class ConfessionRepoImp(
                 .get()
                 .addOnSuccessListener { currentUserDocument ->
                     if (currentUserDocument.exists()) {
-                        val fromUserImageUrl = if(isAnonymous) "" else currentUserDocument.getString("imageUrl")
-                        val fromUserUsername = if(isAnonymous) "Anonymous" else currentUserDocument.getString("userName")
+                        val fromUserImageUrl =
+                            if (isAnonymous) "" else currentUserDocument.getString("imageUrl")
+                        val fromUserUsername =
+                            if (isAnonymous) "Anonymous" else currentUserDocument.getString("userName")
                         val fromUserEmail = currentUserDocument.getString("email")
-                        val anonymousId = if(isAnonymous) currentUserDocument.getString("uid") else ""
-                        val fromUserUid = if(isAnonymous) "" else currentUserDocument.getString("uid")
+                        val anonymousId =
+                            if (isAnonymous) currentUserDocument.getString("uid") else ""
+                        val fromUserUid =
+                            if (isAnonymous) "" else currentUserDocument.getString("uid")
 
                         database.collection("users").document(userUid)
                             .get()
@@ -84,7 +89,7 @@ class ConfessionRepoImp(
                                     newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success("Confession added successfully"))
-                                            if(toFcmToken != "" && toFcmToken != null) {
+                                            if (toFcmToken != "" && toFcmToken != null) {
                                                 sendNotification(
                                                     "$fromUserUsername confessed",
                                                     confessionText,
@@ -92,8 +97,15 @@ class ConfessionRepoImp(
                                                     toFcmToken
                                                 )
                                             }
-                                            addNotificationToUser(userUid, fromUserUid ?: "", confessionText, fromUserUsername ?: "",
-                                                fromUserImageUrl ?: "", confessionId)
+                                            addNotificationToUser(
+                                                userId = userUid,
+                                                fromUserId = fromUserUid ?: "",
+                                                confessionText = confessionText,
+                                                fromUserUsername=fromUserUsername ?: "",
+                                                fromUserImageUrl=fromUserImageUrl ?: "",
+                                                confessionId = confessionId,
+                                                description = "confessed"
+                                            )
                                         }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure("Could not confess"))
@@ -294,7 +306,12 @@ class ConfessionRepoImp(
                                                 )
                                             )
                                         )
-                                        sendNotification("$fromUserUsername replied to this confession:", confessionText, fromUserUserId, fcmToken)
+                                        sendNotification(
+                                            "$fromUserUsername replied to this confession:",
+                                            confessionText,
+                                            fromUserUserId,
+                                            fcmToken
+                                        )
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(UiState.Failure(exception.localizedMessage))
@@ -349,7 +366,7 @@ class ConfessionRepoImp(
                                                 )
                                             )
                                         )
-                                        if(favorited) {
+                                        if (favorited) {
                                             sendNotification(
                                                 "$username liked this confession:",
                                                 confessionText,
@@ -391,7 +408,8 @@ class ConfessionRepoImp(
                     if (!confessionQuerySnapshot.isEmpty) {
                         val confessionDocumentSnapshot = confessionQuerySnapshot.documents[0]
 
-                        val fromUserUsername = confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
+                        val fromUserUsername =
+                            confessionDocumentSnapshot.getString("fromUserUsername") ?: ""
                         val userId = confessionDocumentSnapshot.getString("userId") ?: ""
                         val userToken = confessionDocumentSnapshot.getString("userToken") ?: ""
                         val fcmToken = userToken
@@ -414,7 +432,7 @@ class ConfessionRepoImp(
                                                     )
                                                 )
                                             )
-                                            if(isFavorited) {
+                                            if (isFavorited) {
                                                 sendNotification(
                                                     "$fromUserUsername liked this answer:",
                                                     "$answerText",
@@ -702,7 +720,12 @@ class ConfessionRepoImp(
         }
     }
 
-    private fun sendNotification(title: String, message: String, currentUserId: String, token: String) {
+    private fun sendNotification(
+        title: String,
+        message: String,
+        currentUserId: String,
+        token: String
+    ) {
 
         try {
             val jsonObject = JSONObject()
@@ -757,21 +780,29 @@ class ConfessionRepoImp(
         confessionText: String,
         fromUserUsername: String,
         fromUserImageUrl: String,
-        confessionId: String
+        confessionId: String,
+        description: String
     ) {
         val notificationsCollection = database.collection("users").document(userId)
             .collection("notifications")
-        val notificationData = hashMapOf(
-            "fromUserId" to fromUserId,
-            "userId" to userId,
-            "confessionText" to confessionText,
-            "fromUserUsername" to fromUserUsername,
-            "fromUserImageUrl" to fromUserImageUrl,
-            "confessionId" to confessionId,
-            "timestamp" to FieldValue.serverTimestamp()
+
+        val notification = Notification(
+            confessionId = confessionId,
+            userId = userId,
+            fromUserId = fromUserId,
+            text = confessionText,
+            fromUserUsername = fromUserUsername,
+            fromUserImageUrl = fromUserImageUrl,
+            description = " $description"
         )
 
-        notificationsCollection.add(notificationData)
-    }
+        notificationsCollection.add(notification)
+            .addOnSuccessListener { documentReference ->
+                val notificationId = documentReference.id
+                val updatedNotification = notification.copy(id = notificationId)
 
+                notificationsCollection.document(notificationId)
+                    .set(updatedNotification)
+            }
+    }
 }

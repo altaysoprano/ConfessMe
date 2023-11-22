@@ -4,14 +4,17 @@
     android:layout_height="wrap_content"
     android:padding="8dp">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notificationScreenProfileImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/empty_profile_photo" />
+
     <LinearLayout
+        android:id="@+id/notificationScreenUsernameDescLayout"
         android:layout_width="match_parent"
+        android:layout_toEndOf="@id/notificationScreenProfileImage"
         android:layout_height="wrap_content">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/notificationScreenProfileImage"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/empty_profile_photo" />
 
         <TextView
             android:id="@+id/notificationScreenUsername"
@@ -33,8 +36,23 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:focusable="true"
-            android:text="notification"
+            android:text="description"
             android:textStyle="normal" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/notificationsScreenConfession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:clickable="true"
+        android:layout_gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:focusable="true"
+        android:layout_toEndOf="@id/notificationScreenProfileImage"
+        android:layout_below="@id/notificationScreenUsernameDescLayout"
+        android:text="confession"
+        android:textStyle="normal" />
 
 </RelativeLayout>
