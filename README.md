@@ -1,4 +1,4 @@
-# ConfessMe
+# ConfessMe - Social Media App
 
 ConfessMe is a social media platform developed to allow people to confess things to each other. Users can make confessions and respond to or like others' confessions. It is built using Firebase for cloud storage and incorporates various Android technologies. The codebase is structured using the MVVM architecture with a focus on clean code practices. The development is currently ongoing, and this Read Me will be regularly updated.
 
