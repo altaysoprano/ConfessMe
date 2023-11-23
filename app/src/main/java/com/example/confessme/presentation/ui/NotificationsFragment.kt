@@ -100,12 +100,12 @@ class NotificationsFragment : Fragment() {
         viewModel.fetchNotificationsState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.progressBarNotifications.visibility = View.VISIBLE
+                    binding.progressBarNotificationsGeneral.visibility = View.VISIBLE
                     noNotificationsBinding.root.visibility = View.GONE
                 }
 
                 is UiState.Failure -> {
-                    binding.progressBarNotifications.visibility = View.GONE
+                    binding.progressBarNotificationsGeneral.visibility = View.GONE
                     binding.swipeRefreshLayoutNotifications.isRefreshing = false
                     noNotificationsBinding.root.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
@@ -113,7 +113,7 @@ class NotificationsFragment : Fragment() {
                 }
 
                 is UiState.Success -> {
-                    binding.progressBarNotifications.visibility = View.GONE
+                    binding.progressBarNotificationsGeneral.visibility = View.GONE
                     binding.swipeRefreshLayoutNotifications.isRefreshing = false
                     if (state.data.isEmpty()) {
                         noNotificationsBinding.root.visibility = View.VISIBLE

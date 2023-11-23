@@ -13,6 +13,7 @@ class NotificationRepoImp(
 
     override fun fetchNotificationsForUser(
         limit: Long,
+        forNotifications: Boolean,
         result: (UiState<List<Notification>>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
@@ -35,7 +36,21 @@ class NotificationRepoImp(
                         notificationList.add(notification)
                     }
 
-                    result.invoke(UiState.Success(notificationList))
+                    if (forNotifications) {
+                        val batch = database.batch()
+                        for (document in documents) {
+                            val notificationRef = notificationsCollection.document(document.id)
+                            batch.update(notificationRef, "seen", true)
+                        }
+
+                        batch.commit().addOnSuccessListener {
+                            result.invoke(UiState.Success(notificationList))
+                        }.addOnFailureListener { exception ->
+                            result.invoke(UiState.Failure(exception.localizedMessage))
+                        }
+                    } else {
+                        result.invoke(UiState.Success(notificationList))
+                    }
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))

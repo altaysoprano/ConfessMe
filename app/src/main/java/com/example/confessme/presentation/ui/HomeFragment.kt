@@ -2,6 +2,7 @@ package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -37,6 +38,7 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var navRegister: FragmentNavigation
     private var bottomNavBarControl: BottomNavBarControl? = null
+    private var hasUnreadNotifications: Boolean = false
     private var limit: Long = 20
 
     override fun onCreateView(
@@ -56,6 +58,7 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
 
         viewModel.fetchConfessions(limit)
+        viewModel.fetchNotifications(limit)
 
         binding.swipeRefreshLayoutHome.setOnRefreshListener {
             viewModel.onSwiping(limit)
@@ -73,6 +76,7 @@ class HomeFragment : Fragment() {
         observeAddFavorite()
         observePaging()
         observeSwiping()
+        observeFetchNotifications()
         observeSignOut()
     }
 
@@ -299,6 +303,25 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun observeFetchNotifications() {
+        viewModel.fetchNotificationsState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {}
+
+                is UiState.Failure -> {}
+
+                is UiState.Success -> {
+                    val notifications = state.data
+
+                    val unseenNotifications = notifications.filter { !it.seen }
+                    Log.d("Mesaj: ", "Successte hasUnreadNotifications: $hasUnreadNotifications")
+                    hasUnreadNotifications = if (unseenNotifications.isNotEmpty()) true else false
+                    requireActivity().invalidateOptionsMenu()
+                }
+            }
+        }
+    }
+
     private fun observeSignOut() {
         viewModel.signOutState.observe(this) { state ->
             when (state) {
@@ -458,6 +481,17 @@ class HomeFragment : Fragment() {
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.VISIBLE
 
+        if (hasUnreadNotifications) {
+            val iconDrawable = requireContext().getDrawable(R.drawable.ic_notifications_blur)
+            iconDrawable?.setTint(resources.getColor(R.color.confessmered))
+            val menuItem = menu.findItem(R.id.ic_notifications_home)
+            menuItem.icon = iconDrawable
+        } else {
+            val iconDrawable = requireContext().getDrawable(R.drawable.ic_notifications_blur)
+            iconDrawable?.setTint(Color.parseColor("#6c6c6c"))
+            val menuItem = menu.findItem(R.id.ic_notifications_home)
+            menuItem.icon = iconDrawable
+        }
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -467,7 +501,7 @@ class HomeFragment : Fragment() {
                 signOut()
             }
 
-            R.id.ic_notifications -> {
+            R.id.ic_notifications_home -> {
                 val notificationsFragment = NotificationsFragment()
 
                 navRegister.navigateFrag(notificationsFragment, true)

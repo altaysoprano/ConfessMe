@@ -9,5 +9,6 @@ data class Notification(
     val fromUserUsername: String = "",
     val fromUserImageUrl: String = "",
     val description: String = "",
-    var timestamp: Any? = null
+    var timestamp: Any? = null,
+    var seen: Boolean = false
 )

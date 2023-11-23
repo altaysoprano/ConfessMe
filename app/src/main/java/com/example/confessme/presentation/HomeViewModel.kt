@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.Confession
+import com.example.confessme.data.model.Notification
 import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.data.repository.ConfessionRepo
+import com.example.confessme.data.repository.NotificationRepo
 import com.example.confessme.presentation.ui.FragmentNavigation
 import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.util.ConfessionCategory
@@ -20,8 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val confessRepo: ConfessionRepo,
-    private val authRepo: AuthRepo
-) : ViewModel() {
+    private val authRepo: AuthRepo,
+    private val notificationRepo: NotificationRepo,
+    ) : ViewModel() {
 
     private val _fetchConfessionsState = MutableLiveData<UiState<List<Confession>>>()
     val fetchConfessionsState: LiveData<UiState<List<Confession>>>
@@ -46,6 +49,10 @@ class HomeViewModel @Inject constructor(
     private val _onSwipeState = MutableLiveData<UiState<List<Confession>>>()
     val onSwipeState: LiveData<UiState<List<Confession>>>
         get() = _onSwipeState
+
+    private val _fetchNotificationsState = MutableLiveData<UiState<List<Notification>>>()
+    val fetchNotificationsState: LiveData<UiState<List<Notification>>>
+        get() = _fetchNotificationsState
 
     private val _signOutState = MutableLiveData<UiState<String>>()
     val signOutState: LiveData<UiState<String>>
@@ -90,6 +97,13 @@ class HomeViewModel @Inject constructor(
         _onSwipeState.value = UiState.Loading
         confessRepo.fetchFollowedUsersConfessions(limit) { result ->
             _onSwipeState.postValue(result)
+        }
+    }
+
+    fun fetchNotifications(limit: Long) {
+        _fetchNotificationsState.value = UiState.Loading
+        notificationRepo.fetchNotificationsForUser(limit, false) {
+            _fetchNotificationsState.value = it
         }
     }
 

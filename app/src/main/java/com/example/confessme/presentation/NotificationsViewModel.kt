@@ -48,21 +48,21 @@ class NotificationsViewModel @Inject constructor(
 
     fun fetchNotifications(limit: Long) {
         _fetchNotificationsState.value = UiState.Loading
-        notificationRepo.fetchNotificationsForUser(limit) {
+        notificationRepo.fetchNotificationsForUser(limit, true) {
             _fetchNotificationsState.value = it
         }
     }
 
     fun onPaging(limit: Long) {
         _onPagingState.value = UiState.Loading
-        notificationRepo.fetchNotificationsForUser(limit) { result ->
+        notificationRepo.fetchNotificationsForUser(limit, true) { result ->
             _onPagingState.postValue(result)
         }
     }
 
     fun onSwiping(limit: Long) {
         _onSwipeState.value = UiState.Loading
-        notificationRepo.fetchNotificationsForUser(limit) { result ->
+        notificationRepo.fetchNotificationsForUser(limit, true) { result ->
             _onSwipeState.postValue(result)
         }
     }
