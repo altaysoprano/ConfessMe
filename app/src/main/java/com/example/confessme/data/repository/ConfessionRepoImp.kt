@@ -67,7 +67,7 @@ class ConfessionRepoImp(
                                     val newConfessionDocument = confessionCollection.document()
                                     val confessionId = newConfessionDocument.id
                                     val toFcmToken = userDocument.getString("token")
-                                    val fromFcmToken = currentUserDocument.getString("token")
+                                    val fromFcmToken = currentUserDocument.getString("token") ?: ""
 
                                     val confessionData = hashMapOf(
                                         "id" to confessionId,
@@ -100,6 +100,7 @@ class ConfessionRepoImp(
                                             addNotificationToUser(
                                                 userId = userUid,
                                                 fromUserId = fromUserUid ?: "",
+                                                fromUserToken = fromFcmToken,
                                                 confessionText = confessionText,
                                                 fromUserUsername = fromUserUsername ?: "",
                                                 fromUserImageUrl = fromUserImageUrl ?: "",
@@ -273,6 +274,7 @@ class ConfessionRepoImp(
                         val fromUserImageUrl = confessionDoc.getString("imageUrl") ?: ""
                         val fromUserEmail = confessionDoc.getString("email") ?: ""
                         val fromUserToken = confessionDoc.getString("fromUserToken") ?: ""
+                        val userToken = confessionDoc.getString("userToken") ?: ""
                         val fcmToken = fromUserToken
                         val username = confessionDoc.getString("fromUserUsername") ?: ""
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
@@ -320,6 +322,7 @@ class ConfessionRepoImp(
                                             addNotificationToUser(
                                                 userId = userIdToNotification,
                                                 fromUserId = userId,
+                                                fromUserToken = userToken,
                                                 confessionText = confessionText,
                                                 fromUserUsername = fromUserUsername,
                                                 fromUserImageUrl = fromUserImageUrl,
@@ -361,6 +364,7 @@ class ConfessionRepoImp(
                     if (!confessionQuerySnapshot.isEmpty) {
                         val confessionDoc = confessionQuerySnapshot.documents[0]
                         val fcmToken = confessionDoc.getString("fromUserToken") ?: ""
+                        val fromFcmToken = confessionDoc.getString("userToken") ?: ""
                         val fromUserId = confessionDoc.getString("fromUserId") ?: ""
                         val anonymousId = confessionDoc.getString("anonymousId") ?: ""
                         val userIdToNotification =
@@ -396,6 +400,7 @@ class ConfessionRepoImp(
                                             addNotificationToUser(
                                                 userId = userIdToNotification,
                                                 fromUserId = userId,
+                                                fromUserToken = fromFcmToken,
                                                 confessionText = confessionText,
                                                 fromUserUsername = username,
                                                 fromUserImageUrl = userImageUrl,
@@ -444,6 +449,7 @@ class ConfessionRepoImp(
                         val userId = confessionDocumentSnapshot.getString("userId") ?: ""
                         val fromUserId = confessionDocumentSnapshot.getString("fromUserId") ?: ""
                         val userToken = confessionDocumentSnapshot.getString("userToken") ?: ""
+                        val fromUserToken = confessionDocumentSnapshot.getString("fromUserToken") ?: ""
                         val fcmToken = userToken
 
                         val answerMap =
@@ -474,6 +480,7 @@ class ConfessionRepoImp(
                                                 addNotificationToUser(
                                                     userId = userId,
                                                     fromUserId = fromUserId,
+                                                    fromUserToken = fromUserToken,
                                                     confessionText = answerText,
                                                     fromUserUsername = fromUserUsername,
                                                     fromUserImageUrl = fromUserImageUrl,
@@ -818,13 +825,13 @@ class ConfessionRepoImp(
     private fun addNotificationToUser(
         userId: String,
         fromUserId: String,
+        fromUserToken: String,
         confessionText: String,
         fromUserUsername: String,
         fromUserImageUrl: String,
         confessionId: String,
         description: String
     ) {
-        Log.d("Mesaj: ", "userId: $userId")
         val notificationsCollection = database.collection("users").document(userId)
             .collection("notifications")
 
@@ -832,6 +839,7 @@ class ConfessionRepoImp(
             confessionId = confessionId,
             userId = userId,
             fromUserId = fromUserId,
+            fromUserToken = fromUserToken,
             text = confessionText,
             fromUserUsername = fromUserUsername,
             fromUserImageUrl = fromUserImageUrl,

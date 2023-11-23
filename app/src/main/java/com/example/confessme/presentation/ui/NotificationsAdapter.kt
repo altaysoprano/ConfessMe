@@ -13,6 +13,8 @@ import com.example.confessme.databinding.NotificationItemBinding
 import com.example.confessme.databinding.UserItemBinding
 
 class NotificationsAdapter(
+    private val currentUserUid: String,
+    private val onItemPhotoClick: (String, String, String) -> Unit,
     val notificationsList: MutableList<Notification> = mutableListOf(),
 ) : RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
     override fun onCreateViewHolder(
@@ -63,6 +65,18 @@ class NotificationsAdapter(
                         .into(notificationScreenProfileImage)
                 } else {
                     binding.notificationScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
+                }
+
+                binding.notificationScreenProfileImage.setOnClickListener {
+                    val photoClickedUser = notificationsList[adapterPosition]
+
+                    if (currentUserUid != photoClickedUser.fromUserId && photoClickedUser.fromUserId != "") {
+                        onItemPhotoClick(
+                            photoClickedUser.fromUserId,
+                            photoClickedUser.fromUserToken,
+                            photoClickedUser.fromUserUsername
+                        )
+                    }
                 }
             }
         }

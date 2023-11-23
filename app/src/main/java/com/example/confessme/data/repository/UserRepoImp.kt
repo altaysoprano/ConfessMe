@@ -548,16 +548,12 @@ class UserRepoImp(
     ) {
         val currentUserUid = firebaseAuth.currentUser?.uid
 
-        Log.d("Mesaj: ", "repoda followda userToken: $userToken")
-
         if (currentUserUid != null) {
             val followingRef = database.collection("users").document(currentUserUid)
                 .collection("following").document(userUidToFollow)
             val followersRef = database.collection("users").document(userUidToFollow)
                 .collection("followers").document(currentUserUid)
             val fcmToken = userToken
-
-            Log.d("Mesaj: ", "repoda followda fcmToken: $fcmToken")
 
             val batch = database.batch()
 
@@ -575,7 +571,6 @@ class UserRepoImp(
                             val fromUserImageUrl = it.getString("imageUrl") ?: ""
 
                             if (fcmToken != "") {
-                                Log.d("Mesaj: ", "fcmToken blank değil")
                                 sendNotification(
                                     "$username followed you",
                                     "",

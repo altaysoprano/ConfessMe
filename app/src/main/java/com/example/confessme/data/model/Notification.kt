@@ -5,6 +5,7 @@ data class Notification(
     val confessionId: String = "",
     val userId: String = "",
     val fromUserId: String = "",
+    val fromUserToken: String = "",
     val text: String = "",
     val fromUserUsername: String = "",
     val fromUserImageUrl: String = "",

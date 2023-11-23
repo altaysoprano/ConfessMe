@@ -26,6 +26,7 @@ import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,6 +37,7 @@ class NotificationsFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: NotificationsViewModel by viewModels()
     private lateinit var notificationsListAdapter: NotificationsAdapter
+    private lateinit var currentUserUid: String
     private var bottomNavBarControl: BottomNavBarControl? = null
     private var limit: Long = 20
 
@@ -49,7 +51,13 @@ class NotificationsFragment : Fragment() {
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.title = "Notifications"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.notificationsToolbar)
-        notificationsListAdapter = NotificationsAdapter()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUserUid = currentUser?.uid ?: ""
+        notificationsListAdapter = NotificationsAdapter(currentUserUid = currentUserUid,
+            onItemPhotoClick = { photoUserUid, photoUserToken, userNameUserName ->
+                onItemPhotoClick(photoUserUid, userNameUserName, photoUserToken)
+            }
+        )
         setupRecyclerView()
         setHasOptionsMenu(true)
 
@@ -209,6 +217,18 @@ class NotificationsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun onItemPhotoClick(photoUserUid: String, photoUserName: String, photoUserToken: String) {
+        val bundle = Bundle()
+        bundle.putString("userUid", photoUserUid)
+        bundle.putString("userName", photoUserName)
+        bundle.putString("userToken", photoUserToken)
+
+        val profileFragment = OtherUserProfileFragment()
+        profileFragment.arguments = bundle
+
+        navRegister.navigateFrag(profileFragment, true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
