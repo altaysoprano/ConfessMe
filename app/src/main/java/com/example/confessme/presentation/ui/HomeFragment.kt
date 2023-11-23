@@ -314,7 +314,6 @@ class HomeFragment : Fragment() {
                     val notifications = state.data
 
                     val unseenNotifications = notifications.filter { !it.seen }
-                    Log.d("Mesaj: ", "Successte hasUnreadNotifications: $hasUnreadNotifications")
                     hasUnreadNotifications = if (unseenNotifications.isNotEmpty()) true else false
                     requireActivity().invalidateOptionsMenu()
                 }

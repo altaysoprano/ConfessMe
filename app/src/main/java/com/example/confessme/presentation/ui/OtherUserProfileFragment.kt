@@ -58,6 +58,8 @@ class OtherUserProfileFragment : Fragment() {
         userUid = arguments?.getString("userUid") ?: ""
         userToken = arguments?.getString("userToken") ?: ""
 
+        Log.d("Mesaj: ", "other followda usertoken: $userToken")
+
         setTablayoutAndViewPager()
         setAllClickListeners()
         fetchUserProfile()
@@ -69,7 +71,6 @@ class OtherUserProfileFragment : Fragment() {
     private fun followOrUnfollowUser() {
         if (!userUid.isNullOrEmpty()) {
 
-            Log.d("Mesaj: ", "other followda usertoken: $userToken")
             viewModel.followOrUnfollowUser(userUid, userName, userToken)
 
             val userFollowStateObserver = object : Observer<UiState<FollowUser>> {
