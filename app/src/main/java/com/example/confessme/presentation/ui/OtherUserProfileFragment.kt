@@ -58,8 +58,6 @@ class OtherUserProfileFragment : Fragment() {
         userUid = arguments?.getString("userUid") ?: ""
         userToken = arguments?.getString("userToken") ?: ""
 
-        Log.d("Mesaj: ", "other followda usertoken: $userToken")
-
         setTablayoutAndViewPager()
         setAllClickListeners()
         fetchUserProfile()

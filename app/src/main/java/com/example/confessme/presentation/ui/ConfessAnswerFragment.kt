@@ -422,7 +422,6 @@ class ConfessAnswerFragment(
                     bundle.putString("userName", answerUserName)
                     bundle.putString("userToken", userToken)
 
-                    Log.d("Mesaj: ", "answerFromUsername: $answerFromUsername answerFromUserUid: $answerFromUserUid userToken: $userToken")
                     val profileFragment = OtherUserProfileFragment()
                     profileFragment.arguments = bundle
 
@@ -447,7 +446,6 @@ class ConfessAnswerFragment(
         binding.answerScreenProfileImage.setOnClickListener {
             if (currentUserUid != answerUserUid) {
                 val bundle = Bundle()
-                Log.d("Mesaj: ", "(profile screene tıkladıktan sonra) answerFromUsername: $answerFromUsername answerFromUserUid: $answerFromUserUid userToken: $userToken")
 
                 bundle.putString("userUid", answerUserUid)
                 bundle.putString("userName", answerFromUsername)

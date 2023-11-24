@@ -217,7 +217,6 @@ class ConfessionListAdapter(
             val confessFavorite = confessList[adapterPosition]
             confessFavorite.favorited = !confessFavorite.favorited
             notifyItemChanged(adapterPosition)
-            Log.d("Mesaj: ", "confessFavorite.fromUserToken: ${confessFavorite.fromUserToken}")
             onFavoriteClick(confessFavorite.favorited, confessFavorite.id)
         }
 

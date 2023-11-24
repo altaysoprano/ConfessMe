@@ -88,7 +88,7 @@ class NotificationsAdapter(
 
             if (position != RecyclerView.NO_POSITION) {
                 val itemClickedUser = notificationsList[position]
-                
+
                 if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
                     onItemPhotoClick(
                         itemClickedUser.fromUserId,

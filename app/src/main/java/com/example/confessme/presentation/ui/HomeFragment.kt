@@ -411,7 +411,6 @@ class HomeFragment : Fragment() {
         bundle.putString("userName", userNameUserName)
         bundle.putString("userToken", userNameUserToken)
 
-        Log.d("Mesaj: ", "onUserNameClick'TE TOKEN: $userNameUserToken")
 
         val profileFragment = OtherUserProfileFragment()
         profileFragment.arguments = bundle
