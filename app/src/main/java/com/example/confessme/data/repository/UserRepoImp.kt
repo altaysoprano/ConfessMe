@@ -569,6 +569,7 @@ class UserRepoImp(
                         .addOnSuccessListener {
                             val username = it.getString("userName") ?: ""
                             val fromUserImageUrl = it.getString("imageUrl") ?: ""
+                            val fromUserToken = it.getString("token") ?: ""
 
                             if (fcmToken != "") {
                                 sendNotification(
@@ -578,7 +579,7 @@ class UserRepoImp(
                                     fcmToken
                                 )
                             }
-                            addNotificationToUser(userUidToFollow, currentUserUid, "", username, fromUserImageUrl, "", "followed you")
+                            addNotificationToUser(userUidToFollow, currentUserUid, fromUserToken,"", username, fromUserImageUrl, "", "followed you")
                         }
                 }
                 .addOnFailureListener { exception ->
@@ -804,6 +805,7 @@ class UserRepoImp(
     private fun addNotificationToUser(
         userId: String,
         fromUserId: String,
+        fromUserToken: String,
         confessionText: String,
         fromUserUsername: String,
         fromUserImageUrl: String,
@@ -817,6 +819,7 @@ class UserRepoImp(
             confessionId = confessionId,
             userId = userId,
             fromUserId = fromUserId,
+            fromUserToken = fromUserToken,
             text = confessionText,
             fromUserUsername = fromUserUsername,
             fromUserImageUrl = fromUserImageUrl,
