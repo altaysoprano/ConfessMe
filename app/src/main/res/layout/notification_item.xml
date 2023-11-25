@@ -49,7 +49,7 @@
             android:maxLines="1"
             android:focusable="true"
             android:text="@string/description"
-            android:textStyle="normal" />
+            android:textStyle="bold" />
         </LinearLayout>
         <TextView
             android:id="@+id/notificationsScreenConfession"

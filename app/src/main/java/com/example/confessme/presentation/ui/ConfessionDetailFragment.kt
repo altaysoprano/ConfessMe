@@ -298,7 +298,6 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
         binding.confessionDetailScreenIcAnswer.setOnClickListener {
             val confessAnswer = confess
-            val confessDateTimestamp = confess.answer.timestamp
 
             onAnswerClick(
                 confessAnswer.id
@@ -314,14 +313,16 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             val photoClickedUser = confess
 
             if (currentUserUid != photoClickedUser.fromUserId && photoClickedUser.fromUserId != "") {
-                /*
-                                onItemPhotoClick(
-                                    photoClickedUser.fromUserId,
-                                    photoClickedUser.fromUserEmail,
-                                    photoClickedUser.fromUserToken,
-                                    photoClickedUser.fromUserUsername
-                                )
-                */
+                val bundle = Bundle()
+                bundle.putString("userEmail", photoClickedUser.fromUserEmail)
+                bundle.putString("userUid", photoClickedUser.fromUserId)
+                bundle.putString("userName", photoClickedUser.fromUserUsername)
+                bundle.putString("userToken", photoClickedUser.fromUserToken)
+
+                val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
+                navRegister.navigateFrag(profileFragment, true)
             }
         }
 
