@@ -20,12 +20,23 @@ class ConfessionDetailViewModel @Inject constructor(
     val getConfessionState: LiveData<UiState<Confession?>>
         get() = _getConfessionState
 
+    private val _addFavoriteState = MutableLiveData<UiState<Confession?>>()
+    val addFavoriteState: LiveData<UiState<Confession?>>
+        get() = _addFavoriteState
+
     fun getConfession(confessionId: String) {
         _getConfessionState.value = UiState.Loading
         viewModelScope.launch {
             repository.getConfession(confessionId) {result ->
                 _getConfessionState.postValue(result)
             }
+        }
+    }
+
+    fun addFavorite(favorited: Boolean, confessionId: String) {
+        _addFavoriteState.value = UiState.Loading
+        repository.addFavorite(favorited, confessionId) {
+            _addFavoriteState.value = it
         }
     }
 }

@@ -41,6 +41,7 @@ class ConfessionDetailFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var confessionId: String
     private lateinit var currentUserUid: String
+    private var isConfessFavorited: Boolean = false
     private val viewModel: ConfessionDetailViewModel by viewModels()
     private lateinit var dialogHelper: ConfessMeDialog
 
@@ -72,6 +73,7 @@ class ConfessionDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         observeGetConfession()
+        observeFavorite()
     }
 
     private fun observeGetConfession() {
@@ -210,6 +212,33 @@ class ConfessionDetailFragment : Fragment() {
         navRegister.navigateFrag(profileFragment, true)
     }
 
+    private fun onAnswerClick(confessionId: String, answerDate: String) {
+        if (!confessionId.isNullOrEmpty()) {
+            val bundle = Bundle()
+            bundle.putString("confessionId", confessionId)
+            bundle.putString("currentUserUid", currentUserUid)
+            bundle.putString("answerDate", answerDate)
+            val confessAnswerFragment = ConfessAnswerFragment(
+                { position, updatedConfession -> },
+                { confessionId ->
+                    -1
+                }
+            )
+            confessAnswerFragment.arguments = bundle
+            confessAnswerFragment.show(
+                requireActivity().supportFragmentManager,
+                "ConfessAnswerFragment"
+            )
+        } else {
+            Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun onFavoriteClick(favorited: Boolean) {
+        viewModel.addFavorite(favorited, confessionId)
+    }
+
     @SuppressLint("RestrictedApi")
     private fun setAnswerFavoriteAndMoreActionsItems(
         confess: Confession,
@@ -250,7 +279,9 @@ class ConfessionDetailFragment : Fragment() {
             }
         }
 
-        if (confess.favorited) {
+        isConfessFavorited = confess.favorited
+
+        if (isConfessFavorited) {
             binding.confessionDetailScreenIcFavorite.setColorFilter(Color.parseColor("#BA0000"))
         } else {
             binding.confessionDetailScreenIcFavorite.setColorFilter(Color.parseColor("#b8b8b8"))
@@ -260,20 +291,15 @@ class ConfessionDetailFragment : Fragment() {
             val confessAnswer = confess
             val confessDateTimestamp = confess.answer.timestamp
 
-/*
             onAnswerClick(
                 confessAnswer.id,
                 if (confessDateTimestamp != null) calculateTimeSinceConfession(confessDateTimestamp as Timestamp) else ""
             )
-*/
         }
 
         binding.confessionDetailScreenIcFavorite.setOnClickListener {
-            val confessFavorite = confess
-            confessFavorite.favorited = !confessFavorite.favorited
-/*
-            onFavoriteClick(confessFavorite.favorited, confessFavorite.id)
-*/
+            isConfessFavorited = !isConfessFavorited
+            onFavoriteClick(isConfessFavorited)
         }
 
         binding.confessionDetailScreenProfileImage.setOnClickListener {
@@ -361,6 +387,40 @@ class ConfessionDetailFragment : Fragment() {
 
         itemView.setOnClickListener {
 
+        }
+    }
+
+    private fun observeFavorite() {
+        viewModel.addFavoriteState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.confessionDetailScreenIcFavorite.visibility = View.INVISIBLE
+                    binding.confessionDetailScreenProgressBarFavorite.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.confessionDetailScreenIcFavorite.visibility = View.VISIBLE
+                    binding.confessionDetailScreenProgressBarFavorite.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.confessionDetailScreenIcFavorite.visibility = View.VISIBLE
+                    binding.confessionDetailScreenProgressBarFavorite.visibility = View.GONE
+                    val updatedConfession = state.data
+
+                    setFavorite(updatedConfession?.favorited)
+                }
+            }
+        }
+    }
+
+    private fun setFavorite(favorited: Boolean?) {
+        if(favorited == true) {
+            binding.confessionDetailScreenIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
+        } else {
+            binding.confessionDetailScreenIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
         }
     }
 

@@ -146,7 +146,6 @@ class NotificationsAdapter(
         }
 
         itemView.setOnClickListener {
-            Log.d("Mesaj: ", "itemviewa tıklandı")
             val itemClickedUser = notificationsList[position]
 
             if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
