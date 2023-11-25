@@ -86,7 +86,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
                 is UiState.Failure -> {
                     binding.progressBarConfessionDetail.visibility = View.GONE
-                    binding.confessionDetailRelativeLayout.visibility = View.VISIBLE
+                    binding.confessionDetailRelativeLayout.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -97,31 +97,6 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                     if (state.data != null) {
                         setItem(state.data, binding, requireView())
                     }
-
-                    /*
-                                        val answerText = state.data?.answer?.text ?: ""
-                                        isAnswerFavorited = state.data?.answer?.favorited ?: false
-                                        val answerFromUserUid = state.data?.fromUserId ?: ""
-                                        val answerFromUsername = state.data?.fromUserUsername ?: ""
-                                        val answerUserName = state.data?.username ?: ""
-                                        val userToken = state.data?.fromUserToken ?: ""
-                                        val fromUserToken = state.data?.userToken ?: ""
-                                        val answerUserUid = state.data?.userId ?: ""
-                                        val isConfessionAnswered = state.data?.answered ?: false
-                                        val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
-                                        val confessedUserName = state.data?.answer?.username ?: ""
-                                        val anonymousId = state.data?.anonymousId ?: ""
-
-                                        setUserImage(state.data?.answer?.fromUserImageUrl)
-                                        setSaveButton()
-                                        setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
-                                            answerDate, answerUserUid, answerFromUserUid,
-                                            answerFromUsername, answerUserName, userToken,
-                                            fromUserToken, confessedUserName)
-                                        setFavoriteDeleteEditReplyStates(answerText, answerFromUserUid,
-                                            answerUserUid, anonymousId, isConfessionAnswered)
-                                        setFavorite(isAnswerFavorited)
-                    */
                 }
             }
         }

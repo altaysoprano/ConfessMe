@@ -196,7 +196,7 @@ class SetProfileFragment : Fragment() {
     }
 
     private fun onEditProfilePhotoClick() {
-        val options = arrayOf("Remove Profile Photo", "Edit Profile Photo")
+        val options = arrayOf("Remove Profile Photo", "Change Profile Photo")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setItems(options) { _, which ->
