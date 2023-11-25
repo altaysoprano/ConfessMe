@@ -9,6 +9,7 @@ ConfessMe is a social media platform developed to allow people to confess things
 https://github.com/altaysoprano/ConfessMe/assets/37440249/37a3c5c4-ea9e-4a93-97fc-2af7985d4d73
 
 ### Edit Profile
+On this screen, the user can set their nickname and bio. There's a character limit of 200 for the bio and 30 for the username. The username cannot be empty or less than 3 characters, and it cannot contain spaces. Here, the user can also remove or change their profile picture. After hitting save in either action, the user's previous photo in Firebase storage is deleted, preventing unnecessary bloating in the storage. Additionally, the user cannot claim a username that has been previously taken by another user. Each user's nickname must be unique to them.
 
 https://github.com/altaysoprano/ConfessMe/assets/37440249/6a91acdf-0181-4714-952a-75c317da5dcc
 
