@@ -22,5 +22,11 @@
     <string name="here_the_confessions_of_the_users_you_follow_are_displayed">Here, the confessions of the users you follow are displayed.</string>
     <string name="the_confessions_received_from_the_people_you_follow_are_visible_here">The confessions received from the people you follow are visible here</string>
     <string name="results">RESULTS</string>
+    <string name="user_not_authenticated">User not authenticated</string>
     <string name="clear_all_history">Clear All History</string>
+    <string name="username">username</string>
+    <string name="description">description</string>
+    <string name="confession">confession</string>
+    <string name="timestamp">timestamp</string>
+    <string name="expanding_menu">Expanding Menu</string>
 </resources>

@@ -14,6 +14,7 @@ import com.example.confessme.databinding.NotificationItemBinding
 class NotificationsAdapter(
     private val currentUserUid: String,
     private val onItemPhotoClick: (String, String, String) -> Unit,
+    private val onItemClick: (String) -> Unit,
     val notificationsList: MutableList<Notification> = mutableListOf(),
 ) : RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>() {
     override fun onCreateViewHolder(
@@ -47,7 +48,7 @@ class NotificationsAdapter(
                 if (notificationsScreenConfession.text.isBlank()) {
                     setFollowedNotificationLayout(binding, itemView, adapterPosition)
                 } else {
-                    setFavReplyAndConfessionNotificationLayout(binding, adapterPosition)
+                    setFavReplyAndConfessionNotificationLayout(binding, itemView, adapterPosition)
                 }
 
                 if (notification.fromUserImageUrl.isNotEmpty()) {
@@ -102,6 +103,7 @@ class NotificationsAdapter(
 
     fun setFavReplyAndConfessionNotificationLayout(
         binding: NotificationItemBinding,
+        itemView: View,
         position: Int
     ) {
         binding.notificationsScreenConfession.visibility = View.VISIBLE
@@ -119,6 +121,22 @@ class NotificationsAdapter(
                     photoClickedUser.fromUserToken,
                     photoClickedUser.fromUserUsername
                 )
+            }
+        }
+
+        binding.notificationsScreenNotification.setOnClickListener {
+            val itemClickedUser = notificationsList[position]
+
+            if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
+                onItemClick(itemClickedUser.confessionId)
+            }
+        }
+
+        itemView.setOnClickListener {
+            val itemClickedUser = notificationsList[position]
+
+            if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
+                onItemClick(itemClickedUser.confessionId)
             }
         }
     }

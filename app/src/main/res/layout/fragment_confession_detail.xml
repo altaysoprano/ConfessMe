@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/fragment_confession_detail_constraint_layout"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.ui.ConfessionDetailFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/confession_detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/confession_detail_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confession_detail_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:elevation="4dp"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="8dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/confessionDetailScreenProfileImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/empty_profile_photo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/confessionDetailScreenProfileImage"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/confessionDetailScreenUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="username"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/middle_dot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:paddingHorizontal="4dp"
+                    android:text="·"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/confessionDetailScreenTimestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:maxLines="1"
+                    android:text="@string/timestamp"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/confessionDetailScreenConfession"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:clickable="true"
+                    android:ellipsize="end"
+                    android:focusable="true"
+                    android:text="confession"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/confession_detail_screen_icon_and_favorite_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/confession_detail_screen_ic_answer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:src="@drawable/ic_answer" />
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1.5" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <ImageView
+                        android:id="@+id/confession_detail_screen_ic_favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_favorite"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ProgressBar
+                        android:id="@+id/confession_detail_screen_progress_bar_favorite"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:indeterminateTint="@color/black"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="@+id/confession_detail_screen_ic_favorite"
+                        app:layout_constraintEnd_toEndOf="@+id/confession_detail_screen_ic_favorite"
+                        app:layout_constraintStart_toStartOf="@+id/confession_detail_screen_ic_favorite"
+                        app:layout_constraintTop_toTopOf="@+id/confession_detail_screen_ic_favorite" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/confession_detail_screen_more_action_button"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/expanding_menu"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_ellipses" />
+
+    </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar_confession_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/black"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

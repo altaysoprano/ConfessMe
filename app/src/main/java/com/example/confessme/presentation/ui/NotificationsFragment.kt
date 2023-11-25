@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.content.Context
+import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -56,6 +58,9 @@ class NotificationsFragment : Fragment() {
         notificationsListAdapter = NotificationsAdapter(currentUserUid = currentUserUid,
             onItemPhotoClick = { photoUserUid, photoUserToken, userNameUserName ->
                 onItemPhotoClick(photoUserUid, userNameUserName, photoUserToken)
+            },
+            onItemClick = {confessionId ->
+                onItemClick(confessionId = confessionId)
             }
         )
         setupRecyclerView()
@@ -229,6 +234,16 @@ class NotificationsFragment : Fragment() {
         profileFragment.arguments = bundle
 
         navRegister.navigateFrag(profileFragment, true)
+    }
+
+    private fun onItemClick(confessionId: String) {
+        val bundle = Bundle()
+        bundle.putString("confessionId", confessionId)
+
+        val confessionDetailFragment = ConfessionDetailFragment()
+        confessionDetailFragment.arguments = bundle
+
+        navRegister.navigateFrag(confessionDetailFragment, true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

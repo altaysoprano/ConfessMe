@@ -197,7 +197,7 @@ class ConfessionRepoImp(
                 }
             }
             .addOnFailureListener { exception ->
-                result.invoke(UiState.Failure(exception.localizedMessage))
+                result.invoke(UiState.Failure("An error occurred while loading the confession"))
             }
     }
 

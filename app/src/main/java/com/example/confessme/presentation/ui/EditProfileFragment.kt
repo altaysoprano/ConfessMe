@@ -45,7 +45,6 @@ class EditProfileFragment : Fragment() {
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
