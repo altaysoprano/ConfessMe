@@ -51,6 +51,7 @@ class ConfessAnswerFragment(
     private lateinit var confessionId: String
     private lateinit var answerDate: String
     private lateinit var dialogHelper: ConfessMeDialog
+    private var answerDataListener: AnswerDataListener? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -178,6 +179,8 @@ class ConfessAnswerFragment(
                     val updatedConfession = state.data
                     val position = updatedConfession?.let { findItemById(it.id) }
 
+                    updatedConfession?.answered?.let { answerDataListener?.onAnswerDataReceived(it) }
+
                     if (position != -1) {
                         if (updatedConfession != null) {
                             if (position != null) {
@@ -191,6 +194,10 @@ class ConfessAnswerFragment(
                 }
             }
         }
+    }
+
+    fun setDataListener(listener: AnswerDataListener) {
+        this.answerDataListener = listener
     }
 
     private fun observeDeleteAnswer() {
@@ -212,6 +219,8 @@ class ConfessAnswerFragment(
                     val updatedConfession = state.data
 
                     val position = updatedConfession?.let { findItemById(it.id) }
+
+                    updatedConfession?.answered?.let { answerDataListener?.onAnswerDataReceived(it) }
 
                     if (position != -1) {
                         if (updatedConfession != null) {

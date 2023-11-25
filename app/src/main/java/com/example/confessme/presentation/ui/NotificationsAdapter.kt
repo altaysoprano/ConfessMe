@@ -129,9 +129,7 @@ class NotificationsAdapter(
             if (position != RecyclerView.NO_POSITION) {
                 val itemClickedUser = notificationsList[position]
 
-                if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
-                    onItemClick(itemClickedUser.confessionId)
-                }
+                onItemClick(itemClickedUser.confessionId)
             }
         }
 
@@ -139,18 +137,14 @@ class NotificationsAdapter(
             if (position != RecyclerView.NO_POSITION) {
                 val itemClickedUser = notificationsList[position]
 
-                if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
-                    onItemClick(itemClickedUser.confessionId)
-                }
+                onItemClick(itemClickedUser.confessionId)
             }
         }
 
         itemView.setOnClickListener {
             val itemClickedUser = notificationsList[position]
 
-            if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
-                onItemClick(itemClickedUser.confessionId)
-            }
+            onItemClick(itemClickedUser.confessionId)
         }
     }
 

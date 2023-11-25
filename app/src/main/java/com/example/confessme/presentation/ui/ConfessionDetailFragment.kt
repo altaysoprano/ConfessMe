@@ -35,7 +35,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfessionDetailFragment : Fragment() {
+class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
     private lateinit var binding: FragmentConfessionDetailBinding
     private lateinit var navRegister: FragmentNavigation
@@ -218,12 +218,14 @@ class ConfessionDetailFragment : Fragment() {
             bundle.putString("confessionId", confessionId)
             bundle.putString("currentUserUid", currentUserUid)
             bundle.putString("answerDate", answerDate)
+
             val confessAnswerFragment = ConfessAnswerFragment(
                 { position, updatedConfession -> },
                 { confessionId ->
                     -1
                 }
             )
+            confessAnswerFragment.setDataListener(this)
             confessAnswerFragment.arguments = bundle
             confessAnswerFragment.show(
                 requireActivity().supportFragmentManager,
@@ -237,6 +239,14 @@ class ConfessionDetailFragment : Fragment() {
 
     private fun onFavoriteClick(favorited: Boolean) {
         viewModel.addFavorite(favorited, confessionId)
+    }
+
+    override fun onAnswerDataReceived(isAnswered: Boolean) {
+        if (isAnswered) {
+            binding.confessionDetailScreenIcAnswer.setColorFilter(Color.parseColor("#BA0000"))
+        } else {
+            binding.confessionDetailScreenIcAnswer.setColorFilter(Color.parseColor("#b8b8b8"))
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -306,14 +316,14 @@ class ConfessionDetailFragment : Fragment() {
             val photoClickedUser = confess
 
             if (currentUserUid != photoClickedUser.fromUserId && photoClickedUser.fromUserId != "") {
-/*
-                onItemPhotoClick(
-                    photoClickedUser.fromUserId,
-                    photoClickedUser.fromUserEmail,
-                    photoClickedUser.fromUserToken,
-                    photoClickedUser.fromUserUsername
-                )
-*/
+                /*
+                                onItemPhotoClick(
+                                    photoClickedUser.fromUserId,
+                                    photoClickedUser.fromUserEmail,
+                                    photoClickedUser.fromUserToken,
+                                    photoClickedUser.fromUserUsername
+                                )
+                */
             }
         }
 
@@ -350,26 +360,26 @@ class ConfessionDetailFragment : Fragment() {
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_bookmark -> {
-/*
-                        val confessionToBookmark = confess
+                        /*
+                                                val confessionToBookmark = confess
 
-                        onConfessBookmarkClick(
-                            confessionToBookmark.id,
-                            confessionToBookmark.timestamp.toString(),
-                            confessionToBookmark.fromUserId
-                        )
-*/
+                                                onConfessBookmarkClick(
+                                                    confessionToBookmark.id,
+                                                    confessionToBookmark.timestamp.toString(),
+                                                    confessionToBookmark.fromUserId
+                                                )
+                        */
                         return@setOnMenuItemClickListener true
                     }
 
                     R.id.action_delete -> {
-/*
-                        val confessIdToDelete = confess.id
-                        dialogHelper.showDialog(
-                            "delete confessıon",
-                            "Are you sure you really want to delete this confession?",
-                            { onConfessDeleteClick(confessIdToDelete) })
-*/
+                        /*
+                                                val confessIdToDelete = confess.id
+                                                dialogHelper.showDialog(
+                                                    "delete confessıon",
+                                                    "Are you sure you really want to delete this confession?",
+                                                    { onConfessDeleteClick(confessIdToDelete) })
+                        */
                         return@setOnMenuItemClickListener true
                     }
 
@@ -417,7 +427,7 @@ class ConfessionDetailFragment : Fragment() {
     }
 
     private fun setFavorite(favorited: Boolean?) {
-        if(favorited == true) {
+        if (favorited == true) {
             binding.confessionDetailScreenIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
         } else {
             binding.confessionDetailScreenIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
