@@ -125,14 +125,28 @@ class NotificationsAdapter(
         }
 
         binding.notificationsScreenNotification.setOnClickListener {
-            val itemClickedUser = notificationsList[position]
 
-            if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
-                onItemClick(itemClickedUser.confessionId)
+            if (position != RecyclerView.NO_POSITION) {
+                val itemClickedUser = notificationsList[position]
+
+                if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
+                    onItemClick(itemClickedUser.confessionId)
+                }
+            }
+        }
+
+        binding.notificationsScreenConfession.setOnClickListener {
+            if (position != RecyclerView.NO_POSITION) {
+                val itemClickedUser = notificationsList[position]
+
+                if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
+                    onItemClick(itemClickedUser.confessionId)
+                }
             }
         }
 
         itemView.setOnClickListener {
+            Log.d("Mesaj: ", "itemviewa tıklandı")
             val itemClickedUser = notificationsList[position]
 
             if (currentUserUid != itemClickedUser.fromUserId && itemClickedUser.fromUserId != "") {
