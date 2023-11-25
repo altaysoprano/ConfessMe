@@ -102,8 +102,8 @@ class ConfessionsFragment(
             mutableListOf(),
             currentUserUid,
             false,
-            onAnswerClick = { confessionId, answerDate ->
-                onAnswerClick(confessionId, answerDate)
+            onAnswerClick = { confessionId ->
+                onAnswerClick(confessionId)
             },
             onFavoriteClick = {isFavorited, confessionId ->
 
@@ -206,12 +206,12 @@ class ConfessionsFragment(
         }
     }
 
-    private fun onAnswerClick(confessionId: String, answerDate: String) {
+    private fun onAnswerClick(confessionId: String) {
         if (!confessionId.isNullOrEmpty()) {
             val bundle = Bundle()
             bundle.putString("confessionId", confessionId)
             bundle.putString("currentUserUid", currentUserUid)
-            bundle.putString("answerDate", answerDate)
+
             val confessAnswerFragment = ConfessAnswerFragment(
                 { position, updatedConfession ->
                     confessListAdapter.updateItem(position, updatedConfession)

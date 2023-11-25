@@ -212,12 +212,11 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         navRegister.navigateFrag(profileFragment, true)
     }
 
-    private fun onAnswerClick(confessionId: String, answerDate: String) {
+    private fun onAnswerClick(confessionId: String) {
         if (!confessionId.isNullOrEmpty()) {
             val bundle = Bundle()
             bundle.putString("confessionId", confessionId)
             bundle.putString("currentUserUid", currentUserUid)
-            bundle.putString("answerDate", answerDate)
 
             val confessAnswerFragment = ConfessAnswerFragment(
                 { position, updatedConfession -> },
@@ -302,8 +301,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             val confessDateTimestamp = confess.answer.timestamp
 
             onAnswerClick(
-                confessAnswer.id,
-                if (confessDateTimestamp != null) calculateTimeSinceConfession(confessDateTimestamp as Timestamp) else ""
+                confessAnswer.id
             )
         }
 

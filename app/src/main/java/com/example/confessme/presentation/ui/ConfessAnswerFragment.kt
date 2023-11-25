@@ -33,6 +33,7 @@ import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.util.UiState
+import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,7 +50,6 @@ class ConfessAnswerFragment(
     private var isAnswerFavorited: Boolean = false
     private lateinit var currentUserUid: String
     private lateinit var confessionId: String
-    private lateinit var answerDate: String
     private lateinit var dialogHelper: ConfessMeDialog
     private var answerDataListener: AnswerDataListener? = null
 
@@ -64,7 +64,6 @@ class ConfessAnswerFragment(
         setHasOptionsMenu(true)
         confessionId = arguments?.getString("confessionId", "") ?: ""
         currentUserUid = arguments?.getString("currentUserUid", "") ?: ""
-        answerDate = arguments?.getString("answerDate", "") ?: ""
         dialogHelper = ConfessMeDialog(requireContext())
 
         getConfession(confessionId)
@@ -109,13 +108,14 @@ class ConfessAnswerFragment(
                     val answerUserUid = state.data?.userId ?: ""
                     val isConfessionAnswered = state.data?.answered ?: false
                     val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
+                    val answerTimeStamp = if(state.data?.answer?.timestamp != null) calculateTimeSinceConfession(state.data?.answer?.timestamp as Timestamp) else ""
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
 
                     setUserImage(state.data?.answer?.fromUserImageUrl)
                     setSaveButton()
                     setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
-                        answerDate, answerUserUid, answerFromUserUid,
+                        answerTimeStamp, answerUserUid, answerFromUserUid,
                         answerFromUsername, answerUserName, userToken,
                         fromUserToken, confessedUserName)
                     setFavoriteDeleteEditReplyStates(answerText, answerFromUserUid,
@@ -468,4 +468,27 @@ class ConfessAnswerFragment(
             }
         }
     }
+
+    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
+        val currentTime = Timestamp.now()
+        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
+
+        val minutes = timeDifference / 60
+        val hours = minutes / 60
+        val days = hours / 24
+
+        return when {
+            timeDifference < 60 -> "$timeDifference seconds ago"
+            minutes < 60 -> "$minutes minutes ago"
+            hours < 24 -> "$hours hours ago"
+            else -> {
+                if (days == 1L) {
+                    "1 day ago"
+                } else {
+                    "$days days ago"
+                }
+            }
+        }
+    }
+
 }

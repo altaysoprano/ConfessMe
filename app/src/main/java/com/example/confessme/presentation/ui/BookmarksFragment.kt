@@ -68,8 +68,8 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
             mutableListOf(),
             currentUserUid,
             true,
-            onAnswerClick = { confessionId, answerDate ->
-                onAnswerClick(confessionId, answerDate)
+            onAnswerClick = { confessionId ->
+                onAnswerClick(confessionId)
             },
             onFavoriteClick = {isFavorited, confessionId ->
                 viewModel.addFavorite(isFavorited, confessionId)
@@ -233,12 +233,12 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
         }
     }
 
-    private fun onAnswerClick(confessionId: String, answerDate: String) {
+    private fun onAnswerClick(confessionId: String) {
         if (!confessionId.isNullOrEmpty()) {
             val bundle = Bundle()
             bundle.putString("confessionId", confessionId)
             bundle.putString("currentUserUid", currentUserUid)
-            bundle.putString("answerDate", answerDate)
+
             val confessAnswerFragment = ConfessAnswerFragment(
                 { position, updatedConfession ->
                     confessListAdapter.updateItem(position, updatedConfession)
