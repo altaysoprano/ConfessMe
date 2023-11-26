@@ -74,33 +74,41 @@
 
     <LinearLayout
         android:id="@+id/answer_edit_and_favorite_layout"
-        android:layout_width="500dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:padding="8dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/answer_ic_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
+            android:layout_weight="0.1"
             android:src="@drawable/ic_edit"
+            android:backgroundTint="#FFFFFF"
             app:tint="#B8B8B8" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
+            android:layout_weight="0.1"
             android:layout_height="wrap_content">
-            <ImageView
+            <ImageButton
                 android:id="@+id/answer_ic_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.3"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="#ffffff"
                 android:src="@drawable/ic_favorite" />
 
             <ProgressBar
@@ -112,16 +120,22 @@
                 android:visibility="invisible"></ProgressBar>
         </RelativeLayout>
 
-        <ImageView
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
             android:id="@+id/answer_ic_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
+            android:layout_weight="0.1"
             android:src="@drawable/ic_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:backgroundTint="#ffffff"
             app:tint="#B8B8B8" />
 
     </LinearLayout>

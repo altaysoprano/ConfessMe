@@ -79,12 +79,22 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-            <ImageView
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5">
+            <ImageButton
                 android:id="@+id/ic_answer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:src="@drawable/ic_answer" />
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_answer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Answer Button" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Space
                 android:layout_width="1dp"
@@ -96,11 +106,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5">
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/ic_favorite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="?selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_favorite"
+                    android:contentDescription="Favorite Button"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
