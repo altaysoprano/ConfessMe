@@ -832,8 +832,7 @@ class ConfessionRepoImp(
         confessionId: String,
         description: String
     ) {
-        val notificationsCollection = database.collection("users").document(userId)
-            .collection("notifications")
+        val notificationsCollection = database.collection("notifications")
 
         val notification = Notification(
             confessionId = confessionId,

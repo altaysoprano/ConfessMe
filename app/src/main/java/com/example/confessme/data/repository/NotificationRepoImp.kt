@@ -21,11 +21,11 @@ class NotificationRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
 
-            val notificationsCollection = database.collection("users").document(currentUserUid)
-                .collection("notifications")
+            val notificationsCollection = database.collection("notifications")
 
             notificationsCollection
                 .limit(limit)
+                .whereEqualTo("userId", currentUserUid)
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener { documents ->
