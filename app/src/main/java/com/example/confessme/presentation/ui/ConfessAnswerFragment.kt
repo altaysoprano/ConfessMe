@@ -93,6 +93,8 @@ class ConfessAnswerFragment(
 
                 is UiState.Failure -> {
                     binding.progressBarConfessAnswer.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 is UiState.Success -> {

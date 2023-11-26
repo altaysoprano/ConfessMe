@@ -74,6 +74,8 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         super.onCreate(savedInstanceState)
         observeGetConfession()
         observeFavorite()
+        observeDeleteConfession()
+        observeAddBookmarks()
     }
 
     private fun observeGetConfession() {
@@ -334,32 +336,30 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_bookmark -> {
-                        /*
-                                                val confessionToBookmark = confess
+                        val confessionToBookmark = confess
 
-                                                onConfessBookmarkClick(
-                                                    confessionToBookmark.id,
-                                                    confessionToBookmark.timestamp.toString(),
-                                                    confessionToBookmark.fromUserId
-                                                )
-                        */
+                        viewModel.addBookmark(
+                            confessionToBookmark.id,
+                            confessionToBookmark.timestamp.toString(),
+                            confessionToBookmark.fromUserId
+                        )
                         return@setOnMenuItemClickListener true
                     }
 
                     R.id.action_delete -> {
-                        /*
-                                                val confessIdToDelete = confess.id
-                                                dialogHelper.showDialog(
-                                                    "delete confessıon",
-                                                    "Are you sure you really want to delete this confession?",
-                                                    { onConfessDeleteClick(confessIdToDelete) })
-                        */
+                        val confessIdToDelete = confess.id
+                        dialogHelper.showDialog(
+                            "delete confessıon",
+                            "Are you sure you really want to delete this confession?",
+                            { viewModel.deleteConfession(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }
 
                     R.id.action_unbookmark -> {
+/*
                         val confessToUnbookmark = confess
-                        // onBookmarkRemoveClick(confessToUnbookmark.id)
+                        onBookmarkRemoveClick(confessToUnbookmark.id)
+*/
                         return@setOnMenuItemClickListener true
                     }
 
@@ -405,6 +405,59 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             binding.confessionDetailScreenIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
         } else {
             binding.confessionDetailScreenIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
+        }
+    }
+
+    private fun observeDeleteConfession() {
+        viewModel.deleteConfessionState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessionDetail.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessionDetail.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessionDetail.visibility = View.GONE
+                    requireActivity().onBackPressed()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Answer deleted successfully",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun observeAddBookmarks() {
+        viewModel.addBookmarkState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessionDetail.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessionDetail.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessionDetail.visibility = View.GONE
+                    Toast.makeText(
+                        requireContext(),
+                        "Successfully added to bookmarks",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
