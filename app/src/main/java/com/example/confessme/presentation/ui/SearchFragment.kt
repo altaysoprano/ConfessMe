@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -38,6 +40,8 @@ class SearchFragment : Fragment() {
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var userListAdapter: UserListAdapter
     private lateinit var historyListAdapter: UserListAdapter
+    private var callback: OnBackPressedCallback? = null
+    private var searchViewFocused: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +56,7 @@ class SearchFragment : Fragment() {
         setupRecyclerViews()
         viewModel.getSearchHistoryUsers(limit)
         setSearchText()
+        setOnBackPressed()
 
         binding.deleteAllHistoryTextView.setOnClickListener {
             dialogHelper = ConfessMeDialog(requireContext())
@@ -121,6 +126,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun setSearchText() {
+        val searchView = binding.searchView
+
+        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            searchViewFocused = hasFocus
+        }
+
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -145,8 +156,6 @@ class SearchFragment : Fragment() {
 
     fun onBottomNavItemReselected() {
         val searchView = binding.searchView
-
-        Log.d("Mesaj: ", "Fonksiyon çağrıldı")
 
         searchView.requestFocus()
         val inputMethodManager =
@@ -366,6 +375,42 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.followUserState.observe(this, userFollowStateObserver)
+    }
+
+    private fun setOnBackPressed() {
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (searchViewFocused) {
+                    disableSearchView()
+                } else {
+                    isEnabled = false
+                    hideKeyboard()
+                    requireActivity().onBackPressed()
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback!!)
+    }
+
+    private fun disableSearchView() {
+        val searchView = binding.searchView
+
+        if (searchView.hasFocus()) {
+            searchView.clearFocus()
+            searchViewFocused = false
+
+/*
+            hideKeyboard()
+            requireActivity().onBackPressed()
+*/
+        }
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val view = requireActivity().currentFocus ?: View(requireContext())
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun findPositionById(userId: String, userList: MutableList<User>): Int {
