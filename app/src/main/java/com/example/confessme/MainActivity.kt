@@ -37,22 +37,37 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
-                    navigateFrag(HomeFragment(), false)
-                }
+                    if (getCurrentFragment() is HomeFragment) {
 
+                    } else {
+
+                        navigateFrag(HomeFragment(), false)
+                    }
+                }
                 R.id.profile -> {
-                    navigateFrag(ProfileFragment(), false)
+                    if (getCurrentFragment() is ProfileFragment) {
+                        
+                    } else {
+                        navigateFrag(ProfileFragment(), false)
+                    }
                 }
-
                 R.id.search -> {
-                    navigateFrag(SearchFragment(), false)
-                }
+                    if (getCurrentFragment() is SearchFragment) {
 
+                    } else {
+                        navigateFrag(SearchFragment(), false)
+                    }
+                }
                 else -> {
+
                 }
             }
             true
         }
+    }
+
+    private fun getCurrentFragment(): Fragment? {
+        return supportFragmentManager.findFragmentById(R.id.coordinator)
     }
 
     override fun navigateFrag(fragment: Fragment, addToStack: Boolean) {
