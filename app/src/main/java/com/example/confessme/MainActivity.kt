@@ -18,6 +18,7 @@ import com.example.confessme.presentation.ui.HomeFragment
 import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.presentation.ui.ProfileFragment
 import com.example.confessme.presentation.ui.SearchFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
                 }
                 R.id.search -> {
                     if (getCurrentFragment() is SearchFragment) {
-
+                        ((getCurrentFragment()) as SearchFragment).onBottomNavItemReselected()
                     } else {
                         navigateFrag(SearchFragment(), false)
                     }

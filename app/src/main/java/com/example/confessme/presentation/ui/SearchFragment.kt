@@ -1,9 +1,12 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -58,7 +61,6 @@ class SearchFragment : Fragment() {
                 { viewModel.deleteAllHistory() }
             )
         }
-
         return binding.root
     }
 
@@ -99,7 +101,13 @@ class SearchFragment : Fragment() {
                 onItemClick(user)
             },
             onFollowClick = { userUid, userName, userToken, isFollowing ->
-                followOrUnfollowUser(userUid, userName, userToken, ListType.HistoryList, isFollowing)
+                followOrUnfollowUser(
+                    userUid,
+                    userName,
+                    userToken,
+                    ListType.HistoryList,
+                    isFollowing
+                )
             },
             onItemLongPress = {
                 dialogHelper = ConfessMeDialog(requireContext())
@@ -135,6 +143,17 @@ class SearchFragment : Fragment() {
         })
     }
 
+    fun onBottomNavItemReselected() {
+        val searchView = binding.searchView
+
+        Log.d("Mesaj: ", "Fonksiyon çağrıldı")
+
+        searchView.requestFocus()
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(searchView.findFocus(), InputMethodManager.SHOW_IMPLICIT)
+    }
+
     private fun observeSearchResults() {
         viewModel.searchResults.observe(this) { state ->
             when (state) {
@@ -144,11 +163,13 @@ class SearchFragment : Fragment() {
                     binding.historyTitle.visibility = View.GONE
                     binding.deleteAllHistoryTextView.visibility = View.GONE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
                     binding.historyResultsRecyclerviewId.visibility = View.GONE
@@ -157,7 +178,7 @@ class SearchFragment : Fragment() {
                     binding.resultsTitle.visibility = View.VISIBLE
                     binding.searchResultsRecyclerviewId.visibility = View.VISIBLE
 
-                    if(state.data.isEmpty()) {
+                    if (state.data.isEmpty()) {
                         binding.searchNoUserFoundView.root.visibility = View.VISIBLE
                     } else {
                         binding.searchNoUserFoundView.root.visibility = View.GONE
@@ -177,18 +198,20 @@ class SearchFragment : Fragment() {
                     binding.progressBarSearch.visibility = View.VISIBLE
                     binding.searchNoUserFoundView.root.visibility = View.GONE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
                     binding.resultsTitle.visibility = View.GONE
                     binding.searchResultsRecyclerviewId.visibility = View.GONE
                     binding.searchNoUserFoundView.root.visibility = View.GONE
 
-                    if(state.data.isEmpty()) {
+                    if (state.data.isEmpty()) {
                         binding.historyResultsRecyclerviewId.visibility = View.GONE
                         binding.historyTitle.visibility = View.GONE
                         binding.deleteAllHistoryTextView.visibility = View.GONE
@@ -209,11 +232,13 @@ class SearchFragment : Fragment() {
                 is UiState.Loading -> {
                     binding.progressBarSearch.visibility = View.VISIBLE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
                     binding.historyResultsRecyclerviewId.visibility = View.GONE
@@ -232,17 +257,20 @@ class SearchFragment : Fragment() {
                 is UiState.Loading -> {
                     binding.progressBarSearch.visibility = View.VISIBLE
                 }
+
                 is UiState.Failure -> {
                     binding.progressBarSearch.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
+
                 is UiState.Success -> {
                     binding.progressBarSearch.visibility = View.GONE
 
                     val deletedHistoryId = state.data
 
-                    val position = deletedHistoryId.let { findPositionById(it, historyListAdapter.userList) }
+                    val position =
+                        deletedHistoryId.let { findPositionById(it, historyListAdapter.userList) }
                     if (position != -1) {
                         historyListAdapter.removeHistory(position)
                         if (historyListAdapter.userList.isEmpty()) {
@@ -279,7 +307,13 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun followOrUnfollowUser(userUidToFollowOrUnfollow: String, userName: String, userToken: String, listType: ListType, isFollowing: Boolean) {
+    private fun followOrUnfollowUser(
+        userUidToFollowOrUnfollow: String,
+        userName: String,
+        userToken: String,
+        listType: ListType,
+        isFollowing: Boolean
+    ) {
         if (userUidToFollowOrUnfollow.isEmpty()) {
             return
         }
@@ -290,6 +324,7 @@ class SearchFragment : Fragment() {
             ListType.UserList -> {
                 adapter = userListAdapter
             }
+
             ListType.HistoryList -> {
                 adapter = historyListAdapter
             }
@@ -308,6 +343,7 @@ class SearchFragment : Fragment() {
                             adapter.notifyItemChanged(position)
                         }
                     }
+
                     is UiState.Success -> {
                         if (position != -1) {
                             adapter.userList[position].isFollowingInProgress = false
@@ -316,12 +352,14 @@ class SearchFragment : Fragment() {
                         }
                         viewModel.followUserState.removeObserver(this)
                     }
+
                     is UiState.Failure -> {
                         if (position != -1) {
                             adapter.userList[position].isFollowingInProgress = false
                             adapter.notifyItemChanged(position)
                         }
-                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
