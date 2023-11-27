@@ -2,6 +2,7 @@ package com.example.confessme
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract.Profile
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -38,15 +39,14 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
             when (it.itemId) {
                 R.id.home -> {
                     if (getCurrentFragment() is HomeFragment) {
-
+                        ((getCurrentFragment()) as HomeFragment).onBottomNavItemReselected()
                     } else {
-
                         navigateFrag(HomeFragment(), false)
                     }
                 }
                 R.id.profile -> {
                     if (getCurrentFragment() is ProfileFragment) {
-                        
+                        ((getCurrentFragment()) as ProfileFragment).onBottomNavItemReselected()
                     } else {
                         navigateFrag(ProfileFragment(), false)
                     }
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
                     fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 }
             }
-
             else -> binding.bottomNavigationView.visibility = View.GONE
         }
 

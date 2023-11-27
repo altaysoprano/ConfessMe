@@ -23,6 +23,7 @@ import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.databinding.HomeNoConfessFoundViewBinding
 import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.HomeViewModel
+import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -506,5 +507,9 @@ class HomeFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun onBottomNavItemReselected() {
+        binding.homeRecyclerviewId.smoothScrollToPosition(0)
     }
 }

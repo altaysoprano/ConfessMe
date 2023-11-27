@@ -37,6 +37,7 @@ class ProfileFragment() : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: ProfileViewPagerAdapter
     private val viewModel: ProfileViewModel by viewModels()
+    private var reselectedTabItemIndex: Int? = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,6 +130,7 @@ class ProfileFragment() : Fragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
                     binding.profileViewPager.currentItem = it.position
+                    reselectedTabItemIndex = tab.position
                 }
             }
 
@@ -137,15 +139,7 @@ class ProfileFragment() : Fragment() {
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    val fragmentPosition = it.position
-                    val fragmentTag = "f$fragmentPosition"
-
-                    val fragment = childFragmentManager.findFragmentByTag(fragmentTag)
-                    if (fragment != null && fragment is ScrollableToTop) {
-                        fragment.scrollToTop()
-                    }
-                }
+                onTabReselected()
             }
         })
 
@@ -155,6 +149,30 @@ class ProfileFragment() : Fragment() {
                 binding.profileTabLayout.getTabAt(position)?.select()
             }
         })
+    }
+
+    fun onTabReselected() {
+        reselectedTabItemIndex?.let {
+            val fragmentPosition = reselectedTabItemIndex
+            val fragmentTag = "f$fragmentPosition"
+
+            val fragment = childFragmentManager.findFragmentByTag(fragmentTag)
+            if (fragment != null && fragment is ScrollableToTop) {
+                fragment.scrollToTop()
+            }
+        }
+    }
+
+    fun onBottomNavItemReselected() {
+        binding.profileTabLayout.getTabAt(0)?.select()
+
+        val fragmentPosition = 0
+        val fragmentTag = "f$fragmentPosition"
+
+        val fragment = childFragmentManager.findFragmentByTag(fragmentTag)
+        if (fragment != null && fragment is ScrollableToTop) {
+            fragment.scrollToTop()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -189,5 +207,4 @@ class ProfileFragment() : Fragment() {
         binding.firstNameTv.text = ""
         binding.bioTv.text = ""
     }
-
 }
