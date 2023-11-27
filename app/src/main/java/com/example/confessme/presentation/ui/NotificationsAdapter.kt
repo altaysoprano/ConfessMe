@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -44,6 +45,14 @@ class NotificationsAdapter(
                 notificationScreenUsername.text = notification.fromUserUsername
                 notificationsScreenConfession.text = notification.text
                 notificationsScreenNotification.text = notification.description
+
+                val usernameTv = binding.notificationScreenUsername
+                usernameTv.text = notification.fromUserUsername
+                if (notification.fromUserUsername.equals("Anonymous")) {
+                    usernameTv.setBackgroundResource(R.drawable.anonymous_username_background)
+                } else {
+                    usernameTv.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                }
 
                 if (notificationsScreenConfession.text.isBlank()) {
                     setFollowedNotificationLayout(binding, itemView, adapterPosition)
