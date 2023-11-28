@@ -5,6 +5,9 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -49,8 +52,12 @@ class SearchFragment : Fragment() {
     ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
-        (activity as AppCompatActivity?)!!.title = "Search"
+        binding.searchToolbar.title = "Search"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.searchToolbar)
+
+        binding.searchToolbar.setNavigationOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
         setAdapters()
         setupRecyclerViews()
@@ -130,6 +137,18 @@ class SearchFragment : Fragment() {
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             searchViewFocused = hasFocus
+            if(searchViewFocused) {
+                (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+                    setDisplayHomeAsUpEnabled(true)
+                    setDisplayShowHomeEnabled(true)
+                    setHomeAsUpIndicator(R.drawable.ic_back)
+                }
+            } else {
+                (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+                    setDisplayHomeAsUpEnabled(false)
+                    setDisplayShowHomeEnabled(false)
+                }
+            }
         }
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -311,9 +330,11 @@ class SearchFragment : Fragment() {
         super.onResume()
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.VISIBLE
+/*
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(false)
         }
+*/
     }
 
     private fun followOrUnfollowUser(
@@ -393,22 +414,28 @@ class SearchFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback!!)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                requireActivity().onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun disableSearchView() {
         val searchView = binding.searchView
 
         if (searchView.hasFocus()) {
             searchView.clearFocus()
             searchViewFocused = false
-
-/*
-            hideKeyboard()
-            requireActivity().onBackPressed()
-*/
         }
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         val view = requireActivity().currentFocus ?: View(requireContext())
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
