@@ -62,7 +62,7 @@ class SearchFragment : Fragment() {
         setAdapters()
         setupRecyclerViews()
         viewModel.getSearchHistoryUsers(limit)
-        setSearchText()
+        setSearchBar()
         setOnBackPressed()
 
         binding.deleteAllHistoryTextView.setOnClickListener {
@@ -132,18 +132,27 @@ class SearchFragment : Fragment() {
         )
     }
 
-    private fun setSearchText() {
+    private fun setSearchBar() {
         val searchView = binding.searchView
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             searchViewFocused = hasFocus
             if(searchViewFocused) {
+                Log.d("Mesaj: ", "Şu an searchViewFocused'ta")
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(true)
                     setDisplayShowHomeEnabled(true)
                     setHomeAsUpIndicator(R.drawable.ic_back)
                 }
-            } else {
+            } /*else if(!searchView.query.isEmpty()) {
+                Log.d("Mesaj: ", "Şu an !searchView.query.isEmpty()'de")
+                binding.searchView.setQuery("", false)
+                (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+                    setDisplayHomeAsUpEnabled(false)
+                    setDisplayShowHomeEnabled(false)
+                }
+            } */else {
+                Log.d("Mesaj: ", "Şu an elseta")
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(false)
                     setDisplayShowHomeEnabled(false)
@@ -401,9 +410,15 @@ class SearchFragment : Fragment() {
     private fun setOnBackPressed() {
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (searchViewFocused) {
+                if (searchViewFocused || binding.searchView.query.isNotEmpty()) {
                     disableSearchView()
-                } else {
+                    binding.searchView.setQuery("", false)
+                    (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+                        setDisplayHomeAsUpEnabled(false)
+                        setDisplayShowHomeEnabled(false)
+                    }
+                }
+                else {
                     isEnabled = false
                     hideKeyboard()
                     requireActivity().onBackPressed()
