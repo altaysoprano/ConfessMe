@@ -25,6 +25,7 @@ class NotificationRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
             val notificationsCollection = database.collection("notifications")
+            val followersCollection = database.collection("users").document(currentUserUid).collection("followers")
 
             notificationsCollection
                 .limit(limit)
@@ -48,6 +49,15 @@ class NotificationRepoImp(
 
                             tasks.add(confessionRef.get().addOnSuccessListener { confessionDoc ->
                                 if (!confessionDoc.exists()) {
+                                    batchDelete.delete(notificationsCollection.document(notification.id))
+                                }
+                            })
+                        } else {
+                            val fromUserId = notification.fromUserId
+                            val followerDocument = followersCollection.document(fromUserId)
+
+                            tasks.add(followerDocument.get().addOnSuccessListener { followerDoc ->
+                                if (!followerDoc.exists()) {
                                     batchDelete.delete(notificationsCollection.document(notification.id))
                                 }
                             })
