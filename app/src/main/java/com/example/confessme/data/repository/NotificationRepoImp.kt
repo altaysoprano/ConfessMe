@@ -41,7 +41,6 @@ class NotificationRepoImp(
 
                     for (document in documents) {
                         val notification = document.toObject(Notification::class.java)
-                        notificationList.add(notification)
 
                         if (notification.confessionId.isNotEmpty()) {
                             val confessionRef = database.collection("confessions")
@@ -50,6 +49,8 @@ class NotificationRepoImp(
                             tasks.add(confessionRef.get().addOnSuccessListener { confessionDoc ->
                                 if (!confessionDoc.exists()) {
                                     batchDelete.delete(notificationsCollection.document(notification.id))
+                                } else {
+                                    notificationList.add(notification)
                                 }
                             })
                         } else {
@@ -59,6 +60,8 @@ class NotificationRepoImp(
                             tasks.add(followerDocument.get().addOnSuccessListener { followerDoc ->
                                 if (!followerDoc.exists()) {
                                     batchDelete.delete(notificationsCollection.document(notification.id))
+                                } else {
+                                    notificationList.add(notification)
                                 }
                             })
                         }
