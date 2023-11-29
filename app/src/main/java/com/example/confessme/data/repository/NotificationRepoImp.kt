@@ -7,8 +7,11 @@ import com.example.confessme.util.UiState
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.WriteBatch
 
 class NotificationRepoImp(
     private val firebaseAuth: FirebaseAuth,
@@ -25,7 +28,8 @@ class NotificationRepoImp(
         if (user != null) {
             val currentUserUid = user.uid
             val notificationsCollection = database.collection("notifications")
-            val followersCollection = database.collection("users").document(currentUserUid).collection("followers")
+            val followersCollection =
+                database.collection("users").document(currentUserUid).collection("followers")
 
             notificationsCollection
                 .limit(limit)
@@ -47,11 +51,13 @@ class NotificationRepoImp(
                                 .document(notification.confessionId)
 
                             tasks.add(confessionRef.get().addOnSuccessListener { confessionDoc ->
-                                if (!confessionDoc.exists()) {
-                                    batchDelete.delete(notificationsCollection.document(notification.id))
-                                } else {
-                                    notificationList.add(notification)
-                                }
+                                processAnswerLikeNotification(
+                                    notification,
+                                    confessionDoc,
+                                    notificationsCollection,
+                                    batchDelete,
+                                    notificationList
+                                )
                             })
                         } else {
                             val fromUserId = notification.fromUserId
@@ -67,14 +73,19 @@ class NotificationRepoImp(
                         }
 
                         if (forNotifications) {
-                            batchSeen.update(notificationsCollection.document(document.id), "seen", true)
+                            batchSeen.update(
+                                notificationsCollection.document(document.id),
+                                "seen",
+                                true
+                            )
                         }
                     }
 
                     Tasks.whenAllComplete(tasks)
                         .addOnCompleteListener {
                             batchDelete.commit().addOnCompleteListener {
-                                val sortedNotificationsList = notificationList.sortedByDescending { it.timestamp.toString() }
+                                val sortedNotificationsList =
+                                    notificationList.sortedByDescending { it.timestamp.toString() }
 
                                 if (forNotifications) {
                                     batchSeen.commit().addOnCompleteListener {
@@ -91,6 +102,52 @@ class NotificationRepoImp(
                 }
         } else {
             result.invoke(UiState.Failure("User not authenticated"))
+        }
+    }
+
+    private fun processAnswerLikeNotification(
+        notification: Notification,
+        confessionDoc: DocumentSnapshot,
+        notificationsCollection: CollectionReference,
+        batchDelete: WriteBatch,
+        notificationList: MutableList<Notification>
+    ) {
+        when (notification.description) {
+            " confessed:" -> {
+                if (confessionDoc.exists()) {
+                    notificationList.add(notification)
+                } else {
+                    batchDelete.delete(notificationsCollection.document(notification.id))
+                }
+            }
+
+            " liked this confession:" -> {
+                val favorited = confessionDoc.getBoolean("favorited") ?: false
+                if (!favorited) {
+                    batchDelete.delete(notificationsCollection.document(notification.id))
+                } else {
+                    notificationList.add(notification)
+                }
+            }
+
+            " replied to this confession:" -> {
+                val answered = confessionDoc.getBoolean("answered") ?: false
+                if (!answered) {
+                    batchDelete.delete(notificationsCollection.document(notification.id))
+                } else {
+                    notificationList.add(notification)
+                }
+            }
+
+            " liked this answer:" -> {
+                val answerMap = confessionDoc.get("answer") as? Map<String, Any>
+                val favorited = answerMap?.get("favorited") as? Boolean ?: false
+                if (!favorited) {
+                    batchDelete.delete(notificationsCollection.document(notification.id))
+                } else {
+                    notificationList.add(notification)
+                }
+            }
         }
     }
 }
