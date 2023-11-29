@@ -138,21 +138,12 @@ class SearchFragment : Fragment() {
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             searchViewFocused = hasFocus
             if(searchViewFocused) {
-                Log.d("Mesaj: ", "Şu an searchViewFocused'ta")
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(true)
                     setDisplayShowHomeEnabled(true)
                     setHomeAsUpIndicator(R.drawable.ic_back)
                 }
-            } /*else if(!searchView.query.isEmpty()) {
-                Log.d("Mesaj: ", "Şu an !searchView.query.isEmpty()'de")
-                binding.searchView.setQuery("", false)
-                (activity as AppCompatActivity?)!!.supportActionBar?.apply {
-                    setDisplayHomeAsUpEnabled(false)
-                    setDisplayShowHomeEnabled(false)
-                }
-            } */else {
-                Log.d("Mesaj: ", "Şu an elseta")
+            } else {
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(false)
                     setDisplayShowHomeEnabled(false)
@@ -339,11 +330,14 @@ class SearchFragment : Fragment() {
         super.onResume()
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.VISIBLE
-/*
-        (activity as AppCompatActivity?)!!.supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(false)
+
+        if(binding.searchView.query.isNotEmpty()) {
+            (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                setDisplayShowHomeEnabled(true)
+                setHomeAsUpIndicator(R.drawable.ic_back)
+            }
         }
-*/
     }
 
     private fun followOrUnfollowUser(
