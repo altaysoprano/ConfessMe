@@ -846,13 +846,30 @@ class ConfessionRepoImp(
             timestamp = FieldValue.serverTimestamp()
         )
 
-        notificationsCollection.add(notification)
-            .addOnSuccessListener { documentReference ->
-                val notificationId = documentReference.id
-                val updatedNotification = notification.copy(id = notificationId)
+        notificationsCollection.whereEqualTo("confessionId", confessionId)
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("fromUserId", fromUserId)
+            .whereEqualTo("description", " $description")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.isEmpty) {
+                    notificationsCollection.add(notification)
+                        .addOnSuccessListener { documentReference ->
+                            val notificationId = documentReference.id
+                            val updatedNotification = notification.copy(id = notificationId)
 
-                notificationsCollection.document(notificationId)
-                    .set(updatedNotification)
+                            notificationsCollection.document(notificationId)
+                                .set(updatedNotification)
+                        }
+                } else {
+                    val existingNotification = querySnapshot.documents[0]
+
+                    val notificationId = existingNotification.id
+                    val updatedNotification = notification.copy(id = notificationId)
+
+                    notificationsCollection.document(notificationId)
+                        .set(updatedNotification)
+                }
             }
     }
 }

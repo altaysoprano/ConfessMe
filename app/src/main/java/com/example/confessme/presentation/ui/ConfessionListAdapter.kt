@@ -140,6 +140,7 @@ class ConfessionListAdapter(
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
                 .load(confess.fromUserImageUrl)
+                .placeholder(R.drawable.empty_profile_photo)
                 .into(binding.confessionsScreenProfileImage)
         } else {
             binding.confessionsScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)

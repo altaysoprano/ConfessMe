@@ -85,6 +85,7 @@ class HomeFragment : Fragment() {
         binding.homeRecyclerviewId.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = confessListAdapter
+            setHasFixedSize(true)
             this.addOnScrollListener(object :
                 RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
