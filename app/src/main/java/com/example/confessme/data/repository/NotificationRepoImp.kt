@@ -51,7 +51,7 @@ class NotificationRepoImp(
                                 .document(notification.confessionId)
 
                             tasks.add(confessionRef.get().addOnSuccessListener { confessionDoc ->
-                                processAnswerLikeNotification(
+                                verifyNotificationValidity(
                                     notification,
                                     confessionDoc,
                                     notificationsCollection,
@@ -105,7 +105,7 @@ class NotificationRepoImp(
         }
     }
 
-    private fun processAnswerLikeNotification(
+    private fun verifyNotificationValidity(
         notification: Notification,
         confessionDoc: DocumentSnapshot,
         notificationsCollection: CollectionReference,
