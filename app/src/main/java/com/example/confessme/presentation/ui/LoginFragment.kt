@@ -48,6 +48,8 @@ class LoginFragment : Fragment() {
         viewModel.signInState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
+                    setLoadingState(isLoading = true)
+/*
                     binding.progressBarSignIn.visibility = View.VISIBLE
                     binding.button.isEnabled = false
                     binding.button.alpha = 0.5f
@@ -57,9 +59,14 @@ class LoginFragment : Fragment() {
                     binding.passET.alpha = 0.5f
                     binding.textView2.isEnabled = false
                     binding.textView2.alpha = 0.5f
+                    binding.googleSignInButton.isEnabled = false
+                    binding.googleSignInButton.alpha = 0.5f
+*/
                 }
 
                 is UiState.Failure -> {
+                    setLoadingState(isLoading = false)
+/*
                     binding.progressBarSignIn.visibility = View.GONE
                     binding.button.isEnabled = true
                     binding.button.alpha = 1f
@@ -69,6 +76,9 @@ class LoginFragment : Fragment() {
                     binding.passET.alpha = 1f
                     binding.textView2.isEnabled = true
                     binding.textView2.alpha = 1f
+                    binding.googleSignInButton.isEnabled = true
+                    binding.googleSignInButton.alpha = 1f
+*/
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -102,6 +112,24 @@ class LoginFragment : Fragment() {
         binding.textView2.setOnClickListener {
             navRegister.navigateFrag(RegisterFragment(), false)
         }
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        val alpha = if(isLoading) 0.5f else 1f
+        val isEnabled = !isLoading
+        val progressBarVisibility = if(isLoading) View.VISIBLE else View.GONE
+
+        binding.progressBarSignIn.visibility = progressBarVisibility
+        binding.button.isEnabled = isEnabled
+        binding.button.alpha = alpha
+        binding.emailEt.isEnabled = isEnabled
+        binding.emailEt.alpha = alpha
+        binding.passET.isEnabled = isEnabled
+        binding.passET.alpha = alpha
+        binding.textView2.isEnabled = isEnabled
+        binding.textView2.alpha = alpha
+        binding.googleSignInButton.isEnabled = isEnabled
+        binding.googleSignInButton.alpha = alpha
     }
 
 }
