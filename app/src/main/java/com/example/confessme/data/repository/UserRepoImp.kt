@@ -72,7 +72,7 @@ class UserRepoImp(
                                             profileUpdate["imageUrl"] = newImageUrl
 
                                             // eğer previousImageUrl boş değilse önceki profil resmini siliyoruz
-                                            if (previousImageUrl.isNotEmpty()) {
+                                            if (previousImageUrl.isNotEmpty() && previousImageUrl.contains("firebasestorage")) {
                                                 val storageRef = FirebaseStorage.getInstance()
                                                     .getReferenceFromUrl(previousImageUrl)
                                                 storageRef.delete().addOnSuccessListener {
@@ -135,7 +135,7 @@ class UserRepoImp(
                                 userDocument.update(profileUpdate)
                                     .addOnSuccessListener {
                                         // Eğer previousImageUrl boş değilse storage'ten fotoğrafı siliyoruz
-                                        if (previousImageUrl.isNotEmpty()) {
+                                        if (previousImageUrl.isNotEmpty() && previousImageUrl.contains("firebasestorage")) {
                                             val storageRef = FirebaseStorage.getInstance()
                                                 .getReferenceFromUrl(previousImageUrl)
                                             storageRef.delete().addOnSuccessListener {

@@ -3,7 +3,6 @@ package com.example.confessme.data.repository
 import android.util.Log
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -174,37 +173,69 @@ class AuthRepoImp(
                     val email = googleSignInAccount?.email ?: ""
                     val photoUrl = googleSignInAccount?.photoUrl?.toString() ?: ""
 
-                    val randomUsername = generateRandomUsername(10)
-                    FirebaseMessaging.getInstance().token.addOnSuccessListener { fcmToken ->
+                    database.collection("users").document(uid)
+                        .get()
+                        .addOnSuccessListener { document ->
+                            val storedUserName = document.getString("userName")
+                            val storedBio = document.getString("bio")
 
-                        val newUser = User(
-                            uid = uid,
-                            email = email,
-                            userName = randomUsername,
-                            token = fcmToken,
-                            imageUrl = photoUrl
-                        )
-
-                        database.collection("users").document(uid)
-                            .set(newUser)
-                            .addOnSuccessListener {
-                                result.invoke(UiState.Success("Google Sign-In successful"))
+                            //Google sign in'de daha önceden ayarlanmış bir username, bio veya imageUrl varsa onları çekiyoruz,
+                            // Yoksa random username, boş bio ve google account'ın imageUrl'ini kullanıyoruz
+                            val userName = if (storedUserName.isNullOrEmpty()) {
+                                generateRandomUsername(10)
+                            } else {
+                                storedUserName
                             }
-                            .addOnFailureListener { exception ->
+
+                            val bio = if (!storedBio.isNullOrEmpty()) {
+                                storedBio
+                            } else {
+                                ""
+                            }
+
+                            // Burada fotoyu remove edip geri geldiğinde google fotoğrafı tekrar geliyordu,
+                            // bu düzenleme bunun için yapıldı
+                            val imageUrl = document.getString("imageUrl") ?: photoUrl
+
+                            FirebaseMessaging.getInstance().token.addOnSuccessListener { fcmToken ->
+                                val googleSignInUser = User(
+                                    uid = uid,
+                                    email = email,
+                                    userName = userName,
+                                    token = fcmToken,
+                                    imageUrl = imageUrl,
+                                    bio = bio
+                                )
+
+                                database.collection("users").document(uid)
+                                    .set(googleSignInUser)
+                                    .addOnSuccessListener {
+                                        result.invoke(UiState.Success("Google Sign-In successful"))
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        result.invoke(
+                                            UiState.Failure(
+                                                exception.localizedMessage
+                                                    ?: "User data update failed"
+                                            )
+                                        )
+                                    }
+                            }.addOnFailureListener { exception ->
                                 result.invoke(
                                     UiState.Failure(
-                                        exception.localizedMessage ?: "User data update failed"
+                                        exception.localizedMessage
+                                            ?: "FCM Token retrieval failed"
                                     )
                                 )
                             }
-                    }.addOnFailureListener { exception ->
-                        result.invoke(
-                            UiState.Failure(
-                                exception.localizedMessage
-                                    ?: "FCM Token retrieval failed"
+                        }
+                        .addOnFailureListener { exception ->
+                            result.invoke(
+                                UiState.Failure(
+                                    exception.localizedMessage ?: "Error getting user data"
+                                )
                             )
-                        )
-                    }
+                        }
                 } else {
                     result.invoke(UiState.Failure("Google Sign-In failed"))
                     val exception = task.exception
