@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.util.UiState
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -28,6 +29,13 @@ class LoginViewModel @Inject constructor(
     fun signIn(email: String, password: String) {
         _signInState.value = UiState.Loading
         authRepo.signIn(email, password) {
+            _signInState.value = it
+        }
+    }
+
+    fun googleSignIn(idToken: String, googleSignInAccount: GoogleSignInAccount?) {
+        _signInState.value = UiState.Loading
+        authRepo.googleSignIn(idToken, googleSignInAccount) {
             _signInState.value = it
         }
     }

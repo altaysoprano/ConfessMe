@@ -3,11 +3,14 @@ package com.example.confessme.data.repository
 import android.util.Log
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -114,51 +117,105 @@ class AuthRepoImp(
         }
     }
 
-        override fun signOut(result: (UiState<String>) -> Unit) {
-            val user = firebaseAuth.currentUser
-
-            if (user != null) {
-                firebaseAuth.signOut()
-                result.invoke(UiState.Success("Logout successful"))
-            } else {
-                result.invoke(UiState.Failure("No user signed in"))
-            }
-        }
-
-/*
     override fun signOut(result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
-            FirebaseMessaging.getInstance().deleteToken()
-                .addOnSuccessListener {
-                    val uid = user.uid
-                    database.collection("users").document(uid)
-                        .update("token", "")
-                        .addOnSuccessListener {
-                            firebaseAuth.signOut()
-                            result.invoke(UiState.Success("Logout successful"))
-                        }
-                        .addOnFailureListener { exception ->
-                            result.invoke(
-                                UiState.Failure(
-                                    exception.localizedMessage ?: "Token deletion failed"
-                                )
-                            )
-                        }
-                }
-                .addOnFailureListener { exception ->
-                    result.invoke(
-                        UiState.Failure(
-                            exception.localizedMessage ?: "FCM Token deletion failed"
-                        )
-                    )
-                }
+            firebaseAuth.signOut()
+            result.invoke(UiState.Success("Logout successful"))
         } else {
             result.invoke(UiState.Failure("No user signed in"))
         }
     }
-*/
+
+    /*
+        override fun signOut(result: (UiState<String>) -> Unit) {
+            val user = firebaseAuth.currentUser
+
+            if (user != null) {
+                FirebaseMessaging.getInstance().deleteToken()
+                    .addOnSuccessListener {
+                        val uid = user.uid
+                        database.collection("users").document(uid)
+                            .update("token", "")
+                            .addOnSuccessListener {
+                                firebaseAuth.signOut()
+                                result.invoke(UiState.Success("Logout successful"))
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(
+                                    UiState.Failure(
+                                        exception.localizedMessage ?: "Token deletion failed"
+                                    )
+                                )
+                            }
+                    }
+                    .addOnFailureListener { exception ->
+                        result.invoke(
+                            UiState.Failure(
+                                exception.localizedMessage ?: "FCM Token deletion failed"
+                            )
+                        )
+                    }
+            } else {
+                result.invoke(UiState.Failure("No user signed in"))
+            }
+        }
+    */
+
+    override fun googleSignIn(idToken: String, googleSignInAccount: GoogleSignInAccount?, result: (UiState<String>) -> Unit) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        firebaseAuth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = firebaseAuth.currentUser
+                    val uid = user?.uid ?: return@addOnCompleteListener
+
+                    val email = googleSignInAccount?.email ?: ""
+                    val photoUrl = googleSignInAccount?.photoUrl?.toString() ?: ""
+
+                    val randomUsername = generateRandomUsername(10)
+                    FirebaseMessaging.getInstance().token.addOnSuccessListener { fcmToken ->
+
+                        val newUser = User(
+                            uid = uid,
+                            email = email,
+                            userName = randomUsername,
+                            token = fcmToken,
+                            imageUrl = photoUrl
+                        )
+
+                        database.collection("users").document(uid)
+                            .set(newUser)
+                            .addOnSuccessListener {
+                                result.invoke(UiState.Success("Google Sign-In successful"))
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(
+                                    UiState.Failure(
+                                        exception.localizedMessage ?: "User data update failed"
+                                    )
+                                )
+                            }
+                    }.addOnFailureListener { exception ->
+                        result.invoke(
+                            UiState.Failure(
+                                exception.localizedMessage
+                                    ?: "FCM Token retrieval failed"
+                            )
+                        )
+                    }
+                } else {
+                    result.invoke(UiState.Failure("Google Sign-In failed"))
+                    val exception = task.exception
+                    if (exception is FirebaseAuthUserCollisionException) {
+                        result.invoke(UiState.Failure("User already exists"))
+                    } else {
+                        result.invoke(UiState.Failure("Google Sign-In failed"))
+                    }
+                }
+            }
+    }
 
     override fun updatePassword(
         previousPassword: String,

@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "535977328333-45m5r7p9rnt9vvc7gdk9mh8nbdfp620d.apps.googleusercontent.com",
+          "client_id": "535977328333-q79v58d2qiavt5sq89g848sd4kudaugo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.confessme",
+            "certificate_hash": "1e3c4b965dd3f7643a2aef1e53b718c55b4416d2"
+          }
+        },
+        {
+          "client_id": "535977328333-rvh50j15pm76ejvbvf2e3dlcdcs8964t.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

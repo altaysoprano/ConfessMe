@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,7 +13,14 @@ import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentLoginBinding
 import com.example.confessme.presentation.LoginViewModel
+import com.example.confessme.util.Constants
+import com.example.confessme.util.Constants.Companion.RC_SIGN_IN
 import com.example.confessme.util.UiState
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,41 +52,29 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.googleSignInButton.setOnClickListener {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+            val signInIntent = GoogleSignIn.getClient(requireActivity(), gso).signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
+        }
+    }
+
     private fun observeSignIn() {
         viewModel.signInState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
                     setLoadingState(isLoading = true)
-/*
-                    binding.progressBarSignIn.visibility = View.VISIBLE
-                    binding.button.isEnabled = false
-                    binding.button.alpha = 0.5f
-                    binding.emailEt.isEnabled = false
-                    binding.emailEt.alpha = 0.5f
-                    binding.passET.isEnabled = false
-                    binding.passET.alpha = 0.5f
-                    binding.textView2.isEnabled = false
-                    binding.textView2.alpha = 0.5f
-                    binding.googleSignInButton.isEnabled = false
-                    binding.googleSignInButton.alpha = 0.5f
-*/
                 }
 
                 is UiState.Failure -> {
                     setLoadingState(isLoading = false)
-/*
-                    binding.progressBarSignIn.visibility = View.GONE
-                    binding.button.isEnabled = true
-                    binding.button.alpha = 1f
-                    binding.emailEt.isEnabled = true
-                    binding.emailEt.alpha = 1f
-                    binding.passET.isEnabled = true
-                    binding.passET.alpha = 1f
-                    binding.textView2.isEnabled = true
-                    binding.textView2.alpha = 1f
-                    binding.googleSignInButton.isEnabled = true
-                    binding.googleSignInButton.alpha = 1f
-*/
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -108,6 +104,37 @@ class LoginFragment : Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(requireContext())
+
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                if (account != null) {
+                    val idToken = account.idToken
+                    if (idToken != null) {
+                        viewModel.googleSignIn(idToken, googleSignInAccount)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Google Sign-In failed. Please try again.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: ApiException) {
+                Toast.makeText(
+                    requireContext(),
+                    "Google Sign-In failed. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     private fun setRegisterTvClickListener() {
         binding.textView2.setOnClickListener {
             navRegister.navigateFrag(RegisterFragment(), false)
@@ -131,5 +158,4 @@ class LoginFragment : Fragment() {
         binding.googleSignInButton.isEnabled = isEnabled
         binding.googleSignInButton.alpha = alpha
     }
-
 }
