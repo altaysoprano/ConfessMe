@@ -373,7 +373,7 @@ class ConfessAnswerFragment(
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentLength = s?.length ?: 0
+                val currentLength = s?.trim()?.length ?: 0
                 isTextEmpty = s?.trim()?.isEmpty() == true
 
                 if(isTextEmpty == true) {
@@ -383,7 +383,7 @@ class ConfessAnswerFragment(
                 else if (currentLength > maxLength) {
                     isAnswerButtonEnabled = false
                     setSaveButton()
-                    binding.confessAnswerEditText.error = "Confession is too long (max $maxLength characters)"
+                    binding.confessAnswerEditText.error = "Answer is too long (max $maxLength characters)"
                 } else {
                     binding.confessAnswerEditText.error = null
                     isAnswerButtonEnabled = true

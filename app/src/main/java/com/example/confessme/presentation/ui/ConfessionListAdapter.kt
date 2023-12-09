@@ -152,8 +152,6 @@ class ConfessionListAdapter(
             confess.isExpanded = !confess.isExpanded
             notifyItemChanged(adapterPosition)
         }
-
-        setTextViewExpansion(binding.confessionsScreenConfession, confess.isExpanded)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -314,12 +312,6 @@ class ConfessionListAdapter(
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, confessList.size)
     }
-
-    private fun setTextViewExpansion(textview: TextView, isExpanded: Boolean) {
-        val maxLines = if (isExpanded) Int.MAX_VALUE else 2
-        textview.maxLines = maxLines
-    }
-
     private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
         val currentTime = Timestamp.now()
         val timeDifference = currentTime.seconds - confessionTimestamp.seconds

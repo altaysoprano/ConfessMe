@@ -72,7 +72,7 @@ class ConfessFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentLength = s?.length ?: 0
+                val currentLength = s?.trim()?.length ?: 0
                 isTextEmpty = s?.trim()?.isEmpty()
 
                 if (isTextEmpty == true) {
