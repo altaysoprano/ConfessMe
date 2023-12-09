@@ -13,7 +13,6 @@
 >
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/confessedListRecyclerviewId"
-        android:layout_marginHorizontal="8dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="?android:attr/actionBarSize"

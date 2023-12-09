@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
@@ -79,6 +80,7 @@ class FollowsFragment : Fragment() {
         binding.followsRecyclerviewId.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userListAdapter
+            setHasFixedSize(true)
         }
 
         binding.followsRecyclerviewId.addOnScrollListener(object :
