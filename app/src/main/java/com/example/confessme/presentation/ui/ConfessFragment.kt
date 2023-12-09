@@ -35,7 +35,7 @@ class ConfessFragment : Fragment() {
     private lateinit var userUid: String
     private var isConfessButtonEnabled = false
     private var isAnonymous = false
-    private var confessText = ""
+    private var isTextEmpty: Boolean? = true
     private lateinit var dialogHelper: ConfessMeDialog
     private var callback: OnBackPressedCallback? = null
 
@@ -73,8 +73,7 @@ class ConfessFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
-                val isTextEmpty = s?.trim()?.isEmpty()
-                confessText = s?.toString() ?: ""
+                isTextEmpty = s?.trim()?.isEmpty()
 
                 if (isTextEmpty == true) {
                     isConfessButtonEnabled = false
@@ -194,7 +193,7 @@ class ConfessFragment : Fragment() {
     private fun setOnBackPressed() {
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (!confessText.isEmpty()) {
+                if (isTextEmpty == false) {
                     dialogHelper.showDialog(
                         "confırm exıt",
                         "Do you want to exit without sending the confession?"

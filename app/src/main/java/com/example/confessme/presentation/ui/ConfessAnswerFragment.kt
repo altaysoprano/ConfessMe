@@ -48,6 +48,7 @@ class ConfessAnswerFragment(
     private var isAnswerButtonEnabled = false
     private var isEditAnswer: Boolean = false
     private var isAnswerFavorited: Boolean = false
+    private var isTextEmpty: Boolean = true
     private lateinit var currentUserUid: String
     private lateinit var confessionId: String
     private lateinit var dialogHelper: ConfessMeDialog
@@ -268,7 +269,7 @@ class ConfessAnswerFragment(
         val confessionId = arguments?.getString("confessionId", "")
 
         binding.replyButton.setOnClickListener {
-            val answerEditText = binding.confessAnswerEditText.text.toString()
+            val answerEditText = binding.confessAnswerEditText.text.trim().toString()
 
              viewModel.addAnswer(confessionId ?: "", answerEditText)
         }
@@ -373,7 +374,7 @@ class ConfessAnswerFragment(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val currentLength = s?.length ?: 0
-                val isTextEmpty = s?.trim()?.isEmpty()
+                isTextEmpty = s?.trim()?.isEmpty() == true
 
                 if(isTextEmpty == true) {
                     isAnswerButtonEnabled = false
