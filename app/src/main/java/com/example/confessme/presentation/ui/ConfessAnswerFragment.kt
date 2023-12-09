@@ -390,7 +390,7 @@ class ConfessAnswerFragment(
                     setSaveButton()
                 }
 
-                if(s.toString() == answerText) {
+                if(s?.trim()?.toString() == answerText) {
                     isAnswerButtonEnabled = false
                     setSaveButton()
                 }

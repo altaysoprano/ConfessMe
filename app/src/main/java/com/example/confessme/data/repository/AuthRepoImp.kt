@@ -116,6 +116,7 @@ class AuthRepoImp(
         }
     }
 
+/*
     override fun signOut(result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
@@ -126,43 +127,46 @@ class AuthRepoImp(
             result.invoke(UiState.Failure("No user signed in"))
         }
     }
+*/
 
-    /*
-        override fun signOut(result: (UiState<String>) -> Unit) {
-            val user = firebaseAuth.currentUser
+    override fun signOut(result: (UiState<String>) -> Unit) {
+        val user = firebaseAuth.currentUser
 
-            if (user != null) {
-                FirebaseMessaging.getInstance().deleteToken()
-                    .addOnSuccessListener {
-                        val uid = user.uid
-                        database.collection("users").document(uid)
-                            .update("token", "")
-                            .addOnSuccessListener {
-                                firebaseAuth.signOut()
-                                result.invoke(UiState.Success("Logout successful"))
-                            }
-                            .addOnFailureListener { exception ->
-                                result.invoke(
-                                    UiState.Failure(
-                                        exception.localizedMessage ?: "Token deletion failed"
-                                    )
+        if (user != null) {
+            FirebaseMessaging.getInstance().deleteToken()
+                .addOnSuccessListener {
+                    val uid = user.uid
+                    database.collection("users").document(uid)
+                        .update("token", "")
+                        .addOnSuccessListener {
+                            firebaseAuth.signOut()
+                            result.invoke(UiState.Success("Logout successful"))
+                        }
+                        .addOnFailureListener { exception ->
+                            result.invoke(
+                                UiState.Failure(
+                                    exception.localizedMessage ?: "Token deletion failed"
                                 )
-                            }
-                    }
-                    .addOnFailureListener { exception ->
-                        result.invoke(
-                            UiState.Failure(
-                                exception.localizedMessage ?: "FCM Token deletion failed"
                             )
+                        }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(
+                        UiState.Failure(
+                            exception.localizedMessage ?: "FCM Token deletion failed"
                         )
-                    }
-            } else {
-                result.invoke(UiState.Failure("No user signed in"))
-            }
+                    )
+                }
+        } else {
+            result.invoke(UiState.Failure("No user signed in"))
         }
-    */
+    }
 
-    override fun googleSignIn(idToken: String, googleSignInAccount: GoogleSignInAccount?, result: (UiState<String>) -> Unit) {
+    override fun googleSignIn(
+        idToken: String,
+        googleSignInAccount: GoogleSignInAccount?,
+        result: (UiState<String>) -> Unit
+    ) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
