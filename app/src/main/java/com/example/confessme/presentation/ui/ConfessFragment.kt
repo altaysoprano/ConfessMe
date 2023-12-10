@@ -1,11 +1,10 @@
 package com.example.confessme.presentation.ui
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -17,7 +16,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessBinding
@@ -179,8 +178,12 @@ class ConfessFragment : Fragment() {
         inflater.inflate(R.menu.confess_menu, menu)
         val confessMenuItem = menu.findItem(R.id.action_confess)
         confessMenuItem.isEnabled = isConfessButtonEnabled
-        confessMenuItem.icon?.alpha =
-            if (isConfessButtonEnabled) (1f * 255).toInt() else (0.5f * 255).toInt()
+        confessMenuItem.icon?.apply {
+            alpha = if (isConfessButtonEnabled) (1f * 255).toInt() else (0.5f * 255).toInt()
+            val color = if (isConfessButtonEnabled) ContextCompat.getColor(requireContext(), R.color.confessmered)
+                        else Color.parseColor("#000000")
+            setTint(color)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
