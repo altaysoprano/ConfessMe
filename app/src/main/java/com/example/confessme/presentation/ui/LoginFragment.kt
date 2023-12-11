@@ -45,6 +45,7 @@ class LoginFragment : Fragment() {
             navRegister.navigateFrag(HomeFragment(), false)
         }
 
+        setGoogleSignInButtonDesign()
         setRegisterTvClickListener()
         setSignInClickListener()
         observeSignIn()
@@ -157,5 +158,12 @@ class LoginFragment : Fragment() {
         binding.textView2.alpha = alpha
         binding.googleSignInButton.isEnabled = isEnabled
         binding.googleSignInButton.alpha = alpha
+    }
+    
+    private fun setGoogleSignInButtonDesign() {
+        binding.googleSignInButton.getChildAt(0)?.let {
+            val smaller = Math.min(it.paddingLeft, it.paddingRight)
+            it.setPadding(smaller, it.paddingTop, smaller, it.paddingBottom)
+        }
     }
 }
