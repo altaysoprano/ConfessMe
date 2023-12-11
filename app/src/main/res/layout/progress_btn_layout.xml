@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/follow_button_cardview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
+        app:cardElevation="8dp"
         android:background="@color/confessmered"
         app:cardCornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,21 +19,20 @@
             android:id="@+id/follow_button_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="8dp"
+            android:background="@color/confessmered"
             android:paddingHorizontal="16dp"
-            android:background="@color/confessmered">
+            android:paddingVertical="8dp">
 
             <TextView
                 android:id="@+id/follow_button_tv"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="FOLLOW"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            </TextView>
+                app:layout_constraintTop_toTopOf="parent"></TextView>
 
             <ProgressBar
                 android:id="@+id/progress_bar_follow_button"
@@ -48,6 +47,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
