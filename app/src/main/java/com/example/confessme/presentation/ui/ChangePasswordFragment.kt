@@ -39,7 +39,11 @@ class ChangePasswordFragment : DialogFragment() {
             val newPassword = binding.newPasswordEt.text.toString()
             val newPasswordAgain = binding.newPasswordAgainEt.text.toString()
 
-            viewModel.updatePassword(previousPassword, newPassword, newPasswordAgain)
+            if(previousPassword.isEmpty() || newPassword.isEmpty() || newPasswordAgain.isEmpty()) {
+                Toast.makeText(requireContext(), "Fields cannot be left empty", Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.updatePassword(previousPassword, newPassword, newPasswordAgain)
+            }
         }
 
         observeUpdatePassword()

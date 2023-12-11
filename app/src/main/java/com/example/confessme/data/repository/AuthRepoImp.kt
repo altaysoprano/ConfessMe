@@ -259,6 +259,20 @@ class AuthRepoImp(
     ) {
         val user = firebaseAuth.currentUser
 
+        //Burada kullanıcı eğer Google hesabıyla giriş yapmışsa gerekli uyarı veriliyor.
+        user?.let {
+            val providerData = it.providerData
+
+            for (profile in providerData) {
+                val providerId = profile.providerId
+
+                if (providerId == GoogleAuthProvider.PROVIDER_ID) {
+                    result.invoke(UiState.Failure("You've logged in with your Google account. Please visit the Google account management page to change your password."))
+                    return
+                }
+            }
+        }
+
         if (user == null) {
             result.invoke(UiState.Failure("User is not signed in."))
             return
