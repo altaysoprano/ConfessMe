@@ -152,7 +152,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         if (confess.fromUserUsername.equals("Anonymous")) {
             usernameTv.setBackgroundResource(R.drawable.anonymous_username_background)
         } else {
-            usernameTv.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            usernameTv.setBackgroundColor(Color.TRANSPARENT)
         }
         binding.confessionDetailScreenConfession.text = spannable
         binding.confessionDetailScreenConfession.movementMethod = LinkMovementMethod.getInstance()

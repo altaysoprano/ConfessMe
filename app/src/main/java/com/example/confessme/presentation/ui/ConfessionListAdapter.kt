@@ -129,7 +129,7 @@ class ConfessionListAdapter(
         if (confess.fromUserUsername.equals("Anonymous")) {
             usernameTv.setBackgroundResource(R.drawable.anonymous_username_background)
         } else {
-            usernameTv.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            usernameTv.setBackgroundColor(Color.TRANSPARENT)
         }
         binding.confessionsScreenConfession.text = spannable
         binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()

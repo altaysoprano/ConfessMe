@@ -51,7 +51,7 @@ class NotificationsAdapter(
                 if (notification.fromUserUsername.equals("Anonymous")) {
                     usernameTv.setBackgroundResource(R.drawable.anonymous_username_background)
                 } else {
-                    usernameTv.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                    usernameTv.setBackgroundColor(Color.TRANSPARENT)
                 }
 
                 if (notificationsScreenConfession.text.isBlank()) {

@@ -26,6 +26,7 @@ import com.example.confessme.presentation.ProfileViewPagerAdapter
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.FollowType
 import com.example.confessme.util.UiState
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
