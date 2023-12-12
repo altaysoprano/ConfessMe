@@ -58,6 +58,7 @@
             android:clickable="true"
             android:layout_gravity="center_vertical"
             android:ellipsize="end"
+            android:textColor="?attr/colorOnSecondary"
             android:maxLines="2"
             android:focusable="true"
             android:text="@string/confession"

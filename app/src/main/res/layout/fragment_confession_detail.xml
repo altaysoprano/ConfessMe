@@ -82,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
+                    android:textColor="?attr/colorOnSecondary"
                     android:ellipsize="end"
                     android:focusable="true"
                     android:text="confession"
