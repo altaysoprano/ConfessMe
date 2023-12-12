@@ -122,7 +122,7 @@
                     android:id="@+id/progress_bar_favorite"
                     android:layout_width="12dp"
                     android:layout_height="12dp"
-                    android:indeterminateTint="?attr/colorOnSecondary"
+                    android:indeterminateTint="@color/black"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/ic_favorite"
                     app:layout_constraintEnd_toEndOf="@+id/ic_favorite"
@@ -147,6 +147,6 @@
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="Expanding Menu"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_ellipses" />
+        android:src="@drawable/ic_more_options" />
 
 </RelativeLayout>
