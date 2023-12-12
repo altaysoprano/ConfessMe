@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:text="@string/the_confessions_received_from_the_people_you_follow_are_visible_here"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/colorOnSecondary"
         android:textStyle="bold"
         android:alpha="0.5"
         android:textSize="16sp" />

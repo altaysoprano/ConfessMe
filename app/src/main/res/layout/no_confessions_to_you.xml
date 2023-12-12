@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/nobody_has_opened_up_to_you_just_yet"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/colorOnSecondary"
         android:textStyle="bold"
         android:alpha="0.5"
         android:textSize="16sp" />

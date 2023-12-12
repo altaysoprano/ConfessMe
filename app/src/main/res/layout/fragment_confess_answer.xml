@@ -116,7 +116,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_centerInParent="true"
-                android:indeterminateTint="@color/black"
+                android:indeterminateTint="?attr/colorOnSecondary"
                 android:visibility="invisible"></ProgressBar>
         </RelativeLayout>
 
@@ -145,7 +145,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
-        android:indeterminateTint="@color/black"
+        android:indeterminateTint="?attr/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
