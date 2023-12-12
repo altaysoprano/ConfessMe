@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -177,11 +178,16 @@ class ConfessFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.confess_menu, menu)
         val confessMenuItem = menu.findItem(R.id.action_confess)
+        val typedValue = TypedValue()
+        val theme = requireContext().theme
+        theme.resolveAttribute(com.google.android.material.R.attr.colorOnSecondary, typedValue, true)
+        val colorOnSecondary = typedValue.data
+
         confessMenuItem.isEnabled = isConfessButtonEnabled
         confessMenuItem.icon?.apply {
-            alpha = if (isConfessButtonEnabled) (1f * 255).toInt() else (0.5f * 255).toInt()
+            alpha = if (isConfessButtonEnabled) (1f * 255).toInt() else (0.3f * 255).toInt()
             val color = if (isConfessButtonEnabled) ContextCompat.getColor(requireContext(), R.color.confessmered)
-                        else Color.parseColor("#000000")
+                        else colorOnSecondary
             setTint(color)
         }
         super.onCreateOptionsMenu(menu, inflater)

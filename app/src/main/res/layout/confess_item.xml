@@ -12,24 +12,22 @@
         android:layout_height="50dp"
         android:src="@drawable/empty_profile_photo" />
 
-    <LinearLayout
+    <TableLayout
+        android:id="@+id/confess_item_username_and_timestamp_table"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:elevation="4dp"
+        android:shrinkColumns="0"
         android:layout_marginStart="8dp"
         android:layout_toEndOf="@id/confessionsScreenProfileImage"
-        android:orientation="vertical">
+        android:layout_toStartOf="@+id/more_action_button"
+        android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
+        <TableRow>
             <TextView
                 android:id="@+id/confessionsScreenUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:text="username"
                 android:textStyle="bold" />
 
@@ -37,7 +35,7 @@
                 android:id="@+id/middle_dot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:paddingHorizontal="4dp"
                 android:text="·"
                 android:textStyle="bold" />
@@ -47,10 +45,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha="0.75"
-                android:maxLines="1"
+                android:layout_gravity="start"
                 android:text="timestamp"
-                android:textStyle="normal" />
-        </LinearLayout>
+                android:textStyle="normal"
+                android:ellipsize="none"
+                android:singleLine="true"
+                />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:elevation="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/confessionsScreenProfileImage"
+        android:layout_below="@+id/confess_item_username_and_timestamp_table"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -142,7 +154,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="?selectableItemBackgroundBorderless"
