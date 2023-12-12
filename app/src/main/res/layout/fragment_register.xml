@@ -117,7 +117,6 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:textStyle="bold"
             android:text="Do you already have an account? "
             />
