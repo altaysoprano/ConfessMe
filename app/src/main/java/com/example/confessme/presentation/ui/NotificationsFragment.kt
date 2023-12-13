@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +28,7 @@ import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.NotificationsViewModel
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.util.MyPreferences
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -43,6 +45,7 @@ class NotificationsFragment : Fragment() {
     private lateinit var currentUserUid: String
     private var bottomNavBarControl: BottomNavBarControl? = null
     private var limit: Long = 20
+    private lateinit var myPreferences: MyPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +54,7 @@ class NotificationsFragment : Fragment() {
         binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         noNotificationsBinding = binding.noConfessionsHereText
         noNotificationsBinding.noConfessionsHereText.text = "No notifications found here"
+        myPreferences = MyPreferences(requireContext())
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.title = "Notifications"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.notificationsToolbar)
@@ -65,6 +69,7 @@ class NotificationsFragment : Fragment() {
             }
         )
         setupRecyclerView()
+        applyAppTheme()
         setHasOptionsMenu(true)
 
         viewModel.fetchNotifications(limit)
@@ -251,6 +256,10 @@ class NotificationsFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.notifications_menu, menu)
+
+        val openCloseLightsItem = menu.findItem(R.id.open_close_lights)
+        openCloseLightsItem.title = getOpenCloseItemText()
+
         return super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -263,8 +272,44 @@ class NotificationsFragment : Fragment() {
             R.id.ic_notifications -> {
                 requireActivity().onBackPressed()
             }
+            R.id.open_close_lights -> {
+                val nightModeEnabled = myPreferences.isNightModeEnabled()
+                saveNightMode(!nightModeEnabled)
+                AppCompatDelegate.setDefaultNightMode(if (!nightModeEnabled) {
+                    AppCompatDelegate.MODE_NIGHT_YES
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_NO
+                })
+                item.title = getOpenCloseItemText()
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun saveNightMode(isNightModeEnabled: Boolean) {
+        myPreferences.setNightMode(isNightModeEnabled)
+    }
+
+    private fun isDarkModeEnabled(): Boolean {
+        return myPreferences.isNightModeEnabled()
+    }
+
+    private fun getOpenCloseItemText(): String {
+        return if (isDarkModeEnabled()) {
+            "Open Lights"
+        } else {
+            "Close Lights"
+        }
+    }
+
+    private fun applyAppTheme() {
+        val isDarkModeEnabled = myPreferences.isNightModeEnabled()
+
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
     }
 
     private fun setHomeScreenDisabled(disabled: Boolean) {
@@ -333,5 +378,4 @@ class NotificationsFragment : Fragment() {
     fun signOut() {
         viewModel.signOut()
     }
-
 }

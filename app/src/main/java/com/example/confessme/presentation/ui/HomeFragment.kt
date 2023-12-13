@@ -26,6 +26,7 @@ import com.example.confessme.databinding.HomeNoConfessFoundViewBinding
 import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.HomeViewModel
 import com.example.confessme.presentation.ScrollableToTop
+import com.example.confessme.util.MyPreferences
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -43,6 +44,7 @@ class HomeFragment : Fragment() {
     private var bottomNavBarControl: BottomNavBarControl? = null
     private var hasUnreadNotifications: Boolean = false
     private var limit: Long = 20
+    private lateinit var myPreferences: MyPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +54,7 @@ class HomeFragment : Fragment() {
         noConfessFoundBinding = binding.homeNoConfessFoundView
         (activity as AppCompatActivity?)!!.title = "Home"
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.homeToolbar)
+        myPreferences = MyPreferences(requireContext())
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUserUid = currentUser?.uid ?: ""
         navRegister = activity as FragmentNavigation
@@ -59,6 +62,7 @@ class HomeFragment : Fragment() {
 
         setConfessListAdapter()
         setupRecyclerView()
+        applyAppTheme()
 
         viewModel.fetchConfessions(limit)
         viewModel.fetchNotifications(limit)
@@ -513,39 +517,42 @@ class HomeFragment : Fragment() {
                 navRegister.navigateFrag(notificationsFragment, true)
             }
             R.id.open_close_lights -> {
-                item.title = getOpenCloseItemText()
-                if (isDarkModeEnabled()) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                val nightModeEnabled = myPreferences.isNightModeEnabled()
+                saveNightMode(!nightModeEnabled)
+                AppCompatDelegate.setDefaultNightMode(if (!nightModeEnabled) {
+                    AppCompatDelegate.MODE_NIGHT_YES
                 } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
+                    AppCompatDelegate.MODE_NIGHT_NO
+                })
+                item.title = getOpenCloseItemText()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    private fun saveNightMode(isNightModeEnabled: Boolean) {
+        myPreferences.setNightMode(isNightModeEnabled)
+    }
+
     private fun isDarkModeEnabled(): Boolean {
-        return when (AppCompatDelegate.getDefaultNightMode()) {
-            AppCompatDelegate.MODE_NIGHT_YES -> {
-                Log.d("Mesaj: ","mode night yes girdi")
-                true
-            }
-            AppCompatDelegate.MODE_NIGHT_NO -> {
-                Log.d("Mesaj: ","mode night no girdi")
-                false
-            }
-            else -> {
-                Log.d("Mesaj: ","elsea girdi")
-                false
-            }
-        }
+        return myPreferences.isNightModeEnabled()
     }
 
     private fun getOpenCloseItemText(): String {
-        return if(isDarkModeEnabled()) {
+        return if (isDarkModeEnabled()) {
             "Open Lights"
         } else {
             "Close Lights"
+        }
+    }
+
+    private fun applyAppTheme() {
+        val isDarkModeEnabled = myPreferences.isNightModeEnabled()
+
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
