@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notificationItemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground"
-    android:id="@+id/notificationItemLayout"
     android:padding="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -14,54 +14,58 @@
 
     <LinearLayout
         android:id="@+id/notificationsScreenGeneralLinearLayout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:gravity="center_vertical"
+        android:layout_height="50dp"
         android:layout_marginStart="4dp"
         android:layout_toEndOf="@id/notificationScreenProfileImage"
-        android:layout_height="50dp">
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <TableLayout
+            android:id="@+id/notificationScreenUsernameDescLayout"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
-            android:layout_height="wrap_content"
-            android:id="@+id/notificationScreenUsernameDescLayout"
-            >
-            <TextView
-            android:id="@+id/notificationScreenUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="@string/username"
-            android:layout_gravity="center_vertical"
-            android:textStyle="bold" />
+            android:orientation="horizontal"
+            android:shrinkColumns="0">
 
-        <TextView
-            android:id="@+id/notificationsScreenNotification"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:clickable="true"
-            android:layout_gravity="center_vertical"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:focusable="true"
-            android:text="@string/description"
-            android:textStyle="bold" />
-        </LinearLayout>
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/notificationScreenUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/username"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/notificationsScreenNotification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:ellipsize="none"
+                    android:singleLine="true"
+                    android:focusable="true"
+                    android:text="@string/description"
+                    android:textStyle="bold" />
+            </TableRow>
+        </TableLayout>
+
         <TextView
             android:id="@+id/notificationsScreenConfession"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:layout_gravity="center_vertical"
+            android:clickable="true"
             android:ellipsize="end"
-            android:textColor="?attr/colorOnSecondary"
-            android:maxLines="2"
             android:focusable="true"
+            android:maxLines="2"
             android:text="@string/confession"
+            android:textColor="?attr/colorOnSecondary"
             android:textStyle="normal" />
     </LinearLayout>
 
