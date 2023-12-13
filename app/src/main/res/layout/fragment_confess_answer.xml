@@ -41,6 +41,7 @@
         app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
         android:gravity="start|top"
         android:textColor="?attr/colorOnSecondary"
+        android:textColorHint="@color/grey600"
         android:visibility="gone"
         android:background="@null"
         app:layout_constraintTop_toBottomOf="@id/confess_answer_user_name_and_date"
