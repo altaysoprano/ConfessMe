@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -483,6 +484,9 @@ class HomeFragment : Fragment() {
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.VISIBLE
 
+        val openCloseLightsItem = menu.findItem(R.id.open_close_lights)
+        openCloseLightsItem.title = getOpenCloseItemText()
+
         if (hasUnreadNotifications) {
             val iconDrawable = requireContext().getDrawable(R.drawable.ic_notifications_blur)
             iconDrawable?.setTint(resources.getColor(R.color.confessmered))
@@ -508,8 +512,41 @@ class HomeFragment : Fragment() {
 
                 navRegister.navigateFrag(notificationsFragment, true)
             }
+            R.id.open_close_lights -> {
+                item.title = getOpenCloseItemText()
+                if (isDarkModeEnabled()) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun isDarkModeEnabled(): Boolean {
+        return when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_YES -> {
+                Log.d("Mesaj: ","mode night yes girdi")
+                true
+            }
+            AppCompatDelegate.MODE_NIGHT_NO -> {
+                Log.d("Mesaj: ","mode night no girdi")
+                false
+            }
+            else -> {
+                Log.d("Mesaj: ","elsea girdi")
+                false
+            }
+        }
+    }
+
+    private fun getOpenCloseItemText(): String {
+        return if(isDarkModeEnabled()) {
+            "Open Lights"
+        } else {
+            "Close Lights"
+        }
     }
 
     fun onBottomNavItemReselected() {
