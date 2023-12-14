@@ -32,6 +32,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessAnswerBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ConfessMeDialog
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
@@ -112,7 +113,7 @@ class ConfessAnswerFragment(
                     val answerUserUid = state.data?.userId ?: ""
                     val isConfessionAnswered = state.data?.answered ?: false
                     val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
-                    val answerTimeStamp = if(state.data?.answer?.timestamp != null) calculateTimeSinceConfession(state.data?.answer?.timestamp as Timestamp) else ""
+                    val answerTimeStamp = state.data?.answer?.timestamp
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
 
@@ -348,7 +349,7 @@ class ConfessAnswerFragment(
     }
 
     private fun setImageAndTextStates(isConfessionAnswered: Boolean, answerText: String, answeredUserName: String,
-                                        answerDate: String, answerUserUid: String, answerFromUserUid: String,
+                                        answerTimestamp: Any?, answerUserUid: String, answerFromUserUid: String,
                                       answerFromUsername: String, answerUserName: String, userToken: String,
                                       fromUserToken: String, confessedUserName: String) {
 
@@ -360,7 +361,7 @@ class ConfessAnswerFragment(
             setUserNameProfileImageAndAnswerText(
                 answerUserUid, answerFromUserUid, answerFromUsername, answerUserName,
                 userToken, fromUserToken, confessedUserName, answerText)
-            setUsernameAndDateText(answeredUserName, answerDate)
+            setUsernameAndDateText(answeredUserName, answerTimestamp)
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
             binding.confessAnswerTextView.visibility = View.GONE
@@ -411,12 +412,30 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setUsernameAndDateText(answeredUserName: String, answerDate: String) {
+    private fun setUsernameAndDateText(answeredUserName: String, answerTimestamp: Any?) {
         val answeredUserNameBold = SpannableString(answeredUserName)
         answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        val answerDateBold = SpannableString(answerDate)
+
+        val answerElapsedTime = if(answerTimestamp != null) MyUtils.calculateTimeSinceConfession(answerTimestamp as Timestamp) else "-"
+
+        val answerDateBold = SpannableString(answerElapsedTime)
+        answerDateBold.setSpan(object : ClickableSpan() {
+            override fun onClick(view: View) {
+                val date = MyUtils.convertFirestoreTimestampToReadableDate(answerTimestamp)
+                Toast.makeText(view.context, date, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = false
+                ds.color = ContextCompat.getColor(requireContext(), R.color.grey600)
+            }
+        }, 0, answerElapsedTime.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        binding.confessAnswerUserNameAndDate.highlightColor = Color.TRANSPARENT
         val usernameAndDateText = TextUtils.concat(answeredUserNameBold, " · ", answerDateBold)
         binding.confessAnswerUserNameAndDate.text = usernameAndDateText
+        binding.confessAnswerUserNameAndDate.movementMethod = LinkMovementMethod.getInstance()
     }
 
     private fun setUserNameProfileImageAndAnswerText(answerUserUid: String, answerFromUserUid: String,
@@ -472,27 +491,4 @@ class ConfessAnswerFragment(
             }
         }
     }
-
-    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
-        val currentTime = Timestamp.now()
-        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
-
-        val minutes = timeDifference / 60
-        val hours = minutes / 60
-        val days = hours / 24
-
-        return when {
-            timeDifference < 60 -> "$timeDifference seconds ago"
-            minutes < 60 -> "$minutes minutes ago"
-            hours < 24 -> "$hours hours ago"
-            else -> {
-                if (days == 1L) {
-                    "1 day ago"
-                } else {
-                    "$days days ago"
-                }
-            }
-        }
-    }
-
 }

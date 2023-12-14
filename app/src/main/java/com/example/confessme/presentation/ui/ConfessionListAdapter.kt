@@ -26,6 +26,7 @@ import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.presentation.ConfessMeDialog
+import com.example.confessme.util.MyUtils
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -139,7 +140,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()
         binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT
         binding.confessionsScreenTimestamp.text =
-            calculateTimeSinceConfession(confess.timestamp as Timestamp)
+            MyUtils.calculateTimeSinceConfession(confess.timestamp as Timestamp)
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
@@ -302,7 +303,7 @@ class ConfessionListAdapter(
         }
 
         binding.confessionsScreenTimestamp.setOnClickListener {
-            val date = convertFirestoreTimestampToReadableDate(confess.timestamp)
+            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp)
             onTimestampClick(date)
         }
 
@@ -320,43 +321,5 @@ class ConfessionListAdapter(
         confessList.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, confessList.size)
-    }
-    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
-        val currentTime = Timestamp.now()
-        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
-
-        val minutes = timeDifference / 60
-        val hours = minutes / 60
-        val days = hours / 24
-
-        return when {
-            timeDifference < 60 -> "$timeDifference seconds ago"
-            minutes < 60 -> "$minutes minutes ago"
-            hours < 24 -> "$hours hours ago"
-            else -> {
-                if (days == 1L) {
-                    "1 day ago"
-                } else {
-                    "$days days ago"
-                }
-            }
-        }
-    }
-
-    private fun convertFirestoreTimestampToReadableDate(timestamp: Any?): String {
-        return try {
-            if (timestamp is Timestamp) {
-                val seconds = timestamp.seconds
-                val nanoseconds = timestamp.nanoseconds
-
-                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-                val date = Date(seconds * 1000 + nanoseconds / 1000000)
-                sdf.format(date)
-            } else {
-                "Invalid date format"
-            }
-        } catch (e: Exception) {
-            "Invalid date format"
-        }
     }
 }

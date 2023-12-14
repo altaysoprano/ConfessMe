@@ -29,6 +29,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessionDetailBinding
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.ConfessionDetailViewModel
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -44,7 +45,6 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
     private var isConfessFavorited: Boolean = false
     private val viewModel: ConfessionDetailViewModel by viewModels()
     private lateinit var dialogHelper: ConfessMeDialog
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -158,7 +158,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         binding.confessionDetailScreenConfession.movementMethod = LinkMovementMethod.getInstance()
         binding.confessionDetailScreenConfession.highlightColor = Color.TRANSPARENT
         binding.confessionDetailScreenTimestamp.text =
-            calculateTimeSinceConfession(confess.timestamp as Timestamp)
+            MyUtils.calculateTimeSinceConfession(confess.timestamp as Timestamp)
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
@@ -456,28 +456,6 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                         "Successfully added to bookmarks",
                         Toast.LENGTH_SHORT
                     ).show()
-                }
-            }
-        }
-    }
-
-    private fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
-        val currentTime = Timestamp.now()
-        val timeDifference = currentTime.seconds - confessionTimestamp.seconds
-
-        val minutes = timeDifference / 60
-        val hours = minutes / 60
-        val days = hours / 24
-
-        return when {
-            timeDifference < 60 -> "$timeDifference seconds ago"
-            minutes < 60 -> "$minutes minutes ago"
-            hours < 24 -> "$hours hours ago"
-            else -> {
-                if (days == 1L) {
-                    "1 day ago"
-                } else {
-                    "$days days ago"
                 }
             }
         }
