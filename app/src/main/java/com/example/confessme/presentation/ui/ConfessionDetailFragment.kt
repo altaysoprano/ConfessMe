@@ -168,6 +168,11 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             binding.confessionDetailScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
         }
 
+        binding.confessionDetailScreenTimestamp.setOnClickListener {
+            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp)
+            Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
+        }
+
         setAnswerFavoriteAndMoreActionsItems(confess, binding, itemView)
     }
 
