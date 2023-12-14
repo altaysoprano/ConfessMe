@@ -108,6 +108,9 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 profileFragment.arguments = bundle
 
                 navRegister.navigateFrag(profileFragment, true)
+            },
+            onTimestampClick = {date ->
+                Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
             }
         )
     }

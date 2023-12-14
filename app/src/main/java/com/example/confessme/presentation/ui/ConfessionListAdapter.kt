@@ -27,6 +27,9 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ConfessItemBinding
 import com.example.confessme.presentation.ConfessMeDialog
 import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ConfessionListAdapter(
     private val context: Context,
@@ -39,7 +42,8 @@ class ConfessionListAdapter(
     private val onConfessBookmarkClick: (String, String, String) -> Unit,
     private val onBookmarkRemoveClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String, String) -> Unit,
-    private val onUserNameClick: (String, String, String, String) -> Unit
+    private val onUserNameClick: (String, String, String, String) -> Unit,
+    private val onTimestampClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = ConfessMeDialog(context)
@@ -297,6 +301,11 @@ class ConfessionListAdapter(
             popupMenu.show()
         }
 
+        binding.confessionsScreenTimestamp.setOnClickListener {
+            val date = convertFirestoreTimestampToReadableDate(confess.timestamp)
+            onTimestampClick(date)
+        }
+
         itemView.setOnClickListener {
 
         }
@@ -331,6 +340,23 @@ class ConfessionListAdapter(
                     "$days days ago"
                 }
             }
+        }
+    }
+
+    private fun convertFirestoreTimestampToReadableDate(timestamp: Any?): String {
+        return try {
+            if (timestamp is Timestamp) {
+                val seconds = timestamp.seconds
+                val nanoseconds = timestamp.nanoseconds
+
+                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                val date = Date(seconds * 1000 + nanoseconds / 1000000)
+                sdf.format(date)
+            } else {
+                "Invalid date format"
+            }
+        } catch (e: Exception) {
+            "Invalid date format"
         }
     }
 }
