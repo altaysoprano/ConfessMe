@@ -17,10 +17,10 @@
         android:id="@+id/anonymously_layout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/grey300"
+        android:elevation="8dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:elevation="8dp"
-        android:background="@color/grey300"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/confess_toolbar">
@@ -29,41 +29,57 @@
             android:id="@+id/anonim_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="start|center"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="32dp"
             android:layout_weight="1"
-            android:textStyle="bold"
-            android:text="I want to confess" />
+            android:gravity="start|center"
+            android:text="I want to confess"
+            android:textStyle="bold" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/anonymity_switch"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="openly"
             android:textStyle="bold"
-            app:theme="@style/SwitchTheme"
-            android:layout_height="wrap_content">
-        </androidx.appcompat.widget.SwitchCompat>
+            app:theme="@style/SwitchTheme"></androidx.appcompat.widget.SwitchCompat>
 
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/confess_edit_text"
-        android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/confess_input_layout"
+        style="@style/ConfessTextInputLayoutStyle"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@null"
-        android:gravity="start|end"
-        android:hint="I want to confess to you that..."
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="top|start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/anonymously_layout"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/anonymously_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confess_edit_text"
+            style="@style/ConfessEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="start"
+            android:gravity="top|start"
+            android:hint="@string/i_want_to_confess_to_you_that"
+            android:textSize="16sp"
+            app:boxBackgroundMode="none" />
+
+        <TextView
+            android:id="@+id/counter_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="#b6b6b6"
+            android:text="0/560" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar_confess"

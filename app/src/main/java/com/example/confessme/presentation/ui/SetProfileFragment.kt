@@ -299,6 +299,11 @@ class SetProfileFragment : Fragment() {
             binding.setSaveButton.isEnabled = false
             binding.setSaveButton.alpha = 0.5f
         }
+        if (userName?.contains("\n") == true) {
+            binding.setFirstNameEt.error = "Username cannot contain line breaks."
+            binding.setSaveButton.isEnabled = false
+            binding.setSaveButton.alpha = 0.5f
+        }
     }
 
     private fun openImageFiles() {

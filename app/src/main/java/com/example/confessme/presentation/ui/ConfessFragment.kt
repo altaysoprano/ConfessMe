@@ -12,11 +12,13 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
@@ -66,26 +68,33 @@ class ConfessFragment : Fragment() {
 
     private fun setTextField() {
         val maxLength = 560
+        binding.counterTextView.text = "0/$maxLength"
         binding.confessEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentLength = s?.trim()?.length ?: 0
+                val lineCount = (s?.count { it == '\n' } ?: 0)
+                val characterCount = s?.trim()?.length ?: 0
+                val currentLength = lineCount + characterCount
                 isTextEmpty = s?.trim()?.isEmpty()
+                binding.counterTextView.text = "$currentLength/$maxLength"
 
                 if (isTextEmpty == true) {
                     isConfessButtonEnabled = false
+                    binding.counterTextView.setTextColor(Color.parseColor("#B6B6B6"))
                     requireActivity().invalidateOptionsMenu()
                 } else if (currentLength > maxLength) {
                     isConfessButtonEnabled = false
                     requireActivity().invalidateOptionsMenu()
+                    binding.counterTextView.setTextColor(Color.RED)
                     binding.confessEditText.error =
                         "Confession is too long (max $maxLength characters)"
                 } else {
                     binding.confessEditText.error = null
                     isConfessButtonEnabled = true
+                    binding.counterTextView.setTextColor(Color.parseColor("#B6B6B6"))
                     requireActivity().invalidateOptionsMenu()
                 }
             }
@@ -93,6 +102,12 @@ class ConfessFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
             }
         })
+
+        binding.confessInputLayout.setOnClickListener {
+            binding.confessEditText.requestFocus()
+            val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(binding.confessEditText, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
     private fun observeAddConfession() {
@@ -141,7 +156,7 @@ class ConfessFragment : Fragment() {
             }
 
             R.id.action_confess -> {
-                val confessionText = binding.confessEditText.text.toString()
+                val confessionText = binding.confessEditText.text.toString().trim()
                 viewModel.addConfession(userUid, confessionText, isAnonymous)
                 return true
             }

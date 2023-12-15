@@ -259,17 +259,17 @@ class EditProfileFragment : Fragment() {
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
-        if(userNameCurrentLength < userNameMinLength) {
+        if (userNameCurrentLength < userNameMinLength) {
             binding.firstNameEt.error = "Username must be more than 3 characters."
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
-        if(isUserNameEmpty == true) {
+        if (isUserNameEmpty == true) {
             binding.firstNameEt.error = "Username cannot be empty."
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
-        if(userName?.contains(" ") == true) {
+        if (userName?.contains(" ") == true) {
             binding.firstNameEt.error = "Username cannot contain spaces."
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
@@ -279,8 +279,13 @@ class EditProfileFragment : Fragment() {
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
-        if(userName == "Anonymous") {
+        if (userName == "Anonymous") {
             binding.firstNameEt.error = "Username cannot be \"Anonymous\"."
+            binding.saveButton.isEnabled = false
+            binding.saveButton.alpha = 0.5f
+        }
+        if (userName?.contains("\n") == true) {
+            binding.firstNameEt.error = "Username cannot contain line breaks."
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
