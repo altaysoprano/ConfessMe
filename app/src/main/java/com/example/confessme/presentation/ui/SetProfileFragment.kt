@@ -155,16 +155,17 @@ class SetProfileFragment : Fragment() {
     private fun setOnClickListeners() {
         binding.setSaveButton.setOnClickListener {
             val username = binding.setFirstNameEt.text?.trim().toString()
-            val bio = binding.setBioEt.text.toString()
+            val bio = binding.setBioEt.text?.trim().toString()
+            val cleanedBio = bio.replace("\\s+".toRegex(), " ")
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
-                viewModel.updateProfile(currentUsername, currentImageUrl, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
+                viewModel.updateProfile(currentUsername, currentImageUrl, username, cleanedBio, selectedImg, ProfilePhotoAction.CHANGE)
             } else if (isProfilePhotoRemoved) {
                 viewModel.updateProfile(
                     currentUsername,
                     currentImageUrl,
                     username,
-                    bio,
+                    cleanedBio,
                     Uri.EMPTY,
                     ProfilePhotoAction.REMOVE
                 )
@@ -173,7 +174,7 @@ class SetProfileFragment : Fragment() {
                     currentUsername,
                     currentImageUrl,
                     username,
-                    bio,
+                    cleanedBio,
                     Uri.EMPTY,
                     ProfilePhotoAction.DO_NOT_CHANGE
                 )
@@ -229,7 +230,7 @@ class SetProfileFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 isUserNameEmpty = s?.isEmpty()
-                userNameCurrentLength = s?.length ?: 0
+                userNameCurrentLength = s?.trim()?.length ?: 0
                 userName = s.toString()
 
                 binding.setSaveButton.isEnabled = true

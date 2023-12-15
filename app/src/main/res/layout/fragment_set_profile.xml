@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".presentation.ui.SetProfileFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/set_profile_toolbar"
@@ -12,32 +17,32 @@
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </androidx.appcompat.widget.Toolbar>
+        app:layout_constraintTop_toTopOf="parent"></androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:id="@+id/welcome_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="Welcome to "
         android:textSize="24sp"
-        android:layout_marginTop="24dp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/set_profile_toolbar"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/set_profile_toolbar" />
+
     <TextView
         android:id="@+id/confessme_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ConfessMe!"
+        android:textColor="@color/confessmered"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="@color/confessmered"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/set_profile_image"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/welcome_textview"
-        app:layout_constraintBottom_toTopOf="@id/set_profile_image"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_textview" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/set_profile_image"
@@ -55,15 +60,15 @@
         android:id="@+id/set_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/edit_pp_button_background"
         android:elevation="8dp"
-        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_edit"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/set_profile_image"
-        app:layout_constraintEnd_toEndOf="@+id/set_profile_image"
-        android:background="@drawable/edit_pp_button_background"
-        android:src="@drawable/ic_edit" />
+        app:layout_constraintEnd_toEndOf="@+id/set_profile_image" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/setTvFirstName"
@@ -72,9 +77,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
-        app:boxStrokeColor="@color/confessmered"
-        app:hintTextColor="@color/confessmered"
         android:elevation="4dp"
+        app:boxStrokeColor="@color/confessmered"
+        app:counterEnabled="true"
+        app:counterMaxLength="30"
+        app:hintTextColor="@color/confessmered"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,9 +102,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        app:boxStrokeColor="@color/confessmered"
-        app:hintTextColor="@color/confessmered"
         android:elevation="4dp"
+        app:boxStrokeColor="@color/confessmered"
+        app:counterEnabled="true"
+        app:counterMaxLength="200"
+        app:hintTextColor="@color/confessmered"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -108,8 +117,10 @@
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ems="10"
             android:hint="Bio"
-            android:inputType="textLongMessage" />
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLines="4" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
@@ -117,9 +128,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="36dp"
         android:background="@color/confessmered"
         android:elevation="4dp"
-        android:layout_marginTop="36dp"
         android:text="SAVE AND PROCEED"
         android:textColor="@color/white"
         android:textStyle="bold"
@@ -133,12 +144,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginVertical="16dp"
         android:background="@color/white"
         android:elevation="4dp"
         android:text="SKIP"
         android:textColor="@color/black"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -155,4 +167,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

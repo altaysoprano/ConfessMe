@@ -47,6 +47,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="32dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="30"
         app:boxStrokeColor="@color/confessmered"
         app:hintTextColor="@color/confessmered"
         android:elevation="4dp"
@@ -72,6 +74,8 @@
         android:layout_marginHorizontal="16dp"
         app:hintTextColor="@color/confessmered"
         android:elevation="4dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,8 +86,10 @@
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="4"
+            android:ems="10"
             android:hint="Bio"
-            android:inputType="textLongMessage" />
+            android:inputType="textCapSentences|textMultiLine" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton

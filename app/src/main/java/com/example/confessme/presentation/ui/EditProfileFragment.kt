@@ -151,16 +151,17 @@ class EditProfileFragment : Fragment() {
     private fun setOnClickListeners() {
         binding.saveButton.setOnClickListener {
             val username = binding.firstNameEt.text?.trim().toString()
-            val bio = binding.bioEt.text.toString()
+            val bio = binding.bioEt.text?.trim().toString()
+            val cleanedBio = bio.replace("\\s+".toRegex(), " ")
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
-                viewModel.updateProfile(currentUsername, currentImageUrl, username, bio, selectedImg, ProfilePhotoAction.CHANGE)
+                viewModel.updateProfile(currentUsername, currentImageUrl, username, cleanedBio, selectedImg, ProfilePhotoAction.CHANGE)
             } else if (isProfilePhotoRemoved) {
                 viewModel.updateProfile(
                     currentUsername,
                     currentImageUrl,
                     username,
-                    bio,
+                    cleanedBio,
                     Uri.EMPTY,
                     ProfilePhotoAction.REMOVE
                 )
@@ -169,7 +170,7 @@ class EditProfileFragment : Fragment() {
                     currentUsername,
                     currentImageUrl,
                     username,
-                    bio,
+                    cleanedBio,
                     Uri.EMPTY,
                     ProfilePhotoAction.DO_NOT_CHANGE
                 )
@@ -215,7 +216,7 @@ class EditProfileFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 isUserNameEmpty = s?.isEmpty()
-                userNameCurrentLength = s?.length ?: 0
+                userNameCurrentLength = s?.trim()?.length ?: 0
                 userName = s.toString()
 
                 binding.saveButton.isEnabled = true
@@ -243,7 +244,6 @@ class EditProfileFragment : Fragment() {
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
-
             }
 
             override fun afterTextChanged(s: Editable?) {
