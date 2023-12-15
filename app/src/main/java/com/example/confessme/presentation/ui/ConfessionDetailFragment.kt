@@ -432,7 +432,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
                     Toast.makeText(
                         requireContext(),
-                        "Answer deleted successfully",
+                        "Confession deleted successfully",
                         Toast.LENGTH_SHORT
                     )
                         .show()
