@@ -49,7 +49,7 @@ class ConfessAnswerFragment(
     private var isAnswerButtonEnabled = false
     private var isEditAnswer: Boolean = false
     private var isAnswerFavorited: Boolean = false
-    private var isTextEmpty: Boolean = true
+    private var isTextEmpty: Boolean? = true
     private lateinit var currentUserUid: String
     private lateinit var confessionId: String
     private lateinit var dialogHelper: ConfessMeDialog
@@ -270,7 +270,7 @@ class ConfessAnswerFragment(
         val confessionId = arguments?.getString("confessionId", "")
 
         binding.replyButton.setOnClickListener {
-            val answerEditText = binding.confessAnswerEditText.text.trim().toString()
+            val answerEditText = binding.confessAnswerEditText.text?.trim().toString()
 
              viewModel.addAnswer(confessionId ?: "", answerEditText)
         }
@@ -280,6 +280,7 @@ class ConfessAnswerFragment(
             binding.answerScreenProfileImage.visibility = View.GONE
             binding.confessAnswerUserNameAndDate.visibility = View.GONE
             binding.replyButton.visibility = View.VISIBLE
+            binding.answerCounterTextView.visibility = View.VISIBLE
             binding.confessAnswerEditText.let {
                 it.visibility = View.VISIBLE
                 it.setText(answerText)
@@ -356,6 +357,7 @@ class ConfessAnswerFragment(
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
             binding.confessAnswerEditText.visibility = View.GONE
+            binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
             setUserNameProfileImageAndAnswerText(
@@ -364,6 +366,7 @@ class ConfessAnswerFragment(
             setUsernameAndDateText(answeredUserName, answerTimestamp)
         } else {
             binding.confessAnswerEditText.visibility = View.VISIBLE
+            binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.GONE
             binding.answerScreenProfileImage.visibility = View.GONE
         }
@@ -374,20 +377,29 @@ class ConfessAnswerFragment(
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentLength = s?.trim()?.length ?: 0
-                isTextEmpty = s?.trim()?.isEmpty() == true
+                val lineCount = (s?.count { it == '\n' } ?: 0)
+                val characterCount = s?.trim()?.length ?: 0
+                val currentLength = lineCount + characterCount
+                isTextEmpty = s?.trim()?.isEmpty()
+                binding.answerCounterTextView.apply {
+                    visibility = View.VISIBLE
+                    text = "$currentLength/$maxLength"
+                }
 
                 if(isTextEmpty == true) {
                     isAnswerButtonEnabled = false
+                    binding.answerCounterTextView.setTextColor(Color.parseColor("#B6B6B6"))
                     setSaveButton()
                 }
                 else if (currentLength > maxLength) {
                     isAnswerButtonEnabled = false
                     setSaveButton()
+                    binding.answerCounterTextView.setTextColor(Color.RED)
                     binding.confessAnswerEditText.error = "Answer is too long (max $maxLength characters)"
                 } else {
                     binding.confessAnswerEditText.error = null
                     isAnswerButtonEnabled = true
+                    binding.answerCounterTextView.setTextColor(Color.parseColor("#B6B6B6"))
                     setSaveButton()
                 }
 

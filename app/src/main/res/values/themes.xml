@@ -65,6 +65,13 @@
         <item name="boxBackgroundMode">none</item>
     </style>
 
+    <style name="ConfessAnswerTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/edit_text_background</item>
+        <item name="boxBackgroundMode">none</item>
+    </style>
+
     <style name="MyCardView" parent="@style/Widget.MaterialComponents.CardView">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MaterialCardView.Cut</item>
         <item name="backgroundTint">#00FFFFFF</item>

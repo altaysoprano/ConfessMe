@@ -31,24 +31,39 @@
         >
     </TextView>
 
-    <EditText
-        android:id="@+id/confess_answer_edit_text"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/confess_answer_text_input_layout"
         android:layout_width="0dp"
+        style="@style/ConfessAnswerTextInputLayoutStyle"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:hint="Reply to confession..."
+        android:gravity="top|start"
         app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
-        android:gravity="start|top"
-        android:textColor="?attr/colorOnSecondary"
-        android:textColorHint="@color/grey600"
-        android:visibility="gone"
-        android:background="@null"
         app:layout_constraintTop_toBottomOf="@id/confess_answer_user_name_and_date"
         app:layout_constraintEnd_toStartOf="@+id/reply_button"
-        app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confess_answer_edit_text"
+            style="@style/ConfessEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Reply to confession..."
+            app:boxBackgroundMode="none"
+            android:ellipsize="start"
+            android:textColorHint="?attr/colorOnSecondary"
+            android:gravity="start|top"
+            android:visibility="gone"/>
+        <TextView
+            android:id="@+id/answer_counter_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginRight="4dp"
+            android:visibility="gone"
+            android:textColor="#b6b6b6"
+            android:text="0/560" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/confess_answer_text_view"
@@ -145,8 +160,8 @@
 
     <ProgressBar
         android:id="@+id/progress_bar_confess_answer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:visibility="invisible"
         android:indeterminateTint="?attr/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
