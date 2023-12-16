@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -66,6 +68,7 @@ class ConfessFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setTextField() {
         val maxLength = 560
         binding.counterTextView.text = "0/$maxLength"
@@ -75,9 +78,12 @@ class ConfessFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+/*
                 val lineCount = (s?.count { it == '\n' } ?: 0)
                 val characterCount = s?.trim()?.length ?: 0
                 val currentLength = lineCount + characterCount
+*/
+                val currentLength = s?.trim()?.length ?: 0
                 isTextEmpty = s?.trim()?.isEmpty()
                 binding.counterTextView.text = "$currentLength/$maxLength"
 
@@ -103,10 +109,16 @@ class ConfessFragment : Fragment() {
             }
         })
 
-        binding.confessInputLayout.setOnClickListener {
-            binding.confessEditText.requestFocus()
-            val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.showSoftInput(binding.confessEditText, InputMethodManager.SHOW_IMPLICIT)
+        binding.confessScrollView.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    binding.confessEditText.requestFocus()
+                    val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.showSoftInput(binding.confessEditText, InputMethodManager.SHOW_IMPLICIT)
+                    true
+                }
+                else -> false
+            }
         }
     }
 
