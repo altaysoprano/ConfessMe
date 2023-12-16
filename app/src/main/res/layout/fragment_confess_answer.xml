@@ -1,172 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_marginHorizontal="32dp"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presentation.ui.ConfessAnswerFragment">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/answerScreenProfileImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/empty_profile_photo" />
-
-    <TextView
-        android:id="@+id/confess_answer_user_name_and_date"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_width="0dp"
-        android:textColor="@color/grey600"
-        android:alpha="0.75"
-        app:layout_constraintTop_toTopOf="@+id/answerScreenProfileImage"
-        app:layout_constraintStart_toEndOf="@+id/answerScreenProfileImage"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"
-        android:gravity="start|top"
-        >
-    </TextView>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/confess_answer_text_input_layout"
-        android:layout_width="0dp"
-        style="@style/ConfessAnswerTextInputLayoutStyle"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:gravity="top|start"
-        app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
-        app:layout_constraintTop_toBottomOf="@id/confess_answer_user_name_and_date"
-        app:layout_constraintEnd_toStartOf="@+id/reply_button"
-        app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/confess_answer_edit_text"
-            style="@style/ConfessEditTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Reply to confession..."
-            app:boxBackgroundMode="none"
-            android:ellipsize="start"
-            android:textColorHint="?attr/colorOnSecondary"
-            android:gravity="start|top"
-            android:visibility="gone"/>
-        <TextView
-            android:id="@+id/answer_counter_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginRight="4dp"
-            android:visibility="gone"
-            android:textColor="#b6b6b6"
-            android:text="0/560" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/confess_answer_text_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:gravity="start|top"
-        android:text="@string/reply_to_confession"
-        android:visibility="gone"
-        android:textColor="?attr/colorOnSecondary"
-        app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
-        app:layout_constraintEnd_toStartOf="@+id/reply_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/answerScreenProfileImage"
-        app:layout_constraintTop_toBottomOf="@+id/confess_answer_user_name_and_date"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageButton
-        android:id="@+id/reply_button"
-        android:layout_width="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_arrow_right"
-        android:backgroundTint="@color/confessmered"
-        android:layout_height="wrap_content">
-    </ImageButton>
-
-    <LinearLayout
-        android:id="@+id/answer_edit_and_favorite_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="8dp"
-        android:paddingTop="8dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/answer_ic_edit"
-            android:layout_width="wrap_content"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/answerScreenProfileImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/empty_profile_photo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/confess_answer_user_name_and_date"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:src="@drawable/ic_edit"
-            android:backgroundTint="@android:color/transparent"
-            app:tint="#B8B8B8" />
+            android:layout_marginStart="8dp"
+            android:alpha="0.75"
+            android:gravity="start|top"
+            android:textColor="@color/grey600"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/answerScreenProfileImage"
+            app:layout_constraintTop_toTopOf="@+id/answerScreenProfileImage"></TextView>
 
-        <Space
-            android:layout_width="1dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/confess_answer_text_input_layout"
+            style="@style/ConfessAnswerTextInputLayoutStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:gravity="top|start"
+            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
+            app:layout_constraintEnd_toStartOf="@+id/reply_button"
+            app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
+            app:layout_constraintTop_toBottomOf="@id/confess_answer_user_name_and_date">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_weight="0.1"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/answer_ic_favorite"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/confess_answer_edit_text"
+                style="@style/ConfessEditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="start"
+                android:gravity="start|top"
+                android:hint="Reply to confession..."
+                android:textColorHint="?attr/colorOnSecondary"
+                android:visibility="gone"
+                app:boxBackgroundMode="none" />
+
+            <TextView
+                android:id="@+id/answer_counter_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_favorite" />
+                android:layout_gravity="end"
+                android:layout_marginRight="4dp"
+                android:text="0/560"
+                android:textColor="#b6b6b6"
+                android:visibility="gone" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <ProgressBar
-                android:id="@+id/progress_bar_answer_favorite"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_centerInParent="true"
-                android:indeterminateTint="?attr/colorOnSecondary"
-                android:visibility="invisible"></ProgressBar>
-        </RelativeLayout>
-
-        <Space
-            android:layout_width="1dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+        <TextView
+            android:id="@+id/confess_answer_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="marquee"
+            android:gravity="start|top"
+            android:text="@string/reply_to_confession"
+            android:textColor="?attr/colorOnSecondary"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/reply_button"
+            app:layout_constraintStart_toEndOf="@id/answerScreenProfileImage"
+            app:layout_constraintTop_toBottomOf="@+id/confess_answer_user_name_and_date"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
-            android:id="@+id/answer_ic_delete"
+            android:id="@+id/reply_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:src="@drawable/ic_delete"
+            android:backgroundTint="@color/confessmered"
+            android:src="@drawable/ic_arrow_right"
+            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
+            app:layout_constraintEnd_toEndOf="parent"></ImageButton>
+
+        <LinearLayout
+            android:id="@+id/answer_edit_and_favorite_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/answer_ic_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/ic_edit"
+                app:tint="#B8B8B8" />
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1">
+
+                <ImageButton
+                    android:id="@+id/answer_ic_favorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/ic_favorite" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_answer_favorite"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="?attr/colorOnSecondary"
+                    android:visibility="invisible"></ProgressBar>
+            </RelativeLayout>
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/answer_ic_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/ic_delete"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#B8B8B8" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar_confess_answer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="?attr/colorOnSecondary"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:layout_marginHorizontal="4dp"
+            android:padding="2dp"
+            android:background="?android:attr/selectableItemBackground"
+            app:tint="#b6b6b6"
+            android:contentDescription="Close"
             app:layout_constraintTop_toTopOf="parent"
-            android:backgroundTint="@android:color/transparent"
-            app:tint="#B8B8B8" />
-    </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar_confess_answer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:indeterminateTint="?attr/colorOnSecondary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

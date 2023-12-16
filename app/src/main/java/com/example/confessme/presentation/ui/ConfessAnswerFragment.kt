@@ -123,7 +123,7 @@ class ConfessAnswerFragment(
                         answerTimeStamp, answerUserUid, answerFromUserUid,
                         answerFromUsername, answerUserName, userToken,
                         fromUserToken, confessedUserName)
-                    setFavoriteDeleteEditReplyStates(answerText, answerFromUserUid,
+                    setFavoriteDeleteEditReplyDismissStates(answerText, answerFromUserUid,
                                                     answerUserUid, anonymousId, isConfessionAnswered)
                     setFavorite(isAnswerFavorited)
                 }
@@ -264,7 +264,7 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setFavoriteDeleteEditReplyStates(answerText: String, answerFromUserUid: String,
+    private fun setFavoriteDeleteEditReplyDismissStates(answerText: String, answerFromUserUid: String,
                                                     answerUserUid: String, anonymousId: String,
                                                     isConfessionAnswered: Boolean) {
         val confessionId = arguments?.getString("confessionId", "")
@@ -346,6 +346,10 @@ class ConfessAnswerFragment(
             } else {
                 binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
             }
+        }
+
+        binding.closeButton.setOnClickListener {
+            dismiss()
         }
     }
 
