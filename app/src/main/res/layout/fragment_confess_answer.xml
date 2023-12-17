@@ -36,11 +36,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/confess_answer_text_input_layout"
-            style="@style/ConfessAnswerTextInputLayoutStyle"
+            style="@style/ConfessTextInputLayoutStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            app:hintTextColor="?attr/colorOnSecondary"
             android:gravity="top|start"
             app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
             app:layout_constraintEnd_toStartOf="@+id/reply_button"
@@ -55,7 +56,6 @@
                 android:ellipsize="start"
                 android:gravity="start|top"
                 android:hint="Reply to confession..."
-                android:textColorHint="?attr/colorOnSecondary"
                 android:visibility="gone"
                 app:boxBackgroundMode="none" />
 
