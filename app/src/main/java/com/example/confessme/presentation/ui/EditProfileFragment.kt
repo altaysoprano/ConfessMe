@@ -3,6 +3,7 @@ package com.example.confessme.presentation.ui
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -224,7 +225,6 @@ class EditProfileFragment : Fragment() {
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
-
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -237,10 +237,18 @@ class EditProfileFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                bioCurrentLength = s?.length ?: 0
+                val bio = s?.trim().toString().replace("\\s+".toRegex(), " ")
+                bioCurrentLength = bio.length
 
+                binding.editProfileCounterTextView.text = "$bioCurrentLength/$bioMaxLength"
                 binding.saveButton.isEnabled = true
                 binding.saveButton.alpha = 1f
+
+                if (bioCurrentLength > bioMaxLength) {
+                    binding.editProfileCounterTextView.setTextColor(Color.RED)
+                } else {
+                    binding.editProfileCounterTextView.setTextColor(Color.parseColor("#b6b6b6"))
+                }
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)

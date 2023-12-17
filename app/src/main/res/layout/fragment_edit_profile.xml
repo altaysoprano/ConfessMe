@@ -74,8 +74,6 @@
         android:layout_marginHorizontal="16dp"
         app:hintTextColor="@color/confessmered"
         android:elevation="4dp"
-        app:counterEnabled="true"
-        app:counterMaxLength="200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,6 +88,14 @@
             android:ems="10"
             android:hint="Bio"
             android:inputType="textCapSentences|textMultiLine" />
+        <TextView
+            android:id="@+id/edit_profile_counter_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginRight="4dp"
+            android:text="0/200"
+            android:textColor="#b6b6b6" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton

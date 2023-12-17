@@ -381,9 +381,7 @@ class ConfessAnswerFragment(
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val lineCount = (s?.count { it == '\n' } ?: 0)
-                val characterCount = s?.trim()?.length ?: 0
-                val currentLength = lineCount + characterCount
+                val currentLength = s?.trim()?.length ?: 0
                 isTextEmpty = s?.trim()?.isEmpty()
                 binding.answerCounterTextView.apply {
                     visibility = View.VISIBLE

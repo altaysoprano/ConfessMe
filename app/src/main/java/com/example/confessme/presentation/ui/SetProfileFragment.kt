@@ -4,6 +4,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -251,10 +252,18 @@ class SetProfileFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                bioCurrentLength = s?.length ?: 0
+                val bio = s?.trim().toString().replace("\\s+".toRegex(), " ")
+                bioCurrentLength = bio.length
 
+                binding.setProfileCounterTextView.text = "$bioCurrentLength/$bioMaxLength"
                 binding.setSaveButton.isEnabled = true
                 binding.setSaveButton.alpha = 1f
+
+                if (bioCurrentLength > bioMaxLength) {
+                    binding.setProfileCounterTextView.setTextColor(Color.RED)
+                } else {
+                    binding.setProfileCounterTextView.setTextColor(Color.parseColor("#b6b6b6"))
+                }
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
