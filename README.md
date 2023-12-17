@@ -4,9 +4,16 @@ ConfessMe is a social media platform developed to allow people to confess things
 
 ## App Screenshots
 
-### Sign In - Sing Up Procedures
+### Application Generral (Light and Dark Mode)
 
-https://github.com/altaysoprano/ConfessMe/assets/37440249/37a3c5c4-ea9e-4a93-97fc-2af7985d4d73
+https://github.com/altaysoprano/ConfessMe/assets/37440249/af4f56b6-7598-4b1e-b05a-09a806fed1a1
+
+https://github.com/altaysoprano/ConfessMe/assets/37440249/15349ae7-baaa-4693-9cb0-2b80bf319ab0
+
+### Sign In - Sign Up Procedures
+Here, there are 2 options available: signing in with a Google account and signing in with an email account. For more detailed information regarding what to consider in the Sign In, Sign Up, and Sign Out processes, you can examine the 'AuthRepositoryImp' class located in the data->repository file path of our project. Subsequently, to delve into what to consider in the SetProfile section, you may review the 'updateProfile()' function within the 'UserRepoImp' class in the data->repository file path. The 'updateProfile()' function is triggered when the 'Save' button is pressed in the SetProfileFragment. Each of these functions not only handles fundamental Firebase authentication tasks but also determines various operations and logics used within the application, such as token operations for notifications, updating all confessions and notifications during an update, and many similar processes.
+
+https://github.com/altaysoprano/ConfessMe/assets/37440249/dbfd1247-12aa-4b58-825c-a36951c51426
 
 ### Edit Profile
 On this screen, the user can set their nickname and bio. There's a character limit of 200 for the bio and 30 for the username. The username cannot be empty or less than 3 characters, and it cannot contain spaces. Here, the user can also remove or change their profile picture. After hitting save in either action, the user's previous photo in Firebase storage is deleted, preventing unnecessary bloating in the storage. Additionally, the user cannot claim a username that has been previously taken by another user. Each user's nickname must be unique to them.
