@@ -58,6 +58,7 @@
     <style name="ConfessTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="hintTextColor">?attr/colorOnSecondary</item>
         <item name="android:background">@drawable/edit_text_background</item>
         <item name="android:layout_marginTop">15dp</item>
         <item name="android:layout_marginBottom">15dp</item>
