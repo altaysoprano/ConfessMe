@@ -102,8 +102,6 @@
         android:layout_marginHorizontal="16dp"
         android:elevation="4dp"
         app:boxStrokeColor="@color/confessmered"
-        app:counterEnabled="true"
-        app:counterMaxLength="200"
         app:hintTextColor="@color/confessmered"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -115,10 +113,12 @@
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
+            android:singleLine="false"
+            android:minLines="3"
+            android:gravity="top|start"
             android:hint="Bio"
-            android:inputType="textCapSentences|textMultiLine"
-            android:maxLines="4" />
+            android:layout_gravity="start|top"
+            android:inputType="textImeMultiLine|textMultiLine" />
         <TextView
             android:id="@+id/set_profile_counter_text_view"
             android:layout_width="wrap_content"

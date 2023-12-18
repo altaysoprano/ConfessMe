@@ -223,6 +223,8 @@ class SetProfileFragment : Fragment() {
         var userName = ""
         var bioCurrentLength = 0
         var isUserNameEmpty: Boolean? = false
+        val maxLines = 3
+        val defaultLines = 3
 
         binding.setFirstNameEt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -267,10 +269,17 @@ class SetProfileFragment : Fragment() {
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
-
             }
 
             override fun afterTextChanged(s: Editable?) {
+                val editText = binding.setBioEt
+                val lineCount = editText.lineCount
+
+                if (lineCount > maxLines) {
+                    editText.setLines(lineCount)
+                } else if (lineCount <= defaultLines) {
+                    editText.setLines(defaultLines)
+                }
             }
         })
     }
