@@ -1,13 +1,16 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -15,10 +18,13 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
@@ -132,18 +138,27 @@ class SearchFragment : Fragment() {
         )
     }
 
+
     private fun setSearchBar() {
         val searchView = binding.searchView
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             searchViewFocused = hasFocus
             if(searchViewFocused) {
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                    View.GONE
+                updateRecyclerViewMargins(false)
+
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(true)
                     setDisplayShowHomeEnabled(true)
                     setHomeAsUpIndicator(R.drawable.ic_back)
                 }
             } else {
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                    View.VISIBLE
+                updateRecyclerViewMargins(true)
+
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(false)
                     setDisplayShowHomeEnabled(false)
@@ -171,6 +186,34 @@ class SearchFragment : Fragment() {
                 return true
             }
         })
+    }
+
+    private fun updateRecyclerViewMargins(isVisible: Boolean) {
+        val actionBarHeight = getActionBarHeight()
+
+        updateRecyclerViewMargin(binding.searchResultsRecyclerviewId, actionBarHeight, isVisible)
+        updateRecyclerViewMargin(binding.historyResultsRecyclerviewId, actionBarHeight, isVisible)
+    }
+
+    private fun updateRecyclerViewMargin(recyclerView: RecyclerView, actionBarHeight: Int, isVisible: Boolean) {
+        val layoutParams = recyclerView.layoutParams as ConstraintLayout.LayoutParams
+
+        if (isVisible) {
+            layoutParams.bottomMargin = actionBarHeight
+        } else {
+            layoutParams.bottomMargin = 0
+        }
+
+        recyclerView.layoutParams = layoutParams
+    }
+
+    private fun getActionBarHeight(): Int {
+        val tv = TypedValue()
+        return if (requireActivity().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+        } else {
+            0
+        }
     }
 
     fun onBottomNavItemReselected() {
@@ -328,8 +371,16 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-            View.VISIBLE
+
+        if(binding.searchView.query.isEmpty() && !searchViewFocused) {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                View.VISIBLE
+            updateRecyclerViewMargins(true)
+        } else {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                View.GONE
+            updateRecyclerViewMargins(false)
+        }
 
         if(binding.searchView.query.isNotEmpty()) {
             (activity as AppCompatActivity?)!!.supportActionBar?.apply {
