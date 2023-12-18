@@ -27,6 +27,7 @@ import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.HomeViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.MyPreferences
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -62,7 +63,7 @@ class HomeFragment : Fragment() {
 
         setConfessListAdapter()
         setupRecyclerView()
-        applyAppTheme()
+        MyUtils.applyAppTheme(myPreferences)
 
         viewModel.fetchConfessions(limit)
         viewModel.fetchNotifications(limit)
@@ -546,16 +547,6 @@ class HomeFragment : Fragment() {
             "Open Lights"
         } else {
             "Close Lights"
-        }
-    }
-
-    private fun applyAppTheme() {
-        val isDarkModeEnabled = myPreferences.isNightModeEnabled()
-
-        if (isDarkModeEnabled) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 

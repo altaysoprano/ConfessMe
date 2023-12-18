@@ -1,11 +1,14 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
@@ -23,7 +26,6 @@ class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
     private val viewModel: RegisterViewModel by viewModels()
     private lateinit var navRegister: FragmentNavigation
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +37,7 @@ class RegisterFragment : Fragment() {
         setSignInTvClickListener()
         setSignUpButtonClickListener()
         observeSignUp()
+        setOutsideTouchListener()
 
         return binding.root
     }
@@ -98,6 +101,22 @@ class RegisterFragment : Fragment() {
     private fun setSignInTvClickListener() {
         binding.textView2.setOnClickListener {
             navRegister.navigateFrag(LoginFragment(), false)
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOutsideTouchListener() {
+        val rootLayout = binding.root
+        rootLayout.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val inputMethodManager = requireContext().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(rootLayout.windowToken, 0)
+
+                binding.emailEt.clearFocus()
+                binding.passwordEt.clearFocus()
+                binding.passwordAgainEt.clearFocus()
+            }
+            false
         }
     }
 

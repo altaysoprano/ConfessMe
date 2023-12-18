@@ -1,20 +1,26 @@
 package com.example.confessme.presentation.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentLoginBinding
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.util.Constants
 import com.example.confessme.util.Constants.Companion.RC_SIGN_IN
+import com.example.confessme.util.MyPreferences
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -31,6 +37,7 @@ class LoginFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: LoginViewModel by viewModels()
     private var isUserLoggedIn: Boolean = true
+    private lateinit var myPreferences: MyPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +47,7 @@ class LoginFragment : Fragment() {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         isUserLoggedIn = viewModel.isUserLoggedIn
+        myPreferences = MyPreferences(requireContext())
 
         if (isUserLoggedIn) {
             navRegister.navigateFrag(HomeFragment(), false)
@@ -49,6 +57,8 @@ class LoginFragment : Fragment() {
         setRegisterTvClickListener()
         setSignInClickListener()
         observeSignIn()
+        setOutsideTouchListener()
+        MyUtils.applyAppTheme(myPreferences)
 
         return binding.root
     }
@@ -164,6 +174,21 @@ class LoginFragment : Fragment() {
         binding.googleSignInButton.getChildAt(0)?.let {
             val smaller = Math.min(it.paddingLeft, it.paddingRight)
             it.setPadding(smaller, it.paddingTop, smaller, it.paddingBottom)
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOutsideTouchListener() {
+        val rootLayout = binding.root
+        rootLayout.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val inputMethodManager = requireContext().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(rootLayout.windowToken, 0)
+
+                binding.emailEt.clearFocus()
+                binding.passET.clearFocus()
+            }
+            false
         }
     }
 }

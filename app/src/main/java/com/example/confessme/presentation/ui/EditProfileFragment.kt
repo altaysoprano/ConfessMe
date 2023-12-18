@@ -1,6 +1,7 @@
 package com.example.confessme.presentation.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -16,8 +17,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -65,6 +68,7 @@ class EditProfileFragment : Fragment() {
         viewModel.getProfileData()
         observeUpdateProfile()
         setUserNameAndBioTv()
+        setOutsideTouchListener()
 
         return binding.root
     }
@@ -343,6 +347,21 @@ class EditProfileFragment : Fragment() {
         binding.profileImage.setImageResource(defaultImageResource)
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOutsideTouchListener() {
+        val rootLayout = binding.root
+        rootLayout.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val inputMethodManager = requireContext().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(rootLayout.windowToken, 0)
+
+                binding.firstNameEt.clearFocus()
+                binding.bioEt.clearFocus()
+            }
+            false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

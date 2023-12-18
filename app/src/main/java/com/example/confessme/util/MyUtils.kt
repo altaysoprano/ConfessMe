@@ -1,5 +1,6 @@
 package com.example.confessme.util
 
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,6 +62,16 @@ object MyUtils {
             }
         } catch (e: Exception) {
             "Invalid date format"
+        }
+    }
+
+    fun applyAppTheme(myPreferences: MyPreferences) {
+        val isDarkModeEnabled = myPreferences.isNightModeEnabled()
+
+        if (isDarkModeEnabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 }

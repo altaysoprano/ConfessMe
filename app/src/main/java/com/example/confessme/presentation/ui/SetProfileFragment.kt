@@ -2,6 +2,7 @@ package com.example.confessme.presentation.ui
 import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -17,8 +18,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -50,6 +53,7 @@ class SetProfileFragment : Fragment() {
     private var isProfilePhotoRemoved: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,6 +69,7 @@ class SetProfileFragment : Fragment() {
         viewModel.getProfileData()
         observeUpdateProfile()
         setUserNameAndBioTv()
+        setOutsideTouchListener()
 
         return binding.root
     }
@@ -385,6 +390,21 @@ class SetProfileFragment : Fragment() {
             )
             duration = animDuration
             start()
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setOutsideTouchListener() {
+        val rootLayout = binding.root
+        rootLayout.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val inputMethodManager = requireContext().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(rootLayout.windowToken, 0)
+
+                binding.setFirstNameEt.clearFocus()
+                binding.setBioEt.clearFocus()
+            }
+            false
         }
     }
 
