@@ -58,7 +58,7 @@ class SearchFragment : Fragment() {
     ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
-        binding.searchToolbar.title = "Search"
+        binding.searchToolbar.title = getString(R.string.search)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.searchToolbar)
 
         binding.searchToolbar.setNavigationOnClickListener {

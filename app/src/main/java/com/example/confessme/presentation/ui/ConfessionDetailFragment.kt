@@ -158,7 +158,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         binding.confessionDetailScreenConfession.movementMethod = LinkMovementMethod.getInstance()
         binding.confessionDetailScreenConfession.highlightColor = Color.TRANSPARENT
         binding.confessionDetailScreenTimestamp.text =
-            MyUtils.calculateTimeSinceConfession(confess.timestamp as Timestamp)
+            MyUtils.calculateTimeSinceConfession(confess.timestamp as Timestamp, requireContext())
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
@@ -169,7 +169,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         }
 
         binding.confessionDetailScreenTimestamp.setOnClickListener {
-            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp)
+            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp, requireContext())
             Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
         }
 
@@ -320,7 +320,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             unbookmarkItem.title = "Remove Bookmark"
 
             val deleteItem = popupMenu.menu.getItem(2)
-            val s = SpannableString("Delete Confess")
+            val s = SpannableString(getString(R.string.delete_confess))
             s.setSpan(ForegroundColorSpan(Color.RED), 0, s.length, 0)
             deleteItem.title = s
 

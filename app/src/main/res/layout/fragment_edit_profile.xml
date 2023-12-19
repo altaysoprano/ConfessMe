@@ -62,7 +62,7 @@
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="User name"
+            android:hint="@string/user_name"
             android:inputType="textPersonName" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:maxLines="4"
             android:ems="10"
-            android:hint="Bio"
+            android:hint="@string/bio"
             android:inputType="textCapSentences|textMultiLine" />
         <TextView
             android:id="@+id/edit_profile_counter_text_view"
@@ -105,7 +105,7 @@
         android:layout_marginHorizontal="16dp"
         android:background="@color/confessmered"
         android:elevation="4dp"
-        android:text="SAVE"
+        android:text="@string/save"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

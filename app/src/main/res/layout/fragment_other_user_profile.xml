@@ -104,7 +104,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="2dp"
-                            android:text="Following"
+                            android:text="@string/following"
                             android:textColor="#808080"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -130,7 +130,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="2dp"
-                            android:text="Followers"
+                            android:text="@string/followers"
                             android:textColor="#808080"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -143,7 +143,7 @@
                 android:id="@+id/other_user_profile_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"></androidx.appcompat.widget.Toolbar>
+                app:layout_collapseMode="pin" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -161,12 +161,12 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Others Confessıons"></com.google.android.material.tabs.TabItem>
+                android:text="@string/others_confess_ons" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Confessed"></com.google.android.material.tabs.TabItem>
+                android:text="@string/confessed" />
         </com.google.android.material.tabs.TabLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -175,7 +175,7 @@
         android:id="@+id/other_user_profile_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"></androidx.viewpager2.widget.ViewPager2>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <ProgressBar
         android:id="@+id/other_user_progress_bar_profile"
@@ -198,6 +198,6 @@
         android:text="@string/confess"
         android:textAlignment="center"
         android:textColor="@color/white"
-        app:fabSize="normal"></com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
+        app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

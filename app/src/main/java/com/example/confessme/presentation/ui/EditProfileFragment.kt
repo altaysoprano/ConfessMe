@@ -54,7 +54,7 @@ class EditProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentEditProfileBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.title = "Edit Profile"
+        (activity as AppCompatActivity?)!!.title = getString(R.string.edit_profile)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.editProfileToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)

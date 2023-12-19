@@ -53,7 +53,7 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         noConfessFoundBinding = binding.homeNoConfessFoundView
-        (activity as AppCompatActivity?)!!.title = "Home"
+        (activity as AppCompatActivity?)!!.title = getString(R.string.home)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.homeToolbar)
         myPreferences = MyPreferences(requireContext())
         val currentUser = FirebaseAuth.getInstance().currentUser

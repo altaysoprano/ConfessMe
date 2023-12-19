@@ -3,19 +3,19 @@
 
     <item
         android:id="@+id/action_bookmark"
-        android:title="Add To Bookmarks"
+        android:title="@string/add_to_bookmarks"
         android:icon="@drawable/ic_bookmark"
         android:iconTint="@color/red"
         />
     <item
         android:id="@+id/action_unbookmark"
-        android:title="Remove Bookmark"
+        android:title="@string/remove_bookmark"
         android:icon="@drawable/ic_unbookmark"
         android:iconTint="@color/red"
         />
     <item
         android:id="@+id/action_delete"
-        android:title="Delete Confess"
+        android:title="@string/delete_confess"
         android:icon="@drawable/ic_answer"
         android:iconTint="@color/red"
         />

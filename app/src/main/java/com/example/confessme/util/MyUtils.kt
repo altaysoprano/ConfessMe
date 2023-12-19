@@ -1,16 +1,18 @@
 package com.example.confessme.util
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.confessme.R
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 object MyUtils {
-    fun calculateTimeSinceConfession(confessionTimestamp: Timestamp): String {
+    fun calculateTimeSinceConfession(confessionTimestamp: Timestamp, context: Context): String {
         val currentTime = Timestamp.now()
         val timeDifference = currentTime.seconds - confessionTimestamp.seconds
-
+        
         val minutes = timeDifference / 60
         val hours = minutes / 60
         val days = hours / 24
@@ -19,36 +21,36 @@ object MyUtils {
         val diffYears = days / 365
 
         return when {
-            timeDifference < 60 -> "$timeDifference seconds ago"
-            minutes < 60 -> "$minutes minutes ago"
-            hours < 24 -> "$hours hours ago"
+            timeDifference < 60 -> "$timeDifference " + context.getString(R.string.seconds_ago)
+            minutes < 60 -> "$minutes " + context.getString(R.string.minutes_ago)
+            hours < 24 -> "$hours " + context.getString(R.string.hours_ago)
             days < 7 -> {
                 if (days == 1L) {
-                    "1 day ago"
+                    context.getString(R.string._1_day_ago)
                 } else {
-                    "$days days ago"
+                    "$days " + context.getString(R.string.days_ago)
                 }
             }
             days < 30 -> {
                 if (weeks == 1L) {
-                    "1 week ago"
+                    context.getString(R.string._1_week_ago)
                 } else {
-                    "$weeks weeks ago"
+                    "$weeks " + context.getString(R.string.weeks_ago)
                 }
             }
-            diffYears == 1L -> "1 year ago"
-            diffYears > 1 -> "$diffYears years ago"
+            diffYears == 1L -> context.getString(R.string._1_year_ago)
+            diffYears > 1 -> "$diffYears " + context.getString(R.string.years_ago)
             else -> {
                 if (diffMonths == 1L) {
-                    "1 month ago"
+                    context.getString(R.string._1_month_ago)
                 } else {
-                    "$diffMonths months ago"
+                    "$diffMonths " +  context.getString(R.string.months_ago)
                 }
             }
         }
     }
 
-    fun convertFirestoreTimestampToReadableDate(timestamp: Any?): String {
+    fun convertFirestoreTimestampToReadableDate(timestamp: Any?, context: Context): String {
         return try {
             if (timestamp is Timestamp) {
                 val seconds = timestamp.seconds
@@ -58,10 +60,10 @@ object MyUtils {
                 val date = Date(seconds * 1000 + nanoseconds / 1000000)
                 sdf.format(date)
             } else {
-                "Invalid date format"
+                context.getString(R.string.invalid_date_format)
             }
         } catch (e: Exception) {
-            "Invalid date format"
+            context.getString(R.string.invalid_date_format)
         }
     }
 

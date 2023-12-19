@@ -56,7 +56,7 @@ class NotificationsFragment : Fragment() {
         noNotificationsBinding.noConfessionsHereText.text = "No notifications found here"
         myPreferences = MyPreferences(requireContext())
         navRegister = activity as FragmentNavigation
-        (activity as AppCompatActivity?)!!.title = "Notifications"
+        (activity as AppCompatActivity?)!!.title = getString(R.string.notifications)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.notificationsToolbar)
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUserUid = currentUser?.uid ?: ""

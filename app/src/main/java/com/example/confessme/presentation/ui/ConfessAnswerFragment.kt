@@ -430,12 +430,12 @@ class ConfessAnswerFragment(
         val answeredUserNameBold = SpannableString(answeredUserName)
         answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-        val answerElapsedTime = if(answerTimestamp != null) MyUtils.calculateTimeSinceConfession(answerTimestamp as Timestamp) else "-"
+        val answerElapsedTime = if(answerTimestamp != null) MyUtils.calculateTimeSinceConfession(answerTimestamp as Timestamp, requireContext()) else "-"
 
         val answerDateBold = SpannableString(answerElapsedTime)
         answerDateBold.setSpan(object : ClickableSpan() {
             override fun onClick(view: View) {
-                val date = MyUtils.convertFirestoreTimestampToReadableDate(answerTimestamp)
+                val date = MyUtils.convertFirestoreTimestampToReadableDate(answerTimestamp, requireContext())
                 Toast.makeText(view.context, date, Toast.LENGTH_SHORT).show()
             }
 

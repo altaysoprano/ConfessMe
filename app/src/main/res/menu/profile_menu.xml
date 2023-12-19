@@ -6,14 +6,14 @@
         app:showAsAction="always">
         <menu>
             <item android:id="@+id/edit_profile"
-                android:title="Edit Profile"
+                android:title="@string/edit_profile"
                 android:icon="@drawable/ic_edit_black"
                 android:orderInCategory="1"
                 />
             <item android:id="@+id/settings"
                 android:icon="@drawable/ic_settings"
                 android:orderInCategory="2"
-                android:title="Settings" />
+                android:title="@string/settings" />
         </menu>
     </item>
 </menu>

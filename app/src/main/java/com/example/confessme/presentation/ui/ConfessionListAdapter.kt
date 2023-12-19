@@ -140,7 +140,7 @@ class ConfessionListAdapter(
         binding.confessionsScreenConfession.movementMethod = LinkMovementMethod.getInstance()
         binding.confessionsScreenConfession.highlightColor = Color.TRANSPARENT
         binding.confessionsScreenTimestamp.text =
-            MyUtils.calculateTimeSinceConfession(confess.timestamp as Timestamp)
+            MyUtils.calculateTimeSinceConfession(confess.timestamp as Timestamp, context)
 
         if (confess.fromUserImageUrl.isNotEmpty()) {
             Glide.with(itemView)
@@ -241,13 +241,13 @@ class ConfessionListAdapter(
             popupMenu.setForceShowIcon(true)
 
             val bookmarkItem = popupMenu.menu.getItem(0)
-            bookmarkItem.title = "Add to Bookmarks"
+            bookmarkItem.title = context.getString(R.string.add_to_bookmarks)
 
             val unbookmarkItem = popupMenu.menu.getItem(1)
-            unbookmarkItem.title = "Remove Bookmark"
+            unbookmarkItem.title = context.getString(R.string.remove_bookmark)
 
             val deleteItem = popupMenu.menu.getItem(2)
-            val s = SpannableString("Delete Confess")
+            val s = SpannableString(context.getString(R.string.delete_confess))
             s.setSpan(ForegroundColorSpan(Color.RED), 0, s.length, 0)
             deleteItem.title = s
 
@@ -303,7 +303,7 @@ class ConfessionListAdapter(
         }
 
         binding.confessionsScreenTimestamp.setOnClickListener {
-            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp)
+            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp, context)
             onTimestampClick(date)
         }
 
