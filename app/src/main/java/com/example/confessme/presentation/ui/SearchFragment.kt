@@ -103,7 +103,8 @@ class SearchFragment : Fragment() {
             onFollowClick = { userUid, userName, userToken, isFollowing ->
                 followOrUnfollowUser(userUid, userName, userToken, ListType.UserList, isFollowing)
             },
-            onItemLongPress = {}
+            onItemLongPress = {},
+            context = requireContext()
         )
 
         historyListAdapter = UserListAdapter(mutableListOf(),
@@ -127,7 +128,8 @@ class SearchFragment : Fragment() {
                     "Are you sure you want to delete the selected search?",
                     { viewModel.deleteHistoryItem(it.uid) }
                 )
-            }
+            },
+            context = requireContext()
         )
     }
 
@@ -391,8 +393,8 @@ class SearchFragment : Fragment() {
         binding.deleteAllHistoryTextView.setOnClickListener {
             dialogHelper = ConfessMeDialog(requireContext())
             dialogHelper.showDialog(
-                "delete all hıstory",
-                "Are you sure you want to delete the entire search history?",
+                getString(R.string.delete_all_history),
+                getString(R.string.are_you_sure_you_want_to_delete_the_entire_search_history),
                 { viewModel.deleteAllHistory() }
             )
         }

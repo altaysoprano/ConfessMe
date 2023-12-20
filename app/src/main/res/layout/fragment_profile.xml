@@ -81,7 +81,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="2dp"
-                            android:text="Following"
+                            android:text="@string/following"
                             android:textColor="#808080"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -100,14 +100,14 @@
                             android:text="0"
                             android:textColor="?attr/colorOnSecondary"
                             android:textSize="16sp"
-                            android:textStyle="bold"></TextView>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/profileFollowersTv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="2dp"
-                            android:text="Followers"
+                            android:text="@string/followers"
                             android:textColor="#808080"
                             android:textSize="16sp"
                             android:textStyle="bold" />

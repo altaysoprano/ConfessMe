@@ -127,7 +127,7 @@ class OtherUserProfileFragment : Fragment() {
                                 Color.BLACK
                             )
                     } else {
-                        binding.otherUserProgressButtonLayout.followButtonTv.text = "FOLLOW"
+                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.follow)
                         binding.otherUserProgressButtonLayout.followButtonLayout.setBackgroundColor(
                             Color.parseColor("#cf363c")
                         )

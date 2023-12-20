@@ -36,17 +36,7 @@ class FollowsFragment : Fragment() {
     private var limit: Long = 20
     private val viewModel: FollowsViewModel by viewModels()
 
-    private val userListAdapter = UserListAdapter(mutableListOf(),
-        currentUserUid = currentUserUid,
-        onItemClick = { user ->
-            onItemClick(user)
-        },
-        onFollowClick = { userUid, userName, userToken, isFollowing ->
-            followOrUnfollowUser(userUid, userName, userToken, isFollowing)
-        },
-        onItemLongPress = {}
-    )
-
+    private lateinit var userListAdapter: UserListAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,6 +56,7 @@ class FollowsFragment : Fragment() {
         }
 
         getFollowings(followTypeOrdinal)
+        setAdapter()
         setupRecyclerView()
 
         return binding.root
@@ -101,6 +92,20 @@ class FollowsFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun setAdapter() {
+        userListAdapter = UserListAdapter(mutableListOf(),
+            currentUserUid = currentUserUid,
+            onItemClick = { user ->
+                onItemClick(user)
+            },
+            onFollowClick = { userUid, userName, userToken, isFollowing ->
+                followOrUnfollowUser(userUid, userName, userToken, isFollowing)
+            },
+            onItemLongPress = {},
+            context = requireContext()
+        )
     }
 
     private fun observeFollowsResults() {
@@ -210,11 +215,11 @@ class FollowsFragment : Fragment() {
     private fun setTitle() {
         val followType = FollowType.values()[followTypeOrdinal]
         if (followType == FollowType.MyFollowers || followType == FollowType.OtherUserFollowers) {
-            (activity as AppCompatActivity?)!!.title = "Followers"
+            (activity as AppCompatActivity?)!!.title = getString(R.string.followers)
         } else if (followType == FollowType.MyFollowings || followType == FollowType.OtherUserFollowings) {
-            (activity as AppCompatActivity?)!!.title = "Following"
+            (activity as AppCompatActivity?)!!.title = getString(R.string.following)
         } else {
-            (activity as AppCompatActivity?)!!.title = "Error"
+            (activity as AppCompatActivity?)!!.title = getString(R.string.error)
         }
     }
 

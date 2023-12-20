@@ -33,7 +33,7 @@
         android:id="@+id/historyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="RECENT SEARCHES"
+        android:text="@string/recent_searches"
         android:textStyle="bold"
         android:visibility="gone"
         android:layout_marginVertical="8dp"

@@ -56,7 +56,7 @@
     <string name="others_confess_ons">Ona Gelenler</string>
     <string name="confessed">Onun İtirafları</string>
     <string name="followers">Takipçiler</string>
-    <string name="following">Takip Edilenler</string>
+    <string name="following">Takip Edilen</string>
     <string name="i_want_to_confess">Nasıl itiraf etmek istiyorsun?</string>
     <string name="openly">açıkça</string>
     <string name="anonymously">anonim olarak</string>
@@ -67,4 +67,9 @@
     <string name="conf_rm_ex_t">Çıkışı Onayla</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
+    <string name="recent_searches">Son Aramalar</string>
+    <string name="follow">Takip Et</string>
+    <string name="error">Hata</string>
+    <string name="delete_all_history">Tüm Geçmişi Temizle</string>
+    <string name="are_you_sure_you_want_to_delete_the_entire_search_history">Bütün arama geçmişini silmek istediğinden emin misin?</string>
 </resources>

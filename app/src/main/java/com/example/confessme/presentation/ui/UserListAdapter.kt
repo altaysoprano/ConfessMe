@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.Log
@@ -17,7 +18,8 @@ class UserListAdapter(
     private val currentUserUid: String,
     private val onItemClick: (User) -> Unit,
     private val onFollowClick: (String, String, String, Boolean) -> Unit,
-    private val onItemLongPress: (User) -> Unit
+    private val onItemLongPress: (User) -> Unit,
+    private val context: Context
 ) :
     RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
 
@@ -76,13 +78,13 @@ class UserListAdapter(
                 }
 
                 if (user.isFollowing) {
-                    binding.followsProgressButtonLayout.followButtonTv.text = "FOLLOWING"
+                    binding.followsProgressButtonLayout.followButtonTv.text = context.getString(R.string.following).toUpperCase()
                     binding.followsProgressButtonLayout.followButtonLayout.setBackgroundColor(Color.WHITE)
                     binding.followsProgressButtonLayout.followButtonTv.setTextColor(Color.BLACK)
                     binding.followsProgressButtonLayout.progressBarFollowButton.indeterminateTintList =
                         ColorStateList.valueOf(Color.BLACK)
                 } else {
-                    binding.followsProgressButtonLayout.followButtonTv.text = "FOLLOW"
+                    binding.followsProgressButtonLayout.followButtonTv.text = context.getString(R.string.follow).toUpperCase()
                     binding.followsProgressButtonLayout.followButtonLayout.setBackgroundColor(
                         Color.parseColor("#cf363c")
                     )
