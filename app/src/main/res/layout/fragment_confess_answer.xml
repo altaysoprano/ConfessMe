@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="start"
                 android:gravity="start|top"
-                android:hint="Reply to confession..."
+                android:hint="@string/reply_to_confession"
                 android:visibility="gone"
                 app:boxBackgroundMode="none" />
 

@@ -117,7 +117,7 @@ class OtherUserProfileFragment : Fragment() {
                 is UiState.Success -> {
                     val isFollowing = result.data.isFollowed
                     if (isFollowing) {
-                        binding.otherUserProgressButtonLayout.followButtonTv.text = "FOLLOWING"
+                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.following).toUpperCase()
                         binding.otherUserProgressButtonLayout.followButtonLayout.setBackgroundColor(
                             Color.WHITE
                         )
@@ -127,7 +127,7 @@ class OtherUserProfileFragment : Fragment() {
                                 Color.BLACK
                             )
                     } else {
-                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.follow)
+                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.follow).toUpperCase()
                         binding.otherUserProgressButtonLayout.followButtonLayout.setBackgroundColor(
                             Color.parseColor("#cf363c")
                         )

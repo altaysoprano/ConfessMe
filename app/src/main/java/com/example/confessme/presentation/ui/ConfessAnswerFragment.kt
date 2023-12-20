@@ -295,8 +295,8 @@ class ConfessAnswerFragment(
 
         binding.answerIcDelete.setOnClickListener {
             dialogHelper.showDialog(
-                "delete answer",
-                "Are you sure you really want to delete this answer?",
+                getString(R.string.delete_answer),
+                getString(R.string.are_you_sure_you_really_want_to_delete_this_answer),
                 { viewModel.deleteAnswer(confessionId ?: "") }
             )
         }
@@ -397,7 +397,7 @@ class ConfessAnswerFragment(
                     isAnswerButtonEnabled = false
                     setSaveButton()
                     binding.answerCounterTextView.setTextColor(Color.RED)
-                    binding.confessAnswerEditText.error = "Answer is too long (max $maxLength characters)"
+                    binding.confessAnswerEditText.error = getString(R.string.answer_is_too_long_max) + maxLength + getString(R.string.characters)
                 } else {
                     binding.confessAnswerEditText.error = null
                     isAnswerButtonEnabled = true

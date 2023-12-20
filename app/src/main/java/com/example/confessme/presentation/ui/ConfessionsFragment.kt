@@ -206,7 +206,7 @@ class ConfessionsFragment(
 
                 is UiState.Success -> {
                     binding.progressBarConfessionsGeneral.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Successfully added to bookmarks", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.successfully_added_to_bookmarks), Toast.LENGTH_SHORT).show()
                 }
             }
         }

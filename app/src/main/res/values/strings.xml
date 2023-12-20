@@ -74,4 +74,16 @@
     <string name="error">Error</string>
     <string name="delete_all_history">delete all hıstory</string>
     <string name="are_you_sure_you_want_to_delete_the_entire_search_history">Are you sure you want to delete the entire search history?</string>
+    <string name="remove_profile_photo">Remove Profile Photo</string>
+    <string name="change_profile_photo">Change Profile Photo</string>
+    <string name="delete_search">delete search</string>
+    <string name="are_you_sure_you_want_to_delete_the_selected_search">Are you sure you want to delete the selected search?</string>
+    <string name="following_you">Following You</string>
+    <string name="delete_answer">Delete Answer</string>
+    <string name="are_you_sure_you_really_want_to_delete_this_answer">Are you sure you really want to delete this answer?</string>
+    <string name="answer_is_too_long_max">"Answer is too long (max "</string>
+    <string name="delete_confess_on">delete confessıon</string>
+    <string name="are_you_sure_you_really_want_to_delete_this_confession">Are you sure you really want to delete this confession?</string>
+    <string name="confession_deleted_successfully">Confession deleted successfully</string>
+    <string name="successfully_added_to_bookmarks">Successfully added to bookmarks</string>
 </resources>

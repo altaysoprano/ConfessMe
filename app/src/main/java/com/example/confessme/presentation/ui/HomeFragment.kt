@@ -222,7 +222,7 @@ class HomeFragment : Fragment() {
                     binding.progressBarHomeGeneral.visibility = View.GONE
                     Toast.makeText(
                         requireContext(),
-                        "Successfully added to bookmarks",
+                        getString(R.string.successfully_added_to_bookmarks),
                         Toast.LENGTH_SHORT
                     ).show()
                 }

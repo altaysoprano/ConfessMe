@@ -314,10 +314,10 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             popupMenu.setForceShowIcon(true)
 
             val bookmarkItem = popupMenu.menu.getItem(0)
-            bookmarkItem.title = "Add to Bookmarks"
+            bookmarkItem.title = getString(R.string.add_to_bookmarks)
 
             val unbookmarkItem = popupMenu.menu.getItem(1)
-            unbookmarkItem.title = "Remove Bookmark"
+            unbookmarkItem.title = getString(R.string.remove_bookmark)
 
             val deleteItem = popupMenu.menu.getItem(2)
             val s = SpannableString(getString(R.string.delete_confess))
@@ -354,8 +354,8 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                     R.id.action_delete -> {
                         val confessIdToDelete = confess.id
                         dialogHelper.showDialog(
-                            "delete confessıon",
-                            "Are you sure you really want to delete this confession?",
+                            getString(R.string.delete_confess_on),
+                            getString(R.string.are_you_sure_you_really_want_to_delete_this_confession),
                             { viewModel.deleteConfession(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }
@@ -432,7 +432,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
                     Toast.makeText(
                         requireContext(),
-                        "Confession deleted successfully",
+                        getString(R.string.confession_deleted_successfully),
                         Toast.LENGTH_SHORT
                     )
                         .show()
@@ -458,7 +458,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                     binding.progressBarConfessionDetail.visibility = View.GONE
                     Toast.makeText(
                         requireContext(),
-                        "Successfully added to bookmarks",
+                        getString(R.string.successfully_added_to_bookmarks),
                         Toast.LENGTH_SHORT
                     ).show()
                 }

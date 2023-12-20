@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
@@ -213,7 +214,7 @@ class ConfessionsToMeFragment(
 
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMeGeneral.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Successfully added to bookmarks", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.successfully_added_to_bookmarks), Toast.LENGTH_SHORT).show()
                 }
             }
         }

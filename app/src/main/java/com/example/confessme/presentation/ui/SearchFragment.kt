@@ -124,8 +124,8 @@ class SearchFragment : Fragment() {
             onItemLongPress = {
                 dialogHelper = ConfessMeDialog(requireContext())
                 dialogHelper.showDialog(
-                    "delete search",
-                    "Are you sure you want to delete the selected search?",
+                    getString(R.string.delete_search),
+                    getString(R.string.are_you_sure_you_want_to_delete_the_selected_search),
                     { viewModel.deleteHistoryItem(it.uid) }
                 )
             },

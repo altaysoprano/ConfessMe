@@ -284,8 +284,8 @@ class ConfessionListAdapter(
                     R.id.action_delete -> {
                         val confessIdToDelete = confessList[adapterPosition].id
                         dialogHelper.showDialog(
-                            "delete confessıon",
-                            "Are you sure you really want to delete this confession?",
+                            context.getString(R.string.delete_confess_on),
+                            context.getString(R.string.are_you_sure_you_really_want_to_delete_this_confession),
                             { onConfessDeleteClick(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }

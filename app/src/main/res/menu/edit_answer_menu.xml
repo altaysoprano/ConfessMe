@@ -17,6 +17,6 @@
         android:id="@+id/action_delete_answer"
         android:icon="@drawable/ic_delete"
         android:orderInCategory="0"
-        android:title="Delete Answer"
+        android:title="@string/delete_answer"
         app:showAsAction="ifRoom" />
 </menu>

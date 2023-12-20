@@ -71,5 +71,17 @@
     <string name="follow">Takip Et</string>
     <string name="error">Hata</string>
     <string name="delete_all_history">Tüm Geçmişi Temizle</string>
-    <string name="are_you_sure_you_want_to_delete_the_entire_search_history">Bütün arama geçmişini silmek istediğinden emin misin?</string>
+    <string name="are_you_sure_you_want_to_delete_the_entire_search_history">Bütün arama geçmişini silmek istediğinizden emin misiniz?</string>
+    <string name="remove_profile_photo">Profil fotoğrafını kaldır</string>
+    <string name="change_profile_photo">Profil fotoğrafını değiştir</string>
+    <string name="delete_search">Aramayı Kaldır</string>
+    <string name="are_you_sure_you_want_to_delete_the_selected_search">Bu aramayı kaldırmak istediğinizden emin misiniz?</string>
+    <string name="following_you">Seni Takip Ediyor</string>
+    <string name="delete_answer">Cevabı Sil</string>
+    <string name="are_you_sure_you_really_want_to_delete_this_answer">Cevabı silmek istediğinizden emin misiniz?</string>
+    <string name="answer_is_too_long_max">"Cevap çok uzun (maksimum "</string>
+    <string name="delete_confess_on">İtirafı Sil</string>
+    <string name="are_you_sure_you_really_want_to_delete_this_confession">İtirafı silmek istediğinizden emin misiniz?</string>
+    <string name="confession_deleted_successfully">İtiraf silindi</string>
+    <string name="successfully_added_to_bookmarks">Yer işaretlerine eklendi</string>
 </resources>

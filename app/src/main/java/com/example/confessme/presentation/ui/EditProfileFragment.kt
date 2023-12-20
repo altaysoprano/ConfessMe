@@ -188,7 +188,7 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun onEditProfilePhotoClick() {
-        val options = arrayOf("Remove Profile Photo", "Change Profile Photo")
+        val options = arrayOf(getString(R.string.remove_profile_photo), getString(R.string.change_profile_photo))
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setItems(options) { _, which ->
