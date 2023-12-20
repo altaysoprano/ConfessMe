@@ -33,14 +33,14 @@
             android:layout_marginEnd="32dp"
             android:layout_weight="1"
             android:gravity="start|center"
-            android:text="I want to confess"
+            android:text="@string/i_want_to_confess"
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/anonymity_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="openly"
+            android:text="@string/openly"
             android:textStyle="bold"
             app:theme="@style/SwitchTheme"></androidx.appcompat.widget.SwitchCompat>
 

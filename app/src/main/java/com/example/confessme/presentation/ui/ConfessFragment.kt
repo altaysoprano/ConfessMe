@@ -49,7 +49,7 @@ class ConfessFragment : Fragment() {
     ): View {
 
         binding = FragmentConfessBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.title = "Confess"
+        (activity as AppCompatActivity?)!!.title = context?.getString(R.string.confess)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.confessToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
@@ -91,7 +91,7 @@ class ConfessFragment : Fragment() {
                     requireActivity().invalidateOptionsMenu()
                     binding.counterTextView.setTextColor(Color.RED)
                     binding.confessEditText.error =
-                        "Confession is too long (max $maxLength characters)"
+                        getString(R.string.confession_is_too_long_max) + maxLength + getString(R.string.characters)
                 } else {
                     binding.confessEditText.error = null
                     isConfessButtonEnabled = true
@@ -148,7 +148,7 @@ class ConfessFragment : Fragment() {
                 is UiState.Success -> {
                     binding.progressBarConfess.visibility = View.GONE
                     requireActivity().onBackPressed()
-                    Toast.makeText(requireContext(), "Confessed ;)", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.confessedwithsmile), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -174,7 +174,7 @@ class ConfessFragment : Fragment() {
     private fun setAnonymitySwitch() {
         binding.anonymitySwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                binding.anonymitySwitch.text = "anonymously"
+                binding.anonymitySwitch.text = getString(R.string.anonymously)
                 binding.anonymitySwitch.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
@@ -184,7 +184,7 @@ class ConfessFragment : Fragment() {
                 binding.anonymitySwitch.alpha = 1f
                 isAnonymous = true
             } else {
-                binding.anonymitySwitch.text = "openly"
+                binding.anonymitySwitch.text = getString(R.string.openly)
                 binding.anonymitySwitch.setTextColor(
                     ContextCompat.getColor(
                         requireContext(),
@@ -226,8 +226,8 @@ class ConfessFragment : Fragment() {
             override fun handleOnBackPressed() {
                 if (isTextEmpty == false) {
                     dialogHelper.showDialog(
-                        "confırm exıt",
-                        "Do you want to exit without sending the confession?"
+                        getString(R.string.conf_rm_ex_t),
+                        getString(R.string.do_you_want_to_exit_without_sending_the_confession)
                     ) {
                         isEnabled = false
                         hideKeyboard()

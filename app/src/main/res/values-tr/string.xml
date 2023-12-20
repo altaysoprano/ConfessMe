@@ -53,4 +53,18 @@
     <string name="_1_month_ago">1 ay önce</string>
     <string name="invalid_date_format">Geçersiz tarih formatı</string>
     <string name="notifications">Bildirimler</string>
+    <string name="others_confess_ons">Ona Gelenler</string>
+    <string name="confessed">Onun İtirafları</string>
+    <string name="followers">Takipçiler</string>
+    <string name="following">Takip Edilenler</string>
+    <string name="i_want_to_confess">Nasıl itiraf etmek istiyorsun?</string>
+    <string name="openly">açıkça</string>
+    <string name="anonymously">anonim olarak</string>
+    <string name="confession_is_too_long_max">"İtiraf çok uzun (maksimum "</string>
+    <string name="characters">" karakter)"</string>
+    <string name="confessedwithsmile">İtiraf edildi ;)</string>
+    <string name="do_you_want_to_exit_without_sending_the_confession">İtirafı göndermeden çıkmak istiyor musun?</string>
+    <string name="conf_rm_ex_t">Çıkışı Onayla</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
 </resources>

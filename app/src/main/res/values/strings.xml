@@ -59,4 +59,14 @@
     <string name="confessed">Confessed</string>
     <string name="followers">Followers</string>
     <string name="following">Following</string>
+    <string name="i_want_to_confess">I want to confess</string>
+    <string name="openly">openly</string>
+    <string name="anonymously">anonymously</string>
+    <string name="confession_is_too_long_max">"Confession is too long (max "</string>
+    <string name="characters">" characters)"</string>
+    <string name="confessedwithsmile">Confessed ;)</string>
+    <string name="do_you_want_to_exit_without_sending_the_confession">Do you want to exit without sending the confession?</string>
+    <string name="conf_rm_ex_t">confırm exıt</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
