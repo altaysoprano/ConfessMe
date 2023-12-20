@@ -26,7 +26,7 @@
         android:id="@+id/share_your_profile_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Be the first one to confess!"
+        android:text="@string/be_the_first_one_to_confess"
         android:textColor="@color/confessmered"
         android:textStyle="bold"
         android:textSize="16sp" />

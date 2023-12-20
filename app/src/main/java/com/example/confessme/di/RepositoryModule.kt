@@ -1,5 +1,6 @@
 package com.example.confessme.di
 
+import android.content.Context
 import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.data.repository.AuthRepoImp
 import com.example.confessme.data.repository.ConfessionRepo
@@ -14,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -25,9 +27,10 @@ object RepositoryModule {
     @Singleton
     fun provideConfessionRepo(
         firebaseAuth: FirebaseAuth,
-        database: FirebaseFirestore
-    ) : ConfessionRepo {
-        return ConfessionRepoImp(firebaseAuth, database)
+        database: FirebaseFirestore,
+        @ApplicationContext context: Context
+    ): ConfessionRepo {
+        return ConfessionRepoImp(firebaseAuth, database, context)
     }
 
     @Provides
@@ -43,9 +46,10 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepo(
         firebaseAuth: FirebaseAuth,
-        database: FirebaseFirestore
+        database: FirebaseFirestore,
+        @ApplicationContext context: Context
     ) : AuthRepo {
-        return AuthRepoImp(firebaseAuth, database)
+        return AuthRepoImp(firebaseAuth, database, context)
     }
 
     @Provides

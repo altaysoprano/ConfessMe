@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:background="?attr/colorSecondaryVariant"
-            android:hint="Email"
+            android:hint="@string/type_your_email"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:background="?attr/colorSecondaryVariant"
-            android:hint="Password"
+            android:hint="@string/type_your_password"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:background="?attr/colorSecondaryVariant"
-            android:hint="Password Again"
+            android:hint="@string/type_your_password_again"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -104,7 +104,7 @@
         android:layout_marginTop="24dp"
         android:background="@color/confessmered"
         android:elevation="4dp"
-        android:text="SIGN UP"
+        android:text="@string/sign_up"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -123,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Do you already have an account? "
+            android:text="@string/do_you_already_have_an_account"
             />
         <TextView
             android:id="@+id/textView2"
@@ -131,7 +131,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/confessmered"
             android:textStyle="bold"
-            android:text="Sign In"
+            android:text="@string/sign_in_lower"
             />
 
     </LinearLayout>

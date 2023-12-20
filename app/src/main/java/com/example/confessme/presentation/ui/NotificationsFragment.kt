@@ -55,7 +55,7 @@ class NotificationsFragment : Fragment() {
     ): View {
         binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         noNotificationsBinding = binding.noConfessionsHereText
-        noNotificationsBinding.noConfessionsHereText.text = "No notifications found here"
+        noNotificationsBinding.noConfessionsHereText.text = getString(R.string.no_notifications_found_here)
         myPreferences = MyPreferences(requireContext())
         navRegister = activity as FragmentNavigation
         (activity as AppCompatActivity?)!!.title = getString(R.string.notifications)

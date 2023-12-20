@@ -1,6 +1,8 @@
 package com.example.confessme.data.repository
 
+import android.content.Context
 import android.util.Log
+import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -12,10 +14,12 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 class AuthRepoImp(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseFirestore,
+    @ApplicationContext private val context: Context
 ) : AuthRepo {
     override fun signIn(email: String, pass: String, result: (UiState<String>) -> Unit) {
         firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
@@ -65,7 +69,7 @@ class AuthRepoImp(
         if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty()) {
             if (pass == confirmPass) {
                 if (!isValidPassword(pass)) {
-                    result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character, and must be at least 8 characters long. It should not contain spaces."))
+                    result.invoke(UiState.Failure(context.getString(R.string.password_must_contain_at_least_one_uppercase_letter_one_digit_one_special_character_and_must_be_at_least_8_characters_long_it_should_not_contain_spaces)))
                     return
                 }
                 val randomUsername = generateRandomUsername(10)
@@ -86,7 +90,8 @@ class AuthRepoImp(
                                                 token = fcmToken
                                             )
                                         )
-                                        .addOnSuccessListener { result.invoke(UiState.Success("Successfully signed up")) }
+                                        .addOnSuccessListener { result.invoke(UiState.Success(context.getString(
+                                                                                    R.string.successfully_signed_up))) }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure(exception.localizedMessage))
                                         }
@@ -94,7 +99,7 @@ class AuthRepoImp(
                                     result.invoke(
                                         UiState.Failure(
                                             exception.localizedMessage
-                                                ?: "FCM Token retrieval failed"
+                                                ?: context.getString(R.string.fcm_token_retrieval_failed)
                                         )
                                     )
                                 }
@@ -102,17 +107,17 @@ class AuthRepoImp(
                         } else {
                             val exception = authTask.exception
                             if (exception is FirebaseAuthUserCollisionException) {
-                                result.invoke(UiState.Failure("User already exists"))
+                                result.invoke(UiState.Failure(context.getString(R.string.user_already_exists)))
                             } else {
-                                result.invoke(UiState.Failure("Unknown error: ${exception?.localizedMessage}"))
+                                result.invoke(UiState.Failure(context.getString(R.string.unknown_error) + exception?.localizedMessage))
                             }
                         }
                     }
             } else {
-                result.invoke(UiState.Failure("Passwords do not match."))
+                result.invoke(UiState.Failure(context.getString(R.string.passwords_do_not_match)))
             }
         } else {
-            result.invoke(UiState.Failure("Please fill in all fields."))
+            result.invoke(UiState.Failure(context.getString(R.string.please_fill_in_all_fields)))
         }
     }
 

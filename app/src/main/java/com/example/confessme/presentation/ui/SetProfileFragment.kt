@@ -59,7 +59,7 @@ class SetProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSetProfileBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.title = "Set Your Profile"
+        (activity as AppCompatActivity?)!!.title = getString(R.string.set_your_profile)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.setProfileToolbar)
         navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)

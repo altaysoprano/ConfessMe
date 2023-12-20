@@ -1,5 +1,6 @@
 package com.example.confessme.data.repository
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.example.confessme.data.model.Answer
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.rpc.context.AttributeContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -30,6 +32,7 @@ import java.io.IOException
 class ConfessionRepoImp(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseFirestore,
+    @ApplicationContext private val context: Context
 ) : ConfessionRepo {
 
     override fun addConfession(
