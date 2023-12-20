@@ -67,7 +67,7 @@
     <string name="conf_rm_ex_t">Çıkışı Onayla</string>
     <string name="yes">Evet</string>
     <string name="no">Hayır</string>
-    <string name="recent_searches">Son Aramalar</string>
+    <string name="recent_searches">SON ARAMALAR</string>
     <string name="follow">Takip Et</string>
     <string name="error">Hata</string>
     <string name="delete_all_history">Tüm Geçmişi Temizle</string>
@@ -84,4 +84,10 @@
     <string name="are_you_sure_you_really_want_to_delete_this_confession">İtirafı silmek istediğinizden emin misiniz?</string>
     <string name="confession_deleted_successfully">İtiraf silindi</string>
     <string name="successfully_added_to_bookmarks">Yer işaretlerine eklendi</string>
+    <string name="enter_your_current_password">Şu anki şifrenizi giriniz</string>
+    <string name="new_password">Yeni şifre</string>
+    <string name="new_password_again">Yeni şifre (Tekrar)</string>
+    <string name="close_lights">Işıkları Kapat</string>
+    <string name="open_lights">Işıkları Aç</string>
+    <string name="sign_out">Çıkış Yap</string>
 </resources>

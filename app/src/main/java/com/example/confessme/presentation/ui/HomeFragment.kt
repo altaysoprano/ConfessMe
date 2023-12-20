@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -493,7 +494,9 @@ class HomeFragment : Fragment() {
             View.VISIBLE
 
         val openCloseLightsItem = menu.findItem(R.id.open_close_lights)
+        val icon = ContextCompat.getDrawable(requireContext(), getOpenCloseItemIcon())
         openCloseLightsItem.title = getOpenCloseItemText()
+        openCloseLightsItem.icon = icon
 
         if (hasUnreadNotifications) {
             val iconDrawable = requireContext().getDrawable(R.drawable.ic_notifications_blur)
@@ -522,6 +525,7 @@ class HomeFragment : Fragment() {
             }
             R.id.open_close_lights -> {
                 val nightModeEnabled = myPreferences.isNightModeEnabled()
+                val icon = ContextCompat.getDrawable(requireContext(), getOpenCloseItemIcon())
                 saveNightMode(!nightModeEnabled)
                 AppCompatDelegate.setDefaultNightMode(if (!nightModeEnabled) {
                     AppCompatDelegate.MODE_NIGHT_YES
@@ -529,6 +533,7 @@ class HomeFragment : Fragment() {
                     AppCompatDelegate.MODE_NIGHT_NO
                 })
                 item.title = getOpenCloseItemText()
+                item.icon = icon
             }
         }
         return super.onOptionsItemSelected(item)
@@ -544,9 +549,19 @@ class HomeFragment : Fragment() {
 
     private fun getOpenCloseItemText(): String {
         return if (isDarkModeEnabled()) {
-            "Open Lights"
+            getString(R.string.open_lights)
         } else {
-            "Close Lights"
+            getString(R.string.close_lights)
+        }
+    }
+
+    private fun getOpenCloseItemIcon(): Int {
+        val isDarkMode = isDarkModeEnabled()
+
+        return if (isDarkMode) {
+            R.drawable.ic_light
+        } else {
+            R.drawable.ic_dark_mode
         }
     }
 

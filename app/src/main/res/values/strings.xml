@@ -86,4 +86,10 @@
     <string name="are_you_sure_you_really_want_to_delete_this_confession">Are you sure you really want to delete this confession?</string>
     <string name="confession_deleted_successfully">Confession deleted successfully</string>
     <string name="successfully_added_to_bookmarks">Successfully added to bookmarks</string>
+    <string name="enter_your_current_password">Enter your current password</string>
+    <string name="new_password">New Password</string>
+    <string name="new_password_again">New Password Again</string>
+    <string name="close_lights">Close Lights</string>
+    <string name="open_lights">Open Lights</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -16,6 +17,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -258,9 +260,11 @@ class NotificationsFragment : Fragment() {
         inflater.inflate(R.menu.notifications_menu, menu)
 
         val openCloseLightsItem = menu.findItem(R.id.open_close_lights)
+        val icon = ContextCompat.getDrawable(requireContext(), getOpenCloseItemIcon())
         openCloseLightsItem.title = getOpenCloseItemText()
+        openCloseLightsItem.icon = icon
 
-        return super.onCreateOptionsMenu(menu, inflater)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -274,6 +278,7 @@ class NotificationsFragment : Fragment() {
             }
             R.id.open_close_lights -> {
                 val nightModeEnabled = myPreferences.isNightModeEnabled()
+                val icon = ContextCompat.getDrawable(requireContext(), getOpenCloseItemIcon())
                 saveNightMode(!nightModeEnabled)
                 AppCompatDelegate.setDefaultNightMode(if (!nightModeEnabled) {
                     AppCompatDelegate.MODE_NIGHT_YES
@@ -281,6 +286,7 @@ class NotificationsFragment : Fragment() {
                     AppCompatDelegate.MODE_NIGHT_NO
                 })
                 item.title = getOpenCloseItemText()
+                item.icon = icon
             }
         }
         return super.onOptionsItemSelected(item)
@@ -296,9 +302,19 @@ class NotificationsFragment : Fragment() {
 
     private fun getOpenCloseItemText(): String {
         return if (isDarkModeEnabled()) {
-            "Open Lights"
+            getString(R.string.open_lights)
         } else {
-            "Close Lights"
+            getString(R.string.close_lights)
+        }
+    }
+
+    private fun getOpenCloseItemIcon(): Int {
+        val isDarkMode = isDarkModeEnabled()
+
+        return if (isDarkMode) {
+            R.drawable.ic_light
+        } else {
+            R.drawable.ic_dark_mode
         }
     }
 

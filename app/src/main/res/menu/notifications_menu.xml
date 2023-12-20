@@ -13,11 +13,11 @@
             <item android:id="@+id/open_close_lights"
                 android:icon="@drawable/ic_dark_mode"
                 android:orderInCategory="3"
-                android:title="Open Lights" />
+                android:title="@string/open_lights" />
             <item android:id="@+id/sign_out"
                 android:icon="@drawable/ic_sign_out"
                 android:orderInCategory="3"
-                android:title="Sign Out" />
+                android:title="@string/sign_out" />
         </menu>
     </item>
 </menu>
