@@ -44,6 +44,14 @@ class SearchViewModel @Inject constructor(
     val followUserState: LiveData<UiState<FollowUser>>
         get() = _followUserState
 
+    private val _searchViewFocused = MutableLiveData<Boolean>()
+    val searchViewFocused: LiveData<Boolean>
+        get() = _searchViewFocused
+
+    private val _searchViewText = MutableLiveData<String>()
+    val searchViewText: LiveData<String>
+        get() = _searchViewText
+
     private var searchJob: Job? = null
     private var getHistoryJob: Job? = null
     private var deleteHistoryJob: Job? = null
@@ -131,5 +139,13 @@ class SearchViewModel @Inject constructor(
 
             }
         }
+    }
+
+    fun setSearchViewFocused(isFocused: Boolean) {
+        _searchViewFocused.value = isFocused
+    }
+
+    fun setSearchViewText(text: String) {
+        _searchViewText.value = text
     }
 }

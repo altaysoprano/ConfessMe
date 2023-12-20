@@ -50,7 +50,6 @@ class SearchFragment : Fragment() {
     private lateinit var userListAdapter: UserListAdapter
     private lateinit var historyListAdapter: UserListAdapter
     private var callback: OnBackPressedCallback? = null
-    private var searchViewFocused: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,15 +69,9 @@ class SearchFragment : Fragment() {
         viewModel.getSearchHistoryUsers(limit)
         setSearchBar()
         setOnBackPressed()
+        setDeleteAllClickListener()
+        observeSearchView()
 
-        binding.deleteAllHistoryTextView.setOnClickListener {
-            dialogHelper = ConfessMeDialog(requireContext())
-            dialogHelper.showDialog(
-                "delete all hıstory",
-                "Are you sure you want to delete the entire search history?",
-                { viewModel.deleteAllHistory() }
-            )
-        }
         return binding.root
     }
 
@@ -143,22 +136,14 @@ class SearchFragment : Fragment() {
         val searchView = binding.searchView
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
-            searchViewFocused = hasFocus
-            if(searchViewFocused) {
-                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                    View.GONE
-                updateRecyclerViewMargins(false)
-
+            viewModel.setSearchViewFocused(hasFocus)
+            if(viewModel.searchViewFocused.value == true) {
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(true)
                     setDisplayShowHomeEnabled(true)
                     setHomeAsUpIndicator(R.drawable.ic_back)
                 }
             } else {
-                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                    View.VISIBLE
-                updateRecyclerViewMargins(true)
-
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(false)
                     setDisplayShowHomeEnabled(false)
@@ -172,11 +157,12 @@ class SearchFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if (!newText.isNullOrBlank()) {
+                viewModel.setSearchViewText(newText ?: "")
+                if (!viewModel.searchViewText.value.isNullOrBlank()) {
                     binding.historyResultsRecyclerviewId.visibility = View.GONE
                     binding.historyTitle.visibility = View.GONE
                     binding.deleteAllHistoryTextView.visibility = View.GONE
-                    viewModel.searchUsers(newText)
+                    viewModel.searchUsers(viewModel.searchViewText.value ?: "")
                 } else {
                     binding.searchNoUserFoundView.root.visibility = View.GONE
                     binding.resultsTitle.visibility = View.GONE
@@ -354,6 +340,26 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun observeSearchView() {
+        viewModel.searchViewFocused.observe(viewLifecycleOwner) { isFocused ->
+            val isTextNotEmpty = !viewModel.searchViewText.value.isNullOrBlank()
+            if (isFocused || isTextNotEmpty) {
+                hideBottomNavigationView()
+            } else {
+                showBottomNavigationView()
+            }
+        }
+
+        viewModel.searchViewText.observe(viewLifecycleOwner) { newText ->
+            val isFocused = viewModel.searchViewFocused.value == true
+            if (isFocused || !newText.isNullOrBlank()) {
+                hideBottomNavigationView()
+            } else {
+                showBottomNavigationView()
+            }
+        }
+    }
+
     private fun onItemClick(user: User) {
         val bundle = Bundle()
         bundle.putString("userEmail", user.email)
@@ -372,17 +378,7 @@ class SearchFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        if(binding.searchView.query.isEmpty() && !searchViewFocused) {
-            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                View.VISIBLE
-            updateRecyclerViewMargins(true)
-        } else {
-            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                View.GONE
-            updateRecyclerViewMargins(false)
-        }
-
-        if(binding.searchView.query.isNotEmpty()) {
+        if(viewModel.searchViewText.value?.isNotEmpty()==true) {
             (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
@@ -391,6 +387,16 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun setDeleteAllClickListener() {
+        binding.deleteAllHistoryTextView.setOnClickListener {
+            dialogHelper = ConfessMeDialog(requireContext())
+            dialogHelper.showDialog(
+                "delete all hıstory",
+                "Are you sure you want to delete the entire search history?",
+                { viewModel.deleteAllHistory() }
+            )
+        }
+    }
     private fun followOrUnfollowUser(
         userUidToFollowOrUnfollow: String,
         userName: String,
@@ -455,7 +461,7 @@ class SearchFragment : Fragment() {
     private fun setOnBackPressed() {
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (searchViewFocused || binding.searchView.query.isNotEmpty()) {
+                if (viewModel.searchViewFocused.value == true || viewModel.searchViewText.value?.isNotEmpty() == true) {
                     disableSearchView()
                     binding.searchView.setQuery("", false)
                     (activity as AppCompatActivity?)!!.supportActionBar?.apply {
@@ -489,7 +495,6 @@ class SearchFragment : Fragment() {
 
         if (searchView.hasFocus()) {
             searchView.clearFocus()
-            searchViewFocused = false
         }
     }
 
@@ -498,6 +503,18 @@ class SearchFragment : Fragment() {
             requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         val view = requireActivity().currentFocus ?: View(requireContext())
         inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun hideBottomNavigationView() {
+        val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.visibility = View.GONE
+        updateRecyclerViewMargins(false)
+    }
+
+    private fun showBottomNavigationView() {
+        val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.visibility = View.VISIBLE
+        updateRecyclerViewMargins(true)
     }
 
     private fun findPositionById(userId: String, userList: MutableList<User>): Int {
