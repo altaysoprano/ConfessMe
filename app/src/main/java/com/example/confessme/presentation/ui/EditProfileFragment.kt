@@ -224,8 +224,15 @@ class EditProfileFragment : Fragment() {
                 userNameCurrentLength = s?.trim()?.length ?: 0
                 userName = s.toString()
 
+                binding.editProfileFirstNameCounterTextView.text = "$userNameCurrentLength/$userNameMaxLength"
                 binding.saveButton.isEnabled = true
                 binding.saveButton.alpha = 1f
+
+                if (userNameCurrentLength > userNameMaxLength) {
+                    binding.editProfileFirstNameCounterTextView.setTextColor(Color.RED)
+                } else {
+                    binding.editProfileFirstNameCounterTextView.setTextColor(Color.parseColor("#b6b6b6"))
+                }
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
                     userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
@@ -267,37 +274,37 @@ class EditProfileFragment : Fragment() {
                                            userNameMinLength: Int, isUserNameEmpty: Boolean?, bioMaxLength: Int,
                                             userName: String?) {
         if (userNameCurrentLength > userNameMaxLength) {
-            binding.firstNameEt.error = "Username can be up to 30 characters long."
+            binding.firstNameEt.error = getString(R.string.username_can_be_up_to_30_characters_long)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
         if (userNameCurrentLength < userNameMinLength) {
-            binding.firstNameEt.error = "Username must be more than 3 characters."
+            binding.firstNameEt.error = getString(R.string.username_must_be_more_than_3_characters)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
         if (isUserNameEmpty == true) {
-            binding.firstNameEt.error = "Username cannot be empty."
+            binding.firstNameEt.error = getString(R.string.username_cannot_be_empty)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
         if (userName?.contains(" ") == true) {
-            binding.firstNameEt.error = "Username cannot contain spaces."
+            binding.firstNameEt.error = getString(R.string.username_cannot_contain_spaces)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
         if (bioCurrentLength > bioMaxLength) {
-            binding.bioEt.error = "Bio can be up to 200 characters long."
+            binding.bioEt.error = getString(R.string.bio_can_be_up_to_200_characters_long)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
         if (userName == "Anonymous") {
-            binding.firstNameEt.error = "Username cannot be \"Anonymous\"."
+            binding.firstNameEt.error = getString(R.string.username_cannot_be_anonymous)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }
         if (userName?.contains("\n") == true) {
-            binding.firstNameEt.error = "Username cannot contain line breaks."
+            binding.firstNameEt.error = getString(R.string.username_cannot_contain_line_breaks)
             binding.saveButton.isEnabled = false
             binding.saveButton.alpha = 0.5f
         }

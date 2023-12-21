@@ -1,7 +1,9 @@
 package com.example.confessme.presentation.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
@@ -21,6 +23,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
@@ -284,6 +287,8 @@ class ConfessAnswerFragment(
             binding.confessAnswerEditText.let {
                 it.visibility = View.VISIBLE
                 it.setText(answerText)
+                it.requestFocus()
+                showKeyboard(requireContext(), it)
             }
             isEditAnswer = true
         }
@@ -369,10 +374,15 @@ class ConfessAnswerFragment(
                 userToken, fromUserToken, confessedUserName, answerText)
             setUsernameAndDateText(answeredUserName, answerTimestamp)
         } else {
-            binding.confessAnswerEditText.visibility = View.VISIBLE
+            binding.confessAnswerEditText.apply {
+                visibility = View.VISIBLE
+                requestFocus()
+                showKeyboard(requireContext(), this)
+            }
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.GONE
             binding.answerScreenProfileImage.visibility = View.GONE
+
         }
 
         val maxLength = 560
@@ -504,5 +514,10 @@ class ConfessAnswerFragment(
                 navRegister.navigateFrag(profileFragment, true)
             }
         }
+    }
+
+    fun showKeyboard(context: Context, view: View) {
+        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 }

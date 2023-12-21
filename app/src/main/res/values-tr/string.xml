@@ -114,4 +114,11 @@
     <string name="come_on_start_following_someone">Birilerini takip etmeye başla!</string>
     <string name="be_the_first_one_to_confess">Ona ilk itirafı sen yap!</string>
     <string name="no_notifications_found_here">Henüz hiç bildirimin yok</string>
+    <string name="username_can_be_up_to_30_characters_long">Kullanıcı adı en fazla 30 karakter olabilir.</string>
+    <string name="username_must_be_more_than_3_characters">Kullanıcı adı 3 karakterden fazla olmalıdır.</string>
+    <string name="username_cannot_be_empty">Kullanıcı adı boş olamaz.</string>
+    <string name="username_cannot_contain_spaces">Kullanıcı adı boşluk içeremez.</string>
+    <string name="bio_can_be_up_to_200_characters_long">Biyografi en fazla 200 karakter olabilir.</string>
+    <string name="username_cannot_be_anonymous">Kullanıcı adı "Anonim" olamaz.</string>
+    <string name="username_cannot_contain_line_breaks">Kullanıcı adı satır sonu içeremez.</string>
 </resources>

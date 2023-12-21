@@ -92,6 +92,14 @@
             android:layout_height="wrap_content"
             android:hint="@string/user_name"
             android:inputType="textPersonName" />
+        <TextView
+            android:id="@+id/set_profile_first_name_counter_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginRight="4dp"
+            android:text="0/30"
+            android:textColor="#b6b6b6" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout

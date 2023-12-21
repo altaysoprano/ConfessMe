@@ -116,4 +116,11 @@
     <string name="come_on_start_following_someone">Come on, start following someone!</string>
     <string name="be_the_first_one_to_confess">Be the first one to confess!</string>
     <string name="no_notifications_found_here">No notifications found here</string>
+    <string name="username_can_be_up_to_30_characters_long">Username can be up to 30 characters long.</string>
+    <string name="username_must_be_more_than_3_characters">Username must be more than 3 characters.</string>
+    <string name="username_cannot_be_empty">Username cannot be empty.</string>
+    <string name="username_cannot_contain_spaces">Username cannot contain spaces.</string>
+    <string name="bio_can_be_up_to_200_characters_long">Bio can be up to 200 characters long.</string>
+    <string name="username_cannot_be_anonymous">Username cannot be \"Anonymous\".</string>
+    <string name="username_cannot_contain_line_breaks">Username cannot contain line breaks.</string>
 </resources>
