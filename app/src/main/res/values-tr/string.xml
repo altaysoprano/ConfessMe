@@ -161,4 +161,6 @@
     <string name="password_update_failed">Şifre güncelleme başarısız:</string>
     <string name="reauthentication_failed_make_sure_you_entered_the_correct_current_password">Yeniden kimlik doğrulama başarısız oldu. Lütfen doğru mevcut şifreyi girdiğinizden emin olun.</string>
     <string name="an_error_occurred_please_try_again">Bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="email_or_password_cannot_be_left_blank">Eposta veya şifre boş bırakılamaz!</string>
+    <string name="google_sign_in_failed_please_try_again">Google ile giriş başarısız oldu. Lütfen tekrar deneyin.</string>
 </resources>

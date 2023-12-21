@@ -108,7 +108,7 @@ class LoginFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Email or password cannot be left blank!",
+                    getString(R.string.email_or_password_cannot_be_left_blank),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -131,7 +131,7 @@ class LoginFragment : Fragment() {
                     } else {
                         Toast.makeText(
                             requireContext(),
-                            "Google Sign-In failed. Please try again.",
+                            getString(R.string.google_sign_in_failed_please_try_again),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -139,7 +139,7 @@ class LoginFragment : Fragment() {
             } catch (e: ApiException) {
                 Toast.makeText(
                     requireContext(),
-                    "Google Sign-In failed. Please try again.",
+                    getString(R.string.google_sign_in_failed_please_try_again),
                     Toast.LENGTH_SHORT
                 ).show()
             }

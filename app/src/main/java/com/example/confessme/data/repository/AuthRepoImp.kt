@@ -67,6 +67,10 @@ class AuthRepoImp(
         result: (UiState<String>) -> Unit
     ) {
         if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty()) {
+            if (!isValidEmail(email)) {
+                result.invoke(UiState.Failure(context.getString(R.string.invalid_email)))
+                return
+            }
             if (pass == confirmPass) {
                 if (!isValidPassword(pass)) {
                     result.invoke(UiState.Failure(context.getString(R.string.password_must_contain_at_least_one_uppercase_letter_one_digit_one_special_character_and_must_be_at_least_8_characters_long_it_should_not_contain_spaces)))
@@ -319,6 +323,10 @@ class AuthRepoImp(
             return false
         }
         return passwordRegex.matches(password)
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     private fun generateRandomUsername(length: Int): String {

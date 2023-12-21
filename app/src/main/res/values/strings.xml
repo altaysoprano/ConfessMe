@@ -161,4 +161,6 @@
     <string name="password_update_failed">Password update failed:</string>
     <string name="reauthentication_failed_make_sure_you_entered_the_correct_current_password">Reauthentication failed. Make sure you entered the correct current password.</string>
     <string name="an_error_occurred_please_try_again">An error occurred. Please try again.</string>
+    <string name="email_or_password_cannot_be_left_blank">Email or password cannot be left blank!</string>
+    <string name="google_sign_in_failed_please_try_again">Google Sign-In failed. Please try again.</string>
 </resources>
