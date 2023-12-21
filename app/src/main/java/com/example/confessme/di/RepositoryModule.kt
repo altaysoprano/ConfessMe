@@ -37,9 +37,10 @@ object RepositoryModule {
     @Singleton
     fun provideNotificationRepo(
         firebaseAuth: FirebaseAuth,
-        database: FirebaseFirestore
+        database: FirebaseFirestore,
+        @ApplicationContext context: Context
     ) : NotificationRepo {
-        return NotificationRepoImp(firebaseAuth, database)
+        return NotificationRepoImp(firebaseAuth, database, context)
     }
 
     @Provides
@@ -57,9 +58,10 @@ object RepositoryModule {
     fun provideUserRepo(
         firebaseAuth: FirebaseAuth,
         database: FirebaseFirestore,
-        storage: FirebaseStorage
+        storage: FirebaseStorage,
+        @ApplicationContext context: Context
     ) : UserRepo {
-        return UserRepoImp(firebaseAuth, database, storage)
+        return UserRepoImp(firebaseAuth, database, storage, context)
     }
 
 }

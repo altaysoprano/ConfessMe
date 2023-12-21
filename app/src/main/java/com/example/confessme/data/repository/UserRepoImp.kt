@@ -1,7 +1,9 @@
 package com.example.confessme.data.repository
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.example.confessme.R
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.Notification
 import com.example.confessme.data.model.User
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import okhttp3.Call
 import okhttp3.Callback
@@ -31,7 +34,8 @@ import java.util.Date
 class UserRepoImp(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
+    @ApplicationContext private val context: Context
 ) : UserRepo {
     override fun updateProfile(
         previousUserName: String,
@@ -52,7 +56,7 @@ class UserRepoImp(
                 .get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty && previousUserName != userName) {
-                        result.invoke(UiState.Failure("Username is already taken. Please choose a different one."))
+                        result.invoke(UiState.Failure(context.getString(R.string.username_is_already_taken_please_choose_a_different_one)))
                     } else {
                         val userDocument = database.collection("users").document(uid)
 
@@ -87,9 +91,9 @@ class UserRepoImp(
                                                                 newImageUrl
                                                             ) { success ->
                                                                 if (success) {
-                                                                    result.invoke(UiState.Success("Profile successfully updated"))
+                                                                    result.invoke(UiState.Success(context.getString(R.string.profile_successfully_updated)))
                                                                 } else {
-                                                                    result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_updating_profile)))
                                                                 }
                                                             }
                                                         }
@@ -111,9 +115,9 @@ class UserRepoImp(
                                                             newImageUrl
                                                         ) { success ->
                                                             if (success) {
-                                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                                                result.invoke(UiState.Success(context.getString(R.string.profile_successfully_updated)))
                                                             } else {
-                                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                                result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_updating_profile)))
                                                             }
                                                         }
                                                     }
@@ -123,7 +127,7 @@ class UserRepoImp(
                                             }
                                         }
                                     } else {
-                                        result.invoke(UiState.Failure("An error occurred while updating the profile photo."))
+                                        result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_updating_profile)))
                                     }
                                 }
                             }
@@ -147,9 +151,9 @@ class UserRepoImp(
                                                     ""
                                                 ) { success ->
                                                     if (success) {
-                                                        result.invoke(UiState.Success("Profile successfully updated"))
+                                                        result.invoke(UiState.Success(context.getString(R.string.profile_successfully_updated)))
                                                     } else {
-                                                        result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                        result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_updating_profile)))
                                                     }
                                                 }
                                             }.addOnFailureListener { exception ->
@@ -164,9 +168,9 @@ class UserRepoImp(
                                                 ""
                                             ) { success ->
                                                 if (success) {
-                                                    result.invoke(UiState.Success("Profile successfully updated"))
+                                                    result.invoke(UiState.Success(context.getString(R.string.profile_successfully_updated)))
                                                 } else {
-                                                    result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_updating_profile)))
                                                 }
                                             }
                                         }
@@ -184,9 +188,9 @@ class UserRepoImp(
                                             userName
                                         ) { success ->
                                             if (success) {
-                                                result.invoke(UiState.Success("Profile successfully updated"))
+                                                result.invoke(UiState.Success(context.getString(R.string.profile_successfully_updated)))
                                             } else {
-                                                result.invoke(UiState.Failure("An error occurred while updating profile"))
+                                                result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_updating_profile)))
                                             }
                                         }
                                     }
@@ -201,7 +205,7 @@ class UserRepoImp(
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not found"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -393,21 +397,21 @@ class UserRepoImp(
                                             result.invoke(UiState.Success(userProfile))
                                         }
                                         .addOnFailureListener { exception ->
-                                            result.invoke(UiState.Failure("An error occurred while pulling the following count"))
+                                            result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_following_count)))
                                         }
                                 }
                                 .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_follower_count)))
                                 }
                         } else {
-                            result.invoke(UiState.Failure("User data not found"))
+                            result.invoke(UiState.Failure(context.getString(R.string.user_data_not_found)))
                         }
                     }
                     .addOnFailureListener { exception ->
                         result.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                result.invoke(UiState.Failure("User not authenticated"))
+                result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -440,21 +444,21 @@ class UserRepoImp(
                                             result.invoke(UiState.Success(user))
                                         }
                                         .addOnFailureListener { exception ->
-                                            result.invoke(UiState.Failure("An error occurred while pulling the following count"))
+                                            result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_following_count)))
                                         }
                                 }
                                 .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure("An error occurred while pulling the follower count"))
+                                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_follower_count)))
                                 }
                         } else {
-                            result.invoke(UiState.Failure("User data not found"))
+                            result.invoke(UiState.Failure(context.getString(R.string.user_data_not_found)))
                         }
                     }
                     .addOnFailureListener { exception ->
                         result.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                result.invoke(UiState.Failure("User not authenticated"))
+                result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -509,7 +513,7 @@ class UserRepoImp(
                         result.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                result.invoke(UiState.Failure("User not authenticated"))
+                result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -602,7 +606,7 @@ class UserRepoImp(
                         result.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                result.invoke(UiState.Failure("User not authenticated"))
+                result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -661,7 +665,7 @@ class UserRepoImp(
                         callback.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                callback.invoke(UiState.Failure("User not authenticated"))
+                callback.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -692,7 +696,7 @@ class UserRepoImp(
                         callback.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                callback.invoke(UiState.Failure("User not authenticated"))
+                callback.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -719,7 +723,7 @@ class UserRepoImp(
                         callback.invoke(UiState.Failure(exception.localizedMessage))
                     }
             } else {
-                callback.invoke(UiState.Failure("User not authenticated"))
+                callback.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -801,10 +805,10 @@ class UserRepoImp(
 
                     result(UiState.Success(true))
                 } catch (e: Exception) {
-                    result.invoke(UiState.Failure("Deletion failed"))
+                    result.invoke(UiState.Failure(context.getString(R.string.deletion_failed)))
                 }
             } else {
-                result.invoke(UiState.Failure("User not authenticated"))
+                result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 
@@ -824,10 +828,10 @@ class UserRepoImp(
 
                     result(UiState.Success(documentIdToDelete))
                 } catch (e: Exception) {
-                    result(UiState.Failure("Deletion failed"))
+                    result(UiState.Failure(context.getString(R.string.deletion_failed)))
                 }
             } else {
-                result(UiState.Failure("User not authenticated"))
+                result(UiState.Failure(context.getString(R.string.user_not_authenticated)))
             }
         }
 

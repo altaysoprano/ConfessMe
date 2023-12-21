@@ -1,6 +1,8 @@
 package com.example.confessme.data.repository
 
+import android.content.Context
 import android.util.Log
+import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
 import com.example.confessme.util.UiState
@@ -12,10 +14,12 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 class NotificationRepoImp(
     private val firebaseAuth: FirebaseAuth,
-    private val database: FirebaseFirestore
+    private val database: FirebaseFirestore,
+    @ApplicationContext private val context: Context
 ) : NotificationRepo {
 
     override fun fetchNotificationsForUser(
@@ -98,10 +102,10 @@ class NotificationRepoImp(
                         }
                 }
                 .addOnFailureListener {
-                    result.invoke(UiState.Failure("An error occurred. Please try again."))
+                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_please_try_again)))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 

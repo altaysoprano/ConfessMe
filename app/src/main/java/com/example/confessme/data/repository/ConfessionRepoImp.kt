@@ -3,6 +3,7 @@ package com.example.confessme.data.repository
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.example.confessme.R
 import com.example.confessme.data.model.Answer
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
@@ -91,7 +92,7 @@ class ConfessionRepoImp(
 
                                     newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
-                                            result.invoke(UiState.Success("Confession added successfully"))
+                                            result.invoke(UiState.Success(context.getString(R.string.confessed_successfully)))
                                             if (toFcmToken != "" && toFcmToken != null) {
                                                 sendNotification(
                                                     "$fromUserUsername confessed",
@@ -112,24 +113,24 @@ class ConfessionRepoImp(
                                             )
                                         }
                                         .addOnFailureListener { exception ->
-                                            result.invoke(UiState.Failure("Could not confess"))
+                                            result.invoke(UiState.Failure(context.getString(R.string.could_not_confess)))
                                         }
                                 } else {
-                                    result.invoke(UiState.Failure("User not found"))
+                                    result.invoke(UiState.Failure(context.getString(R.string.user_not_found)))
                                 }
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
                             }
                     } else {
-                        result.invoke(UiState.Failure("User not found"))
+                        result.invoke(UiState.Failure(context.getString(R.string.user_not_found)))
                     }
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -183,7 +184,7 @@ class ConfessionRepoImp(
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -196,11 +197,11 @@ class ConfessionRepoImp(
                     val confession = documentSnapshot.toObject(Confession::class.java)
                     result.invoke(UiState.Success(confession))
                 } else {
-                    result.invoke(UiState.Failure("Confession not found"))
+                    result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                 }
             }
             .addOnFailureListener { exception ->
-                result.invoke(UiState.Failure("An error occurred while loading the confession"))
+                result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_loading_the_confession)))
             }
     }
 
@@ -237,17 +238,17 @@ class ConfessionRepoImp(
                                 result.invoke(UiState.Success(confessionsList))
                             }
                             .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure("An error occurred while loading confessions"))
+                                result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_loading_confessions)))
                             }
                     } else {
                         result.invoke(UiState.Success(confessionsList))
                     }
                 }
                 .addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure("An error occurred while fetching followed users"))
+                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_fetching_followed_users)))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -339,14 +340,14 @@ class ConfessionRepoImp(
                                     }
                             }
                             .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure("Unable to send response"))
+                                result.invoke(UiState.Failure(context.getString(R.string.unable_to_send_response)))
                             }
                     } else {
-                        result.invoke(UiState.Failure("Confession not found"))
+                        result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -420,11 +421,11 @@ class ConfessionRepoImp(
                                 result.invoke(UiState.Failure(exception.localizedMessage))
                             }
                     } else {
-                        result.invoke(UiState.Failure("Confession not found"))
+                        result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -497,19 +498,19 @@ class ConfessionRepoImp(
                                         }
                                 }
                                 .addOnFailureListener { exception ->
-                                    result.invoke(UiState.Failure("The like couldn't be completed. Please try again."))
+                                    result.invoke(UiState.Failure(context.getString(R.string.the_like_couldn_t_be_completed_please_try_again)))
                                 }
                         } else {
-                            result.invoke(UiState.Failure("Answer not found"))
+                            result.invoke(UiState.Failure(context.getString(R.string.answer_not_found)))
                         }
                     } else {
-                        result.invoke(UiState.Failure("Confession not found"))
+                        result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }.addOnFailureListener {
-                    result.invoke(UiState.Failure("Confession not found"))
+                    result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -568,16 +569,16 @@ class ConfessionRepoImp(
                                     )
                                 }
                         } else {
-                            result.invoke(UiState.Failure("Answer not found"))
+                            result.invoke(UiState.Failure(context.getString(R.string.answer_not_found)))
                         }
                     } else {
-                        result.invoke(UiState.Failure("Confession not found"))
+                        result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }.addOnFailureListener {
-                    result.invoke(UiState.Failure("Confession not found"))
+                    result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -615,18 +616,18 @@ class ConfessionRepoImp(
                             .addOnFailureListener { exception ->
                                 result.invoke(
                                     UiState.Failure(
-                                        "Could not be deleted."
+                                        context.getString(R.string.could_not_be_deleted)
                                     )
                                 )
                             }
                     } else {
-                        result.invoke(UiState.Failure("Confession not found"))
+                        result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }.addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure("Confession not found"))
+                    result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -652,13 +653,13 @@ class ConfessionRepoImp(
 
             newBookmarkDocument.set(data)
                 .addOnSuccessListener {
-                    result.invoke(UiState.Success("Bookmark added successfully"))
+                    result.invoke(UiState.Success(context.getString(R.string.bookmark_added_successfully)))
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -739,10 +740,10 @@ class ConfessionRepoImp(
                     }
                 }
                 .addOnFailureListener { exception ->
-                    result.invoke(UiState.Failure("Failed to retrieve bookmarks"))
+                    result.invoke(UiState.Failure(context.getString(R.string.failed_to_retrieve_bookmarks)))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 
@@ -767,7 +768,7 @@ class ConfessionRepoImp(
                     result.invoke(UiState.Failure(exception.localizedMessage))
                 }
         } else {
-            result.invoke(UiState.Failure("User not authenticated"))
+            result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
     }
 

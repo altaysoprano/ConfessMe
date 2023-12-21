@@ -31,30 +31,30 @@ class AuthRepoImp(
                     database.collection("users").document(uid)
                         .update("token", fcmToken)
                         .addOnSuccessListener {
-                            result.invoke(UiState.Success("Login successful"))
+                            result.invoke(UiState.Success(context.getString(R.string.login_successful)))
                         }
                         .addOnFailureListener { exception ->
                             result.invoke(
                                 UiState.Failure(
-                                    exception.localizedMessage ?: "Token update failed"
+                                    exception.localizedMessage ?: context.getString(R.string.token_update_failed)
                                 )
                             )
                         }
                 }.addOnFailureListener { exception ->
                     result.invoke(
                         UiState.Failure(
-                            exception.localizedMessage ?: "FCM Token retrieval failed"
+                            exception.localizedMessage ?: context.getString(R.string.fcm_token_retrieval_failed)
                         )
                     )
                 }
             } else {
                 val exception = task.exception
                 if (exception is FirebaseAuthInvalidUserException) {
-                    result.invoke(UiState.Failure("Invalid email."))
+                    result.invoke(UiState.Failure(context.getString(R.string.invalid_email)))
                 } else if (exception is FirebaseAuthInvalidCredentialsException) {
-                    result.invoke(UiState.Failure("Invalid password."))
+                    result.invoke(UiState.Failure(context.getString(R.string.invalid_password)))
                 } else {
-                    result.invoke(UiState.Failure("An error occurred. Please try again later."))
+                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_please_try_again_later)))
                 }
             }
         }
@@ -145,12 +145,12 @@ class AuthRepoImp(
                         .update("token", "")
                         .addOnSuccessListener {
                             firebaseAuth.signOut()
-                            result.invoke(UiState.Success("Logout successful"))
+                            result.invoke(UiState.Success(context.getString(R.string.logout_successful)))
                         }
                         .addOnFailureListener { exception ->
                             result.invoke(
                                 UiState.Failure(
-                                    exception.localizedMessage ?: "Token deletion failed"
+                                    exception.localizedMessage ?: context.getString(R.string.token_deletion_failed)
                                 )
                             )
                         }
@@ -158,12 +158,12 @@ class AuthRepoImp(
                 .addOnFailureListener { exception ->
                     result.invoke(
                         UiState.Failure(
-                            exception.localizedMessage ?: "FCM Token deletion failed"
+                            exception.localizedMessage ?: context.getString(R.string.fcm_token_deletion_failed)
                         )
                     )
                 }
         } else {
-            result.invoke(UiState.Failure("No user signed in"))
+            result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))
         }
     }
 
@@ -219,13 +219,13 @@ class AuthRepoImp(
                                 database.collection("users").document(uid)
                                     .set(googleSignInUser)
                                     .addOnSuccessListener {
-                                        result.invoke(UiState.Success("Google Sign-In successful"))
+                                        result.invoke(UiState.Success(context.getString(R.string.google_sign_in_successful)))
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(
                                             UiState.Failure(
                                                 exception.localizedMessage
-                                                    ?: "User data update failed"
+                                                    ?: context.getString(R.string.user_data_update_failed)
                                             )
                                         )
                                     }
@@ -233,7 +233,7 @@ class AuthRepoImp(
                                 result.invoke(
                                     UiState.Failure(
                                         exception.localizedMessage
-                                            ?: "FCM Token retrieval failed"
+                                            ?: context.getString(R.string.fcm_token_retrieval_failed)
                                     )
                                 )
                             }
@@ -241,17 +241,17 @@ class AuthRepoImp(
                         .addOnFailureListener { exception ->
                             result.invoke(
                                 UiState.Failure(
-                                    exception.localizedMessage ?: "Error getting user data"
+                                    exception.localizedMessage ?: context.getString(R.string.error_getting_user_data)
                                 )
                             )
                         }
                 } else {
-                    result.invoke(UiState.Failure("Google Sign-In failed"))
+                    result.invoke(UiState.Failure(context.getString(R.string.google_sign_in_failed)))
                     val exception = task.exception
                     if (exception is FirebaseAuthUserCollisionException) {
-                        result.invoke(UiState.Failure("User already exists"))
+                        result.invoke(UiState.Failure(context.getString(R.string.user_already_exists)))
                     } else {
-                        result.invoke(UiState.Failure("Google Sign-In failed"))
+                        result.invoke(UiState.Failure(context.getString(R.string.google_sign_in_failed)))
                     }
                 }
             }
@@ -272,24 +272,24 @@ class AuthRepoImp(
                 val providerId = profile.providerId
 
                 if (providerId == GoogleAuthProvider.PROVIDER_ID) {
-                    result.invoke(UiState.Failure("You've logged in with your Google account. Please visit the Google account management page to change your password."))
+                    result.invoke(UiState.Failure(context.getString(R.string.you_ve_logged_in_with_your_google_account_please_visit_the_google_account_management_page_to_change_your_password)))
                     return
                 }
             }
         }
 
         if (user == null) {
-            result.invoke(UiState.Failure("User is not signed in."))
+            result.invoke(UiState.Failure(context.getString(R.string.user_is_not_signed_in)))
             return
         }
 
         if (!isValidPassword(newPassword)) {
-            result.invoke(UiState.Failure("Password must contain at least one uppercase letter, one digit, one special character, and must be at least 8 characters long. It should not contain spaces."))
+            result.invoke(UiState.Failure(context.getString(R.string.password_must_contain_at_least_one_uppercase_letter_one_digit_one_special_character_and_must_be_at_least_8_characters_long_it_should_not_contain_spaces)))
             return
         }
 
         if (previousPassword == newPassword) {
-            result.invoke(UiState.Failure("New password cannot be the same as the previous password."))
+            result.invoke(UiState.Failure(context.getString(R.string.new_password_cannot_be_the_same_as_the_previous_password)))
             return
         }
 
@@ -301,14 +301,14 @@ class AuthRepoImp(
                     user.updatePassword(newPassword)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                result.invoke(UiState.Success("Password updated successfully."))
+                                result.invoke(UiState.Success(context.getString(R.string.password_updated_successfully)))
                             } else {
                                 val exception = task.exception
-                                result.invoke(UiState.Failure("Password update failed: ${exception?.localizedMessage}"))
+                                result.invoke(UiState.Failure(context.getString(R.string.password_update_failed) + " ${exception?.localizedMessage}"))
                             }
                         }
                 } else {
-                    result.invoke(UiState.Failure("Reauthentication failed. Make sure you entered the correct current password."))
+                    result.invoke(UiState.Failure(context.getString(R.string.reauthentication_failed_make_sure_you_entered_the_correct_current_password)))
                 }
             }
     }
