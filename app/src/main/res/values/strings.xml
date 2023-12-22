@@ -169,4 +169,5 @@
     <string name="liked_this_answer">" liked this answer:"</string>
     <string name="followed_you">" followed you"</string>
     <string name="replied_to_this_confession">" replied to this confession:"</string>
+    <string name="select_language">Select Language</string>
 </resources>

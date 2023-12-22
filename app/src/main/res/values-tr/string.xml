@@ -169,4 +169,5 @@
     <string name="liked_this_answer">" şu cevabı beğendi:"</string>
     <string name="followed_you">" seni takip etti"</string>
     <string name="replied_to_this_confession">" şu itirafa yanıt verdi:"</string>
+    <string name="select_language">Dili Ayarla</string>
 </resources>
