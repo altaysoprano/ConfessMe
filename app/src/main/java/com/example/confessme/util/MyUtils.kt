@@ -1,6 +1,7 @@
 package com.example.confessme.util
 
 import android.content.Context
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.confessme.R
 import com.google.firebase.Timestamp
@@ -75,5 +76,14 @@ object MyUtils {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+    }
+
+    fun setAppLanguage(myPreferences: MyPreferences, context: Context) {
+        val selectedLanguage = myPreferences.getSelectedLanguage()
+        val locale = Locale(selectedLanguage)
+        Locale.setDefault(locale)
+        val configuration = Configuration()
+        configuration.setLocale(locale)
+        context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
     }
 }

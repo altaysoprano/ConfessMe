@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSettingsBinding
+import com.example.confessme.util.MyPreferences
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.core.view.Change
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ import java.util.Locale
 class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
+    private lateinit var navRegister: FragmentNavigation
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +35,7 @@ class SettingsFragment : Fragment() {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
         (activity as AppCompatActivity?)!!.title = context?.getString(R.string.settings)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.settingsToolbar)
+        navRegister = activity as FragmentNavigation
         setHasOptionsMenu(true)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
@@ -74,6 +77,10 @@ class SettingsFragment : Fragment() {
         configuration.setLocale(locale)
         requireContext().resources.updateConfiguration(configuration, requireContext().resources.displayMetrics)
 
+        val myPreferences = MyPreferences(requireContext())
+        myPreferences.saveSelectedLanguage(languageCode)
+
+        navRegister.navigateFrag(ProfileFragment(), false)
         requireActivity().recreate()
     }
 

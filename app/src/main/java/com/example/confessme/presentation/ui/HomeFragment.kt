@@ -64,7 +64,6 @@ class HomeFragment : Fragment() {
 
         setConfessListAdapter()
         setupRecyclerView()
-        MyUtils.applyAppTheme(myPreferences)
 
         viewModel.fetchConfessions(limit)
         viewModel.fetchNotifications(limit)

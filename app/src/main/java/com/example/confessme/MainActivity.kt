@@ -18,6 +18,8 @@ import com.example.confessme.presentation.ui.HomeFragment
 import com.example.confessme.presentation.ui.LoginFragment
 import com.example.confessme.presentation.ui.ProfileFragment
 import com.example.confessme.presentation.ui.SearchFragment
+import com.example.confessme.util.MyPreferences
+import com.example.confessme.util.MyUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,10 +28,17 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
     BottomNavBarControl {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var myPreferences: MyPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        myPreferences = MyPreferences(this)
+
         setContentView(binding.root)
+
+        MyUtils.applyAppTheme(myPreferences)
+        MyUtils.setAppLanguage(myPreferences, this)
 
         supportFragmentManager.beginTransaction()
             .add(R.id.coordinator, LoginFragment())

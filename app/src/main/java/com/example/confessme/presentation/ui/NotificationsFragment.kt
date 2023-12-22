@@ -31,6 +31,7 @@ import com.example.confessme.presentation.NotificationsViewModel
 import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.MyPreferences
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -73,7 +74,7 @@ class NotificationsFragment : Fragment() {
             }
         )
         setupRecyclerView()
-        applyAppTheme()
+        // MyUtils.applyAppTheme(myPreferences)
         setHasOptionsMenu(true)
 
         viewModel.fetchNotifications(limit)
@@ -317,16 +318,6 @@ class NotificationsFragment : Fragment() {
             R.drawable.ic_light
         } else {
             R.drawable.ic_dark_mode
-        }
-    }
-
-    private fun applyAppTheme() {
-        val isDarkModeEnabled = myPreferences.isNightModeEnabled()
-
-        if (isDarkModeEnabled) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 

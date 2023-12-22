@@ -58,7 +58,6 @@ class LoginFragment : Fragment() {
         setSignInClickListener()
         observeSignIn()
         setOutsideTouchListener()
-        MyUtils.applyAppTheme(myPreferences)
 
         return binding.root
     }
