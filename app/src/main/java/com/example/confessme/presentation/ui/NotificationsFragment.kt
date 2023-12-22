@@ -62,7 +62,9 @@ class NotificationsFragment : Fragment() {
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.notificationsToolbar)
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUserUid = currentUser?.uid ?: ""
-        notificationsListAdapter = NotificationsAdapter(currentUserUid = currentUserUid,
+        notificationsListAdapter = NotificationsAdapter(
+            context = requireContext(),
+            currentUserUid = currentUserUid,
             onItemPhotoClick = { photoUserUid, photoUserToken, userNameUserName ->
                 onItemPhotoClick(photoUserUid, userNameUserName, photoUserToken)
             },

@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,8 +12,10 @@ import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.data.model.Notification
 import com.example.confessme.databinding.NotificationItemBinding
+import com.example.confessme.util.NotificationType
 
 class NotificationsAdapter(
+    private val context: Context,
     private val currentUserUid: String,
     private val onItemPhotoClick: (String, String, String) -> Unit,
     private val onItemClick: (String) -> Unit,
@@ -44,7 +47,18 @@ class NotificationsAdapter(
             binding.apply {
                 notificationScreenUsername.text = notification.fromUserUsername
                 notificationsScreenConfession.text = notification.text
-                notificationsScreenNotification.text = notification.description
+                val type = notification.type
+
+                val description = when (type) {
+                    NotificationType.Confessed.toString() -> context.getString(R.string.confessed_notification_text)
+                    NotificationType.ConfessionLike.toString() -> context.getString(R.string.liked_this_confession)
+                    NotificationType.AnswerLike.toString() -> context.getString(R.string.liked_this_answer)
+                    NotificationType.Followed.toString() -> context.getString(R.string.followed_you)
+                    NotificationType.ConfessionReply.toString() -> context.getString(R.string.replied_to_this_confession)
+                    else -> {}
+                }
+
+                notificationsScreenNotification.text = description.toString()
 
                 val usernameTv = binding.notificationScreenUsername
                 usernameTv.text = notification.fromUserUsername

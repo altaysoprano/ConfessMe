@@ -164,4 +164,9 @@
     <string name="email_or_password_cannot_be_left_blank">Email or password cannot be left blank!</string>
     <string name="google_sign_in_failed_please_try_again">Google Sign-In failed. Please try again.</string>
     <string name="fields_cannot_be_left_empty">Fields cannot be left empty</string>
+    <string name="confessed_notification_text">" confessed:"</string>
+    <string name="liked_this_confession">" liked this confession:"</string>
+    <string name="liked_this_answer">" liked this answer:"</string>
+    <string name="followed_you">" followed you"</string>
+    <string name="replied_to_this_confession">" replied to this confession:"</string>
 </resources>

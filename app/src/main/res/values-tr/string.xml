@@ -164,4 +164,9 @@
     <string name="email_or_password_cannot_be_left_blank">Eposta veya şifre boş bırakılamaz!</string>
     <string name="google_sign_in_failed_please_try_again">Google ile giriş başarısız oldu. Lütfen tekrar deneyin.</string>
     <string name="fields_cannot_be_left_empty">Alanlar boş bırakılamaz</string>
+    <string name="confessed_notification_text">" itiraf etti:"</string>
+    <string name="liked_this_confession">" şu itirafı beğendi:"</string>
+    <string name="liked_this_answer">" şu cevabı beğendi:"</string>
+    <string name="followed_you">" seni takip etti"</string>
+    <string name="replied_to_this_confession">" şu itirafa yanıt verdi:"</string>
 </resources>
