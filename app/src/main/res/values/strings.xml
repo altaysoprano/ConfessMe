@@ -56,7 +56,7 @@
     <string name="others_confess_ons">Others Confessıons</string>
     <string name="confessed">Confessed</string>
     <string name="followers">Followers</string>
-    <string name="following">following</string>
+    <string name="following">Following</string>
     <string name="i_want_to_confess">I want to confess</string>
     <string name="openly">openly</string>
     <string name="anonymously">anonymously</string>
@@ -68,7 +68,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="recent_searches">RECENT SEARCHES</string>
-    <string name="follow">Follow</string>
+    <string name="follow">FOLLOW</string>
     <string name="error">Error</string>
     <string name="delete_all_history">delete all hıstory</string>
     <string name="are_you_sure_you_want_to_delete_the_entire_search_history">Are you sure you want to delete the entire search history?</string>

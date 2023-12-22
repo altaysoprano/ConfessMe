@@ -110,8 +110,7 @@ class ConfessionRepoImp(
                                                 fromUserUsername = fromUserUsername ?: "",
                                                 fromUserImageUrl = fromUserImageUrl ?: "",
                                                 confessionId = confessionId,
-                                                notificationType = NotificationType.Confessed,
-                                                description = "confessed:"
+                                                notificationType = NotificationType.Confessed
                                             )
                                         }
                                         .addOnFailureListener { exception ->
@@ -333,8 +332,7 @@ class ConfessionRepoImp(
                                                 fromUserUsername = fromUserUsername,
                                                 fromUserImageUrl = fromUserImageUrl,
                                                 confessionId = confessionId,
-                                                notificationType = NotificationType.ConfessionReply,
-                                                description = "replied to this confession:"
+                                                notificationType = NotificationType.ConfessionReply
                                             )
                                         }
                                     }
@@ -412,8 +410,7 @@ class ConfessionRepoImp(
                                                 fromUserUsername = username,
                                                 fromUserImageUrl = userImageUrl,
                                                 confessionId = confessionId,
-                                                notificationType = NotificationType.ConfessionLike,
-                                                description = "liked this confession:"
+                                                notificationType = NotificationType.ConfessionLike
                                             )
                                         }
                                     }
@@ -493,8 +490,7 @@ class ConfessionRepoImp(
                                                     fromUserUsername = fromUserUsername,
                                                     fromUserImageUrl = fromUserImageUrl,
                                                     confessionId = confessionId,
-                                                    notificationType = NotificationType.AnswerLike,
-                                                    description = "liked this answer:"
+                                                    notificationType = NotificationType.AnswerLike
                                                 )
                                             }
                                         }
@@ -840,7 +836,6 @@ class ConfessionRepoImp(
         fromUserImageUrl: String,
         confessionId: String,
         notificationType: NotificationType,
-        description: String
     ) {
         val notificationsCollection = database.collection("notifications")
 
@@ -852,7 +847,6 @@ class ConfessionRepoImp(
             text = confessionText,
             fromUserUsername = fromUserUsername,
             fromUserImageUrl = fromUserImageUrl,
-            description = " $description",
             type = notificationType.toString(),
             timestamp = FieldValue.serverTimestamp()
         )
@@ -860,7 +854,7 @@ class ConfessionRepoImp(
         notificationsCollection.whereEqualTo("confessionId", confessionId)
             .whereEqualTo("userId", userId)
             .whereEqualTo("fromUserId", fromUserId)
-            .whereEqualTo("description", " $description")
+            .whereEqualTo("type", notificationType.toString())
             .get()
             .addOnSuccessListener { querySnapshot ->
                 if (querySnapshot.isEmpty) {
