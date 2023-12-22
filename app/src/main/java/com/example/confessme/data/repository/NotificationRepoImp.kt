@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
+import com.example.confessme.util.NotificationType
 import com.example.confessme.util.UiState
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -116,8 +117,8 @@ class NotificationRepoImp(
         batchDelete: WriteBatch,
         notificationList: MutableList<Notification>
     ) {
-        when (notification.description) {
-            " confessed:" -> {
+        when (notification.type) {
+            NotificationType.Confessed.toString() -> {
                 if (confessionDoc.exists()) {
                     notificationList.add(notification)
                 } else {
@@ -125,7 +126,7 @@ class NotificationRepoImp(
                 }
             }
 
-            " liked this confession:" -> {
+            NotificationType.ConfessionLike.toString() -> {
                 val favorited = confessionDoc.getBoolean("favorited") ?: false
                 if (!favorited) {
                     batchDelete.delete(notificationsCollection.document(notification.id))
@@ -134,7 +135,7 @@ class NotificationRepoImp(
                 }
             }
 
-            " replied to this confession:" -> {
+            NotificationType.ConfessionReply.toString() -> {
                 val answered = confessionDoc.getBoolean("answered") ?: false
                 if (!answered) {
                     batchDelete.delete(notificationsCollection.document(notification.id))
@@ -143,7 +144,7 @@ class NotificationRepoImp(
                 }
             }
 
-            " liked this answer:" -> {
+            NotificationType.AnswerLike.toString() -> {
                 val answerMap = confessionDoc.get("answer") as? Map<String, Any>
                 val favorited = answerMap?.get("favorited") as? Boolean ?: false
                 if (!favorited) {

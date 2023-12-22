@@ -9,6 +9,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.Constants
+import com.example.confessme.util.NotificationType
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -109,6 +110,7 @@ class ConfessionRepoImp(
                                                 fromUserUsername = fromUserUsername ?: "",
                                                 fromUserImageUrl = fromUserImageUrl ?: "",
                                                 confessionId = confessionId,
+                                                notificationType = NotificationType.Confessed,
                                                 description = "confessed:"
                                             )
                                         }
@@ -331,6 +333,7 @@ class ConfessionRepoImp(
                                                 fromUserUsername = fromUserUsername,
                                                 fromUserImageUrl = fromUserImageUrl,
                                                 confessionId = confessionId,
+                                                notificationType = NotificationType.ConfessionReply,
                                                 description = "replied to this confession:"
                                             )
                                         }
@@ -409,6 +412,7 @@ class ConfessionRepoImp(
                                                 fromUserUsername = username,
                                                 fromUserImageUrl = userImageUrl,
                                                 confessionId = confessionId,
+                                                notificationType = NotificationType.ConfessionLike,
                                                 description = "liked this confession:"
                                             )
                                         }
@@ -489,6 +493,7 @@ class ConfessionRepoImp(
                                                     fromUserUsername = fromUserUsername,
                                                     fromUserImageUrl = fromUserImageUrl,
                                                     confessionId = confessionId,
+                                                    notificationType = NotificationType.AnswerLike,
                                                     description = "liked this answer:"
                                                 )
                                             }
@@ -834,6 +839,7 @@ class ConfessionRepoImp(
         fromUserUsername: String,
         fromUserImageUrl: String,
         confessionId: String,
+        notificationType: NotificationType,
         description: String
     ) {
         val notificationsCollection = database.collection("notifications")
@@ -847,6 +853,7 @@ class ConfessionRepoImp(
             fromUserUsername = fromUserUsername,
             fromUserImageUrl = fromUserImageUrl,
             description = " $description",
+            type = notificationType.toString(),
             timestamp = FieldValue.serverTimestamp()
         )
 

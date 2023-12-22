@@ -9,6 +9,7 @@ import com.example.confessme.data.model.Notification
 import com.example.confessme.data.model.User
 import com.example.confessme.util.Constants
 import com.example.confessme.util.FollowType
+import com.example.confessme.util.NotificationType
 import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
@@ -657,6 +658,7 @@ class UserRepoImp(
                                     username,
                                     fromUserImageUrl,
                                     "",
+                                    notificationType = NotificationType.Followed,
                                     "followed you"
                                 )
                             }
@@ -897,6 +899,7 @@ class UserRepoImp(
             fromUserUsername: String,
             fromUserImageUrl: String,
             confessionId: String,
+            notificationType: NotificationType,
             description: String
         ) {
             val notificationsCollection = database.collection("notifications")
@@ -910,6 +913,7 @@ class UserRepoImp(
                 fromUserUsername = fromUserUsername,
                 fromUserImageUrl = fromUserImageUrl,
                 description = " $description",
+                type = notificationType.toString(),
                 timestamp = FieldValue.serverTimestamp()
             )
 

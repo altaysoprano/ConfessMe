@@ -163,4 +163,5 @@
     <string name="an_error_occurred_please_try_again">Bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="email_or_password_cannot_be_left_blank">Eposta veya şifre boş bırakılamaz!</string>
     <string name="google_sign_in_failed_please_try_again">Google ile giriş başarısız oldu. Lütfen tekrar deneyin.</string>
+    <string name="fields_cannot_be_left_empty">Alanlar boş bırakılamaz</string>
 </resources>

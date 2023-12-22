@@ -31,21 +31,9 @@ class ChangePasswordFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentChangePasswordBinding.inflate(inflater, container, false)
 
-        binding.saveButton.setOnClickListener {
-            val previousPassword = binding.previousPasswordEt.text.toString()
-            val newPassword = binding.newPasswordEt.text.toString()
-            val newPasswordAgain = binding.newPasswordAgainEt.text.toString()
-
-            if(previousPassword.isEmpty() || newPassword.isEmpty() || newPasswordAgain.isEmpty()) {
-                Toast.makeText(requireContext(), "Fields cannot be left empty", Toast.LENGTH_SHORT).show()
-            } else {
-                viewModel.updatePassword(previousPassword, newPassword, newPasswordAgain)
-            }
-        }
-
+        setOnSaveClickListener()
         observeUpdatePassword()
 
         return binding.root
@@ -95,6 +83,25 @@ class ChangePasswordFragment : DialogFragment() {
                     Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     dismiss()
                 }
+            }
+        }
+    }
+
+    private fun setOnSaveClickListener() {
+        binding.saveButton.setOnClickListener {
+            val previousPassword = binding.previousPasswordEt.text.toString()
+            val newPassword = binding.newPasswordEt.text.toString()
+            val newPasswordAgain = binding.newPasswordAgainEt.text.toString()
+
+            if (newPassword != newPasswordAgain) {
+                Toast.makeText(requireContext(), getString(R.string.passwords_do_not_match), Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(previousPassword.isEmpty() || newPassword.isEmpty() || newPasswordAgain.isEmpty()) {
+                Toast.makeText(requireContext(), getString(R.string.fields_cannot_be_left_empty), Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.updatePassword(previousPassword, newPassword, newPasswordAgain)
             }
         }
     }

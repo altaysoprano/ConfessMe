@@ -163,4 +163,5 @@
     <string name="an_error_occurred_please_try_again">An error occurred. Please try again.</string>
     <string name="email_or_password_cannot_be_left_blank">Email or password cannot be left blank!</string>
     <string name="google_sign_in_failed_please_try_again">Google Sign-In failed. Please try again.</string>
+    <string name="fields_cannot_be_left_empty">Fields cannot be left empty</string>
 </resources>

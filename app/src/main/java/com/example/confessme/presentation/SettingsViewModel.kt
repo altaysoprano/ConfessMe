@@ -18,12 +18,6 @@ class SettingsViewModel @Inject constructor(
         get() = _updatePasswordState
 
     fun updatePassword(previousPassword: String, newPassword: String, newPasswordAgain: String) {
-
-        if (newPassword != newPasswordAgain) {
-            _updatePasswordState.value = UiState.Failure("Passwords do not match.")
-            return
-        }
-
         _updatePasswordState.value = UiState.Loading
         repository.updatePassword(previousPassword, newPassword) { result ->
             _updatePasswordState.postValue(result)
