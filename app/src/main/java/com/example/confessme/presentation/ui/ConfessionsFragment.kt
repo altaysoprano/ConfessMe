@@ -25,10 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Math.abs
 
 @AndroidEntryPoint
-class ConfessionsFragment(
-    private val userUid: String,
-    private val confessionCategory: ConfessionCategory
-    ) : Fragment(), ScrollableToTop {
+class ConfessionsFragment: Fragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -55,10 +52,10 @@ class ConfessionsFragment(
         setConfessListAdapter()
         setupRecyclerView()
 
-        viewModel.fetchConfessions(userUid, limit, confessionCategory)
+        viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
 
         binding.swipeRefreshLayoutMyConfessions.setOnRefreshListener {
-            viewModel.fetchConfessions(userUid, limit, confessionCategory)
+            viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
             confessListAdapter.notifyDataSetChanged()
         }
 
@@ -92,7 +89,7 @@ class ConfessionsFragment(
                         && totalItemCount >= limit
                     ) {
                         limit += 10
-                        viewModel.fetchConfessions(userUid, limit, confessionCategory)
+                        viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
                     }
                 }
             })

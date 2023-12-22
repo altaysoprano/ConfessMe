@@ -74,7 +74,7 @@ class SettingsFragment : Fragment() {
         configuration.setLocale(locale)
         requireContext().resources.updateConfiguration(configuration, requireContext().resources.displayMetrics)
 
-        // requireActivity().recreate()
+        requireActivity().recreate()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

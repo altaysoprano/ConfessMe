@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ConfessMe</string>
-    <string name="confessions_to_me">Bana İtiraflar</string>
-    <string name="my_confessions">Benim İtiraflarım</string>
+    <string name="confessions_to_me">BANA İTİRAFLAR</string>
+    <string name="my_confessions">BENİM İTİRAFLARIM</string>
     <string name="confess">İtiraf Et</string>
     <string name="no_confess_found_description">İtiraf bulunamadı - açıklama</string>
     <string name="no_confess_found_here">Burada itiraf bulunamadı</string>
@@ -16,7 +16,7 @@
     <string name="you_haven_t_told_anyone_a_secret_yet">Henüz kimseye gizli bir şey söylemedin.</string>
     <string name="no_user_found">Hiç kullanıcı Bulunamadı</string>
     <string name="no_confessions_found_here">Burada itiraf bulunamadı</string>
-    <string name="bookmarks">Yer İşaretleri</string>
+    <string name="bookmarks">YER İŞARETLERİ</string>
     <string name="here_the_confessions_of_the_users_you_follow_are_displayed">Burada, takip ettiğiniz kullanıcıların itirafları görüntülenir.</string>
     <string name="the_confessions_received_from_the_people_you_follow_are_visible_here">Takip ettiğiniz kişilerden gelen itiraflar burada görüntülenir</string>
     <string name="results">SONUÇLAR</string>
@@ -169,5 +169,5 @@
     <string name="liked_this_answer">" şu cevabı beğendi:"</string>
     <string name="followed_you">" seni takip etti"</string>
     <string name="replied_to_this_confession">" şu itirafa yanıt verdi:"</string>
-    <string name="select_language">Dili Ayarla</string>
+    <string name="select_language">DİLİ AYARLA</string>
 </resources>

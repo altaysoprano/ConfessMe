@@ -27,10 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfessionsToMeFragment(
-    private val userUid: String,
-    private val confessionCategory: ConfessionCategory
-) : Fragment(), ConfessionUpdateListener, ScrollableToTop {
+class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableToTop {
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -58,10 +55,10 @@ class ConfessionsToMeFragment(
         setConfessListAdapter()
         setupRecyclerView()
 
-        viewModel.fetchConfessions(userUid, limit, confessionCategory)
+        viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
 
         binding.swipeRefreshLayoutConfessionsToMe.setOnRefreshListener {
-            viewModel.fetchConfessions(userUid, limit, confessionCategory)
+            viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
             confessListAdapter.notifyDataSetChanged()
         }
 
@@ -124,7 +121,7 @@ class ConfessionsToMeFragment(
                         && totalItemCount >= limit
                     ) {
                         limit += 10
-                        viewModel.fetchConfessions(userUid, limit, confessionCategory)
+                        viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
                     }
                 }
             })

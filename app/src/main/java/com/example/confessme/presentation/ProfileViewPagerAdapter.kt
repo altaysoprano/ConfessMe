@@ -18,10 +18,10 @@ class ProfileViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragmen
 
     override fun createFragment(position: Int): Fragment {
         val fragment = when (position) {
-            0 -> ConfessionsFragment("", confessionCategory = ConfessionCategory.MY_CONFESSIONS)
-            1 -> ConfessionsToMeFragment("", confessionCategory = ConfessionCategory.CONFESSIONS_TO_ME)
+            0 -> ConfessionsFragment()
+            1 -> ConfessionsToMeFragment()
             2 -> BookmarksFragment()
-            else -> ConfessionsFragment("", confessionCategory = ConfessionCategory.MY_CONFESSIONS)
+            else -> ConfessionsFragment()
         }
         fragments.add(fragment)
         return fragment
