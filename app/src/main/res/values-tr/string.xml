@@ -170,4 +170,6 @@
     <string name="followed_you">" seni takip etti"</string>
     <string name="replied_to_this_confession">" şu itirafa yanıt verdi:"</string>
     <string name="select_language">DİLİ AYARLA</string>
+    <string name="application_language_set_to_english">Uygulama dili \'İngilizce\' olarak ayarlandı</string>
+    <string name="application_language_set_to_turkish">Uygulama dili \'Türkçe\' olarak ayarlandı</string>
 </resources>

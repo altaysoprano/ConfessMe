@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.confessme.MainActivity
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSettingsBinding
@@ -80,8 +81,7 @@ class SettingsFragment : Fragment() {
         val myPreferences = MyPreferences(requireContext())
         myPreferences.saveSelectedLanguage(languageCode)
 
-        navRegister.navigateFrag(ProfileFragment(), false)
-        requireActivity().recreate()
+        (activity as? MainActivity)?.restartActivity()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

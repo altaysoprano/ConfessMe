@@ -76,6 +76,13 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
         }
     }
 
+    fun restartActivity() {
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
+    }
+
     private fun getCurrentFragment(): Fragment? {
         return supportFragmentManager.findFragmentById(R.id.coordinator)
     }
