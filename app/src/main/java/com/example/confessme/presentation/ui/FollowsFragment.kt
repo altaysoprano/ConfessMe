@@ -166,7 +166,7 @@ class FollowsFragment : Fragment() {
         } else {
             Toast.makeText(
                 requireContext(),
-                "An error occured. Please try again.",
+                getString(R.string.an_error_occured_please_try_again),
                 Toast.LENGTH_SHORT
             ).show()
         }

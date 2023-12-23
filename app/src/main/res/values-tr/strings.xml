@@ -109,7 +109,7 @@
     <string name="password_must_contain_at_least_one_uppercase_letter_one_digit_one_special_character_and_must_be_at_least_8_characters_long_it_should_not_contain_spaces">Şifre en az bir büyük harf, bir rakam, bir özel karakter içermeli ve en az 8 karakter uzunluğunda olmalıdır. Boşluk içermemelidir.</string>
     <string name="skip">ATLA</string>
     <string name="set_your_profile">Profilini ayarla</string>
-    <string name="welcome_to">"ConfessMe'ye"</string>
+    <string name="welcome_to">"ConfessMe\'ye"</string>
     <string name="confessme">Hoşgeldiniz!</string>
     <string name="come_on_start_following_someone">Birilerini takip etmeye başla!</string>
     <string name="be_the_first_one_to_confess">Ona ilk itirafı sen yap!</string>
@@ -172,4 +172,13 @@
     <string name="select_language">DİLİ AYARLA</string>
     <string name="application_language_set_to_english">Uygulama dili \'İngilizce\' olarak ayarlandı</string>
     <string name="application_language_set_to_turkish">Uygulama dili \'Türkçe\' olarak ayarlandı</string>
+    <string name="answered_successfully">Başarıyla yanıtlandı</string>
+    <string name="answer_deleted_successfully">Yanıt başarıyla silindi</string>
+    <string name="access_to_files_denied">Dosyalara erişim reddedildi</string>
+    <string name="an_error_occured_please_try_again">Bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="application_language_set_to_chinese">Uygulama dili \'Çince\' olarak ayarlandı</string>
+    <string name="application_language_set_to_spanish">Uygulama dili \'İspanyolca\' olarak ayarlandı</string>
+    <string name="application_language_set_to_french">Uygulama dili \'Fransızca\' olarak ayarlandı</string>
+    <string name="application_language_set_to_japanese">Uygulama dili \'Japonca\' olarak ayarlandı</string>
+    <string name="application_language_set_to_german">Uygulama dili \'Almanca\' olarak ayarlandı</string>
 </resources>

@@ -203,7 +203,7 @@ class ConfessAnswerFragment(
                         }
                     }
 
-                    Toast.makeText(requireContext(), "Answered successfully", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.answered_successfully), Toast.LENGTH_SHORT)
                         .show()
                 }
             }
@@ -246,7 +246,7 @@ class ConfessAnswerFragment(
 
                     Toast.makeText(
                         requireContext(),
-                        "Answer deleted successfully",
+                        getString(R.string.answer_deleted_successfully),
                         Toast.LENGTH_SHORT
                     )
                         .show()

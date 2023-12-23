@@ -378,7 +378,7 @@ class HomeFragment : Fragment() {
                 "ConfessAnswerFragment"
             )
         } else {
-            Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.confession_not_found), Toast.LENGTH_SHORT)
                 .show()
         }
     }

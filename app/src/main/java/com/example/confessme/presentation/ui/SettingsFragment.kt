@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.confessme.MainActivity
@@ -58,13 +59,39 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showSelectLanguageDialog() {
-        val options = arrayOf("English", "Türkçe")
+        val options = arrayOf("English", "Türkçe", "中文", "Español", "Français", "日本語", "Deutsch")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setItems(options) { _, which ->
             when (which) {
-                0 -> setLocale("en")
-                1 -> setLocale("tr")
+                0 -> {
+                    setLocale("en")
+                    Toast.makeText(requireContext(), R.string.application_language_set_to_english, Toast.LENGTH_SHORT).show()
+                }
+                1 -> {
+                    setLocale("tr")
+                    Toast.makeText(requireContext(), R.string.application_language_set_to_turkish, Toast.LENGTH_SHORT).show()
+                }
+                2 -> {
+                    setLocale("zh")
+                    Toast.makeText(requireContext(), getString(R.string.application_language_set_to_chinese), Toast.LENGTH_SHORT).show()
+                }
+                3 -> {
+                    setLocale("es")
+                    Toast.makeText(requireContext(), getString(R.string.application_language_set_to_spanish), Toast.LENGTH_SHORT).show()
+                }
+                4 -> {
+                    setLocale("fr")
+                    Toast.makeText(requireContext(), getString(R.string.application_language_set_to_french), Toast.LENGTH_SHORT).show()
+                }
+                5 -> {
+                    setLocale("ja")
+                    Toast.makeText(requireContext(), getString(R.string.application_language_set_to_japanese), Toast.LENGTH_SHORT).show()
+                }
+                6 -> {
+                    setLocale("de")
+                    Toast.makeText(requireContext(), getString(R.string.application_language_set_to_german), Toast.LENGTH_SHORT).show()
+                }
             }
         }
         val dialog = builder.create()

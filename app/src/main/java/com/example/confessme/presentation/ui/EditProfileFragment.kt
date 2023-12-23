@@ -343,7 +343,7 @@ class EditProfileFragment : Fragment() {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openImageFiles()
                 } else {
-                    Toast.makeText(requireContext(), "Access to files denied", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.access_to_files_denied), Toast.LENGTH_SHORT).show()
                 }
             }
         }

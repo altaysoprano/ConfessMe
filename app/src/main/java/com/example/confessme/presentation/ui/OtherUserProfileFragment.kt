@@ -117,7 +117,7 @@ class OtherUserProfileFragment : Fragment() {
                 is UiState.Success -> {
                     val isFollowing = result.data.isFollowed
                     if (isFollowing) {
-                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.following).toUpperCase()
+                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.following).uppercase()
                         binding.otherUserProgressButtonLayout.followButtonLayout.setBackgroundColor(
                             Color.WHITE
                         )
@@ -127,7 +127,7 @@ class OtherUserProfileFragment : Fragment() {
                                 Color.BLACK
                             )
                     } else {
-                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.follow).toUpperCase()
+                        binding.otherUserProgressButtonLayout.followButtonTv.text = getString(R.string.follow).uppercase()
                         binding.otherUserProgressButtonLayout.followButtonLayout.setBackgroundColor(
                             Color.parseColor("#cf363c")
                         )
@@ -224,7 +224,7 @@ class OtherUserProfileFragment : Fragment() {
 
                 navRegister.navigateFrag(confessFragment, true)
             } else {
-                Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.user_not_found), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -238,7 +238,7 @@ class OtherUserProfileFragment : Fragment() {
         } else {
             Toast.makeText(
                 requireContext(),
-                "An error occured. Please try again.",
+                getString(R.string.an_error_occured_please_try_again),
                 Toast.LENGTH_SHORT
             )
                 .show()
