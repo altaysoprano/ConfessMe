@@ -2,6 +2,9 @@ package com.example.confessme.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Configuration
+import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 
 class MyPreferences(context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -18,9 +21,15 @@ class MyPreferences(context: Context) {
         editor.apply()
     }
 
-    fun isNightModeEnabled(): Boolean {
-        return sharedPreferences.getBoolean(NIGHT_MODE, false)
+    fun isNightModeEnabled(context: Context): Boolean {
+        val uiModeFlags = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val systemNightMode = when (uiModeFlags) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            else -> false
+        }
+        return sharedPreferences.getBoolean(NIGHT_MODE, systemNightMode)
     }
+
 
     fun saveSelectedLanguage(languageCode: String) {
         val editor = sharedPreferences.edit()

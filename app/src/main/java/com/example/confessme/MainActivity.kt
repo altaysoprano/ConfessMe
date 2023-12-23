@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
 
         setContentView(binding.root)
 
-        MyUtils.applyAppTheme(myPreferences)
+        MyUtils.applyAppTheme(myPreferences, this)
         MyUtils.setAppLanguage(myPreferences, this)
 
         supportFragmentManager.beginTransaction()

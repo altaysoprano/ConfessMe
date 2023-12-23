@@ -523,7 +523,7 @@ class HomeFragment : Fragment() {
                 navRegister.navigateFrag(notificationsFragment, true)
             }
             R.id.open_close_lights -> {
-                val nightModeEnabled = myPreferences.isNightModeEnabled()
+                val nightModeEnabled = myPreferences.isNightModeEnabled(requireContext())
                 val icon = ContextCompat.getDrawable(requireContext(), getOpenCloseItemIcon())
                 saveNightMode(!nightModeEnabled)
                 AppCompatDelegate.setDefaultNightMode(if (!nightModeEnabled) {
@@ -543,7 +543,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun isDarkModeEnabled(): Boolean {
-        return myPreferences.isNightModeEnabled()
+        return myPreferences.isNightModeEnabled(requireContext())
     }
 
     private fun getOpenCloseItemText(): String {
