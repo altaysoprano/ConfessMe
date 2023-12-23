@@ -181,4 +181,5 @@
     <string name="application_language_set_to_french">Uygulama dili \'Fransızca\' olarak ayarlandı</string>
     <string name="application_language_set_to_japanese">Uygulama dili \'Japonca\' olarak ayarlandı</string>
     <string name="application_language_set_to_german">Uygulama dili \'Almanca\' olarak ayarlandı</string>
+    <string name="menu">Menü</string>
 </resources>

@@ -7,7 +7,7 @@
         android:title="@string/notifications" />
     <item
         android:icon="@drawable/ic_more_options"
-        android:title="menu"
+        android:title="@string/menu"
         app:showAsAction="always">
         <menu>
             <item android:id="@+id/open_close_lights"

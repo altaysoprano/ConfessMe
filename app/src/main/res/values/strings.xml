@@ -181,4 +181,5 @@
     <string name="application_language_set_to_french">Application language set to \'French\'</string>
     <string name="application_language_set_to_japanese">Application language set to \'Japanese\'</string>
     <string name="application_language_set_to_german">Application language set to \'German\'</string>
+    <string name="menu">Menu</string>
 </resources>

@@ -182,4 +182,5 @@
     <string name="application_language_set_to_french">Langue de l\'application définie sur \'Français\'</string>
     <string name="application_language_set_to_japanese">Langue de l\'application définie sur \'Japonais\'</string>
     <string name="application_language_set_to_german">Langue de l\'application définie sur \'Allemand\'</string>
+    <string name="menu">Menu</string>
 </resources>

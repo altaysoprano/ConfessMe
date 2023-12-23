@@ -182,4 +182,5 @@
     <string name="application_language_set_to_french">アプリの言語が「フランス語」に設定されました</string>
     <string name="application_language_set_to_japanese">アプリの言語が「日本語」に設定されました</string>
     <string name="application_language_set_to_german">アプリの言語が「ドイツ語」に設定されました</string>
+    <string name="menu">メニュー</string>
 </resources>
