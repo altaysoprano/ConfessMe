@@ -59,7 +59,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showSelectLanguageDialog() {
-        val options = arrayOf("English", "Türkçe", "中文", "Español", "Français", "日本語", "Deutsch")
+        val options = arrayOf("English", "Türkçe", "中文", "Español", "Français", "日本語", "Deutsch", "العربية")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setItems(options) { _, which ->
@@ -91,6 +91,10 @@ class SettingsFragment : Fragment() {
                 6 -> {
                     setLocale("de")
                     Toast.makeText(requireContext(), getString(R.string.application_language_set_to_german), Toast.LENGTH_SHORT).show()
+                }
+                7 -> {
+                    setLocale("ar")
+                    Toast.makeText(requireContext(), getString(R.string.application_language_set_to_arabic), Toast.LENGTH_SHORT).show()
                 }
             }
         }

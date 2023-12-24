@@ -6,7 +6,7 @@
     <string name="confess">忏悔</string>
     <string name="no_confess_found_description">未找到忏悔描述</string>
     <string name="no_confess_found_here">这里没有忏悔</string>
-    <string name="reply_to_confession" />
+    <string name="reply_to_confession">回复表白</string>
     <string name="edit_answer">编辑回答</string>
     <string name="fav_answer">收藏回答</string>
     <string name="save">保存</string>
@@ -111,7 +111,7 @@
     <string name="skip">跳过</string>
     <string name="set_your_profile">设置您的个人资料</string>
     <string name="welcome_to">欢迎来到</string>
-    <string name="confessme">忏悔我！</string>
+    <string name="confessme">ConfessMe!</string>
     <string name="come_on_start_following_someone">来吧，开始关注某人吧！</string>
     <string name="be_the_first_one_to_confess">成为第一个忏悔的人！</string>
     <string name="no_notifications_found_here">这里没有通知</string>
@@ -183,4 +183,5 @@
     <string name="application_language_set_to_japanese">应用语言设置为\'日语\'</string>
     <string name="application_language_set_to_german">应用语言设置为\'德语\'</string>
     <string name="menu">菜单</string>
+    <string name="application_language_set_to_arabic" />
 </resources>

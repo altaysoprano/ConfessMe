@@ -6,7 +6,7 @@
     <string name="confess">Confesser</string>
     <string name="no_confess_found_description">Aucune Description de Confession Trouvée</string>
     <string name="no_confess_found_here">Aucune Confession Trouvée Ici</string>
-    <string name="reply_to_confession" />
+    <string name="reply_to_confession">Répondre à la confession</string>
     <string name="edit_answer">Modifier la Réponse</string>
     <string name="fav_answer">Réponse Préférée</string>
     <string name="save">ENREGISTRER</string>
@@ -120,7 +120,7 @@
     <string name="username_cannot_be_empty">Le nom d\'utilisateur ne peut pas être vide.</string>
     <string name="username_cannot_contain_spaces">Le nom d\'utilisateur ne peut pas contenir d\'espaces.</string>
     <string name="bio_can_be_up_to_200_characters_long">La bio peut comporter jusqu\'à 200 caractères.</string>
-    <string name="username_cannot_be_anonymous">Le nom d\'utilisateur ne peut pas être "Anonyme".</string>
+    <string name="username_cannot_be_anonymous">Le nom d\'utilisateur ne peut pas être \"Anonyme\".</string>
     <string name="username_cannot_contain_line_breaks">Le nom d\'utilisateur ne peut pas contenir de sauts de ligne.</string>
     <string name="could_not_confess">Impossible de confesser</string>
     <string name="user_not_found">Utilisateur introuvable</string>
@@ -183,4 +183,5 @@
     <string name="application_language_set_to_japanese">Langue de l\'application définie sur \'Japonais\'</string>
     <string name="application_language_set_to_german">Langue de l\'application définie sur \'Allemand\'</string>
     <string name="menu">Menu</string>
+    <string name="application_language_set_to_arabic" />
 </resources>

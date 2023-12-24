@@ -5,7 +5,7 @@
     <string name="confess">Confess</string>
     <string name="no_confess_found_description">No Confess Found Description</string>
     <string name="no_confess_found_here">No Confess Found Here</string>
-    <string name="reply_to_confession" />
+    <string name="reply_to_confession">Reply To Confession</string>
     <string name="edit_answer">Edit Answer</string>
     <string name="fav_answer">Fav Answer</string>
     <string name="save">SAVE</string>
@@ -182,4 +182,5 @@
     <string name="application_language_set_to_japanese">Application language set to \'Japanese\'</string>
     <string name="application_language_set_to_german">Application language set to \'German\'</string>
     <string name="menu">Menu</string>
+    <string name="application_language_set_to_arabic">Application language set to \'Arabic\'</string>
 </resources>

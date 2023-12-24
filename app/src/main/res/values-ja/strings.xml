@@ -41,17 +41,17 @@
     <string name="user_name">ユーザー名</string>
     <string name="bio">バイオ</string>
     <string name="save_and_proceed">保存して続行</string>
-    <string name="_1_day_ago">1日前</string>
+    <string name="_1_day_ago">1 日前</string>
     <string name="days_ago">日前</string>
     <string name="hours_ago">時間前</string>
     <string name="minutes_ago">分前</string>
     <string name="seconds_ago">秒前</string>
-    <string name="_1_week_ago">1週間前</string>
+    <string name="_1_week_ago">1 週間前</string>
     <string name="weeks_ago">週前</string>
-    <string name="_1_year_ago">1年前</string>
+    <string name="_1_year_ago">1 年前</string>
     <string name="years_ago">年前</string>
     <string name="months_ago">ヶ月前</string>
-    <string name="_1_month_ago">1ヶ月前</string>
+    <string name="_1_month_ago">1 ヶ月前</string>
     <string name="invalid_date_format">無効な日付形式</string>
     <string name="notifications">通知</string>
     <string name="others_confess_ons">他の告白</string>
@@ -165,11 +165,11 @@
     <string name="email_or_password_cannot_be_left_blank">メールアドレスまたはパスワードを空白にすることはできません！</string>
     <string name="google_sign_in_failed_please_try_again">Googleサインインに失敗しました。もう一度お試しください。</string>
     <string name="fields_cannot_be_left_empty">フィールドを空白のままにすることはできません</string>
-    <string name="confessed_notification_text">"が告白しました:"</string>
-    <string name="liked_this_confession">"がこの告白をいいねしました:"</string>
-    <string name="liked_this_answer">"がこの回答をいいねしました:"</string>
-    <string name="followed_you">"があなたをフォローしました"</string>
-    <string name="replied_to_this_confession">"がこの告白に返信しました:"</string>
+    <string name="confessed_notification_text">" が告白しました:"</string>
+    <string name="liked_this_confession">" がこの告白をいいねしました:"</string>
+    <string name="liked_this_answer">" がこの回答をいいねしました:"</string>
+    <string name="followed_you">" があなたをフォローしました"</string>
+    <string name="replied_to_this_confession">" がこの告白に返信しました:"</string>
     <string name="select_language">言語を選択</string>
     <string name="application_language_set_to_english">アプリの言語が「英語」に設定されました</string>
     <string name="application_language_set_to_turkish">アプリの言語が「トルコ語」に設定されました</string>
@@ -183,4 +183,5 @@
     <string name="application_language_set_to_japanese">アプリの言語が「日本語」に設定されました</string>
     <string name="application_language_set_to_german">アプリの言語が「ドイツ語」に設定されました</string>
     <string name="menu">メニュー</string>
+    <string name="application_language_set_to_arabic" />
 </resources>

@@ -6,7 +6,7 @@
     <string name="confess">Gestehen</string>
     <string name="no_confess_found_description">Kein Geständnis gefunden Beschreibung</string>
     <string name="no_confess_found_here">Kein Geständnis hier gefunden</string>
-    <string name="reply_to_confession" />
+    <string name="reply_to_confession">Antwort auf Beichte</string>
     <string name="edit_answer">Antwort bearbeiten</string>
     <string name="fav_answer">Fav-Antwort</string>
     <string name="save">SPEICHERN</string>
@@ -183,4 +183,5 @@
     <string name="application_language_set_to_japanese">Anwendungssprache auf \'Japanisch\' festgelegt</string>
     <string name="application_language_set_to_german">Anwendungssprache auf \'Deutsch\' festgelegt</string>
     <string name="menu">Menü</string>
+    <string name="application_language_set_to_arabic" />
 </resources>

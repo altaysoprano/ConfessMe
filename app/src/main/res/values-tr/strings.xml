@@ -9,7 +9,7 @@
     <string name="edit_answer">Yanıtı Düzenle</string>
     <string name="fav_answer">Favori Yanıt</string>
     <string name="save">KAYDET</string>
-    <string name="change_password">Şifre Değiştir</string>
+    <string name="change_password">ŞİFRE DEĞİŞTİR</string>
     <string name="nobody_has_opened_up_to_you_just_yet">Henüz kimse size açılmadı</string>
     <string name="confess_to_someone_let_it_out">Birine itiraf et, içini dök!</string>
     <string name="share_your_profile_with_your_friends">Profilini arkadaşlarınla paylaş!</string>
@@ -119,7 +119,7 @@
     <string name="username_cannot_be_empty">Kullanıcı adı boş olamaz.</string>
     <string name="username_cannot_contain_spaces">Kullanıcı adı boşluk içeremez.</string>
     <string name="bio_can_be_up_to_200_characters_long">Biyografi en fazla 200 karakter olabilir.</string>
-    <string name="username_cannot_be_anonymous">Kullanıcı adı "Anonim" olamaz.</string>
+    <string name="username_cannot_be_anonymous">Kullanıcı adı \"Anonymous\" olamaz.</string>
     <string name="username_cannot_contain_line_breaks">Kullanıcı adı satır sonu içeremez.</string>
     <string name="could_not_confess">İtiraf yapılamadı</string>
     <string name="user_not_found">Kullanıcı bulunamadı</string>
@@ -182,4 +182,5 @@
     <string name="application_language_set_to_japanese">Uygulama dili \'Japonca\' olarak ayarlandı</string>
     <string name="application_language_set_to_german">Uygulama dili \'Almanca\' olarak ayarlandı</string>
     <string name="menu">Menü</string>
+    <string name="application_language_set_to_arabic" />
 </resources>

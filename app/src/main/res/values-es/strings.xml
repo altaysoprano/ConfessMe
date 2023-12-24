@@ -6,7 +6,7 @@
     <string name="confess">Confesar</string>
     <string name="no_confess_found_description">No se encontró descripción de confesión</string>
     <string name="no_confess_found_here">No se encontraron confesiones aquí</string>
-    <string name="reply_to_confession" />
+    <string name="reply_to_confession">Responder a la confesión</string>
     <string name="edit_answer">Editar Respuesta</string>
     <string name="fav_answer">Respuesta Favorita</string>
     <string name="save">GUARDAR</string>
@@ -111,7 +111,7 @@
     <string name="skip">SALTAR</string>
     <string name="set_your_profile">Configura tu Perfil</string>
     <string name="welcome_to">Bienvenido a</string>
-    <string name="confessme">ConfesiónMe\!</string>
+    <string name="confessme">ConfessMe\!</string>
     <string name="come_on_start_following_someone">¡Vamos, comienza a seguir a alguien\!</string>
     <string name="be_the_first_one_to_confess">¡Sé el primero en confesar\!</string>
     <string name="no_notifications_found_here">No se encontraron notificaciones aquí</string>
@@ -120,7 +120,7 @@
     <string name="username_cannot_be_empty">El nombre de usuario no puede estar vacío.</string>
     <string name="username_cannot_contain_spaces">El nombre de usuario no puede contener espacios.</string>
     <string name="bio_can_be_up_to_200_characters_long">La biografía puede tener hasta 200 caracteres de longitud.</string>
-    <string name="username_cannot_be_anonymous">El nombre de usuario no puede ser "Anónimo".</string>
+    <string name="username_cannot_be_anonymous">El nombre de usuario no puede ser \"Anónimo\".</string>
     <string name="username_cannot_contain_line_breaks">El nombre de usuario no puede contener saltos de línea.</string>
     <string name="could_not_confess">No se pudo confesar</string>
     <string name="user_not_found">Usuario no encontrado</string>
@@ -183,4 +183,5 @@
     <string name="application_language_set_to_japanese">Idioma de la aplicación establecido en \'Japonés\'</string>
     <string name="application_language_set_to_german">Idioma de la aplicación establecido en \'Alemán\'</string>
     <string name="menu">Menú</string>
+    <string name="application_language_set_to_arabic" />
 </resources>
