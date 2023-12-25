@@ -29,16 +29,20 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var myPreferences: MyPreferences
+    private lateinit var myPreferencesForActivity: MyPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         myPreferences = MyPreferences(this)
+        myPreferencesForActivity = MyPreferences(applicationContext)
 
         setContentView(binding.root)
 
         MyUtils.applyAppTheme(myPreferences, this)
+        MyUtils.applyAppTheme(myPreferencesForActivity, applicationContext)
         MyUtils.setAppLanguage(myPreferences, this)
+        MyUtils.setAppLanguage(myPreferencesForActivity, applicationContext)
 
         supportFragmentManager.beginTransaction()
             .add(R.id.coordinator, LoginFragment())

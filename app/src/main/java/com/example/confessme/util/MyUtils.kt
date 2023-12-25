@@ -83,17 +83,19 @@ object MyUtils {
 
     fun setAppLanguage(myPreferences: MyPreferences, context: Context) {
         val selectedLanguage = myPreferences.getSelectedLanguage()
+        Log.d("Mesaj: ", "setAppLanguage başladı")
+        Log.d("Mesaj: ", "selectedLanguage: $selectedLanguage")
 
         val locale = if (selectedLanguage.isNotEmpty()) {
             Locale(selectedLanguage)
         } else {
-            // Varsayılan olarak sistem dilini kullan
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Resources.getSystem().configuration.locales[0]
             } else {
                 Resources.getSystem().configuration.locale
             }
         }
+        Log.d("Mesaj: ", "locale.language: ${locale.language}")
 
         Locale.setDefault(locale)
         val configuration = Configuration()
