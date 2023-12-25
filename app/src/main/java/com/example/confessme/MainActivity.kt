@@ -33,25 +33,32 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        
         myPreferences = MyPreferences(this)
         myPreferencesForActivity = MyPreferences(applicationContext)
-
-        setContentView(binding.root)
 
         MyUtils.applyAppTheme(myPreferences, this)
         MyUtils.applyAppTheme(myPreferencesForActivity, applicationContext)
         MyUtils.setAppLanguage(myPreferences, this)
         MyUtils.setAppLanguage(myPreferencesForActivity, applicationContext)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
+
         supportFragmentManager.beginTransaction()
             .add(R.id.coordinator, LoginFragment())
             .commit()
         binding.bottomNavigationView.visibility = View.GONE
 
+        setBottomNavBarSelectListener()
+    }
+
+    private fun setBottomNavBarSelectListener() {
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
+                    Log.d("Mesaj: ", "title: ${it.title}")
                     if (getCurrentFragment() is HomeFragment) {
                         ((getCurrentFragment()) as HomeFragment).onBottomNavItemReselected()
                     } else {
@@ -59,6 +66,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
                     }
                 }
                 R.id.profile -> {
+                    Log.d("Mesaj: ", "title: ${it.title}")
                     if (getCurrentFragment() is ProfileFragment) {
                         ((getCurrentFragment()) as ProfileFragment).onBottomNavItemReselected()
                     } else {
@@ -66,6 +74,7 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
                     }
                 }
                 R.id.search -> {
+                    Log.d("Mesaj: ", "title: ${it.title}")
                     if (getCurrentFragment() is SearchFragment) {
                         ((getCurrentFragment()) as SearchFragment).onBottomNavItemReselected()
                     } else {
