@@ -9,4 +9,4 @@ interface AuthRepo {
     fun googleSignIn(idToken: String, googleSignInAccount: GoogleSignInAccount?, result: (UiState<String>) -> Unit)
     fun signOut(result: (UiState<String>) -> Unit)
     fun updatePassword(previousPassword: String, newPassword: String, result: (UiState<String>) -> Unit)
-}
+    fun updateLanguage(language: String)}

@@ -14,10 +14,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import com.example.confessme.MainActivity
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSettingsBinding
+import com.example.confessme.presentation.SettingsViewModel
 import com.example.confessme.util.MyPreferences
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.core.view.Change
@@ -29,6 +31,7 @@ class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
     private lateinit var navRegister: FragmentNavigation
+    private val viewModel: SettingsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -111,6 +114,7 @@ class SettingsFragment : Fragment() {
 
         val myPreferences = MyPreferences(requireContext())
         myPreferences.saveSelectedLanguage(languageCode)
+        updateUserLanguage(languageCode)
 
         (activity as? MainActivity)?.restartActivity()
     }
@@ -122,5 +126,9 @@ class SettingsFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun updateUserLanguage(language: String) {
+        viewModel.updateLanguage(language)
     }
 }

@@ -12,7 +12,6 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("Mesaj: ", "Application onCreate çalıştı")
 
         val myPreferences = MyPreferences(applicationContext)
         MyUtils.applyAppTheme(myPreferences, applicationContext)

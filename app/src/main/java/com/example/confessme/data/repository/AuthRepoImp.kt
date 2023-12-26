@@ -317,6 +317,17 @@ class AuthRepoImp(
             }
     }
 
+    override fun updateLanguage(language: String) {
+        val user = firebaseAuth.currentUser
+
+        if (user != null) {
+            val uid = user.uid
+
+            database.collection("users").document(uid)
+                .update("language", language)
+        }
+    }
+
     private fun isValidPassword(password: String): Boolean {
         val passwordRegex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$".toRegex()
         if (password.contains(" ")) {

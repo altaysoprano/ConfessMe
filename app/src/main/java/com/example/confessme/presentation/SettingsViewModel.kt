@@ -23,4 +23,8 @@ class SettingsViewModel @Inject constructor(
             _updatePasswordState.postValue(result)
         }
     }
+
+    fun updateLanguage(language: String) {
+        repository.updateLanguage(language)
+    }
 }
