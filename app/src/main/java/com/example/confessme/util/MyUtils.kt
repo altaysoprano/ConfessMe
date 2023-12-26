@@ -99,4 +99,65 @@ object MyUtils {
         configuration.setLocale(locale)
         context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
     }
+
+    fun getNotificationText(languageCode: String, notificationType: NotificationType): String {
+        return when (notificationType) {
+            NotificationType.Confessed -> when (languageCode) {
+                "en" -> "confessed"
+                "tr" -> "itiraf etti"
+                "zh" -> "坦白了"
+                "es" -> "confesó"
+                "fr" -> "a confessé"
+                "ja" -> "告白しました"
+                "de" -> "hat gebeichtet"
+                "ar" -> "اعترف"
+                else -> "confessed"
+            }
+            NotificationType.ConfessionLike -> when (languageCode) {
+                "en" -> "liked this confession"
+                "tr" -> "bu itirafları beğendi"
+                "zh" -> "喜欢了这个坦白"
+                "es" -> "le gustó esta confesión"
+                "fr" -> "a aimé cette confession"
+                "ja" -> "この告白をいいね！しました"
+                "de" -> "hat dieses Geständnis gemocht"
+                "ar" -> "أعجب بهذا الاعتراف"
+                else -> "liked this confession"
+            }
+            NotificationType.AnswerLike -> when (languageCode) {
+                "en" -> "liked this answer"
+                "tr" -> "şu cevabı beğendi"
+                "zh" -> "喜欢了这个回答"
+                "es" -> "le gustó esta respuesta"
+                "fr" -> "a aimé cette réponse"
+                "ja" -> "この回答をいいね！しました"
+                "de" -> "hat diese Antwort gemocht"
+                "ar" -> "أعجب بهذه الإجابة"
+                else -> "liked this answer"
+            }
+            NotificationType.Followed -> when (languageCode) {
+                "en" -> "followed you"
+                "tr" -> "seni takip etti"
+                "zh" -> "关注了你"
+                "es" -> "te ha seguido"
+                "fr" -> "vous a suivi"
+                "ja" -> "あなたをフォローしました"
+                "de" -> "hat dich abonniert"
+                "ar" -> "قام بمتابعتك"
+                else -> "followed you"
+            }
+            NotificationType.ConfessionReply -> when (languageCode) {
+                "en" -> "replied to this confession"
+                "tr" -> "bu itirafa yanıt verdi"
+                "zh" -> "回复了这个坦白"
+                "es" -> "respondió a esta confesión"
+                "fr" -> "a répondu à cette confession"
+                "ja" -> "この告白に返信しました"
+                "de" -> "hat auf dieses Geständnis geantwortet"
+                "ar" -> "رد على هذا الاعتراف"
+                else -> "replied to this confession"
+            }
+        }
+    }
+
 }

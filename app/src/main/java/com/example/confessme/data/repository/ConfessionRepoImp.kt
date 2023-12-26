@@ -9,6 +9,7 @@ import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.Constants
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.NotificationType
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
@@ -73,6 +74,7 @@ class ConfessionRepoImp(
                                     val confessionId = newConfessionDocument.id
                                     val toFcmToken = userDocument.getString("token")
                                     val fromFcmToken = currentUserDocument.getString("token") ?: ""
+                                    val language = userDocument.getString("language") ?: ""
 
                                     val confessionData = hashMapOf(
                                         "id" to confessionId,
@@ -94,9 +96,11 @@ class ConfessionRepoImp(
                                     newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success(context.getString(R.string.confessed_successfully)))
+                                            val title = MyUtils.getNotificationText(language, NotificationType.Confessed)
                                             if (toFcmToken != "" && toFcmToken != null) {
                                                 sendNotification(
-                                                    "$fromUserUsername confessed",
+                                                    "$fromUserUsername ",
+                                                    title,
                                                     confessionText,
                                                     userUid,
                                                     toFcmToken
@@ -319,7 +323,8 @@ class ConfessionRepoImp(
                                         )
                                         if (userIdToNotification.isNotBlank()) {
                                             sendNotification(
-                                                "$fromUserUsername replied to this confession:",
+                                                "$fromUserUsername ",
+                                                context.getString(R.string.replied_to_this_confession),
                                                 confessionText,
                                                 userIdToNotification,
                                                 fcmToken
@@ -397,7 +402,8 @@ class ConfessionRepoImp(
                                         )
                                         if (favorited && userIdToNotification.isNotBlank()) {
                                             sendNotification(
-                                                "$username liked this confession:",
+                                                "$username ",
+                                                context.getString(R.string.liked_this_confession),
                                                 confessionText,
                                                 userIdToNotification,
                                                 fcmToken
@@ -454,7 +460,8 @@ class ConfessionRepoImp(
                         val userId = confessionDocumentSnapshot.getString("userId") ?: ""
                         val fromUserId = confessionDocumentSnapshot.getString("fromUserId") ?: ""
                         val userToken = confessionDocumentSnapshot.getString("userToken") ?: ""
-                        val fromUserToken = confessionDocumentSnapshot.getString("fromUserToken") ?: ""
+                        val fromUserToken =
+                            confessionDocumentSnapshot.getString("fromUserToken") ?: ""
                         val fcmToken = userToken
 
                         val answerMap =
@@ -477,7 +484,8 @@ class ConfessionRepoImp(
                                             )
                                             if (isFavorited) {
                                                 sendNotification(
-                                                    "$fromUserUsername liked this answer:",
+                                                    "$fromUserUsername ",
+                                                    context.getString(R.string.liked_this_answer),
                                                     "$answerText",
                                                     userId,
                                                     fcmToken
@@ -774,6 +782,7 @@ class ConfessionRepoImp(
     }
 
     private fun sendNotification(
+        username: String,
         title: String,
         message: String,
         currentUserId: String,
@@ -784,8 +793,9 @@ class ConfessionRepoImp(
             val jsonObject = JSONObject()
 
             val notificationObject = JSONObject()
+            val notificationText = username + title
 
-            notificationObject.put("title", title)
+            notificationObject.put("title", notificationText)
             notificationObject.put("body", message)
 
             val dataObject = JSONObject()

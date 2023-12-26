@@ -125,7 +125,6 @@ class AuthRepoImp(
         }
     }
 
-/*
     override fun signOut(result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
@@ -136,8 +135,8 @@ class AuthRepoImp(
             result.invoke(UiState.Failure("No user signed in"))
         }
     }
-*/
 
+/*
     override fun signOut(result: (UiState<String>) -> Unit) {
         val user = firebaseAuth.currentUser
 
@@ -170,6 +169,7 @@ class AuthRepoImp(
             result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))
         }
     }
+*/
 
     override fun googleSignIn(
         idToken: String,

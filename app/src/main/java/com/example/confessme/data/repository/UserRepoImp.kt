@@ -690,7 +690,8 @@ class UserRepoImp(
 
                             if (fcmToken != "") {
                                 sendNotification(
-                                    "$username followed you",
+                                    "$username ",
+                                    context.getString(R.string.followed_you),
                                     "",
                                     userUidToFollow,
                                     fcmToken
@@ -883,6 +884,7 @@ class UserRepoImp(
     }
 
     private fun sendNotification(
+        username: String,
         title: String,
         message: String,
         currentUserId: String,
@@ -893,8 +895,9 @@ class UserRepoImp(
             val jsonObject = JSONObject()
 
             val notificationObject = JSONObject()
+            val notificationText = username + title
 
-            notificationObject.put("title", title)
+            notificationObject.put("title", notificationText)
             notificationObject.put("body", message)
 
             val dataObject = JSONObject()
