@@ -100,6 +100,20 @@ object MyUtils {
         context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
     }
 
+    fun getAppLanguage(myPreferences: MyPreferences): String {
+        val selectedLanguage = myPreferences.getSelectedLanguage()
+
+        return if (selectedLanguage.isNotEmpty()) {
+            selectedLanguage
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Resources.getSystem().configuration.locales[0].language
+            } else {
+                Resources.getSystem().configuration.locale.language
+            }
+        }
+    }
+
     fun getNotificationText(languageCode: String, notificationType: NotificationType): String {
         return when (notificationType) {
             NotificationType.Confessed -> when (languageCode) {

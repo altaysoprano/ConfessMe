@@ -67,6 +67,7 @@ class HomeFragment : Fragment() {
 
         viewModel.fetchConfessions(limit)
         viewModel.fetchNotifications(limit)
+        updateUserLanguage()
 
         binding.swipeRefreshLayoutHome.setOnRefreshListener {
             viewModel.onSwiping(limit)
@@ -552,6 +553,10 @@ class HomeFragment : Fragment() {
         } else {
             getString(R.string.close_lights)
         }
+    }
+
+    private fun updateUserLanguage() {
+        viewModel.updateLanguage(MyUtils.getAppLanguage(myPreferences))
     }
 
     private fun getOpenCloseItemIcon(): Int {

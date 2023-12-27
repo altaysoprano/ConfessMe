@@ -107,6 +107,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun updateLanguage(language: String) {
+        authRepo.updateLanguage(language)
+    }
+
     fun signOut() {
         _signOutState.value = UiState.Loading
         authRepo.signOut {
