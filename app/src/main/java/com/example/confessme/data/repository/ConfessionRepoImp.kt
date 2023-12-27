@@ -96,7 +96,10 @@ class ConfessionRepoImp(
                                     newConfessionDocument.set(confessionData)
                                         .addOnSuccessListener {
                                             result.invoke(UiState.Success(context.getString(R.string.confessed_successfully)))
-                                            val title = MyUtils.getNotificationText(language, NotificationType.Confessed)
+                                            val title = MyUtils.getNotificationText(
+                                                language,
+                                                NotificationType.Confessed
+                                            )
                                             if (toFcmToken != "" && toFcmToken != null) {
                                                 sendNotification(
                                                     "$fromUserUsername ",
@@ -282,9 +285,7 @@ class ConfessionRepoImp(
                         val userId = confessionDoc.getString("userId") ?: ""
                         val fromUserImageUrl = confessionDoc.getString("imageUrl") ?: ""
                         val fromUserEmail = confessionDoc.getString("email") ?: ""
-                        val fromUserToken = confessionDoc.getString("fromUserToken") ?: ""
                         val userToken = confessionDoc.getString("userToken") ?: ""
-                        val fcmToken = fromUserToken
                         val username = confessionDoc.getString("fromUserUsername") ?: ""
                         val imageUrl = confessionDoc.getString("fromUserImageUrl") ?: ""
                         val email = confessionDoc.getString("fromUserEmail") ?: ""
@@ -322,23 +323,40 @@ class ConfessionRepoImp(
                                             )
                                         )
                                         if (userIdToNotification.isNotBlank()) {
-                                            sendNotification(
-                                                "$fromUserUsername ",
-                                                context.getString(R.string.replied_to_this_confession),
-                                                confessionText,
-                                                userIdToNotification,
-                                                fcmToken
-                                            )
-                                            addNotificationToUser(
-                                                userId = userIdToNotification,
-                                                fromUserId = userId,
-                                                fromUserToken = userToken,
-                                                confessionText = confessionText,
-                                                fromUserUsername = fromUserUsername,
-                                                fromUserImageUrl = fromUserImageUrl,
-                                                confessionId = confessionId,
-                                                notificationType = NotificationType.ConfessionReply
-                                            )
+                                            val userDocRef = database.collection("users").document(userIdToNotification)
+
+                                            userDocRef.get()
+                                                .addOnSuccessListener { userDocument ->
+                                                    if (userDocument.exists()) {
+                                                        val languageCode = userDocument.getString("language")
+                                                        val fcmToken = userDocument.getString("token")
+
+                                                        val notificationText =
+                                                            MyUtils.getNotificationText(
+                                                                languageCode ?: "",
+                                                                NotificationType.ConfessionReply
+                                                            )
+                                                        if (!fcmToken.isNullOrEmpty()) {
+                                                            sendNotification(
+                                                                "$fromUserUsername ",
+                                                                notificationText,
+                                                                confessionText,
+                                                                userIdToNotification,
+                                                                fcmToken
+                                                            )
+                                                        }
+                                                        addNotificationToUser(
+                                                            userId = userIdToNotification,
+                                                            fromUserId = userId,
+                                                            fromUserToken = userToken,
+                                                            confessionText = confessionText,
+                                                            fromUserUsername = fromUserUsername,
+                                                            fromUserImageUrl = fromUserImageUrl,
+                                                            confessionId = confessionId,
+                                                            notificationType = NotificationType.ConfessionReply
+                                                        )
+                                                    }
+                                                }
                                         }
                                     }
                                     .addOnFailureListener { exception ->
@@ -788,12 +806,14 @@ class ConfessionRepoImp(
         currentUserId: String,
         token: String
     ) {
+        Log.d("Mesaj: ", "send notificationda")
 
         try {
             val jsonObject = JSONObject()
 
             val notificationObject = JSONObject()
             val notificationText = username + title
+            Log.d("Mesaj: ", "notificationText: $notificationText")
 
             notificationObject.put("title", notificationText)
             notificationObject.put("body", message)
