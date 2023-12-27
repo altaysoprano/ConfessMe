@@ -435,7 +435,7 @@ class ConfessionRepoImp(
                                                         val notificationText =
                                                             MyUtils.getNotificationText(
                                                                 languageCode ?: "",
-                                                                NotificationType.AnswerLike
+                                                                NotificationType.ConfessionLike
                                                             )
                                                         if (!fcmToken.isNullOrEmpty()) {
                                                             sendNotification(
@@ -499,10 +499,8 @@ class ConfessionRepoImp(
                             confessionDocumentSnapshot.getString("fromUserImageUrl") ?: ""
                         val userId = confessionDocumentSnapshot.getString("userId") ?: ""
                         val fromUserId = confessionDocumentSnapshot.getString("fromUserId") ?: ""
-                        val userToken = confessionDocumentSnapshot.getString("userToken") ?: ""
                         val fromUserToken =
                             confessionDocumentSnapshot.getString("fromUserToken") ?: ""
-                        val fcmToken = userToken
 
                         val answerMap =
                             confessionDocumentSnapshot.get("answer") as MutableMap<String, Any>?
@@ -523,23 +521,45 @@ class ConfessionRepoImp(
                                                 )
                                             )
                                             if (isFavorited) {
-                                                sendNotification(
-                                                    "$fromUserUsername ",
-                                                    context.getString(R.string.liked_this_answer),
-                                                    "$answerText",
-                                                    userId,
-                                                    fcmToken
-                                                )
-                                                addNotificationToUser(
-                                                    userId = userId,
-                                                    fromUserId = fromUserId,
-                                                    fromUserToken = fromUserToken,
-                                                    confessionText = answerText,
-                                                    fromUserUsername = fromUserUsername,
-                                                    fromUserImageUrl = fromUserImageUrl,
-                                                    confessionId = confessionId,
-                                                    notificationType = NotificationType.AnswerLike
-                                                )
+
+                                                val userDocRef = database.collection("users")
+                                                    .document(userId)
+
+                                                userDocRef.get()
+                                                    .addOnSuccessListener { userDocument ->
+                                                        if (userDocument.exists()) {
+                                                            val languageCode =
+                                                                userDocument.getString("language")
+                                                            val fcmToken =
+                                                                userDocument.getString("token")
+
+                                                            val notificationText =
+                                                                MyUtils.getNotificationText(
+                                                                    languageCode ?: "",
+                                                                    NotificationType.AnswerLike
+                                                                )
+
+                                                            if (!fcmToken.isNullOrEmpty()) {
+                                                                sendNotification(
+                                                                    "$fromUserUsername ",
+                                                                    notificationText,
+                                                                    "$answerText",
+                                                                    userId,
+                                                                    fcmToken
+                                                                )
+                                                            }
+                                                            addNotificationToUser(
+                                                                userId = userId,
+                                                                fromUserId = fromUserId,
+                                                                fromUserToken = fromUserToken,
+                                                                confessionText = answerText,
+                                                                fromUserUsername = fromUserUsername,
+                                                                fromUserImageUrl = fromUserImageUrl,
+                                                                confessionId = confessionId,
+                                                                notificationType = NotificationType.AnswerLike
+                                                            )
+                                                        }
+                                                    }
                                             }
                                         }
                                         .addOnFailureListener { exception ->

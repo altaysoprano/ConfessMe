@@ -129,7 +129,7 @@ object MyUtils {
             }
             NotificationType.ConfessionLike -> when (languageCode) {
                 "en" -> "liked this confession"
-                "tr" -> "bu itirafları beğendi"
+                "tr" -> "bu itirafı beğendi"
                 "zh" -> "喜欢了这个坦白"
                 "es" -> "le gustó esta confesión"
                 "fr" -> "a aimé cette confession"
