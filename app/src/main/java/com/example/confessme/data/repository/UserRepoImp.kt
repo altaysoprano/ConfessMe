@@ -9,6 +9,7 @@ import com.example.confessme.data.model.Notification
 import com.example.confessme.data.model.User
 import com.example.confessme.util.Constants
 import com.example.confessme.util.FollowType
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.NotificationType
 import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
@@ -670,7 +671,6 @@ class UserRepoImp(
                 .collection("following").document(userUidToFollow)
             val followersRef = database.collection("users").document(userUidToFollow)
                 .collection("followers").document(currentUserUid)
-            val fcmToken = userToken
 
             val batch = database.batch()
 
@@ -688,15 +688,33 @@ class UserRepoImp(
                             val fromUserImageUrl = it.getString("imageUrl") ?: ""
                             val fromUserToken = it.getString("token") ?: ""
 
-                            if (fcmToken != "") {
-                                sendNotification(
-                                    "$username ",
-                                    context.getString(R.string.followed_you),
-                                    "",
-                                    userUidToFollow,
-                                    fcmToken
-                                )
-                            }
+                            val userDocRef = database.collection("users")
+                                .document(userUidToFollow)
+
+                            userDocRef.get()
+                                .addOnSuccessListener { userDocument ->
+                                    if (userDocument.exists()) {
+                                        val languageCode =
+                                            userDocument.getString("language")
+                                        val fcmToken =
+                                            userDocument.getString("token")
+
+                                        val notificationText =
+                                            MyUtils.getNotificationText(
+                                                languageCode ?: "",
+                                                NotificationType.Followed
+                                            )
+                                        if (!fcmToken.isNullOrEmpty()) {
+                                            sendNotification(
+                                                "$username ",
+                                                notificationText,
+                                                "",
+                                                userUidToFollow,
+                                                fcmToken
+                                            )
+                                        }
+                                    }
+                                }
                             addNotificationToUser(
                                 userUidToFollow,
                                 currentUserUid,
