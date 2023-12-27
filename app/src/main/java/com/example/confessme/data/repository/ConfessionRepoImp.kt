@@ -323,13 +323,16 @@ class ConfessionRepoImp(
                                             )
                                         )
                                         if (userIdToNotification.isNotBlank()) {
-                                            val userDocRef = database.collection("users").document(userIdToNotification)
+                                            val userDocRef = database.collection("users")
+                                                .document(userIdToNotification)
 
                                             userDocRef.get()
                                                 .addOnSuccessListener { userDocument ->
                                                     if (userDocument.exists()) {
-                                                        val languageCode = userDocument.getString("language")
-                                                        val fcmToken = userDocument.getString("token")
+                                                        val languageCode =
+                                                            userDocument.getString("language")
+                                                        val fcmToken =
+                                                            userDocument.getString("token")
 
                                                         val notificationText =
                                                             MyUtils.getNotificationText(
@@ -391,7 +394,6 @@ class ConfessionRepoImp(
                 .addOnSuccessListener { confessionQuerySnapshot ->
                     if (!confessionQuerySnapshot.isEmpty) {
                         val confessionDoc = confessionQuerySnapshot.documents[0]
-                        val fcmToken = confessionDoc.getString("fromUserToken") ?: ""
                         val fromFcmToken = confessionDoc.getString("userToken") ?: ""
                         val fromUserId = confessionDoc.getString("fromUserId") ?: ""
                         val anonymousId = confessionDoc.getString("anonymousId") ?: ""
@@ -419,23 +421,43 @@ class ConfessionRepoImp(
                                             )
                                         )
                                         if (favorited && userIdToNotification.isNotBlank()) {
-                                            sendNotification(
-                                                "$username ",
-                                                context.getString(R.string.liked_this_confession),
-                                                confessionText,
-                                                userIdToNotification,
-                                                fcmToken
-                                            )
-                                            addNotificationToUser(
-                                                userId = userIdToNotification,
-                                                fromUserId = userId,
-                                                fromUserToken = fromFcmToken,
-                                                confessionText = confessionText,
-                                                fromUserUsername = username,
-                                                fromUserImageUrl = userImageUrl,
-                                                confessionId = confessionId,
-                                                notificationType = NotificationType.ConfessionLike
-                                            )
+                                            val userDocRef = database.collection("users")
+                                                .document(userIdToNotification)
+
+                                            userDocRef.get()
+                                                .addOnSuccessListener { userDocument ->
+                                                    if (userDocument.exists()) {
+                                                        val languageCode =
+                                                            userDocument.getString("language")
+                                                        val fcmToken =
+                                                            userDocument.getString("token")
+
+                                                        val notificationText =
+                                                            MyUtils.getNotificationText(
+                                                                languageCode ?: "",
+                                                                NotificationType.AnswerLike
+                                                            )
+                                                        if (!fcmToken.isNullOrEmpty()) {
+                                                            sendNotification(
+                                                                "$username ",
+                                                                notificationText,
+                                                                confessionText,
+                                                                userIdToNotification,
+                                                                fcmToken
+                                                            )
+                                                        }
+                                                        addNotificationToUser(
+                                                            userId = userIdToNotification,
+                                                            fromUserId = userId,
+                                                            fromUserToken = fromFcmToken,
+                                                            confessionText = confessionText,
+                                                            fromUserUsername = username,
+                                                            fromUserImageUrl = userImageUrl,
+                                                            confessionId = confessionId,
+                                                            notificationType = NotificationType.ConfessionLike
+                                                        )
+                                                    }
+                                                }
                                         }
                                     }
                                     .addOnFailureListener { exception ->
