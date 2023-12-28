@@ -156,7 +156,7 @@ object MyUtils {
                 "es" -> "te ha seguido"
                 "fr" -> "vous a suivi"
                 "ja" -> "あなたをフォローしました"
-                "de" -> "hat dich abonniert"
+                "de" -> "folgt dir"
                 "ar" -> "قام بمتابعتك"
                 else -> "followed you"
             }
