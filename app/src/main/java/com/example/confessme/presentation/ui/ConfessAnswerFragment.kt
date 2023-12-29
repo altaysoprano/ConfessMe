@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -38,6 +39,7 @@ import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -92,8 +94,8 @@ class ConfessAnswerFragment(
     }
 
     private fun observeGetConfession() {
-        viewModel.getConfessionState.observe(this) { state->
-            when(state) {
+        viewModel.getConfessionState.observe(this) { state ->
+            when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
                     binding.answerIcFavorite.visibility = View.INVISIBLE
@@ -128,12 +130,16 @@ class ConfessAnswerFragment(
 
                     setUserImage(state.data?.answer?.fromUserImageUrl)
                     setSaveButton()
-                    setImageAndTextStates(isConfessionAnswered, answerText, answeredUserName,
+                    setImageAndTextStates(
+                        isConfessionAnswered, answerText, answeredUserName,
                         answerTimeStamp, answerUserUid, answerFromUserUid,
                         answerFromUsername, answerUserName, userToken,
-                        fromUserToken, confessedUserName)
-                    setFavoriteDeleteEditReplyDismissStates(answerText, answerFromUserUid,
-                                                    answerUserUid, anonymousId, isConfessionAnswered)
+                        fromUserToken, confessedUserName
+                    )
+                    setFavoriteDeleteEditReplyDismissStates(
+                        answerText, answerFromUserUid,
+                        answerUserUid, anonymousId, isConfessionAnswered
+                    )
                     setFavorite(isAnswerFavorited)
                 }
             }
@@ -203,8 +209,24 @@ class ConfessAnswerFragment(
                         }
                     }
 
-                    Toast.makeText(requireContext(), getString(R.string.answered_successfully), Toast.LENGTH_SHORT)
-                        .show()
+                    val snackbar = Snackbar.make(
+                        requireActivity().window.decorView.rootView,
+                        getString(R.string.answered_successfully),
+                        Snackbar.LENGTH_LONG
+                    )
+                    snackbar.setAction(getString(R.string.share)) {
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        shareIntent.type = "text/plain"
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Paylaşılacak metin")
+
+                        val chooser = Intent.createChooser(shareIntent, "Nerede paylaşacaksın?")
+                        if (shareIntent.resolveActivity(requireContext().packageManager) != null) {
+                            requireContext().startActivity(chooser)
+                        }
+                    }
+                    val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
+                    snackbar.setAnchorView(bottomNavigationView)
+                    snackbar.show()
                 }
             }
         }
@@ -266,22 +288,24 @@ class ConfessAnswerFragment(
     }
 
     private fun setFavorite(favorited: Boolean?) {
-        if(favorited == true) {
+        if (favorited == true) {
             binding.answerIcFavorite.setColorFilter(resources.getColor(R.color.confessmered))
         } else {
             binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
         }
     }
 
-    private fun setFavoriteDeleteEditReplyDismissStates(answerText: String, answerFromUserUid: String,
-                                                    answerUserUid: String, anonymousId: String,
-                                                    isConfessionAnswered: Boolean) {
+    private fun setFavoriteDeleteEditReplyDismissStates(
+        answerText: String, answerFromUserUid: String,
+        answerUserUid: String, anonymousId: String,
+        isConfessionAnswered: Boolean
+    ) {
         val confessionId = arguments?.getString("confessionId", "")
 
         binding.replyButton.setOnClickListener {
             val answerEditText = binding.confessAnswerEditText.text?.trim().toString()
 
-             viewModel.addAnswer(confessionId ?: "", answerEditText)
+            viewModel.addAnswer(confessionId ?: "", answerEditText)
         }
 
         binding.answerIcEdit.setOnClickListener {
@@ -312,7 +336,7 @@ class ConfessAnswerFragment(
             )
         }
 
-        if(currentUserUid == answerFromUserUid || currentUserUid == anonymousId) {
+        if (currentUserUid == answerFromUserUid || currentUserUid == anonymousId) {
             binding.replyButton.visibility = View.GONE
             binding.answerIcEdit.visibility = View.GONE
             binding.answerIcFavorite.visibility = View.VISIBLE
@@ -323,7 +347,7 @@ class ConfessAnswerFragment(
             } else {
                 binding.answerIcFavorite.setColorFilter(Color.parseColor("#B8B8B8"))
             }
-        } else if(currentUserUid == answerUserUid) {
+        } else if (currentUserUid == answerUserUid) {
             binding.answerIcFavorite.isEnabled = false
             binding.answerIcFavorite.alpha = 0.5f
 
@@ -364,10 +388,12 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setImageAndTextStates(isConfessionAnswered: Boolean, answerText: String, answeredUserName: String,
-                                        answerTimestamp: Any?, answerUserUid: String, answerFromUserUid: String,
-                                      answerFromUsername: String, answerUserName: String, userToken: String,
-                                      fromUserToken: String, confessedUserName: String) {
+    private fun setImageAndTextStates(
+        isConfessionAnswered: Boolean, answerText: String, answeredUserName: String,
+        answerTimestamp: Any?, answerUserUid: String, answerFromUserUid: String,
+        answerFromUsername: String, answerUserName: String, userToken: String,
+        fromUserToken: String, confessedUserName: String
+    ) {
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
@@ -377,7 +403,8 @@ class ConfessAnswerFragment(
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
             setUserNameProfileImageAndAnswerText(
                 answerUserUid, answerFromUserUid, answerFromUsername, answerUserName,
-                userToken, fromUserToken, confessedUserName, answerText)
+                userToken, fromUserToken, confessedUserName, answerText
+            )
             setUsernameAndDateText(answeredUserName, answerTimestamp)
         } else {
             binding.confessAnswerEditText.apply {
@@ -404,16 +431,16 @@ class ConfessAnswerFragment(
                     text = "$currentLength/$maxLength"
                 }
 
-                if(isTextEmpty == true) {
+                if (isTextEmpty == true) {
                     isAnswerButtonEnabled = false
                     binding.answerCounterTextView.setTextColor(Color.parseColor("#B6B6B6"))
                     setSaveButton()
-                }
-                else if (currentLength > maxLength) {
+                } else if (currentLength > maxLength) {
                     isAnswerButtonEnabled = false
                     setSaveButton()
                     binding.answerCounterTextView.setTextColor(Color.RED)
-                    binding.confessAnswerEditText.error = getString(R.string.answer_is_too_long_max) + maxLength + getString(R.string.characters)
+                    binding.confessAnswerEditText.error =
+                        getString(R.string.answer_is_too_long_max) + maxLength + getString(R.string.characters)
                 } else {
                     binding.confessAnswerEditText.error = null
                     isAnswerButtonEnabled = true
@@ -421,7 +448,7 @@ class ConfessAnswerFragment(
                     setSaveButton()
                 }
 
-                if(s?.trim()?.toString() == answerText) {
+                if (s?.trim()?.toString() == answerText) {
                     isAnswerButtonEnabled = false
                     setSaveButton()
                 }
@@ -433,7 +460,7 @@ class ConfessAnswerFragment(
     }
 
     private fun setSaveButton() {
-        if(isAnswerButtonEnabled) {
+        if (isAnswerButtonEnabled) {
             binding.replyButton.alpha = 1f
             binding.replyButton.isClickable = true
         } else {
@@ -444,14 +471,25 @@ class ConfessAnswerFragment(
 
     private fun setUsernameAndDateText(answeredUserName: String, answerTimestamp: Any?) {
         val answeredUserNameBold = SpannableString(answeredUserName)
-        answeredUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, answeredUserName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        answeredUserNameBold.setSpan(
+            StyleSpan(Typeface.BOLD),
+            0,
+            answeredUserName.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
-        val answerElapsedTime = if(answerTimestamp != null) MyUtils.calculateTimeSinceConfession(answerTimestamp as Timestamp, requireContext()) else "-"
+        val answerElapsedTime = if (answerTimestamp != null) MyUtils.calculateTimeSinceConfession(
+            answerTimestamp as Timestamp,
+            requireContext()
+        ) else "-"
 
         val answerDateBold = SpannableString(answerElapsedTime)
         answerDateBold.setSpan(object : ClickableSpan() {
             override fun onClick(view: View) {
-                val date = MyUtils.convertFirestoreTimestampToReadableDate(answerTimestamp, requireContext())
+                val date = MyUtils.convertFirestoreTimestampToReadableDate(
+                    answerTimestamp,
+                    requireContext()
+                )
                 Toast.makeText(view.context, date, Toast.LENGTH_SHORT).show()
             }
 
@@ -468,13 +506,27 @@ class ConfessAnswerFragment(
         binding.confessAnswerUserNameAndDate.movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private fun setUserNameProfileImageAndAnswerText(answerUserUid: String, answerFromUserUid: String,
-                                                     answerFromUsername: String, answerUserName: String,
-                                                     userToken: String, fromUserToken: String,
-                                                     confessedUserName: String, answerText: String) {
+    private fun setUserNameProfileImageAndAnswerText(
+        answerUserUid: String, answerFromUserUid: String,
+        answerFromUsername: String, answerUserName: String,
+        userToken: String, fromUserToken: String,
+        confessedUserName: String, answerText: String
+    ) {
         val confessedUserNameBold = SpannableString("@$confessedUserName")
-        confessedUserNameBold.setSpan(StyleSpan(Typeface.BOLD), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        confessedUserNameBold.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.confessmered)), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        confessedUserNameBold.setSpan(
+            StyleSpan(Typeface.BOLD),
+            0,
+            confessedUserName.length + 1,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        confessedUserNameBold.setSpan(
+            ForegroundColorSpan(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.confessmered
+                )
+            ), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(view: View) {
@@ -497,7 +549,12 @@ class ConfessAnswerFragment(
                 ds.isUnderlineText = false
             }
         }
-        confessedUserNameBold.setSpan(clickableSpan, 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        confessedUserNameBold.setSpan(
+            clickableSpan,
+            0,
+            confessedUserName.length + 1,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         val usernameAndAnswerText = TextUtils.concat(confessedUserNameBold, " ", answerText)
 
@@ -523,7 +580,8 @@ class ConfessAnswerFragment(
     }
 
     fun showKeyboard(context: Context, view: View) {
-        val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 }

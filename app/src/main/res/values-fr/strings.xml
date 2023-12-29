@@ -184,4 +184,5 @@
     <string name="application_language_set_to_german">Langue de l\'application définie sur \'Allemand\'</string>
     <string name="menu">Menu</string>
     <string name="application_language_set_to_arabic" />
+    <string name="share">Partager</string>
 </resources>

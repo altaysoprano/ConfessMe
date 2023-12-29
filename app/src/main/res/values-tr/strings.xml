@@ -183,4 +183,5 @@
     <string name="application_language_set_to_german">Uygulama dili \'Almanca\' olarak ayarlandı</string>
     <string name="menu">Menü</string>
     <string name="application_language_set_to_arabic" />
+    <string name="share">Paylaş</string>
 </resources>

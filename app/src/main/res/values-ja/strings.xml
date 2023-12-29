@@ -184,4 +184,5 @@
     <string name="application_language_set_to_german">アプリの言語が「ドイツ語」に設定されました</string>
     <string name="menu">メニュー</string>
     <string name="application_language_set_to_arabic" />
+    <string name="share">共有</string>
 </resources>

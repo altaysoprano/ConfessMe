@@ -49,6 +49,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="username"
+                android:fontFamily="@font/opensans_regular"
                 android:textStyle="bold" />
 
             <TextView
@@ -58,6 +59,7 @@
                 android:singleLine="true"
                 android:paddingHorizontal="4dp"
                 android:text="·"
+                android:fontFamily="@font/opensans_regular"
                 android:textStyle="bold" />
 
             <TextView
@@ -68,6 +70,7 @@
                 android:layout_gravity="start"
                 android:text="timestamp"
                 android:textStyle="normal"
+                android:fontFamily="@font/opensans_regular"
                 android:ellipsize="none"
                 android:singleLine="true" />
             </TableRow>
@@ -95,6 +98,7 @@
                     android:textColor="?attr/colorOnSecondary"
                     android:ellipsize="end"
                     android:focusable="true"
+                    android:fontFamily="@font/opensans_regular"
                     android:text="confession"
                     android:textStyle="normal" />
 

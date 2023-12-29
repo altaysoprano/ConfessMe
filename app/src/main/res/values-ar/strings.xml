@@ -180,4 +180,9 @@
     <string name="application_language_set_to_german">تم تعيين لغة التطبيق إلى "الألمانية"</string>
     <string name="menu">القائمة</string>
     <string name="application_language_set_to_arabic">تم تعيين لغة التطبيق إلى "العربية"</string>
+    <string name="share">مشاركة</string>
+    <string name="answered_successfully">تم الرد بنجاح</string>
+    <string name="answer_deleted_successfully">تم حذف الرد بنجاح</string>
+    <string name="access_to_files_denied">تم رفض الوصول إلى الملفات</string>
+    <string name="an_error_occured_please_try_again">حدث خطأ. الرجاء المحاولة مرة أخرى.</string>
 </resources>
