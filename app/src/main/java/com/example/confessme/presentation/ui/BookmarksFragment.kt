@@ -20,6 +20,7 @@ import com.example.confessme.presentation.BookmarksViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -232,15 +233,15 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val removedBookmark = state.data
-                    val position = findPositionById(removedBookmark.confessionId)
-                    removedBookmarkPosition = position
+                    val position = removedBookmark?.id?.let { findPositionById(it) }
 
                     if (position != -1) {
-                        confessListAdapter.removeConfession(position)
-                        limit -= 1
+                        if (position != null) {
+                            confessListAdapter.removeConfession(position)
+                            removedBookmarkPosition = position
+                            limit -= 1
+                        }
                     }
-
-                    val bookmark = state.data
 
                     MyUtils.showBookmarkedUnbookmarkedSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
@@ -249,11 +250,13 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-                            viewModel.addBookmark(
-                                confessionId = bookmark.confessionId,
-                                timestamp = bookmark.timestamp,
-                                userUid = bookmark.userId
-                            )
+                            if(removedBookmark != null) {
+                                viewModel.addBookmark(
+                                    confessionId = removedBookmark.id,
+                                    timestamp = removedBookmark.timestamp as Timestamp,
+                                    userUid = removedBookmark.userId
+                                )
+                            }
                         }
                     )
                 }

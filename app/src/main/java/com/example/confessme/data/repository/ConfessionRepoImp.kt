@@ -821,7 +821,7 @@ class ConfessionRepoImp(
 
     override fun removeBookmark(
         confessionId: String,
-        result: (UiState<Bookmark>) -> Unit
+        result: (UiState<Confession?>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
 
@@ -830,22 +830,24 @@ class ConfessionRepoImp(
 
             val bookmarksCollection =
                 database.collection("users").document(currentUserUid).collection("bookmarks")
+            val confessionDocument =
+                database.collection("confessions").document(confessionId)
             val bookmarkDocument = bookmarksCollection.document(confessionId)
-            bookmarkDocument.get()
+            confessionDocument.get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
-                        val userId = documentSnapshot.getString("userUid") ?: ""
-                        val timestamp = documentSnapshot.getTimestamp("timestamp") ?: ""
-                        val bookmark = Bookmark(userId, confessionId, timestamp as Timestamp)
+                        Log.d("Mesaj: ", "Removeda confession existste")
+                        val confession = documentSnapshot.toObject(Confession::class.java)
 
                         bookmarkDocument.delete()
                             .addOnSuccessListener {
-                                result.invoke(UiState.Success(bookmark))
+                                result.invoke(UiState.Success(confession))
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
                             }
                     } else {
+                        Log.d("Mesaj: ", "Removeda confession not foundta")
                         result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }

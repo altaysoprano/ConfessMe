@@ -45,8 +45,8 @@ class HomeViewModel @Inject constructor(
     val addBookmarkState: LiveData<UiState<Confession?>>
         get() = _addBookmarkState
 
-    private val _deleteBookmarkState = MutableLiveData<UiState<Bookmark>>()
-    val removeBookmarkState: LiveData<UiState<Bookmark>>
+    private val _deleteBookmarkState = MutableLiveData<UiState<Confession?>>()
+    val removeBookmarkState: LiveData<UiState<Confession?>>
         get() = _deleteBookmarkState
 
     private val _onPagingState = MutableLiveData<UiState<List<Confession>>>()
