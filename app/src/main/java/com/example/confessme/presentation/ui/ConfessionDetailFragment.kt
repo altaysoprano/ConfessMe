@@ -345,7 +345,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
                         viewModel.addBookmark(
                             confessionToBookmark.id,
-                            confessionToBookmark.timestamp.toString(),
+                            confessionToBookmark.timestamp as Timestamp,
                             confessionToBookmark.fromUserId
                         )
                         return@setOnMenuItemClickListener true

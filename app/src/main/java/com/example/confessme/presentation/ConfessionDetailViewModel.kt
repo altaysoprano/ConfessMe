@@ -4,12 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.confessme.data.model.Bookmark
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.util.UiState
 import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,8 +35,8 @@ class ConfessionDetailViewModel @Inject constructor(
     val addBookmarkState: LiveData<UiState<String>>
         get() = _addBookmarkState
 
-    private val _deleteBookmarkState = MutableLiveData<UiState<DocumentReference>>()
-    val removeBookmarkState: LiveData<UiState<DocumentReference>>
+    private val _deleteBookmarkState = MutableLiveData<UiState<Bookmark>>()
+    val removeBookmarkState: LiveData<UiState<Bookmark>>
         get() = _deleteBookmarkState
 
     fun getConfession(confessionId: String) {
@@ -60,7 +62,7 @@ class ConfessionDetailViewModel @Inject constructor(
         }
     }
 
-    fun addBookmark(confessionId: String, timestamp: String, userUid: String) {
+    fun addBookmark(confessionId: String, timestamp: com.google.firebase.Timestamp, userUid: String) {
         _addBookmarkState.value = UiState.Loading
         repository.addBookmark(confessionId, timestamp, userUid) {
             _addBookmarkState.postValue(it)

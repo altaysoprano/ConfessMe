@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.confessme.R
 import com.example.confessme.data.model.Answer
+import com.example.confessme.data.model.Bookmark
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
 import com.example.confessme.util.ConfessionCategory
@@ -702,7 +703,7 @@ class ConfessionRepoImp(
 
     override fun addBookmark(
         confessionId: String,
-        timestamp: String,
+        timestamp: Timestamp,
         userUid: String,
         result: (UiState<String>) -> Unit
     ) {
@@ -818,7 +819,7 @@ class ConfessionRepoImp(
 
     override fun removeBookmark(
         confessionId: String,
-        result: (UiState<DocumentReference>) -> Unit
+        result: (UiState<Bookmark>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
 
@@ -828,10 +829,23 @@ class ConfessionRepoImp(
             val bookmarksCollection =
                 database.collection("users").document(currentUserUid).collection("bookmarks")
             val bookmarkDocument = bookmarksCollection.document(confessionId)
+            bookmarkDocument.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val userId = documentSnapshot.getString("userUid") ?: ""
+                        val timestamp = documentSnapshot.getTimestamp("timestamp") ?: ""
+                        val bookmark = Bookmark(userId, confessionId, timestamp as Timestamp)
 
-            bookmarkDocument.delete()
-                .addOnSuccessListener {
-                    result.invoke(UiState.Success(bookmarkDocument))
+                        bookmarkDocument.delete()
+                            .addOnSuccessListener {
+                                result.invoke(UiState.Success(bookmark))
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(UiState.Failure(exception.localizedMessage))
+                            }
+                    } else {
+                        result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
+                    }
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))

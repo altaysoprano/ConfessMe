@@ -230,12 +230,14 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val removedBookmark = state.data
-                    val position = findPositionById(removedBookmark.id)
+                    val position = findPositionById(removedBookmark.confessionId)
 
                     if (position != -1) {
                         confessListAdapter.removeConfession(position)
                         limit -= 1
                     }
+
+                    val bookmark = state.data
 
                     MyUtils.showBookmarkedUnbookmarkedSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
@@ -244,7 +246,11 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-
+                            viewModel.addBookmark(
+                                confessionId = bookmark.confessionId,
+                                timestamp = bookmark.timestamp,
+                                userUid = bookmark.userId
+                            )
                         }
                     )
                 }

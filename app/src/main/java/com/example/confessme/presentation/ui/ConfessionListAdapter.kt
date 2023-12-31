@@ -40,7 +40,7 @@ class ConfessionListAdapter(
     private val onAnswerClick: (String) -> Unit,
     private val onFavoriteClick: (Boolean, String) -> Unit,
     private val onConfessDeleteClick: (String) -> Unit,
-    private val onConfessBookmarkClick: (String, String, String) -> Unit,
+    private val onConfessBookmarkClick: (String, Timestamp, String) -> Unit,
     private val onBookmarkRemoveClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String, String) -> Unit,
     private val onUserNameClick: (String, String, String, String) -> Unit,
@@ -275,7 +275,7 @@ class ConfessionListAdapter(
 
                         onConfessBookmarkClick(
                             confessionToBookmark.id,
-                            confessionToBookmark.timestamp.toString(),
+                            confessionToBookmark.timestamp as Timestamp,
                             confessionToBookmark.fromUserId
                         )
                         return@setOnMenuItemClickListener true
