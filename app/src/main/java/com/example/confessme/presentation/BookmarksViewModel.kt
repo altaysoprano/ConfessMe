@@ -57,6 +57,7 @@ class BookmarksViewModel @Inject constructor(
             _deleteBookmarkState.postValue(result)
         }
     }
+
     fun deleteConfession(confessionId: String) {
         _deleteConfessionState.value = UiState.Loading
         repository.deleteConfession(confessionId) {
