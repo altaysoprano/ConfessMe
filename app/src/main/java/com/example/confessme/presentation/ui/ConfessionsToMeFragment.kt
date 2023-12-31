@@ -22,6 +22,7 @@ import com.example.confessme.databinding.NoConfessionsToYouBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.ConfessionCategory
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -211,7 +212,13 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
 
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMeGeneral.visibility = View.GONE
-                    Toast.makeText(requireContext(), getString(R.string.successfully_added_to_bookmarks), Toast.LENGTH_SHORT).show()
+                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                        rootView = requireActivity().window.decorView.rootView,
+                        descriptionText = getString(R.string.successfully_added_to_bookmarks),
+                        buttonText = getString(R.string.undo),
+                        activity = requireActivity(),
+                        context = requireContext()
+                    )
                 }
             }
         }

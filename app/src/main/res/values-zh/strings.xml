@@ -185,4 +185,6 @@
     <string name="menu">菜单</string>
     <string name="application_language_set_to_arabic" />
     <string name="share">分享</string>
+    <string name="undo">撤消</string>
+    <string name="removed_from_bookmarks">从书签中删除</string>
 </resources>

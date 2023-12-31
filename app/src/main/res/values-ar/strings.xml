@@ -185,4 +185,6 @@
     <string name="answer_deleted_successfully">تم حذف الرد بنجاح</string>
     <string name="access_to_files_denied">تم رفض الوصول إلى الملفات</string>
     <string name="an_error_occured_please_try_again">حدث خطأ. الرجاء المحاولة مرة أخرى.</string>
+    <string name="undo">التراجع</string>
+    <string name="removed_from_bookmarks">تمت إزالته من الإشارات</string>
 </resources>

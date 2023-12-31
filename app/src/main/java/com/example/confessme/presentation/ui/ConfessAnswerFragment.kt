@@ -209,24 +209,7 @@ class ConfessAnswerFragment(
                         }
                     }
 
-                    val snackbar = Snackbar.make(
-                        requireActivity().window.decorView.rootView,
-                        getString(R.string.answered_successfully),
-                        Snackbar.LENGTH_LONG
-                    )
-                    snackbar.setAction(getString(R.string.share)) {
-                        val shareIntent = Intent(Intent.ACTION_SEND)
-                        shareIntent.type = "text/plain"
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Paylaşılacak metin")
-
-                        val chooser = Intent.createChooser(shareIntent, "Nerede paylaşacaksın?")
-                        if (shareIntent.resolveActivity(requireContext().packageManager) != null) {
-                            requireContext().startActivity(chooser)
-                        }
-                    }
-                    val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
-                    snackbar.setAnchorView(bottomNavigationView)
-                    snackbar.show()
+                    showRepliedSnackbar()
                 }
             }
         }
@@ -579,9 +562,30 @@ class ConfessAnswerFragment(
         }
     }
 
-    fun showKeyboard(context: Context, view: View) {
+    private fun showKeyboard(context: Context, view: View) {
         val inputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun showRepliedSnackbar() {
+        val snackbar = Snackbar.make(
+            requireActivity().window.decorView.rootView,
+            getString(R.string.answered_successfully),
+            Snackbar.LENGTH_LONG
+        )
+        snackbar.setAction(getString(R.string.share)) {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Paylaşılacak metin")
+
+            val chooser = Intent.createChooser(shareIntent, "Nerede paylaşacaksın?")
+            if (shareIntent.resolveActivity(requireContext().packageManager) != null) {
+                requireContext().startActivity(chooser)
+            }
+        }
+        val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
+        snackbar.setAnchorView(bottomNavigationView)
+        snackbar.show()
     }
 }

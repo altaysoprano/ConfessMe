@@ -185,4 +185,6 @@
     <string name="menu">Menú</string>
     <string name="application_language_set_to_arabic" />
     <string name="share">Compartir</string>
+    <string name="undo">Deshacer</string>
+    <string name="removed_from_bookmarks">Eliminado de marcadores</string>
 </resources>

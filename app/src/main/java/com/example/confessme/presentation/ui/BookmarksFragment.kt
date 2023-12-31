@@ -11,12 +11,14 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.confessme.R
 import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentBookmarksBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.presentation.BookmarksViewModel
 import com.example.confessme.presentation.ScrollableToTop
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -234,6 +236,14 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         confessListAdapter.removeConfession(position)
                         limit -= 1
                     }
+
+                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                        rootView = requireActivity().window.decorView.rootView,
+                        descriptionText = getString(R.string.removed_from_bookmarks),
+                        buttonText = getString(R.string.undo),
+                        activity = requireActivity(),
+                        context = requireContext()
+                    )
                 }
             }
         }

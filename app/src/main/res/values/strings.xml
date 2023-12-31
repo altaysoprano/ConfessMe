@@ -184,4 +184,6 @@
     <string name="menu">Menu</string>
     <string name="application_language_set_to_arabic">Application language set to \'Arabic\'</string>
     <string name="share">Share</string>
+    <string name="undo">Undo</string>
+    <string name="removed_from_bookmarks">Removed from bookmarks</string>
 </resources>

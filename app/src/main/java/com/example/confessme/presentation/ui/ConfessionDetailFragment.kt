@@ -456,11 +456,13 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
                 is UiState.Success -> {
                     binding.progressBarConfessionDetail.visibility = View.GONE
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.successfully_added_to_bookmarks),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                        rootView = requireActivity().window.decorView.rootView,
+                        descriptionText = getString(R.string.successfully_added_to_bookmarks),
+                        buttonText = getString(R.string.undo),
+                        activity = requireActivity(),
+                        context = requireContext()
+                    )
                 }
             }
         }

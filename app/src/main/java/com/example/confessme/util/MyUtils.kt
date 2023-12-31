@@ -1,12 +1,16 @@
 package com.example.confessme.util
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.confessme.R
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -172,6 +176,27 @@ object MyUtils {
                 else -> "replied to this confession"
             }
         }
+    }
+
+    fun showBookmarkedUnbookmarkedSnackbar(
+        rootView: View,
+        context: Context,
+        descriptionText: String,
+        buttonText: String,
+        activity: Activity
+    ) {
+        val snackbar = Snackbar.make(
+            rootView,
+            descriptionText,
+            Snackbar.LENGTH_LONG
+        )
+        snackbar.setAction(buttonText) {
+
+        }
+
+        val bottomNavigationView = activity.findViewById<View>(R.id.bottomNavigationView)
+        snackbar.setAnchorView(bottomNavigationView)
+        snackbar.show()
     }
 
 }

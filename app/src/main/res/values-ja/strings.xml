@@ -185,4 +185,6 @@
     <string name="menu">メニュー</string>
     <string name="application_language_set_to_arabic" />
     <string name="share">共有</string>
+    <string name="undo">取り消す</string>
+    <string name="removed_from_bookmarks">ブックマークから削除されました</string>
 </resources>

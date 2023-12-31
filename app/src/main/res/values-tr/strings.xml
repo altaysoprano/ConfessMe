@@ -184,4 +184,6 @@
     <string name="menu">Menü</string>
     <string name="application_language_set_to_arabic" />
     <string name="share">Paylaş</string>
+    <string name="undo">Geri Al</string>
+    <string name="removed_from_bookmarks">Yer işaretlerinden kaldırıldı</string>
 </resources>
