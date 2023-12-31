@@ -242,7 +242,10 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         descriptionText = getString(R.string.removed_from_bookmarks),
                         buttonText = getString(R.string.undo),
                         activity = requireActivity(),
-                        context = requireContext()
+                        context = requireContext(),
+                        onButtonClicked = {
+
+                        }
                     )
                 }
             }

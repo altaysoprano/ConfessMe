@@ -183,6 +183,7 @@ object MyUtils {
         context: Context,
         descriptionText: String,
         buttonText: String,
+        onButtonClicked: () -> Unit,
         activity: Activity
     ) {
         val snackbar = Snackbar.make(
@@ -191,7 +192,7 @@ object MyUtils {
             Snackbar.LENGTH_LONG
         )
         snackbar.setAction(buttonText) {
-
+            onButtonClicked()
         }
 
         val bottomNavigationView = activity.findViewById<View>(R.id.bottomNavigationView)

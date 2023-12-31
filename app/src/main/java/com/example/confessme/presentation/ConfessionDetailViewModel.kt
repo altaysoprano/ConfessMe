@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.util.UiState
+import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +32,10 @@ class ConfessionDetailViewModel @Inject constructor(
     private val _addBookmarkState = MutableLiveData<UiState<String>>()
     val addBookmarkState: LiveData<UiState<String>>
         get() = _addBookmarkState
+
+    private val _deleteBookmarkState = MutableLiveData<UiState<DocumentReference>>()
+    val removeBookmarkState: LiveData<UiState<DocumentReference>>
+        get() = _deleteBookmarkState
 
     fun getConfession(confessionId: String) {
         _getConfessionState.value = UiState.Loading
@@ -62,4 +67,10 @@ class ConfessionDetailViewModel @Inject constructor(
         }
     }
 
+    fun deleteBookmark(confessionId: String) {
+        _deleteBookmarkState.value = UiState.Loading
+        repository.removeBookmark(confessionId) { result ->
+            _deleteBookmarkState.postValue(result)
+        }
+    }
 }

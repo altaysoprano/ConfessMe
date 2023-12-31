@@ -722,7 +722,7 @@ class ConfessionRepoImp(
 
             newBookmarkDocument.set(data)
                 .addOnSuccessListener {
-                    result.invoke(UiState.Success(context.getString(R.string.bookmark_added_successfully)))
+                    result.invoke(UiState.Success(confessionId))
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))

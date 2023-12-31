@@ -10,6 +10,7 @@ import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -56,6 +57,10 @@ class ConfessViewModel @Inject constructor(
     private val _addBookmarkState = MutableLiveData<UiState<String>>()
     val addBookmarkState: LiveData<UiState<String>>
         get() = _addBookmarkState
+
+    private val _deleteBookmarkState = MutableLiveData<UiState<DocumentReference>>()
+    val removeBookmarkState: LiveData<UiState<DocumentReference>>
+        get() = _deleteBookmarkState
 
     private var addFavoriteAnswerJob: Job? = null
     private var addConfessionJob: Job? = null
@@ -129,6 +134,13 @@ class ConfessViewModel @Inject constructor(
         _addBookmarkState.value = UiState.Loading
         repository.addBookmark(confessionId, timestamp, userUid) {
             _addBookmarkState.postValue(it)
+        }
+    }
+
+    fun deleteBookmark(confessionId: String) {
+        _deleteBookmarkState.value = UiState.Loading
+        repository.removeBookmark(confessionId) { result ->
+            _deleteBookmarkState.postValue(result)
         }
     }
 }
