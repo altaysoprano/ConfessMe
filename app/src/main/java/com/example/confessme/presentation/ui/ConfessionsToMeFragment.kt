@@ -212,7 +212,7 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
 
                 is UiState.Success -> {
                     binding.progressBarConfessionsToMeGeneral.visibility = View.GONE
-                    val confessionId = state.data
+                    val confession = state.data
 
                     MyUtils.showBookmarkedUnbookmarkedSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
@@ -221,7 +221,7 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-                            viewModel.deleteBookmark(confessionId)
+                            confession?.id?.let { viewModel.deleteBookmark(it) }
                         }
                     )
                 }

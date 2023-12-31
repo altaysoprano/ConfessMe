@@ -210,7 +210,7 @@ class OthersConfessionsFragment(
 
                 is UiState.Success -> {
                     binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
-                    val confessionId = state.data
+                    val confession = state.data
 
                     MyUtils.showBookmarkedUnbookmarkedSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
@@ -219,7 +219,7 @@ class OthersConfessionsFragment(
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-                            viewModel.deleteBookmark(confessionId)
+                            confession?.id?.let { viewModel.deleteBookmark(it) }
                         }
                     )
                 }

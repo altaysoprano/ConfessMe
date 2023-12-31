@@ -705,7 +705,7 @@ class ConfessionRepoImp(
         confessionId: String,
         timestamp: Timestamp,
         userUid: String,
-        result: (UiState<String>) -> Unit
+        result: (UiState<Confession?>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
 
@@ -723,7 +723,9 @@ class ConfessionRepoImp(
 
             newBookmarkDocument.set(data)
                 .addOnSuccessListener {
-                    result.invoke(UiState.Success(confessionId))
+                    getConfession(confessionId) { confessionState ->
+                        result.invoke(confessionState)
+                    }
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(UiState.Failure(exception.localizedMessage))

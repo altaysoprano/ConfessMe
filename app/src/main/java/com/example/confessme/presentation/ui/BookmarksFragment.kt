@@ -32,6 +32,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
     private lateinit var navRegister: FragmentNavigation
     private lateinit var noConfessFoundBinding: NoConfessionsHereBinding
     private lateinit var currentUserUid: String
+    private var removedBookmarkPosition = -1
     private val viewModel: BookmarksViewModel by viewModels()
 
     private var limit: Long = 20
@@ -63,6 +64,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
         observeFetchBookmarks()
         observeRemoveBookmark()
         observeDeleteConfession()
+        observeAddBookmarks()
     }
 
     private fun setAdapter() {
@@ -231,6 +233,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val removedBookmark = state.data
                     val position = findPositionById(removedBookmark.confessionId)
+                    removedBookmarkPosition = position
 
                     if (position != -1) {
                         confessListAdapter.removeConfession(position)
@@ -251,6 +254,46 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                                 timestamp = bookmark.timestamp,
                                 userUid = bookmark.userId
                             )
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeAddBookmarks() {
+        viewModel.addBookmarkState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarBookmarksGeneral.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarBookmarksGeneral.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarBookmarksGeneral.visibility = View.GONE
+                    val addedConfession = state.data
+                    val position = removedBookmarkPosition
+
+                    if (position != -1) {
+                        if (addedConfession != null) {
+                            confessListAdapter.addConfession(addedConfession, position)
+                            limit += 1
+                        }
+                    }
+
+                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                        rootView = requireActivity().window.decorView.rootView,
+                        descriptionText = getString(R.string.successfully_added_to_bookmarks),
+                        buttonText = getString(R.string.undo),
+                        activity = requireActivity(),
+                        context = requireContext(),
+                        onButtonClicked = {
+                            addedConfession?.id?.let { viewModel.deleteBookmark(it) }
                         }
                     )
                 }

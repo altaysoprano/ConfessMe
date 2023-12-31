@@ -41,8 +41,8 @@ class HomeViewModel @Inject constructor(
     val addFavoriteState: LiveData<UiState<Confession?>>
         get() = _addFavoriteState
 
-    private val _addBookmarkState = MutableLiveData<UiState<String>>()
-    val addBookmarkState: LiveData<UiState<String>>
+    private val _addBookmarkState = MutableLiveData<UiState<Confession?>>()
+    val addBookmarkState: LiveData<UiState<Confession?>>
         get() = _addBookmarkState
 
     private val _deleteBookmarkState = MutableLiveData<UiState<Bookmark>>()

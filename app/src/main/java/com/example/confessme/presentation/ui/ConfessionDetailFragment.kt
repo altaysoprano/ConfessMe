@@ -456,7 +456,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
 
                 is UiState.Success -> {
                     binding.progressBarConfessionDetail.visibility = View.GONE
-                    val confessionIdToUnbookmark = state.data
+                    val confession = state.data
                     MyUtils.showBookmarkedUnbookmarkedSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.successfully_added_to_bookmarks),
@@ -464,7 +464,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-                            viewModel.deleteBookmark(confessionIdToUnbookmark)
+                            confession?.id?.let { viewModel.deleteBookmark(it) }
                         }
                     )
                 }

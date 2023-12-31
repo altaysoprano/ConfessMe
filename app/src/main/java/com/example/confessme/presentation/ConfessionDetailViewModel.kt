@@ -31,8 +31,8 @@ class ConfessionDetailViewModel @Inject constructor(
     val deleteConfessionState: LiveData<UiState<Confession?>>
         get() = _deleteConfessionState
 
-    private val _addBookmarkState = MutableLiveData<UiState<String>>()
-    val addBookmarkState: LiveData<UiState<String>>
+    private val _addBookmarkState = MutableLiveData<UiState<Confession?>>()
+    val addBookmarkState: LiveData<UiState<Confession?>>
         get() = _addBookmarkState
 
     private val _deleteBookmarkState = MutableLiveData<UiState<Bookmark>>()

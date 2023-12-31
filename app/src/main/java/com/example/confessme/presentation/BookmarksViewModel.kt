@@ -25,8 +25,8 @@ class BookmarksViewModel @Inject constructor(
     val removeBookmarkState: LiveData<UiState<Bookmark>>
         get() = _deleteBookmarkState
 
-    private val _addBookmarkState = MutableLiveData<UiState<String>>()
-    val addBookmarkState: LiveData<UiState<String>>
+    private val _addBookmarkState = MutableLiveData<UiState<Confession?>>()
+    val addBookmarkState: LiveData<UiState<Confession?>>
         get() = _addBookmarkState
 
     private val _addFavoriteState = MutableLiveData<UiState<Confession?>>()
