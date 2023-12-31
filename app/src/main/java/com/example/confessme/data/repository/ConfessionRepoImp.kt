@@ -13,9 +13,11 @@ import com.example.confessme.util.Constants
 import com.example.confessme.util.MyUtils
 import com.example.confessme.util.NotificationType
 import com.example.confessme.util.UiState
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -703,7 +705,7 @@ class ConfessionRepoImp(
 
     override fun addBookmark(
         confessionId: String,
-        timestamp: Timestamp,
+        timestamp: Timestamp?,
         userUid: String,
         result: (UiState<Confession?>) -> Unit
     ) {
@@ -718,7 +720,7 @@ class ConfessionRepoImp(
 
             val data = mapOf(
                 "userUid" to userUid,
-                "timestamp" to FieldValue.serverTimestamp()
+                "timestamp" to if(timestamp != null) timestamp else FieldValue.serverTimestamp()
             )
 
             newBookmarkDocument.set(data)
@@ -821,33 +823,44 @@ class ConfessionRepoImp(
 
     override fun removeBookmark(
         confessionId: String,
-        result: (UiState<Confession?>) -> Unit
+        result: (UiState<Bookmark?>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
 
         if (user != null) {
             val currentUserUid = user.uid
-
             val bookmarksCollection =
                 database.collection("users").document(currentUserUid).collection("bookmarks")
             val confessionDocument =
                 database.collection("confessions").document(confessionId)
             val bookmarkDocument = bookmarksCollection.document(confessionId)
-            confessionDocument.get()
-                .addOnSuccessListener { documentSnapshot ->
-                    if (documentSnapshot.exists()) {
-                        Log.d("Mesaj: ", "Removeda confession existste")
-                        val confession = documentSnapshot.toObject(Confession::class.java)
+
+            val getConfessionTask = confessionDocument.get()
+            val getBookmarkTask = bookmarkDocument.get()
+
+            Tasks.whenAllSuccess<DocumentSnapshot>(getConfessionTask, getBookmarkTask)
+                .addOnSuccessListener { results ->
+                    val confessionSnapshot = results[0]
+                    val bookmarkSnapshot = results[1]
+
+                    if (confessionSnapshot.exists() && bookmarkSnapshot.exists()) {
+                        val timestamp = bookmarkSnapshot.getTimestamp("timestamp")
+                        val userId = bookmarkSnapshot.getString("userUid")
+
+                        val bookmark = Bookmark(
+                            userId = userId ?: "",
+                            confessionId = confessionId,
+                            timestamp = timestamp ?: Timestamp.now()
+                        )
 
                         bookmarkDocument.delete()
                             .addOnSuccessListener {
-                                result.invoke(UiState.Success(confession))
+                                result.invoke(UiState.Success(bookmark))
                             }
                             .addOnFailureListener { exception ->
                                 result.invoke(UiState.Failure(exception.localizedMessage))
                             }
                     } else {
-                        Log.d("Mesaj: ", "Removeda confession not foundta")
                         result.invoke(UiState.Failure(context.getString(R.string.confession_not_found)))
                     }
                 }

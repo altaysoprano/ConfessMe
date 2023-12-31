@@ -3,23 +3,15 @@ package com.example.confessme.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.confessme.data.model.Bookmark
 import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
 import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.data.repository.ConfessionRepo
 import com.example.confessme.data.repository.NotificationRepo
-import com.example.confessme.presentation.ui.FragmentNavigation
-import com.example.confessme.presentation.ui.LoginFragment
-import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,8 +37,8 @@ class HomeViewModel @Inject constructor(
     val addBookmarkState: LiveData<UiState<Confession?>>
         get() = _addBookmarkState
 
-    private val _deleteBookmarkState = MutableLiveData<UiState<Confession?>>()
-    val removeBookmarkState: LiveData<UiState<Confession?>>
+    private val _deleteBookmarkState = MutableLiveData<UiState<Bookmark?>>()
+    val removeBookmarkState: LiveData<UiState<Bookmark?>>
         get() = _deleteBookmarkState
 
     private val _onPagingState = MutableLiveData<UiState<List<Confession>>>()
@@ -86,7 +78,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun addBookmark(confessionId: String, timestamp: Timestamp, userUid: String) {
+    fun addBookmark(confessionId: String, timestamp: Timestamp?, userUid: String) {
         _addBookmarkState.value = UiState.Loading
         confessRepo.addBookmark(confessionId, timestamp, userUid) {
             _addBookmarkState.postValue(it)

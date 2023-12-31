@@ -233,7 +233,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val removedBookmark = state.data
-                    val position = removedBookmark?.id?.let { findPositionById(it) }
+                    val position = removedBookmark?.confessionId?.let { findPositionById(it) }
 
                     if (position != -1) {
                         if (position != null) {
@@ -252,8 +252,8 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         onButtonClicked = {
                             if(removedBookmark != null) {
                                 viewModel.addBookmark(
-                                    confessionId = removedBookmark.id,
-                                    timestamp = removedBookmark.timestamp as Timestamp,
+                                    confessionId = removedBookmark.confessionId,
+                                    timestamp = removedBookmark.timestamp,
                                     userUid = removedBookmark.userId
                                 )
                             }

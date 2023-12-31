@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -26,7 +25,6 @@ import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.databinding.HomeNoConfessFoundViewBinding
 import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.HomeViewModel
-import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.MyPreferences
 import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
@@ -132,7 +130,7 @@ class HomeFragment : Fragment() {
                 viewModel.deleteConfession(confessionId)
             },
             onConfessBookmarkClick = { confessionId, timestamp, userUid ->
-                viewModel.addBookmark(confessionId, timestamp, userUid)
+                viewModel.addBookmark(confessionId, null, userUid)
             },
             onBookmarkRemoveClick = { confessionId -> },
             onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, photoUserName ->

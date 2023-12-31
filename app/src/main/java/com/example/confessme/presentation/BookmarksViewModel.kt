@@ -21,8 +21,8 @@ class BookmarksViewModel @Inject constructor(
     val fetchBookmarksState: LiveData<UiState<List<Confession?>>>
         get() = _fetchBookmarksState
 
-    private val _deleteBookmarkState = MutableLiveData<UiState<Confession?>>()
-    val removeBookmarkState: LiveData<UiState<Confession?>>
+    private val _deleteBookmarkState = MutableLiveData<UiState<Bookmark?>>()
+    val removeBookmarkState: LiveData<UiState<Bookmark?>>
         get() = _deleteBookmarkState
 
     private val _addBookmarkState = MutableLiveData<UiState<Confession?>>()
@@ -44,7 +44,7 @@ class BookmarksViewModel @Inject constructor(
         }
     }
 
-    fun addBookmark(confessionId: String, timestamp: Timestamp, userUid: String) {
+    fun addBookmark(confessionId: String, timestamp: Timestamp?, userUid: String) {
         _addBookmarkState.value = UiState.Loading
         repository.addBookmark(confessionId, timestamp, userUid) {
             _addBookmarkState.postValue(it)

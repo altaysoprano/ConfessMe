@@ -1,24 +1,19 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
-import com.example.confessme.databinding.FragmentConfessionsBinding
 import com.example.confessme.databinding.FragmentOthersConfessionsBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBeTheFirstOneBinding
-import com.example.confessme.databinding.NoConfessionsHereBinding
-import com.example.confessme.databinding.YouHaveNoConfessionsBinding
 import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.ConfessionCategory
@@ -26,7 +21,6 @@ import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Math.abs
 
 @AndroidEntryPoint
 class OthersConfessionsFragment(
@@ -119,7 +113,7 @@ class OthersConfessionsFragment(
                 viewModel.deleteConfession(confessionId)
             },
             onConfessBookmarkClick = { confessionId, timestamp, userUid ->
-                viewModel.addBookmark(confessionId, timestamp, userUid)
+                viewModel.addBookmark(confessionId, null, userUid)
             },
             onBookmarkRemoveClick = { confessionId -> },
             onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, photoUserName ->

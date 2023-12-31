@@ -114,7 +114,7 @@ class ConfessedFragment(
             },
             onConfessDeleteClick = {},
             onConfessBookmarkClick = { confessionId, timestamp, userUid ->
-                viewModel.addBookmark(confessionId, timestamp, userUid)
+                viewModel.addBookmark(confessionId, null, userUid)
             },
             onBookmarkRemoveClick = {confessionId -> },
             onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, photoUserName ->
