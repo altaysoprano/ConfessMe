@@ -455,7 +455,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                 is UiState.Success -> {
                     binding.progressBarConfessionDetail.visibility = View.GONE
                     val confession = state.data
-                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                    MyUtils.showSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.successfully_added_to_bookmarks),
                         buttonText = getString(R.string.undo),

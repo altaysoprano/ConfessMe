@@ -222,7 +222,7 @@ class HomeFragment : Fragment() {
                     binding.progressBarHomeGeneral.visibility = View.GONE
                     val confession = state.data
 
-                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                    MyUtils.showSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.successfully_added_to_bookmarks),
                         buttonText = getString(R.string.undo),
@@ -254,7 +254,7 @@ class HomeFragment : Fragment() {
                     binding.progressBarHomeGeneral.visibility = View.GONE
                     val removedBookmark = state.data
 
-                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                    MyUtils.showSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.removed_from_bookmarks),
                         buttonText = getString(R.string.undo),

@@ -2,11 +2,9 @@ package com.example.confessme.util
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.confessme.R
@@ -178,7 +176,7 @@ object MyUtils {
         }
     }
 
-    fun showBookmarkedUnbookmarkedSnackbar(
+    fun showSnackbar(
         rootView: View,
         context: Context,
         descriptionText: String,

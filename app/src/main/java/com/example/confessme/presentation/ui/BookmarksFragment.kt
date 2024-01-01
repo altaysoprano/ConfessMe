@@ -1,7 +1,6 @@
 package com.example.confessme.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,6 @@ import com.example.confessme.presentation.BookmarksViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -243,7 +241,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         }
                     }
 
-                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                    MyUtils.showSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.removed_from_bookmarks),
                         buttonText = getString(R.string.undo),
@@ -289,7 +287,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                         }
                     }
 
-                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                    MyUtils.showSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.successfully_added_to_bookmarks),
                         buttonText = getString(R.string.undo),

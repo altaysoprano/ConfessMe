@@ -71,6 +71,7 @@ class ConfessedFragment(
         observeFetchConfessions()
         observeAddFavorite()
         observeAddBookmarks()
+        observeRemoveBookmark()
     }
 
     private fun setupRecyclerView() {
@@ -204,7 +205,7 @@ class ConfessedFragment(
                 is UiState.Success -> {
                     binding.progressBarConfessedGeneral.visibility = View.GONE
                     val confession = state.data
-                    MyUtils.showBookmarkedUnbookmarkedSnackbar(
+                    MyUtils.showSnackbar(
                         rootView = requireActivity().window.decorView.rootView,
                         descriptionText = getString(R.string.successfully_added_to_bookmarks),
                         buttonText = getString(R.string.undo),
@@ -212,6 +213,44 @@ class ConfessedFragment(
                         context = requireContext(),
                         onButtonClicked = {
                             confession?.id?.let { viewModel.deleteBookmark(it) }
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeRemoveBookmark() {
+        viewModel.removeBookmarkState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessedGeneral.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessedGeneral.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessedGeneral.visibility = View.GONE
+                    val removedBookmark = state.data
+
+                    MyUtils.showSnackbar(
+                        rootView = requireActivity().window.decorView.rootView,
+                        descriptionText = getString(R.string.removed_from_bookmarks),
+                        buttonText = getString(R.string.undo),
+                        activity = requireActivity(),
+                        context = requireContext(),
+                        onButtonClicked = {
+                            if(removedBookmark != null) {
+                                viewModel.addBookmark(
+                                    confessionId = removedBookmark.confessionId,
+                                    timestamp = removedBookmark.timestamp,
+                                    userUid = removedBookmark.userId
+                                )
+                            }
                         }
                     )
                 }
