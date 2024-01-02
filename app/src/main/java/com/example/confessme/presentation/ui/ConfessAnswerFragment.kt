@@ -6,8 +6,13 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.Spannable
@@ -29,6 +34,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
@@ -42,6 +48,9 @@ import com.example.confessme.util.UiState
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 @AndroidEntryPoint
 class ConfessAnswerFragment(
@@ -201,15 +210,12 @@ class ConfessAnswerFragment(
 
                     updatedConfession?.answered?.let { answerDataListener?.onAnswerDataReceived(it) }
 
-                    if (position != -1) {
-                        if (updatedConfession != null) {
-                            if (position != null) {
-                                onUpdateItem(position, updatedConfession)
-                            }
+                    if (updatedConfession != null) {
+                        showRepliedSnackbar(updatedConfession.text, updatedConfession.answer.text)
+                        if (position != null && position != -1) {
+                            onUpdateItem(position, updatedConfession)
                         }
                     }
-
-                    showRepliedSnackbar()
                 }
             }
         }
@@ -568,21 +574,96 @@ class ConfessAnswerFragment(
         inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun showRepliedSnackbar() {
+    private fun generateImageWithText(confessionText: String, answerText: String): Bitmap {
+        val maxWidth = 500
+        val maxHeight = 500
+
+        val bitmap = Bitmap.createBitmap(maxWidth, maxHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+
+        canvas.drawColor(Color.BLACK)
+
+        paint.color = ContextCompat.getColor(requireContext(), R.color.confessmered)
+        paint.textSize = 30f
+
+        val confessionTextBound = Rect()
+        paint.getTextBounds(confessionText, 0, confessionText.length, confessionTextBound)
+
+        val answerTextBound = Rect()
+        paint.getTextBounds(answerText, 0, answerText.length, answerTextBound)
+
+        val confessionTextHeight = confessionTextBound.height()
+        val answerTextHeight = answerTextBound.height()
+
+        val confessionTextWidth = confessionTextBound.width()
+        val answerTextWidth = answerTextBound.width()
+
+        val confessionTextX = 50f
+        val confessionTextY = 100f
+
+        val answerTextX = 50f
+        val answerTextY = 200f
+
+        if (confessionTextWidth > maxWidth || confessionTextHeight > maxHeight) {
+            paint.textSize *= (maxWidth.toFloat() / confessionTextWidth)
+        }
+
+        if (answerTextWidth > maxWidth || answerTextHeight > maxHeight) {
+            paint.textSize *= (maxWidth.toFloat() / answerTextWidth)
+        }
+
+        canvas.drawText(confessionText, confessionTextX, confessionTextY, paint)
+        canvas.drawText(answerText, answerTextX, answerTextY, paint)
+
+        return bitmap
+    }
+
+    private fun saveBitmapToStorage(bitmap: Bitmap): Uri? {
+        val imagesFolder = File(requireContext().cacheDir, "images")
+        imagesFolder.mkdirs()
+
+        val file = File(imagesFolder, "shared_image.png")
+        try {
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.flush()
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return FileProvider.getUriForFile(
+            requireContext(),
+            requireContext().packageName + ".provider",
+            file
+        )
+    }
+
+    private fun shareTextAndImage(confessionText: String, answerText: String) {
+        val generatedBitmap = generateImageWithText(confessionText, answerText)
+        val imageUri = saveBitmapToStorage(generatedBitmap)
+
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "image/*"
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "$confessionText - $answerText")
+
+        val chooser = Intent.createChooser(shareIntent, getString(R.string.nerede_payla_acaks_n))
+        if (shareIntent.resolveActivity(requireContext().packageManager) != null) {
+            requireContext().startActivity(chooser)
+        }
+    }
+
+    private fun showRepliedSnackbar(confessionText: String, answerText: String) {
         val snackbar = Snackbar.make(
             requireActivity().window.decorView.rootView,
             getString(R.string.answered_successfully),
             Snackbar.LENGTH_LONG
         )
         snackbar.setAction(getString(R.string.share)) {
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "Paylaşılacak metin")
-
-            val chooser = Intent.createChooser(shareIntent, "Nerede paylaşacaksın?")
-            if (shareIntent.resolveActivity(requireContext().packageManager) != null) {
-                requireContext().startActivity(chooser)
-            }
+            shareTextAndImage(confessionText, answerText)
         }
         val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
         snackbar.setAnchorView(bottomNavigationView)
