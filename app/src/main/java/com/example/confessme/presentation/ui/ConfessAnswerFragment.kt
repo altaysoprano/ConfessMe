@@ -9,8 +9,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -574,47 +576,39 @@ class ConfessAnswerFragment(
         inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun generateImageWithText(confessionText: String, answerText: String): Bitmap {
+    private fun generateImage(): Bitmap {
         val maxWidth = 500
         val maxHeight = 500
+        val text = getString(R.string.confess_me_something)
 
         val bitmap = Bitmap.createBitmap(maxWidth, maxHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val paint = Paint()
 
-        canvas.drawColor(Color.BLACK)
+        val shader = LinearGradient(
+            0f, 0f, 0f, maxHeight.toFloat(),
+            intArrayOf(Color.WHITE, ContextCompat.getColor(requireContext(), R.color.confessmered)),
+            null,
+            Shader.TileMode.CLAMP
+        )
+        paint.shader = shader
 
-        paint.color = ContextCompat.getColor(requireContext(), R.color.confessmered)
+        canvas.drawRect(0f, 0f, maxWidth.toFloat(), maxHeight.toFloat(), paint)
+
+        paint.shader = null
+        paint.color = Color.BLACK
         paint.textSize = 30f
+        paint.typeface = Typeface.DEFAULT_BOLD
 
-        val confessionTextBound = Rect()
-        paint.getTextBounds(confessionText, 0, confessionText.length, confessionTextBound)
+        val confessionTextRect = Rect()
+        paint.getTextBounds(text, 0, text.length, confessionTextRect)
 
-        val answerTextBound = Rect()
-        paint.getTextBounds(answerText, 0, answerText.length, answerTextBound)
+        val totalTextHeight = confessionTextRect.height()
 
-        val confessionTextHeight = confessionTextBound.height()
-        val answerTextHeight = answerTextBound.height()
+        val confessionTextX = (maxWidth - confessionTextRect.width()) / 2f
+        val confessionTextY = (maxHeight - totalTextHeight) / 2f + confessionTextRect.height()
 
-        val confessionTextWidth = confessionTextBound.width()
-        val answerTextWidth = answerTextBound.width()
-
-        val confessionTextX = 50f
-        val confessionTextY = 100f
-
-        val answerTextX = 50f
-        val answerTextY = 200f
-
-        if (confessionTextWidth > maxWidth || confessionTextHeight > maxHeight) {
-            paint.textSize *= (maxWidth.toFloat() / confessionTextWidth)
-        }
-
-        if (answerTextWidth > maxWidth || answerTextHeight > maxHeight) {
-            paint.textSize *= (maxWidth.toFloat() / answerTextWidth)
-        }
-
-        canvas.drawText(confessionText, confessionTextX, confessionTextY, paint)
-        canvas.drawText(answerText, answerTextX, answerTextY, paint)
+        canvas.drawText(text, confessionTextX, confessionTextY, paint)
 
         return bitmap
     }
@@ -642,13 +636,18 @@ class ConfessAnswerFragment(
     }
 
     private fun shareTextAndImage(confessionText: String, answerText: String) {
-        val generatedBitmap = generateImageWithText(confessionText, answerText)
+        val emojiSpeech = "\uD83D\uDDE3"
+        val emojiEar = "\uD83D\uDC42"
+
+        val generatedBitmap = generateImage()
         val imageUri = saveBitmapToStorage(generatedBitmap)
+
+        val shareMessage = "$emojiSpeech$emojiEar $confessionText\n\n$emojiSpeech $answerText"
 
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "image/*"
         shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "$confessionText - $answerText")
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
 
         val chooser = Intent.createChooser(shareIntent, getString(R.string.nerede_payla_acaks_n))
         if (shareIntent.resolveActivity(requireContext().packageManager) != null) {
