@@ -188,5 +188,7 @@
     <string name="undo">取り消す</string>
     <string name="removed_from_bookmarks">ブックマークから削除されました</string>
     <string name="nerede_payla_acaks_n">どこで共有しますか？</string>
-    <string name="confess_me_something">私に何かを告白して</string>
+    <string name="confess_me_intro">"ConfessMeにいます。"</string>
+    <string name="confess_me_request">"何かを告白してください。"</string>
+    <string name="confess_me_username">"私のユーザー名: "</string>
 </resources>

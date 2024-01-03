@@ -188,5 +188,7 @@
     <string name="undo">Deshacer</string>
     <string name="removed_from_bookmarks">Eliminado de marcadores</string>
     <string name="nerede_payla_acaks_n">¿Dónde vas a compartir?</string>
-    <string name="confess_me_something">Confiesa algo</string>
+    <string name="confess_me_intro">"Estoy en ConfessMe."</string>
+    <string name="confess_me_request">"Confiesa algo."</string>
+    <string name="confess_me_username">"Mi nombre de usuario: "</string>
 </resources>

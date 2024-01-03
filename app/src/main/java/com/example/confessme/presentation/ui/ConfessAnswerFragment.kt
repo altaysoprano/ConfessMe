@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -70,6 +71,7 @@ class ConfessAnswerFragment(
     private lateinit var currentUserUid: String
     private lateinit var confessionId: String
     private lateinit var dialogHelper: ConfessMeDialog
+    private lateinit var answeredUserName: String
     private var answerDataListener: AnswerDataListener? = null
 
     @SuppressLint("ClickableViewAccessibility")
@@ -134,7 +136,7 @@ class ConfessAnswerFragment(
                     val fromUserToken = state.data?.userToken ?: ""
                     val answerUserUid = state.data?.userId ?: ""
                     val isConfessionAnswered = state.data?.answered ?: false
-                    val answeredUserName = state.data?.answer?.fromUserUsername ?: ""
+                    answeredUserName = state.data?.answer?.fromUserUsername ?: ""
                     val answerTimeStamp = state.data?.answer?.timestamp
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
@@ -579,7 +581,10 @@ class ConfessAnswerFragment(
     private fun generateImage(): Bitmap {
         val maxWidth = 500
         val maxHeight = 500
-        val text = getString(R.string.confess_me_something)
+
+        val introText = getString(R.string.confess_me_intro)
+        val requestText = getString(R.string.confess_me_request)
+        val usernameText = getString(R.string.confess_me_username) + "@$answeredUserName"
 
         val bitmap = Bitmap.createBitmap(maxWidth, maxHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -596,19 +601,42 @@ class ConfessAnswerFragment(
         canvas.drawRect(0f, 0f, maxWidth.toFloat(), maxHeight.toFloat(), paint)
 
         paint.shader = null
-        paint.color = Color.BLACK
         paint.textSize = 30f
         paint.typeface = Typeface.DEFAULT_BOLD
 
-        val confessionTextRect = Rect()
-        paint.getTextBounds(text, 0, text.length, confessionTextRect)
+        val introTextRect = Rect()
+        paint.getTextBounds(introText, 0, introText.length, introTextRect)
 
-        val totalTextHeight = confessionTextRect.height()
+        val requestTextRect = Rect()
+        paint.getTextBounds(requestText, 0, requestText.length, requestTextRect)
 
-        val confessionTextX = (maxWidth - confessionTextRect.width()) / 2f
-        val confessionTextY = (maxHeight - totalTextHeight) / 2f + confessionTextRect.height()
+        val usernameTextRect = Rect()
+        paint.getTextBounds(usernameText, 0, usernameText.length, usernameTextRect)
 
-        canvas.drawText(text, confessionTextX, confessionTextY, paint)
+        val introTextX = (maxWidth - introTextRect.width()) / 2f
+        val introTextY = (maxHeight - (introTextRect.height() * 4)) / 2f + introTextRect.height() // Değişen satır
+
+        val requestTextX = (maxWidth - requestTextRect.width()) / 2f
+        val requestTextY = introTextY + introTextRect.height() + 20f // 20f ile bir miktar artırıldı
+
+        val whisperBitmap = BitmapFactory.decodeResource(resources, R.drawable.whisper)
+        val scaledWhisper = Bitmap.createScaledBitmap(whisperBitmap, 75, 75, true)
+
+        val whisperX = (maxWidth - scaledWhisper.width) / 2f
+        val whisperY = introTextY - scaledWhisper.height - 40f
+        canvas.drawBitmap(scaledWhisper, whisperX, whisperY, paint)
+
+        paint.color = ContextCompat.getColor(requireContext(), R.color.confessmered)
+        canvas.drawText(introText, introTextX, introTextY, paint)
+        canvas.drawText(requestText, requestTextX, requestTextY, paint)
+
+        paint.shader = null
+        paint.textSize = 25f
+        paint.typeface = Typeface.DEFAULT_BOLD
+        val usernameTextX = (maxWidth - usernameTextRect.width()) / 2f
+        val usernameTextY = requestTextY + requestTextRect.height() + 20f
+        paint.color = Color.BLACK
+        canvas.drawText(usernameText, usernameTextX, usernameTextY, paint)
 
         return bitmap
     }

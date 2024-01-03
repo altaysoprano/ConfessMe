@@ -188,5 +188,7 @@
     <string name="undo">التراجع</string>
     <string name="removed_from_bookmarks">تمت إزالته من الإشارات</string>
     <string name="nerede_payla_acaks_n">أين ستشارك؟</string>
-    <string name="confess_me_something">اعترف لي بشيء</string>
+    <string name="confess_me_intro">"أنا على ConfessMe."</string>
+    <string name="confess_me_request">"اعترف لي بشيء."</string>
+    <string name="confess_me_username">"اسمي كمستخدم: "</string>
 </resources>

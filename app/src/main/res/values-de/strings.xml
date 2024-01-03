@@ -188,5 +188,7 @@
     <string name="undo">Rückgängig machen</string>
     <string name="removed_from_bookmarks">Aus Lesezeichen entfernt</string>
     <string name="nerede_payla_acaks_n">Wo möchtest du teilen?</string>
-    <string name="confess_me_something">Gestehen Sie mir etwas</string>
+    <string name="confess_me_intro">"Ich bin bei ConfessMe."</string>
+    <string name="confess_me_request">"Beichte mir etwas."</string>
+    <string name="confess_me_username">"Mein Benutzername: "</string>
 </resources>
