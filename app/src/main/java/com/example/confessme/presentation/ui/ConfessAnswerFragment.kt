@@ -72,6 +72,7 @@ class ConfessAnswerFragment(
     private lateinit var confessionId: String
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var answeredUserName: String
+    private lateinit var answerFromUsername: String
     private var answerDataListener: AnswerDataListener? = null
 
     @SuppressLint("ClickableViewAccessibility")
@@ -130,7 +131,7 @@ class ConfessAnswerFragment(
                     val answerText = state.data?.answer?.text ?: ""
                     isAnswerFavorited = state.data?.answer?.favorited ?: false
                     val answerFromUserUid = state.data?.fromUserId ?: ""
-                    val answerFromUsername = state.data?.fromUserUsername ?: ""
+                    answerFromUsername = state.data?.fromUserUsername ?: ""
                     val answerUserName = state.data?.username ?: ""
                     val userToken = state.data?.fromUserToken ?: ""
                     val fromUserToken = state.data?.userToken ?: ""
@@ -614,10 +615,10 @@ class ConfessAnswerFragment(
         paint.getTextBounds(usernameText, 0, usernameText.length, usernameTextRect)
 
         val introTextX = (maxWidth - introTextRect.width()) / 2f
-        val introTextY = (maxHeight - (introTextRect.height() * 4)) / 2f + introTextRect.height() // Değişen satır
+        val introTextY = (maxHeight - (introTextRect.height() * 4)) / 2f + introTextRect.height()
 
         val requestTextX = (maxWidth - requestTextRect.width()) / 2f
-        val requestTextY = introTextY + introTextRect.height() + 20f // 20f ile bir miktar artırıldı
+        val requestTextY = introTextY + introTextRect.height() + 20f
 
         val whisperBitmap = BitmapFactory.decodeResource(resources, R.drawable.whisper)
         val scaledWhisper = Bitmap.createScaledBitmap(whisperBitmap, 75, 75, true)
@@ -670,7 +671,7 @@ class ConfessAnswerFragment(
         val generatedBitmap = generateImage()
         val imageUri = saveBitmapToStorage(generatedBitmap)
 
-        val shareMessage = "$emojiSpeech$emojiEar $confessionText\n\n$emojiSpeech $answerText"
+        val shareMessage = "$emojiSpeech$emojiEar $answerFromUsername:\n$confessionText\n\n$emojiSpeech\n$answerText"
 
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "image/*"
