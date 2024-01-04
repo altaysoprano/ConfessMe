@@ -191,4 +191,6 @@
     <string name="confess_me_intro">"Ich bin bei ConfessMe."</string>
     <string name="confess_me_request">"Beichte mir etwas."</string>
     <string name="confess_me_username">"Mein Benutzername: "</string>
+    <string name="share_profile">Profil Teilen</string>
+    <string name="share_error">Es ist ein Fehler beim Teilen des Profils aufgetreten. Bitte versuchen Sie es später erneut.</string>
 </resources>

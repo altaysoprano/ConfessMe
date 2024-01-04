@@ -190,4 +190,6 @@
     <string name="confess_me_intro">"I'm at ConfessMe."</string>
     <string name="confess_me_request">"Confess something to me."</string>
     <string name="confess_me_username">"My username: "</string>
+    <string name="share_profile">Share Profile</string>
+    <string name="share_error">An error occurred while sharing the profile. Please try again later.</string>
 </resources>

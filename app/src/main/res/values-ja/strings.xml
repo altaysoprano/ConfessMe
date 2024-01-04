@@ -191,4 +191,6 @@
     <string name="confess_me_intro">"ConfessMeにいます。"</string>
     <string name="confess_me_request">"何かを告白してください。"</string>
     <string name="confess_me_username">"私のユーザー名: "</string>
+    <string name="share_profile">プロフィールを共有する</string>
+    <string name="share_error">プロフィールの共有中にエラーが発生しました。後で再試行してください。</string>
 </resources>

@@ -25,6 +25,7 @@ import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ProfileViewPagerAdapter
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.FollowType
+import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -32,13 +33,15 @@ import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProfileFragment() : Fragment() {
+class ProfileFragment() : Fragment(), UserNameListener {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var viewPagerAdapter: ProfileViewPagerAdapter
     private val viewModel: ProfileViewModel by viewModels()
     private var reselectedTabItemIndex: Int? = 0
+    private lateinit var shareHelper: ShareHelper
+    private lateinit var myUserName: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +52,7 @@ class ProfileFragment() : Fragment() {
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.profileToolbar)
         (activity as AppCompatActivity?)?.title = ""
         navRegister = activity as FragmentNavigation
+        shareHelper = ShareHelper(requireContext())
         setHasOptionsMenu(true)
 
         setTablayoutAndViewPager()
@@ -77,7 +81,8 @@ class ProfileFragment() : Fragment() {
                     binding.progressBarProfile.visibility = View.GONE
                     val userProfile = state.data
                     if (userProfile != null) {
-                        binding.firstNameTv.text = userProfile.userName
+                        myUserName = userProfile.userName
+                        binding.firstNameTv.text = myUserName
                         binding.bioTv.text = userProfile.bio
                         binding.profileFollowingCountTv.text = userProfile.followCount.toString()
                         binding.profileFollowerCountTv.text = userProfile.followersCount.toString()
@@ -192,6 +197,14 @@ class ProfileFragment() : Fragment() {
                 navRegister.navigateFrag(EditProfileFragment(), true)
             }
 
+            R.id.share_profile -> {
+                if(!myUserName.isNullOrEmpty()) {
+                    shareHelper.shareImage(myUserName)
+                } else {
+                    Toast.makeText(context, getString(R.string.share_error), Toast.LENGTH_SHORT).show()
+                }
+            }
+
             R.id.settings -> {
                 navRegister.navigateFrag(SettingsFragment(), true)
             }
@@ -207,5 +220,9 @@ class ProfileFragment() : Fragment() {
         binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
         binding.firstNameTv.text = ""
         binding.bioTv.text = ""
+    }
+
+    override fun onUserNameReceived(userName: String) {
+        // Kullanıcı adını burada alabilirsiniz: userName
     }
 }

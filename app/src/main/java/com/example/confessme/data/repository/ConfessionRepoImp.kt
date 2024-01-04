@@ -879,14 +879,12 @@ class ConfessionRepoImp(
         currentUserId: String,
         token: String
     ) {
-        Log.d("Mesaj: ", "send notificationda")
 
         try {
             val jsonObject = JSONObject()
 
             val notificationObject = JSONObject()
             val notificationText = username + title
-            Log.d("Mesaj: ", "notificationText: $notificationText")
 
             notificationObject.put("title", notificationText)
             notificationObject.put("body", message)

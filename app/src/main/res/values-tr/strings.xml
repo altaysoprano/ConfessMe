@@ -190,4 +190,6 @@
     <string name="confess_me_intro">"ConfessMe'deyim."</string>
     <string name="confess_me_request">"Bana bir şey itiraf et."</string>
     <string name="confess_me_username">"Kullanıcı adım: "</string>
+    <string name="share_profile">Profili Paylaş</string>
+    <string name="share_error">Profil paylaşımı sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
 </resources>

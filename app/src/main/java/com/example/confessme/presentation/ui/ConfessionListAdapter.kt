@@ -324,7 +324,6 @@ class ConfessionListAdapter(
     }
 
     fun addConfession(newConfession: Confession, position: Int) {
-        Log.d("Mesaj: ", "Add Confession'da")
         confessList.add(position, newConfession)
         notifyItemInserted(position)
         notifyItemRangeChanged(position, confessList.size)
