@@ -20,6 +20,7 @@ import com.example.confessme.presentation.ConfessViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.ConfessionCategory
 import com.example.confessme.util.MyUtils
+import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,8 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
     private lateinit var navRegister: FragmentNavigation
     private lateinit var noConfessFoundBinding: NoConfessionsToYouBinding
     private lateinit var currentUserUid: String
+    private var myUserName = ""
+    private lateinit var shareHelper: ShareHelper
     private var limit: Long = 20
 
     private lateinit var confessListAdapter: ConfessionListAdapter
@@ -48,10 +51,12 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
         navRegister = activity as FragmentNavigation
         noConfessFoundBinding = binding.confessionsToMeNoConfessFoundView
         val currentUser = FirebaseAuth.getInstance().currentUser
+        shareHelper = ShareHelper(requireContext())
         currentUserUid = currentUser?.uid ?: ""
 
         setConfessListAdapter()
         setupRecyclerView()
+        setOnShareYourProfileTextClickListener()
 
         viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
 
@@ -318,11 +323,25 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
         navRegister.navigateFrag(profileFragment, true)
     }
 
+    private fun setOnShareYourProfileTextClickListener() {
+        noConfessFoundBinding.shareYourProfileText.setOnClickListener {
+            if (!myUserName.isNullOrEmpty()) {
+                shareHelper.shareImage(myUserName)
+            } else {
+                Toast.makeText(context, getString(R.string.share_error), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
         confessListAdapter.updateItem(position, updatedConfession)
     }
 
     override fun scrollToTop() {
         binding.confessionToMeListRecyclerviewId.smoothScrollToPosition(0)
+    }
+
+    fun receiveUserName(username: String) {
+        myUserName = username
     }
 }

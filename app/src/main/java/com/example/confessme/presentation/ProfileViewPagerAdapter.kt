@@ -10,7 +10,7 @@ import com.example.confessme.util.ConfessionCategory
 
 class ProfileViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    private val fragments = mutableListOf<Fragment>()
+    val fragments = mutableListOf<Fragment>()
 
     override fun getItemCount(): Int {
         return 3

@@ -94,6 +94,9 @@ class ProfileFragment() : Fragment(), UserNameListener {
                         } else {
                             binding.profileScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
                         }
+
+                        val confessionsToMeFragment = viewPagerAdapter.fragments.getOrNull(1) as? ConfessionsToMeFragment
+                        confessionsToMeFragment?.receiveUserName(myUserName)
                     }
                 }
             }
