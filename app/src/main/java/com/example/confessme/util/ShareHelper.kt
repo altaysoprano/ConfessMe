@@ -102,7 +102,7 @@ class ShareHelper(private val context: Context) {
 
         drawTextInBox(
             canvas, confession, 10f, confessBoxY, maxWidth.toFloat() - 20f, confessBoxHeight,
-            ContextCompat.getColor(context, R.color.confessmered), Color.WHITE, paint, 14f, cornerRadius
+            ContextCompat.getColor(context, R.color.confessmeredblur), Color.WHITE, paint, 14f, cornerRadius
         )
         drawTextInBox(
             canvas, answer, 10f, answerBoxY, maxWidth.toFloat() - 20f, confessBoxHeight,
@@ -138,7 +138,7 @@ class ShareHelper(private val context: Context) {
         paint.shader = null
         paint.textSize = 30f
         paint.typeface = Typeface.DEFAULT_BOLD
-        paint.color = ContextCompat.getColor(context, R.color.confessmered) 
+        paint.color = ContextCompat.getColor(context, R.color.confessmered)
 
         val introTextRect = Rect()
         paint.getTextBounds(introText, 0, introText.length, introTextRect)
@@ -158,11 +158,11 @@ class ShareHelper(private val context: Context) {
 
         paint.color = Color.BLACK
 
-        paint.textSize = 25f
+        paint.textSize = 20f
         val usernameLabelTextX = (maxWidth - paint.measureText(usernameLabelText)) / 2f
         val usernameLabelTextY = (maxHeight + introTextRect.height()) / 2f + requestTextRect.height() + 5f
         canvas.drawText(usernameLabelText, usernameLabelTextX, usernameLabelTextY, paint)
-        paint.textSize = 20f
+        paint.textSize = 25f
         val usernameTextX = (maxWidth - paint.measureText(usernameText)) / 2f
         val usernameTextY = usernameLabelTextY + paint.textSize + 5f
         canvas.drawText(usernameText, usernameTextX, usernameTextY, paint)
