@@ -23,6 +23,7 @@ import java.io.IOException
 class ShareHelper(private val context: Context) {
 
     private fun drawTextInBox(
+        usernameText: String,
         canvas: Canvas, text: String, x: Float, y: Float, width: Float, height: Float,
         backgroundColor: Int, textColor: Int, paint: Paint, textSize: Float, radius: Float
     ) {
@@ -32,10 +33,24 @@ class ShareHelper(private val context: Context) {
 
         paint.color = textColor
         paint.textSize = textSize
-        canvas.drawText(text, x + 10f, y + height / 2f + textSize / 2f, paint)
+
+        val trimmedText = if (text.length > 60) {
+            text.substring(0, 60) + "..."
+        } else {
+            text
+        }
+
+        canvas.drawText(usernameText, x + 10f, y + textSize + 5f, paint) // Kullanıcı adını altına çiz
+        canvas.drawText(trimmedText, x + 10f, y + height / 2f + textSize / 2f, paint)
     }
 
-    private fun generateShareImageWithText(confessionText: String, answerText: String, answeredUserName: String): Bitmap {
+    private fun generateShareImageWithText(
+        usernameConfessed: String,
+        usernameAnswered: String,
+        confessionText: String,
+        answerText: String,
+        answeredUserName: String
+    ): Bitmap {
         val maxWidth = 500
         val maxHeight = 500
 
@@ -67,26 +82,26 @@ class ShareHelper(private val context: Context) {
         val scaledWhisper = Bitmap.createScaledBitmap(whisperBitmap, 75, 75, true)
 
         val whisperX = (maxWidth - scaledWhisper.width) / 2f
-        val whisperY = 20f 
+        val whisperY = 20f
 
         canvas.drawBitmap(scaledWhisper, whisperX, whisperY, paint)
 
-        paint.textSize = 20f 
+        paint.textSize = 20f
         val introTextX = (maxWidth - paint.measureText(introText)) / 2f
-        val introTextY = whisperY + scaledWhisper.height + 20f 
+        val introTextY = whisperY + scaledWhisper.height + 20f
         canvas.drawText(introText, introTextX, introTextY, paint)
 
         val requestTextX = (maxWidth - paint.measureText(requestText)) / 2f
-        val requestTextY = introTextY + 20f 
+        val requestTextY = introTextY + 20f
         canvas.drawText(requestText, requestTextX, requestTextY, paint)
 
-        paint.textSize = 16f 
+        paint.textSize = 16f
         paint.color = Color.BLACK
         val usernameLabelTextX = (maxWidth - paint.measureText(usernameLabelText)) / 2f
-        val usernameLabelTextY = requestTextY + 20f 
+        val usernameLabelTextY = requestTextY + 20f
         canvas.drawText(usernameLabelText, usernameLabelTextX, usernameLabelTextY, paint)
 
-        paint.textSize = 16f 
+        paint.textSize = 16f
         val usernameTextX = (maxWidth - paint.measureText(usernameText)) / 2f
         val usernameTextY = usernameLabelTextY + paint.textSize
         canvas.drawText(usernameText, usernameTextX, usernameTextY, paint)
@@ -94,19 +109,39 @@ class ShareHelper(private val context: Context) {
         val confession = confessionText
         val answer = answerText
 
-        val confessBoxHeight = 80f 
+        val confessBoxHeight = 80f
         val confessBoxY = usernameTextY + 40f
         val answerBoxY = confessBoxY + confessBoxHeight + 10f
 
         val cornerRadius = 8f
 
         drawTextInBox(
-            canvas, confession, 10f, confessBoxY, maxWidth.toFloat() - 20f, confessBoxHeight,
-            ContextCompat.getColor(context, R.color.confessmeredblur), Color.WHITE, paint, 14f, cornerRadius
+            usernameConfessed,
+            canvas,
+            confession,
+            10f,
+            confessBoxY,
+            maxWidth.toFloat() - 20f,
+            confessBoxHeight,
+            ContextCompat.getColor(context, R.color.confessmeredblur),
+            Color.WHITE,
+            paint,
+            14f,
+            cornerRadius
         )
         drawTextInBox(
-            canvas, answer, 10f, answerBoxY, maxWidth.toFloat() - 20f, confessBoxHeight,
-            ContextCompat.getColor(context, R.color.confessmered), Color.WHITE, paint, 14f, cornerRadius
+            usernameAnswered,
+            canvas,
+            answer,
+            10f,
+            answerBoxY,
+            maxWidth.toFloat() - 20f,
+            confessBoxHeight,
+            ContextCompat.getColor(context, R.color.confessmered),
+            Color.WHITE,
+            paint,
+            14f,
+            cornerRadius
         )
 
         return bitmap
@@ -146,8 +181,18 @@ class ShareHelper(private val context: Context) {
         val requestTextRect = Rect()
         paint.getTextBounds(requestText, 0, requestText.length, requestTextRect)
 
-        canvas.drawText(introText, (maxWidth - paint.measureText(introText)) / 2f, (maxHeight + introTextRect.height()) / 2f - requestTextRect.height(), paint)
-        canvas.drawText(requestText, (maxWidth - paint.measureText(requestText)) / 2f, (maxHeight + introTextRect.height()) / 2f, paint)
+        canvas.drawText(
+            introText,
+            (maxWidth - paint.measureText(introText)) / 2f,
+            (maxHeight + introTextRect.height()) / 2f - requestTextRect.height(),
+            paint
+        )
+        canvas.drawText(
+            requestText,
+            (maxWidth - paint.measureText(requestText)) / 2f,
+            (maxHeight + introTextRect.height()) / 2f,
+            paint
+        )
 
         val whisperBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.whisper)
         val scaledWhisper = Bitmap.createScaledBitmap(whisperBitmap, 75, 75, true)
@@ -160,9 +205,10 @@ class ShareHelper(private val context: Context) {
 
         paint.textSize = 20f
         val usernameLabelTextX = (maxWidth - paint.measureText(usernameLabelText)) / 2f
-        val usernameLabelTextY = (maxHeight + introTextRect.height()) / 2f + requestTextRect.height() + 5f
+        val usernameLabelTextY =
+            (maxHeight + introTextRect.height()) / 2f + requestTextRect.height() + 5f
         canvas.drawText(usernameLabelText, usernameLabelTextX, usernameLabelTextY, paint)
-        paint.textSize = 25f
+        paint.textSize = 20f
         val usernameTextX = (maxWidth - paint.measureText(usernameText)) / 2f
         val usernameTextY = usernameLabelTextY + paint.textSize + 5f
         canvas.drawText(usernameText, usernameTextX, usernameTextY, paint)
@@ -192,27 +238,32 @@ class ShareHelper(private val context: Context) {
         )
     }
 
-    fun shareTextAndImage(confessionText: String, answerText: String,
-                                  answerFromUsername: String, answeredUserName: String) {
+    fun shareTextAndImage(
+        confessionText: String, answerText: String,
+        answerFromUsername: String, answeredUserName: String
+    ) {
         val emojiSpeech = "\uD83D\uDDE3"
         val emojiEar = "\uD83D\uDC42"
 
         val generatedBitmap = generateShareImageWithText(
-            confessionText = "$emojiSpeech$emojiEar $answerFromUsername:\n" +
-                    "$confessionText",
-            answerText = "$emojiSpeech\n" +
-                    "$answerText",
-            answeredUserName = answeredUserName)
+            usernameConfessed = "$emojiSpeech$emojiEar $answerFromUsername:",
+            usernameAnswered = "$emojiSpeech $answeredUserName:",
+            confessionText = confessionText,
+            answerText = answerText,
+            answeredUserName = answeredUserName
+        )
         val imageUri = saveBitmapToStorage(generatedBitmap)
 
-        val shareMessage = "$emojiSpeech$emojiEar $answerFromUsername:\n$confessionText\n\n$emojiSpeech\n$answerText"
+        val shareMessage =
+            "$emojiSpeech$emojiEar $answerFromUsername:\n$confessionText\n\n$emojiSpeech\n$answerText"
 
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "image/*"
         shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
 
-        val chooser = Intent.createChooser(shareIntent, context.getString(R.string.nerede_payla_acaks_n))
+        val chooser =
+            Intent.createChooser(shareIntent, context.getString(R.string.nerede_payla_acaks_n))
         if (shareIntent.resolveActivity(context.packageManager) != null) {
             context.startActivity(chooser)
         }
@@ -226,7 +277,8 @@ class ShareHelper(private val context: Context) {
         shareIntent.type = "image/*"
         shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
 
-        val chooser = Intent.createChooser(shareIntent, context.getString(R.string.nerede_payla_acaks_n))
+        val chooser =
+            Intent.createChooser(shareIntent, context.getString(R.string.nerede_payla_acaks_n))
         if (shareIntent.resolveActivity(context.packageManager) != null) {
             context.startActivity(chooser)
         }
