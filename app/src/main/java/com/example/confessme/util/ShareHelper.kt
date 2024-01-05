@@ -27,7 +27,8 @@ class ShareHelper(private val context: Context) {
 
         val introText = context.getString(R.string.confess_me_intro)
         val requestText = context.getString(R.string.confess_me_request)
-        val usernameText = context.getString(R.string.confess_me_username) + "@$answeredUserName"
+        val usernameLabelText = context.getString(R.string.confess_me_username)
+        val usernameText = "@$answeredUserName"
 
         val bitmap = Bitmap.createBitmap(maxWidth, maxHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
@@ -46,6 +47,7 @@ class ShareHelper(private val context: Context) {
         paint.shader = null
         paint.textSize = 30f
         paint.typeface = Typeface.DEFAULT_BOLD
+        paint.color = ContextCompat.getColor(context, R.color.confessmered) // Intro ve Request metinleri Confessmered
 
         val introTextRect = Rect()
         paint.getTextBounds(introText, 0, introText.length, introTextRect)
@@ -53,32 +55,25 @@ class ShareHelper(private val context: Context) {
         val requestTextRect = Rect()
         paint.getTextBounds(requestText, 0, requestText.length, requestTextRect)
 
-        val usernameTextRect = Rect()
-        paint.getTextBounds(usernameText, 0, usernameText.length, usernameTextRect)
-
-        val introTextX = (maxWidth - introTextRect.width()) / 2f
-        val introTextY = (maxHeight - (introTextRect.height() * 4)) / 2f + introTextRect.height()
-
-        val requestTextX = (maxWidth - requestTextRect.width()) / 2f
-        val requestTextY = introTextY + introTextRect.height() + 20f
+        canvas.drawText(introText, (maxWidth - paint.measureText(introText)) / 2f, (maxHeight + introTextRect.height()) / 2f - requestTextRect.height(), paint)
+        canvas.drawText(requestText, (maxWidth - paint.measureText(requestText)) / 2f, (maxHeight + introTextRect.height()) / 2f, paint)
 
         val whisperBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.whisper)
         val scaledWhisper = Bitmap.createScaledBitmap(whisperBitmap, 75, 75, true)
 
         val whisperX = (maxWidth - scaledWhisper.width) / 2f
-        val whisperY = introTextY - scaledWhisper.height - 40f
+        val whisperY = (maxHeight - (introTextRect.height() * 4)) / 2f - scaledWhisper.height - 10f
         canvas.drawBitmap(scaledWhisper, whisperX, whisperY, paint)
 
-        paint.color = ContextCompat.getColor(context, R.color.confessmered)
-        canvas.drawText(introText, introTextX, introTextY, paint)
-        canvas.drawText(requestText, requestTextX, requestTextY, paint)
+        paint.color = Color.BLACK // Label metnleri siyah
 
-        paint.shader = null
-        paint.textSize = 25f
-        paint.typeface = Typeface.DEFAULT_BOLD
-        val usernameTextX = (maxWidth - usernameTextRect.width()) / 2f
-        val usernameTextY = requestTextY + requestTextRect.height() + 20f
-        paint.color = Color.BLACK
+        paint.textSize = 25f // Username metninin boyutu 20f
+        val usernameLabelTextX = (maxWidth - paint.measureText(usernameLabelText)) / 2f
+        val usernameLabelTextY = (maxHeight + introTextRect.height()) / 2f + requestTextRect.height() + 5f
+        canvas.drawText(usernameLabelText, usernameLabelTextX, usernameLabelTextY, paint)
+        paint.textSize = 20f // Username metninin boyutu 20f
+        val usernameTextX = (maxWidth - paint.measureText(usernameText)) / 2f
+        val usernameTextY = usernameLabelTextY + paint.textSize + 5f // 10f boşluk ekleyelim
         canvas.drawText(usernameText, usernameTextX, usernameTextY, paint)
 
         return bitmap
