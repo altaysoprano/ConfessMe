@@ -73,6 +73,7 @@ class ConfessAnswerFragment(
     private lateinit var confessionId: String
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var answeredUserName: String
+    private lateinit var answerUserName: String
     private lateinit var answerFromUsername: String
     private lateinit var shareHelper: ShareHelper
     private var answerDataListener: AnswerDataListener? = null
@@ -135,7 +136,7 @@ class ConfessAnswerFragment(
                     isAnswerFavorited = state.data?.answer?.favorited ?: false
                     val answerFromUserUid = state.data?.fromUserId ?: ""
                     answerFromUsername = state.data?.fromUserUsername ?: ""
-                    val answerUserName = state.data?.username ?: ""
+                    answerUserName = state.data?.username ?: ""
                     val userToken = state.data?.fromUserToken ?: ""
                     val fromUserToken = state.data?.userToken ?: ""
                     val answerUserUid = state.data?.userId ?: ""
@@ -589,7 +590,7 @@ class ConfessAnswerFragment(
             Snackbar.LENGTH_LONG
         )
         snackbar.setAction(getString(R.string.share)) {
-            shareHelper.shareTextAndImage(confessionText, answerText, answerFromUsername, answeredUserName)
+            shareHelper.shareTextAndImage(confessionText, answerText, answerFromUsername, answerUserName)
         }
         val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
         snackbar.setAnchorView(bottomNavigationView)

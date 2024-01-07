@@ -74,6 +74,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         observeFavorite()
         observeDeleteConfession()
         observeAddBookmarks()
+        observeRemoveBookmark()
     }
 
     private fun observeGetConfession() {
@@ -432,8 +433,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                         requireContext(),
                         getString(R.string.confession_deleted_successfully),
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    ).show()
                 }
             }
         }
@@ -463,6 +463,44 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                         context = requireContext(),
                         onButtonClicked = {
                             confession?.id?.let { viewModel.deleteBookmark(it) }
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeRemoveBookmark() {
+        viewModel.removeBookmarkState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarConfessionDetail.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarConfessionDetail.visibility = View.GONE
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarConfessionDetail.visibility = View.GONE
+                    val removedBookmark = state.data
+
+                    MyUtils.showSnackbar(
+                        rootView = requireActivity().window.decorView.rootView,
+                        descriptionText = getString(R.string.removed_from_bookmarks),
+                        buttonText = getString(R.string.undo),
+                        activity = requireActivity(),
+                        context = requireContext(),
+                        onButtonClicked = {
+                            if(removedBookmark != null) {
+                                viewModel.addBookmark(
+                                    confessionId = removedBookmark.confessionId,
+                                    timestamp = removedBookmark.timestamp,
+                                    userUid = removedBookmark.userId
+                                )
+                            }
                         }
                     )
                 }

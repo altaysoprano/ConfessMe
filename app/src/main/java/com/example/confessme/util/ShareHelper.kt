@@ -40,7 +40,7 @@ class ShareHelper(private val context: Context) {
             text
         }
 
-        canvas.drawText(usernameText, x + 10f, y + textSize + 5f, paint) // Kullanıcı adını altına çiz
+        canvas.drawText(usernameText, x + 10f, y + textSize + 5f, paint) 
         canvas.drawText(trimmedText, x + 10f, y + height / 2f + textSize / 2f, paint)
     }
 
