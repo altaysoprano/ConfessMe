@@ -157,6 +157,10 @@ class ConfessionListAdapter(
             confess.isExpanded = !confess.isExpanded
             notifyItemChanged(adapterPosition)
         }
+
+        binding.confessionsScreenConfession.setOnLongClickListener {
+            MyUtils.copyTextToClipboard(confess.text, context)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

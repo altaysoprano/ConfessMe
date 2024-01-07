@@ -172,6 +172,10 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
         }
 
+        binding.confessionDetailScreenConfession.setOnLongClickListener {
+            MyUtils.copyTextToClipboard(confess.text, requireContext())
+        }
+
         setAnswerFavoriteAndMoreActionsItems(confess, binding, itemView)
     }
 
