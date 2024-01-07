@@ -413,7 +413,6 @@ class ConfessAnswerFragment(
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.GONE
             binding.answerScreenProfileImage.visibility = View.GONE
-
         }
 
         val maxLength = 560
@@ -455,6 +454,9 @@ class ConfessAnswerFragment(
             override fun afterTextChanged(s: Editable?) {
             }
         })
+        binding.confessAnswerTextView.setOnLongClickListener {
+            MyUtils.copyTextToClipboard(answerText, requireContext())
+        }
     }
 
     private fun setSaveButton() {

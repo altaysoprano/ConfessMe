@@ -1,11 +1,14 @@
 package com.example.confessme.util
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.confessme.R
 import com.google.android.material.snackbar.Snackbar
@@ -196,6 +199,14 @@ object MyUtils {
         val bottomNavigationView = activity.findViewById<View>(R.id.bottomNavigationView)
         snackbar.setAnchorView(bottomNavigationView)
         snackbar.show()
+    }
+
+    fun copyTextToClipboard(text: String, context: Context): Boolean {
+        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("Answer", text)
+        clipboardManager.setPrimaryClip(clipData)
+        Toast.makeText(context, "Answer copied to clipboard", Toast.LENGTH_SHORT).show()
+        return true
     }
 
 }
