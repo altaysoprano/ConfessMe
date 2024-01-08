@@ -359,6 +359,8 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                         dialogHelper.showDialog(
                             getString(R.string.delete_confess_on),
                             getString(R.string.are_you_sure_you_really_want_to_delete_this_confession),
+                            getString(R.string.yes),
+                            getString(R.string.no),
                             { viewModel.deleteConfession(confessIdToDelete) })
                         return@setOnMenuItemClickListener true
                     }

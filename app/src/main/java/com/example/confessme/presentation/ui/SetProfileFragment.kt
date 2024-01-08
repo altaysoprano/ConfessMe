@@ -34,6 +34,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentEditProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSetProfileBinding
+import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.ProfilePhotoAction
@@ -49,6 +50,7 @@ class SetProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
@@ -62,6 +64,7 @@ class SetProfileFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = getString(R.string.set_your_profile)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.setProfileToolbar)
         navRegister = activity as FragmentNavigation
+        dialogHelper = ConfessMeDialog(requireContext())
         setHasOptionsMenu(true)
 
         setWelcomeAnimation()
@@ -153,6 +156,12 @@ class SetProfileFragment : Fragment() {
                     fragmentManager.beginTransaction()
                         .replace(R.id.coordinator, SearchFragment())
                         .commit()
+                    dialogHelper.showDialog(
+                        getString(R.string.share_profile),
+                        getString(R.string.share_your_profile_with_your_friends_for),
+                        getString(R.string.yes),
+                        getString(R.string.no),
+                        {  })
                 }
             }
         }

@@ -227,8 +227,10 @@ class ConfessFragment : Fragment() {
                 if (isTextEmpty == false) {
                     dialogHelper.showDialog(
                         getString(R.string.conf_rm_ex_t),
-                        getString(R.string.do_you_want_to_exit_without_sending_the_confession)
-                    ) {
+                        getString(R.string.do_you_want_to_exit_without_sending_the_confession),
+                        getString(R.string.yes),
+                        getString(R.string.no)
+                        ) {
                         isEnabled = false
                         hideKeyboard()
                         requireActivity().onBackPressed()

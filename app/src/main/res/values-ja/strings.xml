@@ -193,4 +193,6 @@
     <string name="confess_me_username">"私のユーザー名: "</string>
     <string name="share_profile">プロフィールを共有する</string>
     <string name="share_error">プロフィールの共有中にエラーが発生しました。後で再試行してください。</string>
+    <string name="share_your_profile_with_your_friends_for">「プロフィールを共有することで、異なるプラットフォームから友達やより多くのユーザーにアクセスできます」</string>
+    <string name="maybe_later">もしかしたら後で</string>
 </resources>

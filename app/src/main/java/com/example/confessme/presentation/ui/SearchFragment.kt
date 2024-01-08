@@ -131,6 +131,8 @@ class SearchFragment : Fragment() {
                 dialogHelper.showDialog(
                     getString(R.string.delete_search),
                     getString(R.string.are_you_sure_you_want_to_delete_the_selected_search),
+                    getString(R.string.yes),
+                    getString(R.string.no),
                     { viewModel.deleteHistoryItem(it.uid) }
                 )
             },
@@ -409,6 +411,8 @@ class SearchFragment : Fragment() {
             dialogHelper.showDialog(
                 getString(R.string.delete_all_history),
                 getString(R.string.are_you_sure_you_want_to_delete_the_entire_search_history),
+                getString(R.string.yes),
+                getString(R.string.no),
                 { viewModel.deleteAllHistory() }
             )
         }

@@ -16,11 +16,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentLoginBinding
+import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.util.Constants
 import com.example.confessme.util.Constants.Companion.RC_SIGN_IN
 import com.example.confessme.util.MyPreferences
 import com.example.confessme.util.MyUtils
+import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -37,7 +39,10 @@ class LoginFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: LoginViewModel by viewModels()
     private var isUserLoggedIn: Boolean = true
+    private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var myPreferences: MyPreferences
+    private lateinit var shareHelper: ShareHelper
+    private lateinit var myUserName: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +52,9 @@ class LoginFragment : Fragment() {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         navRegister = activity as FragmentNavigation
         isUserLoggedIn = viewModel.isUserLoggedIn
+        dialogHelper = ConfessMeDialog(requireContext())
         myPreferences = MyPreferences(requireContext())
+        shareHelper = ShareHelper(requireContext())
 
         if (isUserLoggedIn) {
             navRegister.navigateFrag(HomeFragment(), false)
@@ -91,7 +98,14 @@ class LoginFragment : Fragment() {
 
                 is UiState.Success -> {
                     binding.progressBarSignIn.visibility = View.GONE
+                    myUserName = state.data
                     navRegister.navigateFrag(SearchFragment(), false)
+                    dialogHelper.showDialog(
+                        getString(R.string.share_profile),
+                        getString(R.string.share_your_profile_with_your_friends_for),
+                        getString(R.string.share),
+                        getString(R.string.maybe_later),
+                        { shareProfile() })
                 }
             }
         }
@@ -167,6 +181,14 @@ class LoginFragment : Fragment() {
         binding.textView2.alpha = alpha
         binding.googleSignInButton.isEnabled = isEnabled
         binding.googleSignInButton.alpha = alpha
+    }
+
+    private fun shareProfile() {
+        if(!myUserName.isNullOrEmpty()) {
+            shareHelper.shareImage(myUserName)
+        } else {
+            Toast.makeText(context, getString(R.string.share_error), Toast.LENGTH_SHORT).show()
+        }
     }
     
     private fun setGoogleSignInButtonDesign() {

@@ -5,14 +5,15 @@ import android.content.Context
 import com.example.confessme.R
 
 class ConfessMeDialog(private val context: Context?) {
-    fun showDialog(title: String, message: String, onConfirm: () -> Unit) {
+    fun showDialog(title: String, message: String, positiveButtonText: String,
+                   negativeButtonText: String, onConfirm: () -> Unit) {
         val alertDialog = AlertDialog.Builder(context)
             .setTitle(title.toUpperCase())
             .setMessage(message)
-            .setPositiveButton(context?.getString(R.string.yes)) { _, _ ->
+            .setPositiveButton(positiveButtonText) { _, _ ->
                 onConfirm()
             }
-            .setNegativeButton(context?.getString(R.string.no)) { _, _ ->
+            .setNegativeButton(negativeButtonText) { _, _ ->
 
             }
             .create()

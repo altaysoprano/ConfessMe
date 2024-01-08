@@ -193,4 +193,6 @@
     <string name="confess_me_username">"Mon nom d'utilisateur: "</string>
     <string name="share_profile">Partager Le Profil</string>
     <string name="share_error">Une erreur s\'est produite lors du partage du profil. Veuillez réessayer plus tard.</string>
+    <string name="share_your_profile_with_your_friends_for">"Partager ton profil t'aide à atteindre des amis et plus d'utilisateurs sur différentes plateformes."</string>
+    <string name="maybe_later">Peut-Être Plus Tard</string>
 </resources>

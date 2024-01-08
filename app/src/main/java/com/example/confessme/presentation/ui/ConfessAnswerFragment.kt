@@ -330,6 +330,8 @@ class ConfessAnswerFragment(
             dialogHelper.showDialog(
                 getString(R.string.delete_answer),
                 getString(R.string.are_you_sure_you_really_want_to_delete_this_answer),
+                getString(R.string.yes),
+                getString(R.string.no),
                 { viewModel.deleteAnswer(confessionId ?: "") }
             )
         }

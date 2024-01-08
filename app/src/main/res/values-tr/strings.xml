@@ -192,4 +192,6 @@
     <string name="confess_me_username">"Kullanıcı adım: "</string>
     <string name="share_profile">Profili Paylaş</string>
     <string name="share_error">Profil paylaşımı sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
+    <string name="share_your_profile_with_your_friends_for">"Profilini paylaşmak, farklı platformlardaki arkadaşlara ve daha fazla kullanıcıya ulaşmana yardımcı olur."</string>
+    <string name="maybe_later">Belki Daha Sonra</string>
 </resources>

@@ -193,4 +193,6 @@
     <string name="confess_me_username">"我的用户名: "</string>
     <string name="share_profile">分享个人资料</string>
     <string name="share_error">在分享个人资料时出现错误。请稍后重试。</string>
+    <string name="share_your_profile_with_your_friends_for">“通过分享你的个人资料，可以让你在不同平台上触达朋友和更多用户。”</string>
+    <string name="maybe_later">也许稍后</string>
 </resources>

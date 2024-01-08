@@ -31,7 +31,19 @@ class AuthRepoImp(
                     database.collection("users").document(uid)
                         .update("token", fcmToken)
                         .addOnSuccessListener {
-                            result.invoke(UiState.Success(context.getString(R.string.login_successful)))
+                            database.collection("users").document(uid)
+                                .get()
+                                .addOnSuccessListener { documentSnapshot ->
+                                    val userName = documentSnapshot.getString("userName") ?: ""
+                                    result.invoke(UiState.Success(userName))
+                                }
+                                .addOnFailureListener { exception ->
+                                    result.invoke(
+                                        UiState.Failure(
+                                            exception.localizedMessage ?: context.getString(R.string.token_update_failed)
+                                        )
+                                    )
+                                }
                         }
                         .addOnFailureListener { exception ->
                             result.invoke(

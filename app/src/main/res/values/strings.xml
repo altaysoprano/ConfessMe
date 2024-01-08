@@ -192,4 +192,6 @@
     <string name="confess_me_username">"My username: "</string>
     <string name="share_profile">Share Profile</string>
     <string name="share_error">An error occurred while sharing the profile. Please try again later.</string>
+    <string name="share_your_profile_with_your_friends_for">"Sharing your profile helps you reach friends and more users across different platforms."</string>
+    <string name="maybe_later">Maybe Later</string>
 </resources>
