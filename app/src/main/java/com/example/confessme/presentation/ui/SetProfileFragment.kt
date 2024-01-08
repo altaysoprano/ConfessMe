@@ -38,6 +38,7 @@ import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.ProfilePhotoAction
+import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
 import com.google.common.collect.ComparisonChain.start
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,6 +51,8 @@ class SetProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private lateinit var sharedUsername: String
+    private lateinit var shareHelper: ShareHelper
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
@@ -65,6 +68,7 @@ class SetProfileFragment : Fragment() {
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.setProfileToolbar)
         navRegister = activity as FragmentNavigation
         dialogHelper = ConfessMeDialog(requireContext())
+        shareHelper = ShareHelper(requireContext())
         setHasOptionsMenu(true)
 
         setWelcomeAnimation()
@@ -87,16 +91,28 @@ class SetProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarSetProfile.visibility = View.VISIBLE
+                    binding.setSaveButton.isEnabled = false
+                    binding.setSkipButton.isEnabled = false
+                    binding.setSaveButton.alpha = 0.5f
+                    binding.setSkipButton.alpha = 0.5f
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSetProfile.visibility = View.GONE
+                    binding.setSaveButton.isEnabled = true
+                    binding.setSkipButton.isEnabled = true
+                    binding.setSaveButton.alpha = 1f
+                    binding.setSkipButton.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
                     binding.progressBarSetProfile.visibility = View.GONE
+                    binding.setSaveButton.isEnabled = true
+                    binding.setSkipButton.isEnabled = true
+                    binding.setSaveButton.alpha = 1f
+                    binding.setSkipButton.alpha = 1f
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
@@ -108,6 +124,7 @@ class SetProfileFragment : Fragment() {
                                 .load(userProfile.imageUrl)
                                 .into(binding.setProfileImage)
                         }
+                        sharedUsername = currentUsername
                     }
                 }
             }
@@ -159,9 +176,9 @@ class SetProfileFragment : Fragment() {
                     dialogHelper.showDialog(
                         getString(R.string.share_profile),
                         getString(R.string.share_your_profile_with_your_friends_for),
-                        getString(R.string.yes),
-                        getString(R.string.no),
-                        {  })
+                        getString(R.string.share),
+                        getString(R.string.maybe_later),
+                        { shareProfile() })
                 }
             }
         }
@@ -172,6 +189,7 @@ class SetProfileFragment : Fragment() {
             val username = binding.setFirstNameEt.text?.trim().toString()
             val bio = binding.setBioEt.text?.trim().toString()
             val cleanedBio = bio.replace("\\s+".toRegex(), " ")
+            sharedUsername = username
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
                 viewModel.updateProfile(currentUsername, currentImageUrl, username, cleanedBio, selectedImg, ProfilePhotoAction.CHANGE)
@@ -208,6 +226,12 @@ class SetProfileFragment : Fragment() {
             fragmentManager.beginTransaction()
                 .replace(R.id.coordinator, SearchFragment())
                 .commit()
+            dialogHelper.showDialog(
+                getString(R.string.share_profile),
+                getString(R.string.share_your_profile_with_your_friends_for),
+                getString(R.string.share),
+                getString(R.string.maybe_later),
+                { shareProfile() })
         }
     }
 
@@ -406,6 +430,14 @@ class SetProfileFragment : Fragment() {
             )
             duration = animDuration
             start()
+        }
+    }
+
+    private fun shareProfile() {
+        if(!sharedUsername.isNullOrEmpty()) {
+            shareHelper.shareImage(sharedUsername)
+        } else {
+            Toast.makeText(context, getString(R.string.share_error), Toast.LENGTH_SHORT).show()
         }
     }
 

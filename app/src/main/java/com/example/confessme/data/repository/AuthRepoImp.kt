@@ -235,7 +235,7 @@ class AuthRepoImp(
                                 database.collection("users").document(uid)
                                     .set(googleSignInUser)
                                     .addOnSuccessListener {
-                                        result.invoke(UiState.Success(context.getString(R.string.google_sign_in_successful)))
+                                        result.invoke(UiState.Success(userName))
                                     }
                                     .addOnFailureListener { exception ->
                                         result.invoke(

@@ -32,9 +32,11 @@ import com.bumptech.glide.Glide
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentEditProfileBinding
 import com.example.confessme.databinding.FragmentProfileBinding
+import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.util.ProfilePhotoAction
+import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,6 +48,9 @@ class EditProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private lateinit var sharedUsername: String
+    private lateinit var shareHelper: ShareHelper
+    private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
@@ -57,6 +62,8 @@ class EditProfileFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = getString(R.string.edit_profile)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.editProfileToolbar)
         navRegister = activity as FragmentNavigation
+        dialogHelper = ConfessMeDialog(requireContext())
+        shareHelper = ShareHelper(requireContext())
         setHasOptionsMenu(true)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
@@ -83,16 +90,22 @@ class EditProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarEditProfile.visibility = View.VISIBLE
+                    binding.saveButton.isEnabled = false
+                    binding.saveButton.alpha = 0.5f
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarEditProfile.visibility = View.GONE
+                    binding.saveButton.isEnabled = true
+                    binding.saveButton.alpha = 1f
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
                     binding.progressBarEditProfile.visibility = View.GONE
+                    binding.saveButton.isEnabled = true
+                    binding.saveButton.alpha = 1f
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
@@ -148,6 +161,12 @@ class EditProfileFragment : Fragment() {
                     fragmentManager.beginTransaction()
                         .replace(R.id.coordinator, ProfileFragment())
                         .commit()
+                    dialogHelper.showDialog(
+                        getString(R.string.share_profile),
+                        getString(R.string.share_your_profile_with_your_friends_for),
+                        getString(R.string.share),
+                        getString(R.string.maybe_later),
+                        { shareProfile() })
                 }
             }
         }
@@ -158,6 +177,7 @@ class EditProfileFragment : Fragment() {
             val username = binding.firstNameEt.text?.trim().toString()
             val bio = binding.bioEt.text?.trim().toString()
             val cleanedBio = bio.replace("\\s+".toRegex(), " ")
+            sharedUsername = username
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
                 viewModel.updateProfile(currentUsername, currentImageUrl, username, cleanedBio, selectedImg, ProfilePhotoAction.CHANGE)
@@ -354,6 +374,14 @@ class EditProfileFragment : Fragment() {
         binding.profileImage.setImageResource(defaultImageResource)
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
+    }
+
+    private fun shareProfile() {
+        if(!sharedUsername.isNullOrEmpty()) {
+            shareHelper.shareImage(sharedUsername)
+        } else {
+            Toast.makeText(context, getString(R.string.share_error), Toast.LENGTH_SHORT).show()
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
