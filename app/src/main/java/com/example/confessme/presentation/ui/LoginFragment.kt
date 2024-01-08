@@ -91,7 +91,7 @@ class LoginFragment : Fragment() {
 
                 is UiState.Success -> {
                     binding.progressBarSignIn.visibility = View.GONE
-                    navRegister.navigateFrag(HomeFragment(), false)
+                    navRegister.navigateFrag(SearchFragment(), false)
                 }
             }
         }

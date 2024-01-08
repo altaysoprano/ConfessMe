@@ -151,7 +151,7 @@ class SetProfileFragment : Fragment() {
                         fragmentManager.popBackStack()
                     }
                     fragmentManager.beginTransaction()
-                        .replace(R.id.coordinator, HomeFragment())
+                        .replace(R.id.coordinator, SearchFragment())
                         .commit()
                 }
             }
@@ -197,7 +197,7 @@ class SetProfileFragment : Fragment() {
                 fragmentManager.popBackStack()
             }
             fragmentManager.beginTransaction()
-                .replace(R.id.coordinator, HomeFragment())
+                .replace(R.id.coordinator, SearchFragment())
                 .commit()
         }
     }

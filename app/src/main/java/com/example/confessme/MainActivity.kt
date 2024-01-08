@@ -153,4 +153,10 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
             binding.bottomNavigationView.menu.getItem(i).isEnabled = true
         }
     }
+
+    override fun setSelectedItemId(itemId: Int) {
+        if (binding.bottomNavigationView.selectedItemId != itemId) {
+            binding.bottomNavigationView.selectedItemId = itemId
+        }
+    }
 }

@@ -29,6 +29,7 @@ import com.example.confessme.R
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
 import com.example.confessme.databinding.FragmentSearchBinding
+import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.ListType
@@ -49,6 +50,7 @@ class SearchFragment : Fragment() {
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var userListAdapter: UserListAdapter
     private lateinit var historyListAdapter: UserListAdapter
+    private var bottomNavBarControl: BottomNavBarControl? = null
     private var callback: OnBackPressedCallback? = null
 
     override fun onCreateView(
@@ -71,6 +73,7 @@ class SearchFragment : Fragment() {
         setOnBackPressed()
         setDeleteAllClickListener()
         observeSearchView()
+        setInitialBottomNavBarSelectedItem()
 
         return binding.root
     }
@@ -95,7 +98,8 @@ class SearchFragment : Fragment() {
     }
 
     private fun setAdapters() {
-        userListAdapter = UserListAdapter(mutableListOf(),
+        userListAdapter = UserListAdapter(
+            mutableListOf(),
             currentUserUid = currentUserUid,
             onItemClick = { user ->
                 onItemClick(user)
@@ -107,7 +111,8 @@ class SearchFragment : Fragment() {
             context = requireContext()
         )
 
-        historyListAdapter = UserListAdapter(mutableListOf(),
+        historyListAdapter = UserListAdapter(
+            mutableListOf(),
             currentUserUid = currentUserUid,
             onItemClick = { user ->
                 onItemClick(user)
@@ -139,7 +144,7 @@ class SearchFragment : Fragment() {
 
         searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             viewModel.setSearchViewFocused(hasFocus)
-            if(viewModel.searchViewFocused.value == true) {
+            if (viewModel.searchViewFocused.value == true) {
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     setDisplayHomeAsUpEnabled(true)
                     setDisplayShowHomeEnabled(true)
@@ -183,7 +188,11 @@ class SearchFragment : Fragment() {
         updateRecyclerViewMargin(binding.historyResultsRecyclerviewId, actionBarHeight, isVisible)
     }
 
-    private fun updateRecyclerViewMargin(recyclerView: RecyclerView, actionBarHeight: Int, isVisible: Boolean) {
+    private fun updateRecyclerViewMargin(
+        recyclerView: RecyclerView,
+        actionBarHeight: Int,
+        isVisible: Boolean
+    ) {
         val layoutParams = recyclerView.layoutParams as ConstraintLayout.LayoutParams
 
         if (isVisible) {
@@ -197,7 +206,12 @@ class SearchFragment : Fragment() {
 
     private fun getActionBarHeight(): Int {
         val tv = TypedValue()
-        return if (requireActivity().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+        return if (requireActivity().theme.resolveAttribute(
+                android.R.attr.actionBarSize,
+                tv,
+                true
+            )
+        ) {
             TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
         } else {
             0
@@ -380,7 +394,7 @@ class SearchFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        if(viewModel.searchViewText.value?.isNotEmpty()==true) {
+        if (viewModel.searchViewText.value?.isNotEmpty() == true) {
             (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
                 setDisplayShowHomeEnabled(true)
@@ -399,6 +413,7 @@ class SearchFragment : Fragment() {
             )
         }
     }
+
     private fun followOrUnfollowUser(
         userUidToFollowOrUnfollow: String,
         userName: String,
@@ -470,8 +485,7 @@ class SearchFragment : Fragment() {
                         setDisplayHomeAsUpEnabled(false)
                         setDisplayShowHomeEnabled(false)
                     }
-                }
-                else {
+                } else {
                     isEnabled = false
                     hideKeyboard()
                     requireActivity().onBackPressed()
@@ -508,15 +522,33 @@ class SearchFragment : Fragment() {
     }
 
     private fun hideBottomNavigationView() {
-        val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val bottomNavigationView =
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNavigationView.visibility = View.GONE
         updateRecyclerViewMargins(false)
     }
 
     private fun showBottomNavigationView() {
-        val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        val bottomNavigationView =
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNavigationView.visibility = View.VISIBLE
         updateRecyclerViewMargins(true)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BottomNavBarControl) {
+            bottomNavBarControl = context
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        bottomNavBarControl = null
+    }
+
+    private fun setInitialBottomNavBarSelectedItem() {
+        bottomNavBarControl?.setSelectedItemId(R.id.search)
     }
 
     private fun findPositionById(userId: String, userList: MutableList<User>): Int {
