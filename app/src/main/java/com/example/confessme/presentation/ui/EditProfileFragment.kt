@@ -94,22 +94,19 @@ class EditProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarEditProfile.visibility = View.VISIBLE
-                    binding.saveButton.isEnabled = false
-                    binding.saveButton.alpha = 0.5f
+                    setInputsEnabled(false)
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarEditProfile.visibility = View.GONE
-                    binding.saveButton.isEnabled = true
-                    binding.saveButton.alpha = 1f
+                    setInputsEnabled(true)
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
                     binding.progressBarEditProfile.visibility = View.GONE
-                    binding.saveButton.isEnabled = true
-                    binding.saveButton.alpha = 1f
+                    setInputsEnabled(true)
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
@@ -132,27 +129,13 @@ class EditProfileFragment : Fragment() {
         viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.saveButton.isEnabled = false
-                    binding.saveButton.alpha = 0.5f
-                    binding.editButton.isEnabled = false
-                    binding.editButton.alpha = 0.5f
-                    binding.firstNameEt.isEnabled = false
-                    binding.firstNameEt.alpha = 0.5f
-                    binding.bioEt.isEnabled = false
-                    binding.bioEt.alpha = 0.5f
+                    setInputsEnabled(false)
                     binding.progressBarEditProfile.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarEditProfile.visibility = View.GONE
-                    binding.saveButton.isEnabled = true
-                    binding.saveButton.alpha = 1f
-                    binding.editButton.isEnabled = true
-                    binding.editButton.alpha = 1f
-                    binding.firstNameEt.isEnabled = true
-                    binding.firstNameEt.alpha = 1f
-                    binding.bioEt.isEnabled = true
-                    binding.bioEt.alpha = 1f
+                    setInputsEnabled(true)
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -216,6 +199,20 @@ class EditProfileFragment : Fragment() {
 
         binding.editButton.setOnClickListener {
             onEditProfilePhotoClick()
+        }
+    }
+
+    private fun setInputsEnabled(enabled: Boolean) {
+        if (enabled) {
+            binding.saveButton.enable()
+            binding.editButton.enable()
+            binding.firstNameEt.enable()
+            binding.bioEt.enable()
+        } else {
+            binding.saveButton.disable()
+            binding.editButton.disable()
+            binding.firstNameEt.disable()
+            binding.bioEt.disable()
         }
     }
 
@@ -447,5 +444,4 @@ class EditProfileFragment : Fragment() {
         }
         return false
     }
-
 }
