@@ -209,4 +209,13 @@ object MyUtils {
         return true
     }
 
+    fun View.disable() {
+        this.isEnabled = false
+        this.alpha = 0.5f
+    }
+
+    fun View.enable() {
+        this.isEnabled = true
+        this.alpha = 1f
+    }
 }

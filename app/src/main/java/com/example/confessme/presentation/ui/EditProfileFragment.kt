@@ -35,6 +35,8 @@ import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.util.MyUtils.disable
+import com.example.confessme.util.MyUtils.enable
 import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
@@ -48,11 +50,13 @@ class EditProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private lateinit var currentBio: String
     private lateinit var sharedUsername: String
     private lateinit var shareHelper: ShareHelper
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
+    private var isProfilePhotoChanged: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -109,6 +113,7 @@ class EditProfileFragment : Fragment() {
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
+                        currentBio = userProfile.bio
                         currentImageUrl = userProfile.imageUrl
                         binding.firstNameEt.setText(userProfile.userName)
                         binding.bioEt.setText(userProfile.bio)
@@ -180,7 +185,14 @@ class EditProfileFragment : Fragment() {
             sharedUsername = username
 
             if (::selectedImg.isInitialized && selectedImg != Uri.EMPTY) {
-                viewModel.updateProfile(currentUsername, currentImageUrl, username, cleanedBio, selectedImg, ProfilePhotoAction.CHANGE)
+                viewModel.updateProfile(
+                    currentUsername,
+                    currentImageUrl,
+                    username,
+                    cleanedBio,
+                    selectedImg,
+                    ProfilePhotoAction.CHANGE
+                )
             } else if (isProfilePhotoRemoved) {
                 viewModel.updateProfile(
                     currentUsername,
@@ -208,7 +220,10 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun onEditProfilePhotoClick() {
-        val options = arrayOf(getString(R.string.remove_profile_photo), getString(R.string.change_profile_photo))
+        val options = arrayOf(
+            getString(R.string.remove_profile_photo),
+            getString(R.string.change_profile_photo)
+        )
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setItems(options) { _, which ->
@@ -216,6 +231,7 @@ class EditProfileFragment : Fragment() {
                 0 -> {
                     removeProfilePhoto()
                 }
+
                 1 -> {
                     checkPermission()
                 }
@@ -231,6 +247,7 @@ class EditProfileFragment : Fragment() {
         val bioMaxLength = 200
         var userNameCurrentLength = 0
         var userName = ""
+        var bio = ""
         var bioCurrentLength = 0
         var isUserNameEmpty: Boolean? = false
 
@@ -244,9 +261,9 @@ class EditProfileFragment : Fragment() {
                 userNameCurrentLength = s?.trim()?.length ?: 0
                 userName = s.toString()
 
-                binding.editProfileFirstNameCounterTextView.text = "$userNameCurrentLength/$userNameMaxLength"
-                binding.saveButton.isEnabled = true
-                binding.saveButton.alpha = 1f
+                binding.editProfileFirstNameCounterTextView.text =
+                    "$userNameCurrentLength/$userNameMaxLength"
+                binding.saveButton.enable()
 
                 if (userNameCurrentLength > userNameMaxLength) {
                     binding.editProfileFirstNameCounterTextView.setTextColor(Color.RED)
@@ -254,8 +271,10 @@ class EditProfileFragment : Fragment() {
                     binding.editProfileFirstNameCounterTextView.setTextColor(Color.parseColor("#b6b6b6"))
                 }
 
-                checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
-                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
+                checkIfUserNameAndBioValidOrSame(
+                    bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio
+                )
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -268,12 +287,11 @@ class EditProfileFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val bio = s?.trim().toString().replace("\\s+".toRegex(), " ")
+                bio = s?.trim().toString().replace("\\s+".toRegex(), " ")
                 bioCurrentLength = bio.length
 
                 binding.editProfileCounterTextView.text = "$bioCurrentLength/$bioMaxLength"
-                binding.saveButton.isEnabled = true
-                binding.saveButton.alpha = 1f
+                binding.saveButton.enable()
 
                 if (bioCurrentLength > bioMaxLength) {
                     binding.editProfileCounterTextView.setTextColor(Color.RED)
@@ -281,8 +299,10 @@ class EditProfileFragment : Fragment() {
                     binding.editProfileCounterTextView.setTextColor(Color.parseColor("#b6b6b6"))
                 }
 
-                checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
-                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
+                checkIfUserNameAndBioValidOrSame(
+                    bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio
+                )
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -290,43 +310,43 @@ class EditProfileFragment : Fragment() {
         })
     }
 
-    private fun checkIfUserNameAndBioValid(bioCurrentLength: Int, userNameCurrentLength: Int, userNameMaxLength: Int,
-                                           userNameMinLength: Int, isUserNameEmpty: Boolean?, bioMaxLength: Int,
-                                            userName: String?) {
+    private fun checkIfUserNameAndBioValidOrSame(
+        bioCurrentLength: Int, userNameCurrentLength: Int, userNameMaxLength: Int,
+        userNameMinLength: Int, isUserNameEmpty: Boolean?, bioMaxLength: Int,
+        userName: String?, bio: String?
+    ) {
         if (userNameCurrentLength > userNameMaxLength) {
             binding.firstNameEt.error = getString(R.string.username_can_be_up_to_30_characters_long)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
         }
         if (userNameCurrentLength < userNameMinLength) {
             binding.firstNameEt.error = getString(R.string.username_must_be_more_than_3_characters)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
         }
         if (isUserNameEmpty == true) {
             binding.firstNameEt.error = getString(R.string.username_cannot_be_empty)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
         }
         if (userName?.contains(" ") == true) {
             binding.firstNameEt.error = getString(R.string.username_cannot_contain_spaces)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
         }
         if (bioCurrentLength > bioMaxLength) {
             binding.bioEt.error = getString(R.string.bio_can_be_up_to_200_characters_long)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
         }
         if (userName == "Anonymous") {
             binding.firstNameEt.error = getString(R.string.username_cannot_be_anonymous)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
         }
         if (userName?.contains("\n") == true) {
             binding.firstNameEt.error = getString(R.string.username_cannot_contain_line_breaks)
-            binding.saveButton.isEnabled = false
-            binding.saveButton.alpha = 0.5f
+            binding.saveButton.disable()
+        }
+        if (userName?.equals(currentUsername) == true && (bio.equals(currentBio))
+            && !isProfilePhotoChanged && !isProfilePhotoRemoved
+        ) {
+            binding.saveButton.disable()
         }
     }
 
@@ -363,7 +383,11 @@ class EditProfileFragment : Fragment() {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openImageFiles()
                 } else {
-                    Toast.makeText(requireContext(), getString(R.string.access_to_files_denied), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.access_to_files_denied),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -374,10 +398,11 @@ class EditProfileFragment : Fragment() {
         binding.profileImage.setImageResource(defaultImageResource)
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
+        binding.saveButton.enable()
     }
 
     private fun shareProfile() {
-        if(!sharedUsername.isNullOrEmpty()) {
+        if (!sharedUsername.isNullOrEmpty()) {
             shareHelper.shareImage(sharedUsername)
         } else {
             Toast.makeText(context, getString(R.string.share_error), Toast.LENGTH_SHORT).show()
@@ -389,7 +414,8 @@ class EditProfileFragment : Fragment() {
         val rootLayout = binding.root
         rootLayout.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
-                val inputMethodManager = requireContext().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                val inputMethodManager =
+                    requireContext().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(rootLayout.windowToken, 0)
 
                 binding.firstNameEt.clearFocus()
@@ -406,6 +432,8 @@ class EditProfileFragment : Fragment() {
             if (data.data != null) {
                 selectedImg = data.data!!
                 binding.profileImage.setImageURI(selectedImg)
+                isProfilePhotoChanged = true
+                binding.saveButton.enable()
             }
         }
     }

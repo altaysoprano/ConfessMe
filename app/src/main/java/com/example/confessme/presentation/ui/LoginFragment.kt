@@ -57,10 +57,7 @@ class LoginFragment : Fragment() {
         myPreferences = MyPreferences(requireContext())
         shareHelper = ShareHelper(requireContext())
 
-        if (isUserLoggedIn) {
-            navRegister.navigateFrag(HomeFragment(), false)
-        }
-
+        checkIfUserLoggedIn()
         setGoogleSignInButtonDesign()
         setRegisterTvClickListener()
         setSignInClickListener()
@@ -211,6 +208,12 @@ class LoginFragment : Fragment() {
                 binding.passET.clearFocus()
             }
             false
+        }
+    }
+
+    private fun checkIfUserLoggedIn() {
+        if (isUserLoggedIn) {
+            navRegister.navigateFrag(HomeFragment(), false)
         }
     }
 }
