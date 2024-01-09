@@ -37,6 +37,8 @@ import com.example.confessme.databinding.FragmentSetProfileBinding
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.LoginViewModel
 import com.example.confessme.presentation.ProfileViewModel
+import com.example.confessme.util.MyUtils.disable
+import com.example.confessme.util.MyUtils.enable
 import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.ShareHelper
 import com.example.confessme.util.UiState
@@ -51,11 +53,13 @@ class SetProfileFragment : Fragment() {
     private lateinit var navRegister: FragmentNavigation
     private val viewModel: ProfileViewModel by viewModels()
     private lateinit var currentUsername: String
+    private lateinit var currentBio: String
     private lateinit var sharedUsername: String
     private lateinit var shareHelper: ShareHelper
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
+    private var isProfilePhotoChanged: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,31 +95,23 @@ class SetProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarSetProfile.visibility = View.VISIBLE
-                    binding.setSaveButton.isEnabled = false
-                    binding.setSkipButton.isEnabled = false
-                    binding.setSaveButton.alpha = 0.5f
-                    binding.setSkipButton.alpha = 0.5f
+                    setInputsEnabled(false)
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSetProfile.visibility = View.GONE
-                    binding.setSaveButton.isEnabled = true
-                    binding.setSkipButton.isEnabled = true
-                    binding.setSaveButton.alpha = 1f
-                    binding.setSkipButton.alpha = 1f
+                    setInputsEnabled(true)
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
                     binding.progressBarSetProfile.visibility = View.GONE
-                    binding.setSaveButton.isEnabled = true
-                    binding.setSkipButton.isEnabled = true
-                    binding.setSaveButton.alpha = 1f
-                    binding.setSkipButton.alpha = 1f
+                    setInputsEnabled(true)
                     val userProfile = state.data
                     if (userProfile != null) {
                         currentUsername = userProfile.userName
+                        currentBio = userProfile.bio
                         currentImageUrl = userProfile.imageUrl
                         binding.setFirstNameEt.setText(userProfile.userName)
                         binding.setBioEt.setText(userProfile.bio)
@@ -135,31 +131,13 @@ class SetProfileFragment : Fragment() {
         viewModel.updateProfileState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.setSaveButton.isEnabled = false
-                    binding.setSaveButton.alpha = 0.5f
-                    binding.setSkipButton.isEnabled = false
-                    binding.setSkipButton.alpha = 0.5f
-                    binding.setButton.isEnabled = false
-                    binding.setButton.alpha = 0.5f
-                    binding.setFirstNameEt.isEnabled = false
-                    binding.setFirstNameEt.alpha = 0.5f
-                    binding.setBioEt.isEnabled = false
-                    binding.setBioEt.alpha = 0.5f
+                    setInputsEnabled(false)
                     binding.progressBarSetProfile.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSetProfile.visibility = View.GONE
-                    binding.setSaveButton.isEnabled = true
-                    binding.setSaveButton.alpha = 1f
-                    binding.setSkipButton.isEnabled = true
-                    binding.setSkipButton.alpha = 1f
-                    binding.setButton.isEnabled = true
-                    binding.setButton.alpha = 1f
-                    binding.setFirstNameEt.isEnabled = true
-                    binding.setFirstNameEt.alpha = 1f
-                    binding.setBioEt.isEnabled = true
-                    binding.setBioEt.alpha = 1f
+                    setInputsEnabled(true)
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -259,6 +237,7 @@ class SetProfileFragment : Fragment() {
         val bioMaxLength = 200
         var userNameCurrentLength = 0
         var userName = ""
+        var bio = ""
         var bioCurrentLength = 0
         var isUserNameEmpty: Boolean? = false
         val maxLines = 3
@@ -275,8 +254,7 @@ class SetProfileFragment : Fragment() {
                 userName = s.toString()
 
                 binding.setProfileFirstNameCounterTextView.text = "$userNameCurrentLength/$userNameMaxLength"
-                binding.setSaveButton.isEnabled = true
-                binding.setSaveButton.alpha = 1f
+                binding.setSaveButton.enable()
 
                 if (userNameCurrentLength > userNameMaxLength) {
                     binding.setProfileFirstNameCounterTextView.setTextColor(Color.RED)
@@ -285,7 +263,7 @@ class SetProfileFragment : Fragment() {
                 }
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
-                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio)
 
             }
 
@@ -299,12 +277,11 @@ class SetProfileFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val bio = s?.trim().toString().replace("\\s+".toRegex(), " ")
+                bio = s?.trim().toString().replace("\\s+".toRegex(), " ")
                 bioCurrentLength = bio.length
 
                 binding.setProfileCounterTextView.text = "$bioCurrentLength/$bioMaxLength"
-                binding.setSaveButton.isEnabled = true
-                binding.setSaveButton.alpha = 1f
+                binding.setSaveButton.enable()
 
                 if (bioCurrentLength > bioMaxLength) {
                     binding.setProfileCounterTextView.setTextColor(Color.RED)
@@ -313,7 +290,7 @@ class SetProfileFragment : Fragment() {
                 }
 
                 checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
-                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName)
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio)
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -331,41 +308,55 @@ class SetProfileFragment : Fragment() {
 
     private fun checkIfUserNameAndBioValid(bioCurrentLength: Int, userNameCurrentLength: Int, userNameMaxLength: Int,
                                            userNameMinLength: Int, isUserNameEmpty: Boolean?, bioMaxLength: Int,
-                                           userName: String?) {
+                                           userName: String?, bio: String?) {
         if (userNameCurrentLength > userNameMaxLength) {
             binding.setFirstNameEt.error = getString(R.string.username_can_be_up_to_30_characters_long)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
         }
         if(userNameCurrentLength < userNameMinLength) {
             binding.setFirstNameEt.error = getString(R.string.username_must_be_more_than_3_characters)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
         }
         if(isUserNameEmpty == true) {
             binding.setFirstNameEt.error = getString(R.string.username_cannot_be_empty)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
         }
         if(userName?.contains(" ") == true) {
             binding.setFirstNameEt.error = getString(R.string.username_cannot_contain_spaces)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
         }
         if (bioCurrentLength > bioMaxLength) {
             binding.setBioEt.error = getString(R.string.bio_can_be_up_to_200_characters_long)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
         }
         if(userName == "Anonymous") {
             binding.setFirstNameEt.error = getString(R.string.username_cannot_be_anonymous)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
         }
         if (userName?.contains("\n") == true) {
             binding.setFirstNameEt.error = getString(R.string.username_cannot_contain_line_breaks)
-            binding.setSaveButton.isEnabled = false
-            binding.setSaveButton.alpha = 0.5f
+            binding.setSaveButton.disable()
+        }
+        if (userName?.equals(currentUsername) == true && (bio.equals(currentBio))
+            && !isProfilePhotoChanged && !isProfilePhotoRemoved
+        ) {
+            binding.setSaveButton.disable()
+        }
+    }
+
+    private fun setInputsEnabled(enabled: Boolean) {
+        if (enabled) {
+            binding.setSaveButton.enable()
+            binding.setSkipButton.enable()
+            binding.setButton.enable()
+            binding.setFirstNameEt.enable()
+            binding.setBioEt.enable()
+        } else {
+            binding.setSaveButton.disable()
+            binding.setSkipButton.disable()
+            binding.setButton.disable()
+            binding.setFirstNameEt.disable()
+            binding.setBioEt.disable()
         }
     }
 
@@ -413,6 +404,7 @@ class SetProfileFragment : Fragment() {
         binding.setProfileImage.setImageResource(defaultImageResource)
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
+        binding.setSaveButton.enable()
     }
 
     private fun setWelcomeAnimation() {
@@ -463,6 +455,8 @@ class SetProfileFragment : Fragment() {
             if (data.data != null) {
                 selectedImg = data.data!!
                 binding.setProfileImage.setImageURI(selectedImg)
+                isProfilePhotoChanged = true
+                binding.setSaveButton.enable()
             }
         }
     }
