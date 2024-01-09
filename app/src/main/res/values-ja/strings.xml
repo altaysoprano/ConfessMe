@@ -195,4 +195,7 @@
     <string name="share_error">プロフィールの共有中にエラーが発生しました。後で再試行してください。</string>
     <string name="share_your_profile_with_your_friends_for">「プロフィールを共有することで、異なるプラットフォームから友達やより多くのユーザーにアクセスできます」</string>
     <string name="maybe_later">もしかしたら後で</string>
+    <string name="delete_account">アカウントを削除する</string>
+    <string name="delete_account_confirmation">アカウントを削除してもよろしいですか？この操作は元に戻すことはできず、このアプリ内のすべてのデータが永久に削除されます。</string>
+    <string name="confirm">確認</string>
 </resources>

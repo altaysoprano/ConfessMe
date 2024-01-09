@@ -194,4 +194,7 @@
     <string name="share_error">An error occurred while sharing the profile. Please try again later.</string>
     <string name="share_your_profile_with_your_friends_for">"Sharing your profile helps you reach friends and more users across different platforms."</string>
     <string name="maybe_later">Maybe Later</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone and all your data in this app will be permanently deleted.</string>
+    <string name="confirm">CONFIRM</string>
 </resources>

@@ -51,6 +51,20 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintHorizontal_bias="0.5" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/delete_account_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:elevation="16dp"
+            android:text="@string/delete_account"
+            android:textColor="@color/confessmered"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.5" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

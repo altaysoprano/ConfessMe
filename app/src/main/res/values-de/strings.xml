@@ -195,4 +195,7 @@
     <string name="share_error">Es ist ein Fehler beim Teilen des Profils aufgetreten. Bitte versuchen Sie es später erneut.</string>
     <string name="share_your_profile_with_your_friends_for">"Indem du dein Profil teilst, kannst du auf verschiedenen Plattformen Freunde und mehr Benutzer erreichen."</string>
     <string name="maybe_later">Vielleicht Später</string>
+    <string name="delete_account">Konto Löschen</string>
+    <string name="delete_account_confirmation">Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden und alle Ihre Daten in dieser Anwendung werden dauerhaft gelöscht.</string>
+    <string name="confirm">Bestätigen</string>
 </resources>

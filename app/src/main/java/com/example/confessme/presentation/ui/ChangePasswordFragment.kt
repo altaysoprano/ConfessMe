@@ -13,6 +13,8 @@ import androidx.fragment.app.viewModels
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentChangePasswordBinding
 import com.example.confessme.presentation.SettingsViewModel
+import com.example.confessme.util.MyUtils.disable
+import com.example.confessme.util.MyUtils.enable
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,26 +46,12 @@ class ChangePasswordFragment : DialogFragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarChangePassword.visibility = View.VISIBLE
-                    binding.saveButton.isEnabled = false
-                    binding.saveButton.alpha = 0.5f
-                    binding.previousPasswordEt.isEnabled = false
-                    binding.previousPasswordEt.alpha = 0.5f
-                    binding.newPasswordEt.isEnabled = false
-                    binding.newPasswordEt.alpha = 0.5f
-                    binding.newPasswordAgainEt.isEnabled = false
-                    binding.newPasswordAgainEt.alpha = 0.5f
+                    setInputsEnabled(false)
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarChangePassword.visibility = View.GONE
-                    binding.saveButton.isEnabled = true
-                    binding.saveButton.alpha = 1f
-                    binding.previousPasswordEt.isEnabled = true
-                    binding.previousPasswordEt.alpha = 1f
-                    binding.newPasswordEt.isEnabled = true
-                    binding.newPasswordEt.alpha = 1f
-                    binding.newPasswordAgainEt.isEnabled = true
-                    binding.newPasswordAgainEt.alpha = 1f
+                    setInputsEnabled(true)
 
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
@@ -71,19 +59,27 @@ class ChangePasswordFragment : DialogFragment() {
 
                 is UiState.Success -> {
                     binding.progressBarChangePassword.visibility = View.GONE
-                    binding.saveButton.isEnabled = true
-                    binding.saveButton.alpha = 1f
-                    binding.previousPasswordEt.isEnabled = true
-                    binding.previousPasswordEt.alpha = 1f
-                    binding.newPasswordEt.isEnabled = true
-                    binding.newPasswordEt.alpha = 1f
-                    binding.newPasswordAgainEt.isEnabled = true
-                    binding.newPasswordAgainEt.alpha = 1f
+                    setInputsEnabled(true)
 
                     Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
                     dismiss()
                 }
             }
+        }
+    }
+
+    private fun setInputsEnabled(enabled: Boolean) {
+        if (enabled) {
+            binding.progressBarChangePassword.visibility = View.GONE
+            binding.saveButton.enable()
+            binding.previousPasswordEt.enable()
+            binding.newPasswordEt.enable()
+            binding.newPasswordAgainEt.enable()
+        } else {
+            binding.saveButton.disable()
+            binding.previousPasswordEt.disable()
+            binding.newPasswordEt.disable()
+            binding.newPasswordAgainEt.disable()
         }
     }
 

@@ -19,6 +19,7 @@ import com.example.confessme.MainActivity
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSettingsBinding
+import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.SettingsViewModel
 import com.example.confessme.util.MyPreferences
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -31,6 +32,7 @@ class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
     private lateinit var navRegister: FragmentNavigation
+    private lateinit var dialogHelper: ConfessMeDialog
     private val viewModel: SettingsViewModel by viewModels()
 
     override fun onCreateView(
@@ -41,6 +43,7 @@ class SettingsFragment : Fragment() {
         (activity as AppCompatActivity?)!!.title = context?.getString(R.string.settings)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.settingsToolbar)
         navRegister = activity as FragmentNavigation
+        dialogHelper = ConfessMeDialog(requireContext())
         setHasOptionsMenu(true)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
@@ -56,6 +59,19 @@ class SettingsFragment : Fragment() {
 
         binding.selectLanguageButton.setOnClickListener {
             showSelectLanguageDialog()
+        }
+
+        binding.deleteAccountButton.setOnClickListener {
+            dialogHelper.showDialog(
+                title = getString(R.string.delete_account),
+                message = getString(R.string.delete_account_confirmation),
+                positiveButtonText = getString(R.string.yes),
+                negativeButtonText = getString(R.string.no),
+                onConfirm = {
+                    val confirmPasswordFragment = ConfirmPasswordFragment()
+                    confirmPasswordFragment.show(requireActivity().supportFragmentManager, "ConfirmPasswordFragment")
+                }
+            )
         }
 
         return binding.root

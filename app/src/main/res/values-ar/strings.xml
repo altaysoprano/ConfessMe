@@ -195,4 +195,7 @@
     <string name="share_error">حدث خطأ أثناء مشاركة الملف الشخصي. يرجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="share_your_profile_with_your_friends_for">"مشاركة ملفك الشخصي تساعدك في الوصول إلى الأصدقاء ومزيد من المستخدمين عبر منصات مختلفة."</string>
     <string name="maybe_later">ربما في وقت لاحق</string>
+    <string name="delete_account">حذف الحساب</string>
+    <string name="delete_account_confirmation">هل أنت متأكد من رغبتك في حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه وسيتم حذف جميع بياناتك في هذا التطبيق نهائيًا.</string>
+    <string name="confirm">تأكيد</string>
 </resources>
