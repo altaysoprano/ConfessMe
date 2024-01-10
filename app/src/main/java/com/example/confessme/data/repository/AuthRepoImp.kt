@@ -6,6 +6,8 @@ import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -142,9 +144,9 @@ class AuthRepoImp(
 
         if (user != null) {
             firebaseAuth.signOut()
-            result.invoke(UiState.Success("Logout successful"))
+            result.invoke(UiState.Success(context.getString(R.string.logout_successful)))
         } else {
-            result.invoke(UiState.Failure("No user signed in"))
+            result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))
         }
     }
 
@@ -327,6 +329,69 @@ class AuthRepoImp(
                     result.invoke(UiState.Failure(context.getString(R.string.reauthentication_failed_make_sure_you_entered_the_correct_current_password)))
                 }
             }
+    }
+
+    override fun deleteAccountWithConfessionsAndSignOut(
+        currentPassword: String,
+        result: (UiState<String>) -> Unit
+    ) {
+        val user = firebaseAuth.currentUser
+        val email = user?.email
+
+        if (user != null && !email.isNullOrEmpty()) {
+            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+
+            user.reauthenticate(credential)
+                .addOnCompleteListener { reAuthTask ->
+                    if (reAuthTask.isSuccessful) {
+                        val uid = user.uid
+                        val confessionsRef = database.collection("confessions")
+
+                        confessionsRef.whereEqualTo("fromUserId", uid)
+                            .get()
+                            .addOnSuccessListener { documents ->
+                                val batch = database.batch()
+
+                                for (document in documents) {
+                                    val docRef = confessionsRef.document(document.id)
+                                    batch.delete(docRef)
+                                }
+
+                                batch.commit()
+                                    .addOnCompleteListener { deleteAllTask ->
+                                        if (deleteAllTask.isSuccessful) {
+                                            user.delete()
+                                                .addOnCompleteListener { deleteAccountTask ->
+                                                    if (deleteAccountTask.isSuccessful) {
+                                                        firebaseAuth.signOut()
+                                                        result.invoke(UiState.Success(context.getString(R.string.account_deleted_successfully)))
+                                                    } else {
+                                                        result.invoke(
+                                                            UiState.Failure(
+                                                                context.getString(R.string.error_deleting_account) + ": " + deleteAccountTask.exception?.localizedMessage
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                        } else {
+                                            result.invoke(UiState.Failure(context.getString(R.string.error_deleting_account) + ": " + deleteAllTask.exception?.localizedMessage))
+                                        }
+                                    }
+                            }
+                            .addOnFailureListener { exception ->
+                                result.invoke(
+                                    UiState.Failure(
+                                        context.getString(R.string.an_error_occured_please_try_again) + ": " + exception.localizedMessage
+                                    )
+                                )
+                            }
+                    } else {
+                        result.invoke(UiState.Failure(context.getString(R.string.invalid_password)))
+                    }
+                }
+        } else {
+            result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))
+        }
     }
 
     override fun updateLanguage(language: String) {

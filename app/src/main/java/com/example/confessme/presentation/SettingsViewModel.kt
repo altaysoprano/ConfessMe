@@ -17,7 +17,11 @@ class SettingsViewModel @Inject constructor(
     val updatePasswordState: LiveData<UiState<String>>
         get() = _updatePasswordState
 
-    fun updatePassword(previousPassword: String, newPassword: String, newPasswordAgain: String) {
+    private val _deleteAccountState = MutableLiveData<UiState<String>>()
+    val deleteAccountState: LiveData<UiState<String>>
+        get() = _deleteAccountState
+
+    fun updatePassword(previousPassword: String, newPassword: String) {
         _updatePasswordState.value = UiState.Loading
         repository.updatePassword(previousPassword, newPassword) { result ->
             _updatePasswordState.postValue(result)
@@ -26,5 +30,12 @@ class SettingsViewModel @Inject constructor(
 
     fun updateLanguage(language: String) {
         repository.updateLanguage(language)
+    }
+
+    fun deleteAccountWithConfessionsAndSignOut(currentPassword: String) {
+        _deleteAccountState.value = UiState.Loading
+        repository.deleteAccountWithConfessionsAndSignOut(currentPassword) { result ->
+            _deleteAccountState.postValue(result)
+        }
     }
 }

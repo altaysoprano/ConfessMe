@@ -198,4 +198,6 @@
     <string name="delete_account">アカウントを削除する</string>
     <string name="delete_account_confirmation">アカウントを削除してもよろしいですか？この操作は元に戻すことはできず、このアプリ内のすべてのデータが永久に削除されます。</string>
     <string name="confirm">確認</string>
+    <string name="error_deleting_account">アカウントの削除中にエラーが発生しました</string>
+    <string name="account_deleted_successfully">アカウントが正常に削除されました</string>
 </resources>

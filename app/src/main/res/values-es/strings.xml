@@ -198,4 +198,6 @@
     <string name="delete_account">Eliminar Cuenta</string>
     <string name="delete_account_confirmation">¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer y todos tus datos en esta aplicación se eliminarán de forma permanente.</string>
     <string name="confirm">Confirmar</string>
+    <string name="error_deleting_account">Error al eliminar la cuenta</string>
+    <string name="account_deleted_successfully">La cuenta se eliminó correctamente</string>
 </resources>

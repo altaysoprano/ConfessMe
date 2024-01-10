@@ -198,4 +198,6 @@
     <string name="delete_account">حذف الحساب</string>
     <string name="delete_account_confirmation">هل أنت متأكد من رغبتك في حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه وسيتم حذف جميع بياناتك في هذا التطبيق نهائيًا.</string>
     <string name="confirm">تأكيد</string>
+    <string name="error_deleting_account">خطأ في حذف الحساب</string>
+    <string name="account_deleted_successfully">تم حذف الحساب بنجاح</string>
 </resources>

@@ -198,4 +198,6 @@
     <string name="delete_account">删除帐户</string>
     <string name="delete_account_confirmation">您确定要删除您的帐户吗？此操作无法撤消，并且此应用中的所有数据都将被永久删除。</string>
     <string name="confirm">确认</string>
+    <string name="error_deleting_account">删除帐户时出错</string>
+    <string name="account_deleted_successfully">帐户已成功删除</string>
 </resources>

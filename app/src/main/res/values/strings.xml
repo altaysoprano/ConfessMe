@@ -197,4 +197,6 @@
     <string name="delete_account">Delete Account</string>
     <string name="delete_account_confirmation">Are you sure you want to delete your account? This action cannot be undone and all your data in this app will be permanently deleted.</string>
     <string name="confirm">CONFIRM</string>
+    <string name="error_deleting_account">Error deleting account</string>
+    <string name="account_deleted_successfully">Account deleted successfully</string>
 </resources>

@@ -198,4 +198,6 @@
     <string name="delete_account">Supprimer Compte</string>
     <string name="delete_account_confirmation">Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes vos données dans cette application seront définitivement supprimées.</string>
     <string name="confirm">Confirmer</string>
+    <string name="error_deleting_account">Erreur lors de la suppression du compte</string>
+    <string name="account_deleted_successfully">Compte supprimé avec succès</string>
 </resources>

@@ -197,4 +197,6 @@
     <string name="delete_account">Hesap Sil</string>
     <string name="delete_account_confirmation">Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve bu uygulamada sahip olduğunuz tüm veriler kalıcı olarak silinir.</string>
     <string name="confirm">Onayla</string>
+    <string name="error_deleting_account">Hesap silme hatası</string>
+    <string name="account_deleted_successfully">Hesap başarıyla silindi</string>
 </resources>

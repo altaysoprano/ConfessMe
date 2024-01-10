@@ -198,4 +198,6 @@
     <string name="delete_account">Konto Löschen</string>
     <string name="delete_account_confirmation">Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden und alle Ihre Daten in dieser Anwendung werden dauerhaft gelöscht.</string>
     <string name="confirm">Bestätigen</string>
+    <string name="error_deleting_account">Fehler beim Löschen des Kontos</string>
+    <string name="account_deleted_successfully">Konto wurde erfolgreich gelöscht</string>
 </resources>

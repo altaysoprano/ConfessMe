@@ -68,21 +68,6 @@ class ChangePasswordFragment : DialogFragment() {
         }
     }
 
-    private fun setInputsEnabled(enabled: Boolean) {
-        if (enabled) {
-            binding.progressBarChangePassword.visibility = View.GONE
-            binding.saveButton.enable()
-            binding.previousPasswordEt.enable()
-            binding.newPasswordEt.enable()
-            binding.newPasswordAgainEt.enable()
-        } else {
-            binding.saveButton.disable()
-            binding.previousPasswordEt.disable()
-            binding.newPasswordEt.disable()
-            binding.newPasswordAgainEt.disable()
-        }
-    }
-
     private fun setOnSaveClickListener() {
         binding.saveButton.setOnClickListener {
             val previousPassword = binding.previousPasswordEt.text.toString()
@@ -97,8 +82,22 @@ class ChangePasswordFragment : DialogFragment() {
             if(previousPassword.isEmpty() || newPassword.isEmpty() || newPasswordAgain.isEmpty()) {
                 Toast.makeText(requireContext(), getString(R.string.fields_cannot_be_left_empty), Toast.LENGTH_SHORT).show()
             } else {
-                viewModel.updatePassword(previousPassword, newPassword, newPasswordAgain)
+                viewModel.updatePassword(previousPassword, newPassword)
             }
+        }
+    }
+
+    private fun setInputsEnabled(enabled: Boolean) {
+        if (enabled) {
+            binding.saveButton.enable()
+            binding.previousPasswordEt.enable()
+            binding.newPasswordEt.enable()
+            binding.newPasswordAgainEt.enable()
+        } else {
+            binding.saveButton.disable()
+            binding.previousPasswordEt.disable()
+            binding.newPasswordEt.disable()
+            binding.newPasswordAgainEt.disable()
         }
     }
 }
