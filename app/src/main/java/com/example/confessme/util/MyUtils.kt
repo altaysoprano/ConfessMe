@@ -8,6 +8,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.confessme.R
@@ -217,5 +218,11 @@ object MyUtils {
     fun View.enable() {
         this.isEnabled = true
         this.alpha = 1f
+    }
+
+    fun showKeyboard(context: Context, view: View) {
+        val inputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 }

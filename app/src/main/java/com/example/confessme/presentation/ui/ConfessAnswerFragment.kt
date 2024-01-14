@@ -316,7 +316,7 @@ class ConfessAnswerFragment(
                 it.visibility = View.VISIBLE
                 it.setText(answerText)
                 it.requestFocus()
-                showKeyboard(requireContext(), it)
+                MyUtils.showKeyboard(requireContext(), it)
             }
             isEditAnswer = true
         }
@@ -410,7 +410,7 @@ class ConfessAnswerFragment(
             binding.confessAnswerEditText.apply {
                 visibility = View.VISIBLE
                 requestFocus()
-                showKeyboard(requireContext(), this)
+                MyUtils.showKeyboard(requireContext(), this)
             }
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.GONE
@@ -579,12 +579,6 @@ class ConfessAnswerFragment(
                 navRegister.navigateFrag(profileFragment, true)
             }
         }
-    }
-
-    private fun showKeyboard(context: Context, view: View) {
-        val inputMethodManager =
-            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun showRepliedSnackbar(confessionText: String, answerText: String) {

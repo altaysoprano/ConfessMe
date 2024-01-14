@@ -27,6 +27,7 @@ import com.example.confessme.R
 import com.example.confessme.databinding.FragmentConfessBinding
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.ConfessViewModel
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -72,37 +73,45 @@ class ConfessFragment : Fragment() {
     private fun setTextField() {
         val maxLength = 560
         binding.counterTextView.text = "0/$maxLength"
-        binding.confessEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
-            }
+        binding.confessEditText.apply {
+            requestFocus()
+            this.postDelayed({
+                MyUtils.showKeyboard(requireContext(), binding.confessEditText)
+            }, 100)
+            MyUtils.showKeyboard(requireContext(), this)
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val currentLength = s?.trim()?.length ?: 0
-                isTextEmpty = s?.trim()?.isEmpty()
-                binding.counterTextView.text = "$currentLength/$maxLength"
-
-                if (isTextEmpty == true) {
-                    isConfessButtonEnabled = false
-                    binding.counterTextView.setTextColor(Color.parseColor("#B6B6B6"))
-                    requireActivity().invalidateOptionsMenu()
-                } else if (currentLength > maxLength) {
-                    isConfessButtonEnabled = false
-                    requireActivity().invalidateOptionsMenu()
-                    binding.counterTextView.setTextColor(Color.RED)
-                    binding.confessEditText.error =
-                        getString(R.string.confession_is_too_long_max) + maxLength + getString(R.string.characters)
-                } else {
-                    binding.confessEditText.error = null
-                    isConfessButtonEnabled = true
-                    binding.counterTextView.setTextColor(Color.parseColor("#B6B6B6"))
-                    requireActivity().invalidateOptionsMenu()
                 }
-            }
 
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val currentLength = s?.trim()?.length ?: 0
+                    isTextEmpty = s?.trim()?.isEmpty()
+                    binding.counterTextView.text = "$currentLength/$maxLength"
+
+                    if (isTextEmpty == true) {
+                        isConfessButtonEnabled = false
+                        binding.counterTextView.setTextColor(Color.parseColor("#B6B6B6"))
+                        requireActivity().invalidateOptionsMenu()
+                    } else if (currentLength > maxLength) {
+                        isConfessButtonEnabled = false
+                        requireActivity().invalidateOptionsMenu()
+                        binding.counterTextView.setTextColor(Color.RED)
+                        binding.confessEditText.error =
+                            getString(R.string.confession_is_too_long_max) + maxLength + getString(R.string.characters)
+                    } else {
+                        binding.confessEditText.error = null
+                        isConfessButtonEnabled = true
+                        binding.counterTextView.setTextColor(Color.parseColor("#B6B6B6"))
+                        requireActivity().invalidateOptionsMenu()
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                }
+            })
+        }
 
         binding.confessScrollView.setOnTouchListener { _, event ->
             when (event.action) {
