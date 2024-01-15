@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.example.confessme.R
@@ -28,6 +29,8 @@ import com.example.confessme.presentation.OtherUserViewPagerAdapter
 import com.example.confessme.presentation.ProfileViewModel
 import com.example.confessme.presentation.ScrollableToTop
 import com.example.confessme.util.FollowType
+import com.example.confessme.util.MyUtils.disable
+import com.example.confessme.util.MyUtils.enable
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
@@ -250,17 +253,21 @@ class OtherUserProfileFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.otherUserProgressBarProfile.visibility = View.VISIBLE
+                    binding.otherUserProgressButtonLayout.followButtonCardview.disable()
                     setAllProfileDataDefault()
                 }
 
                 is UiState.Failure -> {
                     binding.otherUserProgressBarProfile.visibility = View.GONE
+                    binding.otherUserProgressButtonLayout.followButtonCardview.enable()
+                    fragmentManager?.popBackStack()
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
                     binding.otherUserProgressBarProfile.visibility = View.GONE
+                    binding.otherUserProgressButtonLayout.followButtonCardview.enable()
                     val userProfile = state.data
                     if (userProfile != null) {
                         if (userProfile.imageUrl.isNotEmpty()) {
@@ -294,7 +301,6 @@ class OtherUserProfileFragment : Fragment() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Bir sekme seçilmemiş durumdayken yapılacak işlemler
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
