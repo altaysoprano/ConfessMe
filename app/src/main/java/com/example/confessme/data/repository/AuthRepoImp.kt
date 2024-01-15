@@ -346,6 +346,7 @@ class AuthRepoImp(
                     if (reAuthTask.isSuccessful) {
                         val uid = user.uid
                         val confessionsRef = database.collection("confessions")
+                        val usersRef = database.collection("users")
 
                         confessionsRef.whereEqualTo("fromUserId", uid)
                             .get()
@@ -353,9 +354,12 @@ class AuthRepoImp(
                                 val batch = database.batch()
 
                                 for (document in documents) {
-                                    val docRef = confessionsRef.document(document.id)
-                                    batch.delete(docRef)
+                                    val confessionDocRef = confessionsRef.document(document.id)
+                                    batch.delete(confessionDocRef)
                                 }
+
+                                val userDocRef = usersRef.document(uid)
+                                batch.delete(userDocRef)
 
                                 batch.commit()
                                     .addOnCompleteListener { deleteAllTask ->
