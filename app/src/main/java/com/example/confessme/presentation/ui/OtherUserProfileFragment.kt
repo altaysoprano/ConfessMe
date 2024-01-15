@@ -81,11 +81,13 @@ class OtherUserProfileFragment : Fragment() {
                         is UiState.Loading -> {
                             binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                                 View.VISIBLE
+                            binding.otherUserProgressButtonLayout.followButtonCardview.disable()
                         }
 
                         is UiState.Failure -> {
                             binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                                 View.GONE
+                            binding.otherUserProgressButtonLayout.followButtonCardview.enable()
                             Toast.makeText(
                                 requireContext(),
                                 state.error.toString(),
@@ -97,6 +99,7 @@ class OtherUserProfileFragment : Fragment() {
                         is UiState.Success -> {
                             binding.otherUserProgressButtonLayout.progressBarFollowButton.visibility =
                                 View.GONE
+                            binding.otherUserProgressButtonLayout.followButtonCardview.enable()
                             setFollowButton(userUid)
                             viewModel.followUserState.removeObserver(this)
                         }
@@ -260,7 +263,7 @@ class OtherUserProfileFragment : Fragment() {
                 is UiState.Failure -> {
                     binding.otherUserProgressBarProfile.visibility = View.GONE
                     binding.otherUserProgressButtonLayout.followButtonCardview.enable()
-                    fragmentManager?.popBackStack()
+                    requireActivity().onBackPressed()
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
