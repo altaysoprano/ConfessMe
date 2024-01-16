@@ -15,9 +15,11 @@ import com.example.confessme.util.ProfilePhotoAction
 import com.example.confessme.util.UiState
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
@@ -431,26 +433,34 @@ class UserRepoImp(
                     if (documentSnapshot.exists()) {
                         val userProfile = documentSnapshot.toObject(User::class.java)
 
-                        userRef.collection("followers").get()
-                            .addOnSuccessListener { followersQuerySnapshot ->
-                                val followersCount = followersQuerySnapshot.size()
+                        // Eğer userProfile null değilse ve kullanıcı profili bulunuyorsa devam et
+                        userProfile?.let {
+                            checkAndRemoveInvalidUsersFromList(userRef.collection("following"))
+                            checkAndRemoveInvalidUsersFromList(userRef.collection("followers"))
 
-                                userRef.collection("following").get()
-                                    .addOnSuccessListener { followingQuerySnapshot ->
-                                        val followingCount = followingQuerySnapshot.size()
+                            // Takipçi sayısını alma
+                            userRef.collection("followers").get()
+                                .addOnSuccessListener { followersQuerySnapshot ->
+                                    val followersCount = followersQuerySnapshot.size()
 
-                                        userProfile?.followCount = followingCount
-                                        userProfile?.followersCount = followersCount
+                                    // Takip edilen sayısını alma
+                                    userRef.collection("following").get()
+                                        .addOnSuccessListener { followingQuerySnapshot ->
+                                            val followingCount = followingQuerySnapshot.size()
 
-                                        result.invoke(UiState.Success(userProfile))
-                                    }
-                                    .addOnFailureListener { exception ->
-                                        result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_following_count)))
-                                    }
-                            }
-                            .addOnFailureListener { exception ->
-                                result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_follower_count)))
-                            }
+                                            it.followCount = followingCount
+                                            it.followersCount = followersCount
+
+                                            result.invoke(UiState.Success(it))
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_following_count)))
+                                        }
+                                }
+                                .addOnFailureListener { exception ->
+                                    result.invoke(UiState.Failure(context.getString(R.string.an_error_occurred_while_pulling_the_follower_count)))
+                                }
+                        }
                     } else {
                         result.invoke(UiState.Failure(context.getString(R.string.user_data_not_found)))
                     }
@@ -461,6 +471,24 @@ class UserRepoImp(
         } else {
             result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
         }
+    }
+
+    private fun checkAndRemoveInvalidUsersFromList(collectionRef: CollectionReference) {
+        collectionRef.get()
+            .addOnSuccessListener { querySnapshot ->
+                for (document in querySnapshot) {
+                    val userUid = document.id
+                    val userRef = database.collection("users").document(userUid)
+
+                    userRef.get()
+                        .addOnSuccessListener { userDocumentSnapshot ->
+                            if (!userDocumentSnapshot.exists()) {
+                                Log.d("Mesaj: ", "!userDocumentSnapshot.exists()'te. Silinecek username: ${userDocumentSnapshot.toObject(User::class.java)?.userName}")
+                                collectionRef.document(userUid).delete()
+                            }
+                        }
+                }
+            }
     }
 
     override fun fetchUserProfileByUid(userUid: String, result: (UiState<User?>) -> Unit) {
