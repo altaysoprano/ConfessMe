@@ -200,4 +200,7 @@
     <string name="confirm">确认</string>
     <string name="error_deleting_account">删除帐户时出错</string>
     <string name="account_deleted_successfully">帐户已成功删除</string>
+    <string name="enter_code">输入代码</string>
+    <string name="enter_code_description">输入发送到您电子邮件账户的代码</string>
+    <string name="enter_password_prompt">请输入您的帐户密码</string>
 </resources>

@@ -200,4 +200,7 @@
     <string name="confirm">Bestätigen</string>
     <string name="error_deleting_account">Fehler beim Löschen des Kontos</string>
     <string name="account_deleted_successfully">Konto wurde erfolgreich gelöscht</string>
+    <string name="enter_code">Geben Sie den Code ein</string>
+    <string name="enter_code_description">Geben Sie den Code ein, der an Ihr E-Mail-Konto gesendet wurde</string>
+    <string name="enter_password_prompt">Bitte geben Sie Ihr Kontopasswort ein</string>
 </resources>

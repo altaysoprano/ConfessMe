@@ -200,4 +200,7 @@
     <string name="confirm">確認</string>
     <string name="error_deleting_account">アカウントの削除中にエラーが発生しました</string>
     <string name="account_deleted_successfully">アカウントが正常に削除されました</string>
+    <string name="enter_code">コードを入力してください</string>
+    <string name="enter_code_description">メールアカウントに送信されたコードを入力してください</string>
+    <string name="enter_password_prompt">アカウントのパスワードを入力してください</string>
 </resources>

@@ -17,6 +17,10 @@ class SettingsViewModel @Inject constructor(
     val updatePasswordState: LiveData<UiState<String>>
         get() = _updatePasswordState
 
+    private val _checkIfGoogleSignInState = MutableLiveData<UiState<Boolean>>()
+    val checkIfGoogleSignInState: LiveData<UiState<Boolean>>
+        get() = _checkIfGoogleSignInState
+
     private val _deleteAccountState = MutableLiveData<UiState<String>>()
     val deleteAccountState: LiveData<UiState<String>>
         get() = _deleteAccountState
@@ -25,6 +29,13 @@ class SettingsViewModel @Inject constructor(
         _updatePasswordState.value = UiState.Loading
         repository.updatePassword(previousPassword, newPassword) { result ->
             _updatePasswordState.postValue(result)
+        }
+    }
+
+    fun checkIfGoogleSignIn() {
+        _checkIfGoogleSignInState.value = UiState.Loading
+        repository.isGoogleSignIn { result ->
+            _checkIfGoogleSignInState.postValue(result)
         }
     }
 

@@ -419,6 +419,21 @@ class AuthRepoImp(
         }
     }
 
+    override fun isGoogleSignIn(result: (UiState<Boolean>) -> Unit) {
+        return try {
+            val user = firebaseAuth.currentUser
+
+            if (user != null) {
+                val isGoogleSignIn = user.providerData.any { it.providerId == "google.com" }
+                result.invoke(UiState.Success(isGoogleSignIn))
+            } else {
+                result.invoke(UiState.Failure(context.getString(R.string.user_not_authenticated)))
+            }
+        } catch (e: Exception) {
+            result.invoke((UiState.Failure("${context.getString(R.string.an_error_occured_please_try_again)}: ${e.localizedMessage}")))
+        }
+    }
+
     override fun updateLanguage(language: String) {
         val user = firebaseAuth.currentUser
 

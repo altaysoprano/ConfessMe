@@ -200,4 +200,7 @@
     <string name="confirm">Confirmar</string>
     <string name="error_deleting_account">Error al eliminar la cuenta</string>
     <string name="account_deleted_successfully">La cuenta se eliminó correctamente</string>
+    <string name="enter_code">Introduce el código</string>
+    <string name="enter_code_description">Ingrese el código enviado a su cuenta de correo electrónico</string>
+    <string name="enter_password_prompt">Por favor, ingrese la contraseña de su cuenta</string>
 </resources>

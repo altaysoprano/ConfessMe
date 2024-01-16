@@ -200,4 +200,7 @@
     <string name="confirm">تأكيد</string>
     <string name="error_deleting_account">خطأ في حذف الحساب</string>
     <string name="account_deleted_successfully">تم حذف الحساب بنجاح</string>
+    <string name="enter_code_description">أدخل الرمز المرسل إلى حساب بريدك الإلكتروني</string>
+    <string name="enter_password_prompt">الرجاء إدخال كلمة المرور الخاصة بحسابك</string>
+    <string name="enter_code">ادخل الكود</string>
 </resources>

@@ -200,4 +200,7 @@
     <string name="confirm">Confirmer</string>
     <string name="error_deleting_account">Erreur lors de la suppression du compte</string>
     <string name="account_deleted_successfully">Compte supprimé avec succès</string>
+    <string name="enter_code">Entrez le code</string>
+    <string name="enter_code_description">Entrez le code envoyé à votre compte e-mail</string>
+    <string name="enter_password_prompt">Veuillez entrer le mot de passe de votre compte</string>
 </resources>

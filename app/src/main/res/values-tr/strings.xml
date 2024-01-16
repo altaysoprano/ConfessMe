@@ -199,4 +199,7 @@
     <string name="confirm">Onayla</string>
     <string name="error_deleting_account">Hesap silme hatası</string>
     <string name="account_deleted_successfully">Hesap başarıyla silindi</string>
+    <string name="enter_code">Kodu gir</string>
+    <string name="enter_code_description">E-posta hesabına gönderilen kodu gir</string>
+    <string name="enter_password_prompt">Lütfen hesabınızın şifresini giriniz</string>
 </resources>

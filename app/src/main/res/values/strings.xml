@@ -199,4 +199,7 @@
     <string name="confirm">CONFIRM</string>
     <string name="error_deleting_account">Error deleting account</string>
     <string name="account_deleted_successfully">Account deleted successfully</string>
+    <string name="enter_code">Enter the code</string>
+    <string name="enter_code_description">Enter the code sent to your email account</string>
+    <string name="enter_password_prompt">Please enter your account password</string>
 </resources>
