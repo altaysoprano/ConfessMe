@@ -936,7 +936,6 @@ class UserRepoImp(
         currentUserId: String,
         token: String
     ) {
-
         try {
             val jsonObject = JSONObject()
 
