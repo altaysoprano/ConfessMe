@@ -202,4 +202,6 @@
     <string name="enter_code">Kodu gir</string>
     <string name="enter_code_description">E-posta hesabına gönderilen kodu gir</string>
     <string name="enter_password_prompt">Lütfen hesabınızın şifresini giriniz</string>
+    <string name="verification_email_sent">Doğrulama kodu email adresinize gönderildi. Lütfen email hesabınızı kontrol ediniz.</string>
+    <string name="failed_verification_email">Doğrulama emaili gönderilemedi.</string>
 </resources>

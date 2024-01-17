@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.confessme.R
 import com.example.confessme.data.model.User
 import com.example.confessme.util.UiState
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -334,85 +335,111 @@ class AuthRepoImp(
 
     override fun deleteAccountWithConfessionsAndSignOut(
         currentPassword: String,
+        googleSignInAccount: GoogleSignInAccount?,
         result: (UiState<String>) -> Unit
     ) {
         val user = firebaseAuth.currentUser
         val email = user?.email
 
         if (user != null && !email.isNullOrEmpty()) {
-            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+            val isGoogleSignIn = user.providerData.any { it.providerId == GoogleAuthProvider.PROVIDER_ID }
 
-            user.reauthenticate(credential)
-                .addOnCompleteListener { reAuthTask ->
-                    if (reAuthTask.isSuccessful) {
-                        val uid = user.uid
-                        val confessionsRef = database.collection("confessions")
-                        val usersRef = database.collection("users")
+            if (isGoogleSignIn) {
+                val credential = GoogleAuthProvider.getCredential(googleSignInAccount?.idToken, null)
 
-                        confessionsRef.whereEqualTo("fromUserId", uid)
-                            .get()
-                            .addOnSuccessListener { documents ->
-                                val batch = database.batch()
+                user.reauthenticate(credential)
+                    .addOnCompleteListener { reAuthTask ->
+                        if (reAuthTask.isSuccessful) {
+                            performDeleteAccount(result)
+                        } else {
+                            result.invoke(UiState.Failure(context.getString(R.string.google_sign_in_failed_please_try_again)))
+                        }
+                    }
+            } else {
+                val credential = EmailAuthProvider.getCredential(email, currentPassword)
 
-                                for (document in documents) {
-                                    val confessionDocRef = confessionsRef.document(document.id)
-                                    batch.delete(confessionDocRef)
+                user.reauthenticate(credential)
+                    .addOnCompleteListener { reAuthTask ->
+                        if (reAuthTask.isSuccessful) {
+                            performDeleteAccount(result)
+                        } else {
+                            result.invoke(UiState.Failure(context.getString(R.string.invalid_password)))
+                        }
+                    }
+            }
+        } else {
+            result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))
+        }
+    }
+
+    private fun performDeleteAccount(result: (UiState<String>) -> Unit) {
+        val user = firebaseAuth.currentUser
+        val uid = user?.uid
+
+        if (uid != null) {
+            val confessionsRef = database.collection("confessions")
+            val usersRef = database.collection("users")
+
+            confessionsRef.whereEqualTo("fromUserId", uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val batch = database.batch()
+
+                    for (document in documents) {
+                        val confessionDocRef = confessionsRef.document(document.id)
+                        batch.delete(confessionDocRef)
+                    }
+
+                    confessionsRef.whereEqualTo("userId", uid)
+                        .get()
+                        .addOnSuccessListener { userConfessions ->
+                            for (userConfession in userConfessions) {
+                                val userConfessionDocRef = confessionsRef.document(userConfession.id)
+                                val favoritedValue = userConfession.getBoolean("favorited")
+
+                                if (favoritedValue == true) {
+                                    val favoritedFieldUpdate = mapOf("favorited" to false)
+                                    batch.update(userConfessionDocRef, favoritedFieldUpdate)
                                 }
 
-                                confessionsRef.whereEqualTo("userId", uid)
-                                    .get()
-                                    .addOnSuccessListener { userConfessions ->
-                                        for (userConfession in userConfessions) {
-                                            val userConfessionDocRef = confessionsRef.document(userConfession.id)
-                                            val favoritedValue = userConfession.getBoolean("favorited")
+                                val answeredFieldUpdate = mapOf("answered" to false)
+                                val answerFieldUpdate = mapOf("answer" to FieldValue.delete())
 
-                                            if (favoritedValue == true) {
-                                                val favoritedFieldUpdate = mapOf("favorited" to false)
-                                                batch.update(userConfessionDocRef, favoritedFieldUpdate)
-                                            }
+                                batch.update(userConfessionDocRef, answeredFieldUpdate)
+                                batch.update(userConfessionDocRef, answerFieldUpdate)
+                            }
 
-                                            val answeredFieldUpdate = mapOf("answered" to false)
-                                            val answerFieldUpdate = mapOf("answer" to FieldValue.delete())
+                            val userDocRef = usersRef.document(uid)
+                            batch.delete(userDocRef)
 
-                                            batch.update(userConfessionDocRef, answeredFieldUpdate)
-                                            batch.update(userConfessionDocRef, answerFieldUpdate)
-                                        }
-
-                                        val userDocRef = usersRef.document(uid)
-                                        batch.delete(userDocRef)
-
-                                        batch.commit()
-                                            .addOnCompleteListener { deleteAllTask ->
-                                                if (deleteAllTask.isSuccessful) {
-                                                    user.delete()
-                                                        .addOnCompleteListener { deleteAccountTask ->
-                                                            if (deleteAccountTask.isSuccessful) {
-                                                                firebaseAuth.signOut()
-                                                                result.invoke(UiState.Success(context.getString(R.string.account_deleted_successfully)))
-                                                            } else {
-                                                                result.invoke(
-                                                                    UiState.Failure(
-                                                                        context.getString(R.string.error_deleting_account) + ": " + deleteAccountTask.exception?.localizedMessage
-                                                                    )
-                                                                )
-                                                            }
-                                                        }
+                            batch.commit()
+                                .addOnCompleteListener { deleteAllTask ->
+                                    if (deleteAllTask.isSuccessful) {
+                                        user.delete()
+                                            .addOnCompleteListener { deleteAccountTask ->
+                                                if (deleteAccountTask.isSuccessful) {
+                                                    firebaseAuth.signOut()
+                                                    result.invoke(UiState.Success(context.getString(R.string.account_deleted_successfully)))
                                                 } else {
-                                                    result.invoke(UiState.Failure(context.getString(R.string.error_deleting_account) + ": " + deleteAllTask.exception?.localizedMessage))
+                                                    result.invoke(
+                                                        UiState.Failure(
+                                                            context.getString(R.string.error_deleting_account) + ": " + deleteAccountTask.exception?.localizedMessage
+                                                        )
+                                                    )
                                                 }
                                             }
+                                    } else {
+                                        result.invoke(UiState.Failure(context.getString(R.string.error_deleting_account) + ": " + deleteAllTask.exception?.localizedMessage))
                                     }
-                            }
-                            .addOnFailureListener { exception ->
-                                result.invoke(
-                                    UiState.Failure(
-                                        context.getString(R.string.an_error_occurred_please_try_again) + ": " + exception.localizedMessage
-                                    )
-                                )
-                            }
-                    } else {
-                        result.invoke(UiState.Failure(context.getString(R.string.invalid_password)))
-                    }
+                                }
+                        }
+                }
+                .addOnFailureListener { exception ->
+                    result.invoke(
+                        UiState.Failure(
+                            context.getString(R.string.an_error_occurred_please_try_again) + ": " + exception.localizedMessage
+                        )
+                    )
                 }
         } else {
             result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))

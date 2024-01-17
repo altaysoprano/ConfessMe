@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
@@ -21,8 +22,12 @@ import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSettingsBinding
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.SettingsViewModel
+import com.example.confessme.util.Constants
 import com.example.confessme.util.MyPreferences
 import com.example.confessme.util.UiState
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.core.view.Change
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +59,7 @@ class SettingsFragment : Fragment() {
 
         setOnClickListeners()
         observeCheckIfGoogleSignIn()
+        observeConfirmGoogleAccount()
 
         return binding.root
     }
@@ -75,17 +81,85 @@ class SettingsFragment : Fragment() {
                     binding.progressBarSettings.visibility = View.GONE
                     val isGoogleSignIn = state.data
 
-                    val bundle = Bundle()
-                    bundle.putBoolean("isGoogleSignIn", isGoogleSignIn)
+                    if(isGoogleSignIn) {
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
 
-                    val confirmPasswordFragment = ConfirmPasswordFragment()
-                    confirmPasswordFragment.arguments = bundle
+                        val signInIntent = GoogleSignIn.getClient(requireActivity(), gso).signInIntent
+                        startActivityForResult(signInIntent, Constants.RC_SIGN_IN)
+                    } else {
+                        val confirmPasswordFragment = ConfirmPasswordFragment()
 
-                    confirmPasswordFragment.show(
-                        requireActivity().supportFragmentManager,
-                        "ConfirmPasswordFragment"
-                    )
+                        confirmPasswordFragment.show(
+                            requireActivity().supportFragmentManager,
+                            "ConfirmPasswordFragment"
+                        )
+                    }
                 }
+            }
+        }
+    }
+
+    fun observeConfirmGoogleAccount() {
+        viewModel.deleteAccountState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBarSettings.visibility = View.VISIBLE
+                }
+
+                is UiState.Failure -> {
+                    binding.progressBarSettings.visibility = View.GONE
+
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.progressBarSettings.visibility = View.GONE
+
+                    val fragmentManager = parentFragmentManager
+                    for (i in 0 until fragmentManager.backStackEntryCount) {
+                        fragmentManager.popBackStack()
+                    }
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.coordinator, LoginFragment())
+                        .commit()
+
+                    Toast.makeText(requireContext(), state.data, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        val googleSignInAccount = GoogleSignIn.getLastSignedInAccount(requireContext())
+
+        if (requestCode == Constants.RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                if (account != null) {
+                    val idToken = account.idToken
+                    if (idToken != null) {
+                        viewModel.deleteAccountWithConfessionsAndSignOut("", googleSignInAccount)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.google_sign_in_failed_please_try_again),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: ApiException) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.google_sign_in_failed_please_try_again),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

@@ -202,4 +202,6 @@
     <string name="enter_code">Enter the code</string>
     <string name="enter_code_description">Enter the code sent to your email account</string>
     <string name="enter_password_prompt">Please enter your account password</string>
+    <string name="verification_email_sent">Verification code has been sent to your email address. Please check your email account.</string>
+    <string name="failed_verification_email">Failed to send verification email.</string>
 </resources>

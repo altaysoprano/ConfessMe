@@ -203,4 +203,6 @@
     <string name="enter_code">コードを入力してください</string>
     <string name="enter_code_description">メールアカウントに送信されたコードを入力してください</string>
     <string name="enter_password_prompt">アカウントのパスワードを入力してください</string>
+    <string name="verification_email_sent">認証コードがメールアドレスに送信されました。メールアカウントを確認してください。</string>
+    <string name="failed_verification_email">認証メールの送信に失敗しました。</string>
 </resources>

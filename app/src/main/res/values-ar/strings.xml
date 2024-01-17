@@ -202,5 +202,7 @@
     <string name="account_deleted_successfully">تم حذف الحساب بنجاح</string>
     <string name="enter_code_description">أدخل الرمز المرسل إلى حساب بريدك الإلكتروني</string>
     <string name="enter_password_prompt">الرجاء إدخال كلمة المرور الخاصة بحسابك</string>
+    <string name="verification_email_sent">تم إرسال رمز التحقق إلى عنوان بريدك الإلكتروني. يرجى التحقق من حساب البريد الإلكتروني الخاص بك.</string>
+    <string name="failed_verification_email">فشل في إرسال رسالة التحقق عبر البريد الإلكتروني.</string>
     <string name="enter_code">ادخل الكود</string>
 </resources>

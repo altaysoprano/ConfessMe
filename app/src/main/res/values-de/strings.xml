@@ -203,4 +203,6 @@
     <string name="enter_code">Geben Sie den Code ein</string>
     <string name="enter_code_description">Geben Sie den Code ein, der an Ihr E-Mail-Konto gesendet wurde</string>
     <string name="enter_password_prompt">Bitte geben Sie Ihr Kontopasswort ein</string>
+    <string name="verification_email_sent">Der Bestätigungscode wurde an Ihre E-Mail-Adresse gesendet. Bitte überprüfen Sie Ihr E-Mail-Konto.</string>
+    <string name="failed_verification_email">Fehler beim Senden der Bestätigungs-E-Mail.</string>
 </resources>

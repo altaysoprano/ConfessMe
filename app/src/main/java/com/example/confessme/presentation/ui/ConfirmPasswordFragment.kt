@@ -25,7 +25,6 @@ class ConfirmPasswordFragment : DialogFragment() {
 
     private lateinit var binding: FragmentConfirmPasswordBinding
     private val viewModel: SettingsViewModel by viewModels()
-    private var isGoogleSignIn: Boolean? = null
     private var bottomNavBarControl: BottomNavBarControl? = null
 
     override fun onStart() {
@@ -42,8 +41,6 @@ class ConfirmPasswordFragment : DialogFragment() {
     ): View {
         binding = FragmentConfirmPasswordBinding.inflate(inflater, container, false)
 
-        checkIsGoogleSignInNull()
-        setTexts()
         observeConfirmPassword()
         setOnConfirmClickListener()
 
@@ -92,32 +89,15 @@ class ConfirmPasswordFragment : DialogFragment() {
         binding.confirmButton.setOnClickListener {
             val confirmPassword = binding.confirmPasswordEt.text.toString()
 
-            if(confirmPassword.isEmpty()) {
-                Toast.makeText(requireContext(), getString(R.string.please_fill_in_all_fields), Toast.LENGTH_SHORT).show()
+            if (confirmPassword.isEmpty()) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.please_fill_in_all_fields),
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
-                viewModel.deleteAccountWithConfessionsAndSignOut(confirmPassword)
+                viewModel.deleteAccountWithConfessionsAndSignOut(confirmPassword, null)
             }
-        }
-    }
-
-    private fun setTexts() {
-        if (isGoogleSignIn == true) {
-            binding.confirmPasswordEt.hint = getString(R.string.enter_code)
-            binding.tvConfirmPassword.helperText = getString(R.string.enter_code_description)
-        } else {
-            binding.confirmPasswordEt.hint = getString(R.string.type_your_password)
-            binding.tvConfirmPassword.helperText = getString(R.string.enter_password_prompt)
-        }
-    }
-
-    private fun checkIsGoogleSignInNull() {
-        arguments?.let {
-            isGoogleSignIn = it.getBoolean("isGoogleSignIn")
-        }
-
-        if (isGoogleSignIn == null) {
-            Toast.makeText(requireContext(), getString(R.string.an_error_occured_please_try_again), Toast.LENGTH_SHORT).show()
-            dismiss()
         }
     }
 

@@ -11,7 +11,7 @@ interface AuthRepo {
     fun updatePassword(previousPassword: String, newPassword: String, result: (UiState<String>) -> Unit)
     fun updateLanguage(language: String)
     fun isGoogleSignIn(result: (UiState<Boolean>) -> Unit)
-    fun deleteAccountWithConfessionsAndSignOut(currentPassword: String, result: (UiState<String>) -> Unit)
-
+    fun deleteAccountWithConfessionsAndSignOut(currentPassword: String, googleSignInAccount: GoogleSignInAccount?,
+                                               result: (UiState<String>) -> Unit)
 }
 

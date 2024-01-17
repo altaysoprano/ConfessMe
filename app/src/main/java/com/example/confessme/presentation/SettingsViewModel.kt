@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.confessme.data.repository.AuthRepo
 import com.example.confessme.util.UiState
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -43,9 +44,9 @@ class SettingsViewModel @Inject constructor(
         repository.updateLanguage(language)
     }
 
-    fun deleteAccountWithConfessionsAndSignOut(currentPassword: String) {
+    fun deleteAccountWithConfessionsAndSignOut(currentPassword: String, googleSignInAccount: GoogleSignInAccount?) {
         _deleteAccountState.value = UiState.Loading
-        repository.deleteAccountWithConfessionsAndSignOut(currentPassword) { result ->
+        repository.deleteAccountWithConfessionsAndSignOut(currentPassword, googleSignInAccount) { result ->
             _deleteAccountState.postValue(result)
         }
     }
