@@ -52,12 +52,14 @@ class ConfirmPasswordFragment : DialogFragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarChangePassword.visibility = View.VISIBLE
+                    dialog?.setCancelable(false)
                     setInputsEnabled(false)
                     setHomeScreenDisabled(true)
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarChangePassword.visibility = View.GONE
+                    dialog?.setCancelable(true)
                     setInputsEnabled(true)
                     setHomeScreenDisabled(false)
 
@@ -67,6 +69,7 @@ class ConfirmPasswordFragment : DialogFragment() {
 
                 is UiState.Success -> {
                     binding.progressBarChangePassword.visibility = View.GONE
+                    dialog?.setCancelable(true)
                     setInputsEnabled(true)
                     setHomeScreenDisabled(false)
 

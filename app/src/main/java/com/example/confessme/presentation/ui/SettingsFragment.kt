@@ -1,5 +1,6 @@
 package com.example.confessme.presentation.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
@@ -20,10 +21,13 @@ import com.example.confessme.MainActivity
 import com.example.confessme.R
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.FragmentSettingsBinding
+import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.SettingsViewModel
 import com.example.confessme.util.Constants
 import com.example.confessme.util.MyPreferences
+import com.example.confessme.util.MyUtils.disable
+import com.example.confessme.util.MyUtils.enable
 import com.example.confessme.util.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -39,6 +43,7 @@ class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
     private lateinit var navRegister: FragmentNavigation
     private lateinit var dialogHelper: ConfessMeDialog
+    private var bottomNavBarControl: BottomNavBarControl? = null
     private val viewModel: SettingsViewModel by viewModels()
 
     override fun onCreateView(
@@ -107,10 +112,14 @@ class SettingsFragment : Fragment() {
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarSettings.visibility = View.VISIBLE
+                    setInputsEnabled(false)
+                    setHomeScreenDisabled(true)
                 }
 
                 is UiState.Failure -> {
                     binding.progressBarSettings.visibility = View.GONE
+                    setInputsEnabled(true)
+                    setHomeScreenDisabled(false)
 
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
@@ -118,6 +127,8 @@ class SettingsFragment : Fragment() {
 
                 is UiState.Success -> {
                     binding.progressBarSettings.visibility = View.GONE
+                    setInputsEnabled(true)
+                    setHomeScreenDisabled(false)
 
                     val fragmentManager = parentFragmentManager
                     for (i in 0 until fragmentManager.backStackEntryCount) {
@@ -312,5 +323,60 @@ class SettingsFragment : Fragment() {
 
     fun updateUserLanguage(language: String) {
         viewModel.updateLanguage(language)
+    }
+
+    private fun setInputsEnabled(enabled: Boolean) {
+        if (enabled) {
+            binding.deleteAccountButton.enable()
+            binding.selectLanguageButton.enable()
+            binding.changePasswordButton.enable()
+        } else {
+            binding.deleteAccountButton.disable()
+            binding.selectLanguageButton.disable()
+            binding.changePasswordButton.disable()
+        }
+    }
+
+    private fun setHomeScreenDisabled(disabled: Boolean) {
+        if (disabled) {
+            disableBottomNavigationBarInActivity()
+            binding.root.alpha = 0.5f
+            enableDisableViewGroup(requireView() as ViewGroup, false)
+        } else {
+            enableBottomNavigationBarInActivity()
+            binding.root.alpha = 1f
+            enableDisableViewGroup(requireView() as ViewGroup, true)
+        }
+    }
+
+    fun enableDisableViewGroup(viewGroup: ViewGroup, enabled: Boolean) {
+        val childCount = viewGroup.childCount
+        for (i in 0 until childCount) {
+            val view = viewGroup.getChildAt(i)
+            view.isEnabled = enabled
+            if (view is ViewGroup) {
+                enableDisableViewGroup(view, enabled)
+            }
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BottomNavBarControl) {
+            bottomNavBarControl = context
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        bottomNavBarControl = null
+    }
+
+    private fun disableBottomNavigationBarInActivity() {
+        bottomNavBarControl?.disableBottomNavigationBar()
+    }
+
+    private fun enableBottomNavigationBarInActivity() {
+        bottomNavBarControl?.enableBottomNavigationBar()
     }
 }
