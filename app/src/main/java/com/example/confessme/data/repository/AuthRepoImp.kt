@@ -15,9 +15,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.qualifiers.ApplicationContext
 
 class AuthRepoImp(
@@ -380,59 +382,20 @@ class AuthRepoImp(
             val confessionsRef = database.collection("confessions")
             val usersRef = database.collection("users")
 
-            confessionsRef.whereEqualTo("fromUserId", uid)
+            usersRef.document(uid)
                 .get()
-                .addOnSuccessListener { documents ->
-                    val batch = database.batch()
+                .addOnSuccessListener { userDocumentSnapshot ->
+                    val imageUrl = userDocumentSnapshot.getString("imageUrl")
 
-                    for (document in documents) {
-                        val confessionDocRef = confessionsRef.document(document.id)
-                        batch.delete(confessionDocRef)
-                    }
-
-                    confessionsRef.whereEqualTo("userId", uid)
-                        .get()
-                        .addOnSuccessListener { userConfessions ->
-                            for (userConfession in userConfessions) {
-                                val userConfessionDocRef = confessionsRef.document(userConfession.id)
-                                val favoritedValue = userConfession.getBoolean("favorited")
-
-                                if (favoritedValue == true) {
-                                    val favoritedFieldUpdate = mapOf("favorited" to false)
-                                    batch.update(userConfessionDocRef, favoritedFieldUpdate)
-                                }
-
-                                val answeredFieldUpdate = mapOf("answered" to false)
-                                val answerFieldUpdate = mapOf("answer" to FieldValue.delete())
-
-                                batch.update(userConfessionDocRef, answeredFieldUpdate)
-                                batch.update(userConfessionDocRef, answerFieldUpdate)
+                    if (!imageUrl.isNullOrBlank() && imageUrl.contains("firebasestorage")) {
+                        val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
+                        storageRef.delete()
+                            .addOnSuccessListener {
+                                deleteFirestoreData(uid, confessionsRef, usersRef, result)
                             }
-
-                            val userDocRef = usersRef.document(uid)
-                            batch.delete(userDocRef)
-
-                            batch.commit()
-                                .addOnCompleteListener { deleteAllTask ->
-                                    if (deleteAllTask.isSuccessful) {
-                                        user.delete()
-                                            .addOnCompleteListener { deleteAccountTask ->
-                                                if (deleteAccountTask.isSuccessful) {
-                                                    firebaseAuth.signOut()
-                                                    result.invoke(UiState.Success(context.getString(R.string.account_deleted_successfully)))
-                                                } else {
-                                                    result.invoke(
-                                                        UiState.Failure(
-                                                            context.getString(R.string.error_deleting_account) + ": " + deleteAccountTask.exception?.localizedMessage
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                    } else {
-                                        result.invoke(UiState.Failure(context.getString(R.string.error_deleting_account) + ": " + deleteAllTask.exception?.localizedMessage))
-                                    }
-                                }
-                        }
+                    } else {
+                        deleteFirestoreData(uid, confessionsRef, usersRef, result)
+                    }
                 }
                 .addOnFailureListener { exception ->
                     result.invoke(
@@ -444,6 +407,70 @@ class AuthRepoImp(
         } else {
             result.invoke(UiState.Failure(context.getString(R.string.no_user_signed_in)))
         }
+    }
+
+    private fun deleteFirestoreData(uid: String, confessionsRef: CollectionReference, usersRef: CollectionReference, result: (UiState<String>) -> Unit) {
+        confessionsRef.whereEqualTo("fromUserId", uid)
+            .get()
+            .addOnSuccessListener { documents ->
+                val batch = database.batch()
+
+                for (document in documents) {
+                    val confessionDocRef = confessionsRef.document(document.id)
+                    batch.delete(confessionDocRef)
+                }
+
+                confessionsRef.whereEqualTo("userId", uid)
+                    .get()
+                    .addOnSuccessListener { userConfessions ->
+                        for (userConfession in userConfessions) {
+                            val userConfessionDocRef = confessionsRef.document(userConfession.id)
+                            val favoritedValue = userConfession.getBoolean("favorited")
+
+                            if (favoritedValue == true) {
+                                val favoritedFieldUpdate = mapOf("favorited" to false)
+                                batch.update(userConfessionDocRef, favoritedFieldUpdate)
+                            }
+
+                            val answeredFieldUpdate = mapOf("answered" to false)
+                            val answerFieldUpdate = mapOf("answer" to FieldValue.delete())
+
+                            batch.update(userConfessionDocRef, answeredFieldUpdate)
+                            batch.update(userConfessionDocRef, answerFieldUpdate)
+                        }
+
+                        val userDocRef = usersRef.document(uid)
+                        batch.delete(userDocRef)
+
+                        batch.commit()
+                            .addOnCompleteListener { deleteAllTask ->
+                                if (deleteAllTask.isSuccessful) {
+                                    firebaseAuth.currentUser?.delete()
+                                        ?.addOnCompleteListener { deleteAccountTask ->
+                                            if (deleteAccountTask.isSuccessful) {
+                                                firebaseAuth.signOut()
+                                                result.invoke(UiState.Success(context.getString(R.string.account_deleted_successfully)))
+                                            } else {
+                                                result.invoke(
+                                                    UiState.Failure(
+                                                        context.getString(R.string.error_deleting_account) + ": " + deleteAccountTask.exception?.localizedMessage
+                                                    )
+                                                )
+                                            }
+                                        }
+                                } else {
+                                    result.invoke(UiState.Failure(context.getString(R.string.error_deleting_account) + ": " + deleteAllTask.exception?.localizedMessage))
+                                }
+                            }
+                    }
+            }
+            .addOnFailureListener { exception ->
+                result.invoke(
+                    UiState.Failure(
+                        context.getString(R.string.an_error_occurred_please_try_again) + ": " + exception.localizedMessage
+                    )
+                )
+            }
     }
 
     override fun isGoogleSignIn(result: (UiState<Boolean>) -> Unit) {
