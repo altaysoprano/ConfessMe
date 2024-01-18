@@ -77,9 +77,8 @@ class ConfessFragment : Fragment() {
         binding.confessEditText.apply {
             requestFocus()
             this.postDelayed({
-                MyUtils.showKeyboard(requireContext(), binding.confessEditText)
+                MyUtils.showKeyboard(requireActivity(), this.findFocus())
             }, 100)
-            MyUtils.showKeyboard(requireContext(), this)
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 

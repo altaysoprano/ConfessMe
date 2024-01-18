@@ -49,6 +49,7 @@ class ConfessionsFragment: Fragment(), ScrollableToTop {
 
         setConfessListAdapter()
         setupRecyclerView()
+        setConfessSomeoneTextOnClickListener()
 
         viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
 
@@ -305,6 +306,12 @@ class ConfessionsFragment: Fragment(), ScrollableToTop {
         profileFragment.arguments = bundle
 
         navRegister.navigateFrag(profileFragment, true)
+    }
+
+    fun setConfessSomeoneTextOnClickListener() {
+        binding.confessionsNoConfessFoundView.confessSomeoneText.setOnClickListener {
+            navRegister.navigateFrag(SearchFragment(), false)
+        }
     }
 
     private fun findPositionById(confessionId: String): Int {

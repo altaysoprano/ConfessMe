@@ -66,6 +66,7 @@ class HomeFragment : Fragment() {
         viewModel.fetchConfessions(limit)
         viewModel.fetchNotifications(limit)
         updateUserLanguage()
+        setFollowSomeoneTextOnClickListener()
 
         binding.swipeRefreshLayoutHome.setOnRefreshListener {
             viewModel.onSwiping(limit)
@@ -615,5 +616,11 @@ class HomeFragment : Fragment() {
 
     fun onBottomNavItemReselected() {
         binding.homeRecyclerviewId.smoothScrollToPosition(0)
+    }
+
+    fun setFollowSomeoneTextOnClickListener() {
+        binding.homeNoConfessFoundView.shareYourProfileText.setOnClickListener {
+            navRegister.navigateFrag(SearchFragment(), false)
+        }
     }
 }

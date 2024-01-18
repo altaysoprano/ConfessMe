@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -34,6 +35,7 @@ import com.example.confessme.presentation.BottomNavBarControl
 import com.example.confessme.presentation.ConfessMeDialog
 import com.example.confessme.presentation.SearchViewModel
 import com.example.confessme.util.ListType
+import com.example.confessme.util.MyUtils
 import com.example.confessme.util.UiState
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -145,10 +147,12 @@ class SearchFragment : Fragment() {
     private fun setSearchBar() {
         val searchView = binding.searchView
 
-        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+        searchView.setOnQueryTextFocusChangeListener { view, hasFocus ->
             viewModel.setSearchViewFocused(hasFocus)
             if (viewModel.searchViewFocused.value == true) {
+                Log.d("Mesaj: ", "viewModel.searchViewFocused.value == true")
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
+                    MyUtils.showKeyboard(requireActivity(), view.findFocus())
                     setDisplayHomeAsUpEnabled(true)
                     setDisplayShowHomeEnabled(true)
                     setHomeAsUpIndicator(R.drawable.ic_back)

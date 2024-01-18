@@ -316,7 +316,7 @@ class ConfessAnswerFragment(
                 it.visibility = View.VISIBLE
                 it.setText(answerText)
                 it.requestFocus()
-                MyUtils.showKeyboard(requireContext(), it)
+                MyUtils.showKeyboard(requireActivity(), it.findFocus())
             }
             isEditAnswer = true
         }
@@ -410,7 +410,7 @@ class ConfessAnswerFragment(
             binding.confessAnswerEditText.apply {
                 visibility = View.VISIBLE
                 requestFocus()
-                MyUtils.showKeyboard(requireContext(), this)
+                MyUtils.showKeyboard(requireActivity(), this.findFocus())
             }
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.GONE
