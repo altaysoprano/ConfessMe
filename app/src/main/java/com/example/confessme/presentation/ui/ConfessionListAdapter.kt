@@ -308,14 +308,8 @@ class ConfessionListAdapter(
             popupMenu.show()
         }
 
-        binding.confessionsScreenTimestamp.setOnClickListener {
-            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp, context)
-            onTimestampClick(date)
-        }
-
-        itemView.setOnClickListener {
-
-        }
+        val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp, context)
+        binding.confessionsScreenTimestamp.tooltipText = date
     }
 
     fun updateItem(position: Int, updatedConfession: Confession) {

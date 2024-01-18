@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -18,6 +19,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -103,6 +105,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setItem(
         confess: Confession,
         binding: FragmentConfessionDetailBinding,
@@ -167,10 +170,8 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             binding.confessionDetailScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
         }
 
-        binding.confessionDetailScreenTimestamp.setOnClickListener {
-            val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp, requireContext())
-            Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
-        }
+        val date = MyUtils.convertFirestoreTimestampToReadableDate(confess.timestamp, requireContext())
+        binding.confessionDetailScreenTimestamp.tooltipText = date
 
         binding.confessionDetailScreenConfession.setOnLongClickListener {
             MyUtils.copyTextToClipboard(confess.text, requireContext())

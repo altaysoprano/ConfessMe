@@ -16,6 +16,7 @@ import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.Spannable
@@ -36,6 +37,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
@@ -471,7 +473,13 @@ class ConfessAnswerFragment(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setUsernameAndDateText(answeredUserName: String, answerTimestamp: Any?) {
+        val date = MyUtils.convertFirestoreTimestampToReadableDate(
+            answerTimestamp,
+            requireContext()
+        )
+        binding.confessAnswerUserNameAndDate.tooltipText = date
         val answeredUserNameBold = SpannableString(answeredUserName)
         answeredUserNameBold.setSpan(
             StyleSpan(Typeface.BOLD),
@@ -488,11 +496,6 @@ class ConfessAnswerFragment(
         val answerDateBold = SpannableString(answerElapsedTime)
         answerDateBold.setSpan(object : ClickableSpan() {
             override fun onClick(view: View) {
-                val date = MyUtils.convertFirestoreTimestampToReadableDate(
-                    answerTimestamp,
-                    requireContext()
-                )
-                Toast.makeText(view.context, date, Toast.LENGTH_SHORT).show()
             }
 
             override fun updateDrawState(ds: TextPaint) {
