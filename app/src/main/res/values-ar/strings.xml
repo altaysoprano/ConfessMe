@@ -205,4 +205,5 @@
     <string name="verification_email_sent">تم إرسال رمز التحقق إلى عنوان بريدك الإلكتروني. يرجى التحقق من حساب البريد الإلكتروني الخاص بك.</string>
     <string name="failed_verification_email">فشل في إرسال رسالة التحقق عبر البريد الإلكتروني.</string>
     <string name="enter_code">ادخل الكود</string>
+    <string name="exit_without_save">هل أنت متأكد أنك تريد الخروج دون حفظ التغييرات؟</string>
 </resources>

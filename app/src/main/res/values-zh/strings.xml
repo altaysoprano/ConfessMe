@@ -205,4 +205,5 @@
     <string name="enter_password_prompt">请输入您的帐户密码</string>
     <string name="verification_email_sent">验证码已发送至您的电子邮件地址。请检查您的电子邮件帐户。</string>
     <string name="failed_verification_email">无法发送验证电子邮件。</string>
+    <string name="exit_without_save">您确定要在不保存更改的情况下退出吗？</string>
 </resources>

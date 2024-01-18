@@ -58,6 +58,16 @@ class SetProfileFragment : Fragment() {
     private lateinit var shareHelper: ShareHelper
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
+    private val userNameMaxLength = 30
+    private val userNameMinLength = 3
+    private val bioMaxLength = 200
+    private var userNameCurrentLength = 0
+    private var userName = ""
+    private var bio = ""
+    private var bioCurrentLength = 0
+    private var isUserNameEmpty: Boolean? = false
+    private val maxLines = 3
+    private val defaultLines = 3
     private var isProfilePhotoRemoved: Boolean = false
     private var isProfilePhotoChanged: Boolean = false
     private val READ_STORAGE_PERMISSION_CODE = 101
@@ -232,17 +242,6 @@ class SetProfileFragment : Fragment() {
     }
 
     private fun setUserNameAndBioTv() {
-        val userNameMaxLength = 30
-        val userNameMinLength = 3
-        val bioMaxLength = 200
-        var userNameCurrentLength = 0
-        var userName = ""
-        var bio = ""
-        var bioCurrentLength = 0
-        var isUserNameEmpty: Boolean? = false
-        val maxLines = 3
-        val defaultLines = 3
-
         binding.setFirstNameEt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -405,6 +404,8 @@ class SetProfileFragment : Fragment() {
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
         binding.setSaveButton.enable()
+        checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+            userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio)
     }
 
     private fun setWelcomeAnimation() {
@@ -457,6 +458,8 @@ class SetProfileFragment : Fragment() {
                 binding.setProfileImage.setImageURI(selectedImg)
                 isProfilePhotoChanged = true
                 binding.setSaveButton.enable()
+                checkIfUserNameAndBioValid(bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio)
             }
         }
     }

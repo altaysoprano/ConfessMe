@@ -205,4 +205,5 @@
     <string name="enter_password_prompt">Bitte geben Sie Ihr Kontopasswort ein</string>
     <string name="verification_email_sent">Der Bestätigungscode wurde an Ihre E-Mail-Adresse gesendet. Bitte überprüfen Sie Ihr E-Mail-Konto.</string>
     <string name="failed_verification_email">Fehler beim Senden der Bestätigungs-E-Mail.</string>
+    <string name="exit_without_save">Möchten Sie ohne Speichern der Änderungen beenden?</string>
 </resources>

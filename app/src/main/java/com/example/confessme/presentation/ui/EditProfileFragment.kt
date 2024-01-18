@@ -53,6 +53,14 @@ class EditProfileFragment : Fragment() {
     private lateinit var currentBio: String
     private lateinit var sharedUsername: String
     private lateinit var shareHelper: ShareHelper
+    private val userNameMaxLength = 30
+    private val userNameMinLength = 3
+    private val bioMaxLength = 200
+    private var userNameCurrentLength = 0
+    private var userName = ""
+    private var bio = ""
+    private var bioCurrentLength = 0
+    private var isUserNameEmpty: Boolean? = false
     private lateinit var dialogHelper: ConfessMeDialog
     private lateinit var currentImageUrl: String
     private var isProfilePhotoRemoved: Boolean = false
@@ -239,15 +247,6 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun setUserNameAndBioTv() {
-        val userNameMaxLength = 30
-        val userNameMinLength = 3
-        val bioMaxLength = 200
-        var userNameCurrentLength = 0
-        var userName = ""
-        var bio = ""
-        var bioCurrentLength = 0
-        var isUserNameEmpty: Boolean? = false
-
         binding.firstNameEt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -396,6 +395,10 @@ class EditProfileFragment : Fragment() {
         selectedImg = Uri.EMPTY
         isProfilePhotoRemoved = true
         binding.saveButton.enable()
+        checkIfUserNameAndBioValidOrSame(
+            bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+            userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio
+        )
     }
 
     private fun shareProfile() {
@@ -431,6 +434,10 @@ class EditProfileFragment : Fragment() {
                 binding.profileImage.setImageURI(selectedImg)
                 isProfilePhotoChanged = true
                 binding.saveButton.enable()
+                checkIfUserNameAndBioValidOrSame(
+                    bioCurrentLength, userNameCurrentLength, userNameMaxLength,
+                    userNameMinLength, isUserNameEmpty, bioMaxLength, userName, bio
+                )
             }
         }
     }
