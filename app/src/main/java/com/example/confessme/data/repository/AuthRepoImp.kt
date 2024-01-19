@@ -1,14 +1,10 @@
 package com.example.confessme.data.repository
 
 import android.content.Context
-import android.util.Log
 import com.example.confessme.R
 import com.example.confessme.data.model.User
-import com.example.confessme.util.UiState
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.example.confessme.presentation.utils.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -112,7 +108,8 @@ class AuthRepoImp(
                                                 token = fcmToken
                                             )
                                         )
-                                        .addOnSuccessListener { result.invoke(UiState.Success(context.getString(
+                                        .addOnSuccessListener { result.invoke(
+                                            UiState.Success(context.getString(
                                                                                     R.string.successfully_signed_up))) }
                                         .addOnFailureListener { exception ->
                                             result.invoke(UiState.Failure(exception.localizedMessage))

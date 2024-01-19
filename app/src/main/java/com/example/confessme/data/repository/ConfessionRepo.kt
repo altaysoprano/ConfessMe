@@ -2,10 +2,9 @@ package com.example.confessme.data.repository
 
 import com.example.confessme.data.model.Bookmark
 import com.example.confessme.data.model.Confession
-import com.example.confessme.util.ConfessionCategory
-import com.example.confessme.util.UiState
+import com.example.confessme.presentation.profile.ConfessionCategory
+import com.example.confessme.presentation.utils.UiState
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.DocumentReference
 
 interface ConfessionRepo {
 

@@ -7,27 +7,27 @@
 
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.example.confessme.presentation.ui.EditProfileFragment"
+        android:name="com.example.confessme.presentation.profile.edit_set_profile.EditProfileFragment"
         android:label="fragment_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.confessme.presentation.ui.HomeFragment"
+        android:name="com.example.confessme.presentation.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.confessme.presentation.ui.LoginFragment"
+        android:name="com.example.confessme.presentation.auth.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.confessme.presentation.ui.ProfileFragment"
+        android:name="com.example.confessme.presentation.profile.my_profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.confessme.presentation.ui.RegisterFragment"
+        android:name="com.example.confessme.presentation.auth.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" />
 </navigation>

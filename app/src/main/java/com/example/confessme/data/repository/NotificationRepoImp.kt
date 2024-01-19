@@ -1,12 +1,10 @@
 package com.example.confessme.data.repository
 
 import android.content.Context
-import android.util.Log
 import com.example.confessme.R
-import com.example.confessme.data.model.Confession
 import com.example.confessme.data.model.Notification
-import com.example.confessme.util.NotificationType
-import com.example.confessme.util.UiState
+import com.example.confessme.presentation.home.notifications.NotificationType
+import com.example.confessme.presentation.utils.UiState
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth

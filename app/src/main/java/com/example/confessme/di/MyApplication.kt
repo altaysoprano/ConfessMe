@@ -1,10 +1,8 @@
 package com.example.confessme.di
 
 import android.app.Application
-import android.graphics.Typeface
-import android.util.Log
-import com.example.confessme.util.MyPreferences
-import com.example.confessme.util.MyUtils
+import com.example.confessme.utils.MyPreferences
+import com.example.confessme.utils.MyUtils
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp

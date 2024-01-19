@@ -5,7 +5,7 @@
     android:id="@+id/swipe_refresh_layout_others_confessions"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.OthersConfessionsFragment">
+    tools:context=".presentation.profile.other_user_profile.OthersConfessionsFragment">
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

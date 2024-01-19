@@ -3,9 +3,9 @@ package com.example.confessme.data.repository
 import android.net.Uri
 import com.example.confessme.data.model.FollowUser
 import com.example.confessme.data.model.User
-import com.example.confessme.util.FollowType
-import com.example.confessme.util.ProfilePhotoAction
-import com.example.confessme.util.UiState
+import com.example.confessme.presentation.follow.FollowType
+import com.example.confessme.presentation.profile.edit_set_profile.ProfilePhotoAction
+import com.example.confessme.presentation.utils.UiState
 
 interface UserRepo {
 

@@ -1,6 +1,6 @@
 package com.example.confessme.data.repository
 
-import com.example.confessme.util.UiState
+import com.example.confessme.presentation.utils.UiState
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 interface AuthRepo {
