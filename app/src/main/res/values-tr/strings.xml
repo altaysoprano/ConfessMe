@@ -205,4 +205,6 @@
     <string name="verification_email_sent">Doğrulama kodu email adresinize gönderildi. Lütfen email hesabınızı kontrol ediniz.</string>
     <string name="failed_verification_email">Doğrulama emaili gönderilemedi.</string>
     <string name="exit_without_save">Değişiklikleri kaydetmeden çıkmak istediğinize emin misiniz?</string>
+    <string name="deleting_account">Hesabınız siliniyor...</string>
+    <string name="please_wait">Lütfen bekleyiniz</string>
 </resources>

@@ -206,4 +206,6 @@
     <string name="failed_verification_email">فشل في إرسال رسالة التحقق عبر البريد الإلكتروني.</string>
     <string name="enter_code">ادخل الكود</string>
     <string name="exit_without_save">هل أنت متأكد أنك تريد الخروج دون حفظ التغييرات؟</string>
+    <string name="deleting_account">جار حذف حسابك...</string>
+    <string name="please_wait">يرجى الانتظار</string>
 </resources>

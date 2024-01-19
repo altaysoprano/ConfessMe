@@ -205,4 +205,6 @@
     <string name="verification_email_sent">Verification code has been sent to your email address. Please check your email account.</string>
     <string name="failed_verification_email">Failed to send verification email.</string>
     <string name="exit_without_save">Are you sure you want to exit without saving your changes?</string>
+    <string name="deleting_account">Deleting your account...</string>
+    <string name="please_wait">Please wait</string>
 </resources>

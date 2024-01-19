@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -16,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.example.confessme.MainActivity
 import com.example.confessme.R
@@ -111,13 +113,17 @@ class SettingsFragment : Fragment() {
         viewModel.deleteAccountState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
+                    binding.progressBarLayoutSettings.visibility = View.VISIBLE
                     binding.progressBarSettings.visibility = View.VISIBLE
+                    Log.d("Mesaj: ", "binding.progressBarSettings.isVisible: ${binding.progressBarSettings.isVisible}")
                     setInputsEnabled(false)
                     setHomeScreenDisabled(true)
                 }
 
                 is UiState.Failure -> {
+                    binding.progressBarLayoutSettings.visibility = View.GONE
                     binding.progressBarSettings.visibility = View.GONE
+                    Log.d("Mesaj: ", "binding.progressBarSettings.isVisible: ${binding.progressBarSettings.isVisible}")
                     setInputsEnabled(true)
                     setHomeScreenDisabled(false)
 
@@ -126,7 +132,9 @@ class SettingsFragment : Fragment() {
                 }
 
                 is UiState.Success -> {
+                    binding.progressBarLayoutSettings.visibility = View.GONE
                     binding.progressBarSettings.visibility = View.GONE
+                    Log.d("Mesaj: ", "binding.progressBarSettings.isVisible: ${binding.progressBarSettings.isVisible}")
                     setInputsEnabled(true)
                     setHomeScreenDisabled(false)
 

@@ -206,4 +206,6 @@
     <string name="verification_email_sent">Le code de vérification a été envoyé à votre adresse e-mail. Veuillez vérifier votre compte e-mail.</string>
     <string name="failed_verification_email">Échec de l\'envoi de l\'e-mail de vérification.</string>
     <string name="exit_without_save">Êtes-vous sûr de vouloir quitter sans enregistrer les modifications?</string>
+    <string name="deleting_account">Suppression de votre compte...</string>
+    <string name="please_wait">Veuillez patienter</string>
 </resources>
