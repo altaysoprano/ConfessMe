@@ -15,6 +15,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,11 +94,13 @@ class ConfessAnswerFragment(
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun observeGetConfession() {
         viewModel.getConfessionState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                    binding.answerConfessionRelativeLayout.visibility = View.INVISIBLE
                     binding.answerIcFavorite.visibility = View.INVISIBLE
                     binding.answerIcDelete.visibility = View.INVISIBLE
                     binding.answerIcEdit.visibility = View.INVISIBLE
@@ -113,8 +116,12 @@ class ConfessAnswerFragment(
 
                 is UiState.Success -> {
                     binding.progressBarConfessAnswer.visibility = View.GONE
+                    binding.answerConfessionRelativeLayout.visibility = View.VISIBLE
 
                     val answerText = state.data?.answer?.text ?: ""
+                    val confessionText = state.data?.text ?: ""
+                    val confessionUserName = state.data?.fromUserUsername ?: ""
+                    val confessionTimestamp = state.data?.timestamp
                     isAnswerFavorited = state.data?.answer?.favorited ?: false
                     val answerFromUserUid = state.data?.fromUserId ?: ""
                     answerFromUsername = state.data?.fromUserUsername ?: ""
@@ -128,13 +135,14 @@ class ConfessAnswerFragment(
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
 
-                    setUserImage(state.data?.answer?.fromUserImageUrl)
+                    setUsersImages(state.data?.answer?.fromUserImageUrl, state.data?.fromUserImageUrl)
                     setSaveButton()
                     setImageAndTextStates(
                         isConfessionAnswered, answerText, answeredUserName,
                         answerTimeStamp, answerUserUid, answerFromUserUid,
                         answerFromUsername, answerUserName, userToken,
-                        fromUserToken, confessedUserName
+                        fromUserToken, confessedUserName, confessionText,
+                        confessionUserName, confessionTimestamp
                     )
                     setFavoriteDeleteEditReplyDismissStates(
                         answerText, answerFromUserUid,
@@ -257,7 +265,14 @@ class ConfessAnswerFragment(
         }
     }
 
-    private fun setUserImage(fromUserImageUrl: String?) {
+    private fun setUsersImages(fromUserImageUrl: String?, userImageUrl: String?) {
+        if (userImageUrl?.isNotEmpty() == true) {
+            Glide.with(requireContext())
+                .load(userImageUrl)
+                .into(binding.answerScreenConfessionProfileImage)
+        } else {
+            binding.answerScreenConfessionProfileImage.setImageResource(R.drawable.empty_profile_photo)
+        }
         if (fromUserImageUrl?.isNotEmpty() == true) {
             Glide.with(requireContext())
                 .load(fromUserImageUrl)
@@ -370,12 +385,16 @@ class ConfessAnswerFragment(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setImageAndTextStates(
         isConfessionAnswered: Boolean, answerText: String, answeredUserName: String,
         answerTimestamp: Any?, answerUserUid: String, answerFromUserUid: String,
         answerFromUsername: String, answerUserName: String, userToken: String,
-        fromUserToken: String, confessedUserName: String
+        fromUserToken: String, confessedUserName: String, confessionText: String,
+        confessionUserName: String, confessionTimeStamp: Any?
     ) {
+        setConfessionUsernameAndDateText(confessionUserName, confessionTimeStamp)
+        binding.answerScreenConfession.text = confessionText
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
@@ -387,7 +406,7 @@ class ConfessAnswerFragment(
                 answerUserUid, answerFromUserUid, answerFromUsername, answerUserName,
                 userToken, fromUserToken, confessedUserName, answerText
             )
-            setUsernameAndDateText(answeredUserName, answerTimestamp)
+            setAnswerUsernameAndDateText(answeredUserName, answerTimestamp)
         } else {
             binding.confessAnswerEditText.apply {
                 visibility = View.VISIBLE
@@ -454,12 +473,13 @@ class ConfessAnswerFragment(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setUsernameAndDateText(answeredUserName: String, answerTimestamp: Any?) {
-        val date = MyUtils.convertFirestoreTimestampToReadableDate(
+    private fun setAnswerUsernameAndDateText(answeredUserName: String, answerTimestamp: Any?) {
+        val answerDate = MyUtils.convertFirestoreTimestampToReadableDate(
             answerTimestamp,
             requireContext()
         )
-        binding.confessAnswerUserNameAndDate.tooltipText = date
+        binding.confessAnswerUserNameAndDate.tooltipText = answerDate
+
         val answeredUserNameBold = SpannableString(answeredUserName)
         answeredUserNameBold.setSpan(
             StyleSpan(Typeface.BOLD),
@@ -491,12 +511,33 @@ class ConfessAnswerFragment(
         binding.confessAnswerUserNameAndDate.movementMethod = LinkMovementMethod.getInstance()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun setConfessionUsernameAndDateText(confessionUserName: String, confessionTimeStamp: Any?) {
+        val confessionDate = MyUtils.convertFirestoreTimestampToReadableDate(
+            confessionTimeStamp,
+            requireContext()
+        )
+        binding.answerScreenConfessionTimestamp.tooltipText = confessionDate
+        binding.answerScreenConfessionUsername.text = confessionUserName
+
+        val confessionElapsedTime = if (confessionTimeStamp != null) MyUtils.calculateTimeSinceConfession(
+            confessionTimeStamp as Timestamp,
+            requireContext()
+        ) else "-"
+        binding.answerScreenConfessionTimestamp.text = confessionElapsedTime
+
+        if (confessionUserName.equals("Anonymous")) {
+            binding.answerScreenConfessionUsername.setBackgroundResource(R.drawable.anonymous_username_background)
+        } else {
+            binding.answerScreenConfessionUsername.setBackgroundColor(Color.TRANSPARENT)
+        }
+    }
+
     private fun setUserNameProfileImageAndAnswerText(
         answerUserUid: String, answerFromUserUid: String,
         answerFromUsername: String, answerUserName: String,
         userToken: String, fromUserToken: String,
-        confessedUserName: String, answerText: String
-    ) {
+        confessedUserName: String, answerText: String) {
         val confessedUserNameBold = SpannableString("@$confessedUserName")
         confessedUserNameBold.setSpan(
             StyleSpan(Typeface.BOLD),

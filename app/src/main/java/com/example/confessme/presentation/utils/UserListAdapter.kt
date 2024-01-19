@@ -19,8 +19,7 @@ class UserListAdapter(
     private val onFollowClick: (String, String, String, Boolean) -> Unit,
     private val onItemLongPress: (User) -> Unit,
     private val context: Context
-) :
-    RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
+) : RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding = UserItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
