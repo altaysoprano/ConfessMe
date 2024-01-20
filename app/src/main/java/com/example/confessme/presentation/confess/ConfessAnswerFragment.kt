@@ -35,6 +35,7 @@ import com.example.confessme.presentation.profile.other_user_profile.OtherUserPr
 import com.example.confessme.utils.MyUtils
 import com.example.confessme.presentation.utils.ShareHelper
 import com.example.confessme.presentation.utils.UiState
+import com.example.confessme.utils.MyUtils.disable
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
@@ -315,6 +316,8 @@ class ConfessAnswerFragment(
                 it.requestFocus()
                 MyUtils.showKeyboard(requireActivity(), it.findFocus())
             }
+            it.disable()
+            binding.answerIcDelete.disable()
             isEditAnswer = true
         }
 
@@ -459,6 +462,9 @@ class ConfessAnswerFragment(
         })
         binding.confessAnswerTextView.setOnLongClickListener {
             MyUtils.copyTextToClipboard(answerText, requireContext())
+        }
+        binding.answerScreenConfession.setOnLongClickListener {
+            MyUtils.copyTextToClipboard(confessionText, requireContext())
         }
     }
 
