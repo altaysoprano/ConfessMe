@@ -20,6 +20,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -36,6 +38,7 @@ import com.example.confessme.utils.MyUtils
 import com.example.confessme.presentation.utils.ShareHelper
 import com.example.confessme.presentation.utils.UiState
 import com.example.confessme.utils.MyUtils.disable
+import com.example.confessme.utils.MyUtils.enable
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
@@ -305,20 +308,7 @@ class ConfessAnswerFragment(
         }
 
         binding.answerIcEdit.setOnClickListener {
-            binding.confessAnswerTextView.visibility = View.GONE
-            binding.answerScreenProfileImage.visibility = View.GONE
-            binding.confessAnswerUserNameAndDate.visibility = View.GONE
-            binding.replyButton.visibility = View.VISIBLE
-            binding.answerCounterTextView.visibility = View.VISIBLE
-            binding.confessAnswerEditText.let {
-                it.visibility = View.VISIBLE
-                it.setText(answerText)
-                it.requestFocus()
-                MyUtils.showKeyboard(requireActivity(), it.findFocus())
-            }
-            it.disable()
-            binding.answerIcDelete.disable()
-            isEditAnswer = true
+            setOnEditAnswer(binding.answerIcEdit, answerText)
         }
 
         binding.answerIcFavorite.setOnClickListener {
@@ -608,6 +598,42 @@ class ConfessAnswerFragment(
                 dismiss()
                 navRegister.navigateFrag(profileFragment, true)
             }
+        }
+    }
+
+    private fun setOnEditAnswer(icEdit: ImageButton, answerText: String) {
+        if(!isEditAnswer) {
+            binding.confessAnswerTextView.visibility = View.GONE
+            binding.answerScreenProfileImage.visibility = View.GONE
+            binding.confessAnswerUserNameAndDate.visibility = View.GONE
+            binding.replyButton.visibility = View.VISIBLE
+            binding.answerCounterTextView.visibility = View.VISIBLE
+            binding.confessAnswerTextInputLayout.visibility = View.VISIBLE
+            binding.confessAnswerEditText.let {
+                it.visibility = View.VISIBLE
+                it.setText(answerText)
+                it.requestFocus()
+                MyUtils.showKeyboard(requireActivity(), it.findFocus())
+            }
+            icEdit.setImageResource(R.drawable.ic_back)
+            binding.confessAnswerTextInputLayout.hint = getString(R.string.edit_answer)
+            binding.answerIcDelete.disable()
+            isEditAnswer = true
+        } else {
+            binding.confessAnswerTextView.visibility = View.VISIBLE
+            binding.answerScreenProfileImage.visibility = View.VISIBLE
+            binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
+            binding.replyButton.visibility = View.GONE
+            binding.answerCounterTextView.visibility = View.GONE
+            binding.confessAnswerEditText.let {
+                MyUtils.hideKeyboard(requireActivity(), it.findFocus())
+                it.visibility = View.GONE
+            }
+            binding.confessAnswerTextInputLayout.visibility = View.GONE
+            icEdit.setImageResource(R.drawable.ic_edit)
+            binding.confessAnswerTextInputLayout.hint = getString(R.string.reply_to_confession)
+            binding.answerIcDelete.enable()
+            isEditAnswer = false
         }
     }
 

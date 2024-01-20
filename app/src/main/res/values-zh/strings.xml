@@ -7,7 +7,6 @@
     <string name="no_confess_found_description">未找到忏悔描述</string>
     <string name="no_confess_found_here">这里没有忏悔</string>
     <string name="reply_to_confession">回复表白</string>
-    <string name="edit_answer">编辑回答</string>
     <string name="fav_answer">收藏回答</string>
     <string name="save">保存</string>
     <string name="change_password">更改密码</string>
@@ -208,4 +207,5 @@
     <string name="exit_without_save">您确定要在不保存更改的情况下退出吗？</string>
     <string name="deleting_account">正在删除您的帐户...</string>
     <string name="please_wait">请稍候</string>
+    <string name="edit_answer">编辑答案</string>
 </resources>

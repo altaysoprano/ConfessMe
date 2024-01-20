@@ -7,7 +7,6 @@
     <string name="no_confess_found_description">Aucune Description de Confession Trouvée</string>
     <string name="no_confess_found_here">Aucune Confession Trouvée Ici</string>
     <string name="reply_to_confession">Répondre à la confession</string>
-    <string name="edit_answer">Modifier la Réponse</string>
     <string name="fav_answer">Réponse Préférée</string>
     <string name="save">ENREGISTRER</string>
     <string name="change_password">Changer le Mot de Passe</string>
@@ -208,4 +207,5 @@
     <string name="exit_without_save">Êtes-vous sûr de vouloir quitter sans enregistrer les modifications?</string>
     <string name="deleting_account">Suppression de votre compte...</string>
     <string name="please_wait">Veuillez patienter</string>
+    <string name="edit_answer">Modifier La Réponse</string>
 </resources>

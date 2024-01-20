@@ -6,7 +6,6 @@
     <string name="no_confess_found_description">No Confess Found Description</string>
     <string name="no_confess_found_here">No Confess Found Here</string>
     <string name="reply_to_confession">Reply To Confession</string>
-    <string name="edit_answer">Edit Answer</string>
     <string name="fav_answer">Fav Answer</string>
     <string name="save">SAVE</string>
     <string name="change_password">Change Password</string>
@@ -207,4 +206,5 @@
     <string name="exit_without_save">Are you sure you want to exit without saving your changes?</string>
     <string name="deleting_account">Deleting your account...</string>
     <string name="please_wait">Please wait</string>
+    <string name="edit_answer">Edit The Answer</string>
 </resources>

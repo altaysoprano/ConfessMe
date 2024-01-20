@@ -7,7 +7,6 @@
     <string name="no_confess_found_description">لم يتم العثور على وصف الاعتراف</string>
     <string name="no_confess_found_here">لم يتم العثور على اعتراف هنا</string>
     <string name="reply_to_confession">الرد على الاعتراف</string>
-    <string name="edit_answer">تحرير الجواب</string>
     <string name="fav_answer">الجواب المفضل</string>
     <string name="save">حفظ</string>
     <string name="change_password">تغيير كلمة المرور</string>
@@ -208,4 +207,5 @@
     <string name="exit_without_save">هل أنت متأكد أنك تريد الخروج دون حفظ التغييرات؟</string>
     <string name="deleting_account">جار حذف حسابك...</string>
     <string name="please_wait">يرجى الانتظار</string>
+    <string name="edit_answer">عدّل الجواب</string>
 </resources>

@@ -7,7 +7,6 @@
     <string name="no_confess_found_description">No se encontró descripción de confesión</string>
     <string name="no_confess_found_here">No se encontraron confesiones aquí</string>
     <string name="reply_to_confession">Responder a la confesión</string>
-    <string name="edit_answer">Editar Respuesta</string>
     <string name="fav_answer">Respuesta Favorita</string>
     <string name="save">GUARDAR</string>
     <string name="change_password">Cambiar Contraseña</string>
@@ -208,4 +207,5 @@
     <string name="exit_without_save">¿Está seguro de que desea salir sin guardar los cambios?</string>
     <string name="deleting_account">Eliminando tu cuenta...</string>
     <string name="please_wait">Espere por favor</string>
+    <string name="edit_answer">Editar La Respuesta</string>
 </resources>

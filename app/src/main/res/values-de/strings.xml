@@ -7,7 +7,6 @@
     <string name="no_confess_found_description">Kein Geständnis gefunden Beschreibung</string>
     <string name="no_confess_found_here">Kein Geständnis hier gefunden</string>
     <string name="reply_to_confession">Antwort auf Beichte</string>
-    <string name="edit_answer">Antwort bearbeiten</string>
     <string name="fav_answer">Fav-Antwort</string>
     <string name="save">SPEICHERN</string>
     <string name="change_password">Passwort ändern</string>
@@ -208,4 +207,5 @@
     <string name="exit_without_save">Möchten Sie ohne Speichern der Änderungen beenden?</string>
     <string name="deleting_account">Ihr Konto wird gelöscht...</string>
     <string name="please_wait">Bitte warten Sie</string>
+    <string name="edit_answer">Antwort Bearbeiten</string>
 </resources>
