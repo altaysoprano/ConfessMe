@@ -207,7 +207,7 @@ object MyUtils {
         val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("Answer", text)
         clipboardManager.setPrimaryClip(clipData)
-        Toast.makeText(context, "Answer copied to clipboard", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
         return true
     }
 

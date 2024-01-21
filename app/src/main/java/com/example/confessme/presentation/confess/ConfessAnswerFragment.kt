@@ -612,6 +612,7 @@ class ConfessAnswerFragment(
             binding.confessAnswerEditText.let {
                 it.visibility = View.VISIBLE
                 it.setText(answerText)
+                it.text?.let { answerText -> it.setSelection(answerText.length) }
                 it.requestFocus()
                 MyUtils.showKeyboard(requireActivity(), it.findFocus())
             }

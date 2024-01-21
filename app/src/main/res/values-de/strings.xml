@@ -208,4 +208,5 @@
     <string name="deleting_account">Ihr Konto wird gelöscht...</string>
     <string name="please_wait">Bitte warten Sie</string>
     <string name="edit_answer">Antwort Bearbeiten</string>
+    <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
 </resources>

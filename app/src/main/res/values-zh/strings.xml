@@ -208,4 +208,5 @@
     <string name="deleting_account">正在删除您的帐户...</string>
     <string name="please_wait">请稍候</string>
     <string name="edit_answer">编辑答案</string>
+    <string name="copied_to_clipboard">已复制到剪贴板</string>
 </resources>

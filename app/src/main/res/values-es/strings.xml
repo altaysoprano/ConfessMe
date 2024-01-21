@@ -208,4 +208,5 @@
     <string name="deleting_account">Eliminando tu cuenta...</string>
     <string name="please_wait">Espere por favor</string>
     <string name="edit_answer">Editar La Respuesta</string>
+    <string name="copied_to_clipboard">Copiado al portapapeles</string>
 </resources>

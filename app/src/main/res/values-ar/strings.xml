@@ -208,4 +208,5 @@
     <string name="deleting_account">جار حذف حسابك...</string>
     <string name="please_wait">يرجى الانتظار</string>
     <string name="edit_answer">عدّل الجواب</string>
+    <string name="copied_to_clipboard">تم نسخها إلى الحافظة</string>
 </resources>
