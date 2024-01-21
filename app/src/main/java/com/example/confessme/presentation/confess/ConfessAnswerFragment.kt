@@ -131,6 +131,10 @@ class ConfessAnswerFragment(
                     answerFromUsername = state.data?.fromUserUsername ?: ""
                     answerUserName = state.data?.username ?: ""
                     val userToken = state.data?.fromUserToken ?: ""
+                    val confessionFromUserUid = state.data?.fromUserId ?: ""
+                    val confessionUserUid = state.data?.userId ?: ""
+                    val confessionFromUserToken = state.data?.fromUserToken ?: ""
+                    val confessionUserToken = state.data?.userToken ?: ""
                     val fromUserToken = state.data?.userToken ?: ""
                     val answerUserUid = state.data?.userId ?: ""
                     val isConfessionAnswered = state.data?.answered ?: false
@@ -139,14 +143,18 @@ class ConfessAnswerFragment(
                     val confessedUserName = state.data?.answer?.username ?: ""
                     val anonymousId = state.data?.anonymousId ?: ""
 
-                    setUsersImages(state.data?.answer?.fromUserImageUrl, state.data?.fromUserImageUrl)
+                    setUsersImages(
+                        state.data?.answer?.fromUserImageUrl,
+                        state.data?.fromUserImageUrl
+                    )
                     setSaveButton()
                     setImageAndTextStates(
                         isConfessionAnswered, answerText, answeredUserName,
                         answerTimeStamp, answerUserUid, answerFromUserUid,
                         answerFromUsername, answerUserName, userToken,
                         fromUserToken, confessedUserName, confessionText,
-                        confessionUserName, confessionTimestamp
+                        confessionUserName, confessionTimestamp, confessionUserUid,
+                        confessionFromUserUid, confessionFromUserToken, confessionUserToken
                     )
                     setFavoriteDeleteEditReplyDismissStates(
                         answerText, answerFromUserUid,
@@ -384,9 +392,13 @@ class ConfessAnswerFragment(
         answerTimestamp: Any?, answerUserUid: String, answerFromUserUid: String,
         answerFromUsername: String, answerUserName: String, userToken: String,
         fromUserToken: String, confessedUserName: String, confessionText: String,
-        confessionUserName: String, confessionTimeStamp: Any?
+        confessionUserName: String, confessionTimeStamp: Any?, confessionUserUid: String,
+        confessionFromUserUid: String, confessionFromUserToken: String, confessionUserToken: String
     ) {
-        setConfessionTexts(confessionUserName, answerUserName, confessionText, confessionTimeStamp)
+        setConfessionTexts(
+            confessionUserName, answerUserName, confessionText, confessionTimeStamp,
+            confessionUserUid, confessionFromUserUid, confessionFromUserToken, confessionUserToken
+        )
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
@@ -485,7 +497,11 @@ class ConfessAnswerFragment(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setConfessionTexts(confessionUserName: String, toUserName: String, confessionText: String, confessionTimeStamp: Any?) {
+    private fun setConfessionTexts(
+        confessionUserName: String, toUserName: String, confessionText: String,
+        confessionTimeStamp: Any?, confessionUserUid: String, confessionFromUserUid: String,
+        confessionFromUserToken: String, confessionUserToken: String
+    ) {
         val toUserName = "@$toUserName "
         val spannable = SpannableString("$toUserName${confessionText}")
 
@@ -496,17 +512,18 @@ class ConfessAnswerFragment(
         spannable.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-/*
+                    if (currentUserUid != confessionUserUid && confessionUserUid != "") {
+                        val bundle = Bundle()
+                        bundle.putString("userUid", confessionUserUid)
+                        bundle.putString("userName", answerUserName)
+                        bundle.putString("userToken", confessionUserToken)
 
-                    if (currentUserUid != confess.userId) {
-                        onUserNameClick(
-                            confess.userId,
-                            confess.email,
-                            confess.userToken,
-                            confess.username
-                        )
+                        val profileFragment = OtherUserProfileFragment()
+                        profileFragment.arguments = bundle
+
+                        dismiss()
+                        navRegister.navigateFrag(profileFragment, true)
                     }
-*/
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
@@ -539,15 +556,33 @@ class ConfessAnswerFragment(
         binding.answerScreenConfessionTimestamp.text =
             MyUtils.calculateTimeSinceConfession(confessionTimeStamp as Timestamp, requireContext())
 
-        val date = MyUtils.convertFirestoreTimestampToReadableDate(confessionTimeStamp, requireContext())
+        val date =
+            MyUtils.convertFirestoreTimestampToReadableDate(confessionTimeStamp, requireContext())
         binding.answerScreenConfessionTimestamp.tooltipText = date
+
+        binding.answerScreenConfessionProfileImage.setOnClickListener {
+            if (currentUserUid != confessionFromUserUid) {
+                val bundle = Bundle()
+
+                bundle.putString("userUid", confessionFromUserUid)
+                bundle.putString("userName", answerFromUsername)
+                bundle.putString("userToken", confessionFromUserToken)
+
+                val profileFragment = OtherUserProfileFragment()
+                profileFragment.arguments = bundle
+
+                dismiss()
+                navRegister.navigateFrag(profileFragment, true)
+            }
+        }
     }
 
     private fun setUserNameProfileImageAndAnswerText(
         answerUserUid: String, answerFromUserUid: String,
         answerFromUsername: String, answerUserName: String,
         userToken: String, fromUserToken: String,
-        confessedUserName: String, answerText: String) {
+        confessedUserName: String, answerText: String
+    ) {
         val confessedUserNameBold = SpannableString("@$confessedUserName")
         confessedUserNameBold.setSpan(
             StyleSpan(Typeface.BOLD),
@@ -616,7 +651,7 @@ class ConfessAnswerFragment(
     }
 
     private fun setOnEditAnswer(icEdit: ImageButton, answerText: String) {
-        if(!isEditAnswer) {
+        if (!isEditAnswer) {
             binding.confessAnswerTextView.visibility = View.GONE
             binding.answerScreenProfileImage.visibility = View.GONE
             binding.answerScreenAnswerUsernameAndTimestampLayout.visibility = View.GONE
@@ -659,7 +694,12 @@ class ConfessAnswerFragment(
             Snackbar.LENGTH_LONG
         )
         snackbar.setAction(getString(R.string.share)) {
-            shareHelper.shareTextAndImage(confessionText, answerText, answerFromUsername, answerUserName)
+            shareHelper.shareTextAndImage(
+                confessionText,
+                answerText,
+                answerFromUsername,
+                answerUserName
+            )
         }
         val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottomNavigationView)
         snackbar.setAnchorView(bottomNavigationView)
