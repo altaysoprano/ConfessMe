@@ -538,6 +538,9 @@ class ConfessAnswerFragment(
         binding.answerScreenConfession.highlightColor = Color.TRANSPARENT
         binding.answerScreenConfessionTimestamp.text =
             MyUtils.calculateTimeSinceConfession(confessionTimeStamp as Timestamp, requireContext())
+
+        val date = MyUtils.convertFirestoreTimestampToReadableDate(confessionTimeStamp, requireContext())
+        binding.answerScreenConfessionTimestamp.tooltipText = date
     }
 
     private fun setUserNameProfileImageAndAnswerText(
