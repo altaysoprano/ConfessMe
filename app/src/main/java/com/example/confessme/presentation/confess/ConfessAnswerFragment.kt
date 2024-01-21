@@ -386,15 +386,14 @@ class ConfessAnswerFragment(
         fromUserToken: String, confessedUserName: String, confessionText: String,
         confessionUserName: String, confessionTimeStamp: Any?
     ) {
-        setConfessionUsernameAndDateText(confessionUserName, confessionTimeStamp)
-        binding.answerScreenConfession.text = confessionText
+        setConfessionTexts(confessionUserName, answerUserName, confessionText, confessionTimeStamp)
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
             binding.confessAnswerTextInputLayout.visibility = View.GONE
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
-            binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
+            binding.answerScreenAnswerUsernameAndTimestampLayout.visibility = View.VISIBLE
             setUserNameProfileImageAndAnswerText(
                 answerUserUid, answerFromUserUid, answerFromUsername, answerUserName,
                 userToken, fromUserToken, confessedUserName, answerText
@@ -474,59 +473,71 @@ class ConfessAnswerFragment(
             answerTimestamp,
             requireContext()
         )
-        binding.confessAnswerUserNameAndDate.tooltipText = answerDate
-
-        val answeredUserNameBold = SpannableString(answeredUserName)
-        answeredUserNameBold.setSpan(
-            StyleSpan(Typeface.BOLD),
-            0,
-            answeredUserName.length,
-            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+        binding.answerScreenAnswerTimestamp.tooltipText = answerDate
+        binding.answerScreenAnswerUsername.text = answeredUserName
 
         val answerElapsedTime = if (answerTimestamp != null) MyUtils.calculateTimeSinceConfession(
             answerTimestamp as Timestamp,
             requireContext()
         ) else "-"
 
-        val answerDateBold = SpannableString(answerElapsedTime)
-        answerDateBold.setSpan(object : ClickableSpan() {
-            override fun onClick(view: View) {
-            }
-
-            override fun updateDrawState(ds: TextPaint) {
-                super.updateDrawState(ds)
-                ds.isUnderlineText = false
-                ds.color = ContextCompat.getColor(requireContext(), R.color.grey600)
-            }
-        }, 0, answerElapsedTime.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        binding.confessAnswerUserNameAndDate.highlightColor = Color.TRANSPARENT
-        val usernameAndDateText = TextUtils.concat(answeredUserNameBold, " · ", answerDateBold)
-        binding.confessAnswerUserNameAndDate.text = usernameAndDateText
-        binding.confessAnswerUserNameAndDate.movementMethod = LinkMovementMethod.getInstance()
+        binding.answerScreenAnswerTimestamp.text = answerElapsedTime
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setConfessionUsernameAndDateText(confessionUserName: String, confessionTimeStamp: Any?) {
-        val confessionDate = MyUtils.convertFirestoreTimestampToReadableDate(
-            confessionTimeStamp,
-            requireContext()
+    private fun setConfessionTexts(confessionUserName: String, toUserName: String, confessionText: String, confessionTimeStamp: Any?) {
+        val toUserName = "@$toUserName "
+        val spannable = SpannableString("$toUserName${confessionText}")
+
+        val usernameColor = ContextCompat.getColor(requireContext(), R.color.confessmered)
+        val usernameStart = 0
+        val usernameEnd = toUserName.length
+
+        spannable.setSpan(
+            object : ClickableSpan() {
+                override fun onClick(widget: View) {
+/*
+
+                    if (currentUserUid != confess.userId) {
+                        onUserNameClick(
+                            confess.userId,
+                            confess.email,
+                            confess.userToken,
+                            confess.username
+                        )
+                    }
+*/
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    ds.color = usernameColor
+                    ds.isUnderlineText = false
+                }
+            },
+            usernameStart,
+            usernameEnd,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        binding.answerScreenConfessionTimestamp.tooltipText = confessionDate
-        binding.answerScreenConfessionUsername.text = confessionUserName
 
-        val confessionElapsedTime = if (confessionTimeStamp != null) MyUtils.calculateTimeSinceConfession(
-            confessionTimeStamp as Timestamp,
-            requireContext()
-        ) else "-"
-        binding.answerScreenConfessionTimestamp.text = confessionElapsedTime
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            usernameStart,
+            usernameEnd,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
+        val usernameTv = binding.answerScreenConfessionUsername
+        usernameTv.text = confessionUserName
         if (confessionUserName.equals("Anonymous")) {
-            binding.answerScreenConfessionUsername.setBackgroundResource(R.drawable.anonymous_username_background)
+            usernameTv.setBackgroundResource(R.drawable.anonymous_username_background)
         } else {
-            binding.answerScreenConfessionUsername.setBackgroundColor(Color.TRANSPARENT)
+            usernameTv.setBackgroundColor(Color.TRANSPARENT)
         }
+        binding.answerScreenConfession.text = spannable
+        binding.answerScreenConfession.movementMethod = LinkMovementMethod.getInstance()
+        binding.answerScreenConfession.highlightColor = Color.TRANSPARENT
+        binding.answerScreenConfessionTimestamp.text =
+            MyUtils.calculateTimeSinceConfession(confessionTimeStamp as Timestamp, requireContext())
     }
 
     private fun setUserNameProfileImageAndAnswerText(
@@ -605,7 +616,7 @@ class ConfessAnswerFragment(
         if(!isEditAnswer) {
             binding.confessAnswerTextView.visibility = View.GONE
             binding.answerScreenProfileImage.visibility = View.GONE
-            binding.confessAnswerUserNameAndDate.visibility = View.GONE
+            binding.answerScreenAnswerUsernameAndTimestampLayout.visibility = View.GONE
             binding.replyButton.visibility = View.VISIBLE
             binding.answerCounterTextView.visibility = View.VISIBLE
             binding.confessAnswerTextInputLayout.visibility = View.VISIBLE
@@ -623,7 +634,7 @@ class ConfessAnswerFragment(
         } else {
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.answerScreenProfileImage.visibility = View.VISIBLE
-            binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
+            binding.answerScreenAnswerUsernameAndTimestampLayout.visibility = View.VISIBLE
             binding.replyButton.visibility = View.GONE
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerEditText.let {

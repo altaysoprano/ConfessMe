@@ -31,7 +31,6 @@
             android:shrinkColumns="0">
 
             <TableRow>
-
                 <TextView
                     android:id="@+id/notificationScreenUsername"
                     android:layout_width="wrap_content"
