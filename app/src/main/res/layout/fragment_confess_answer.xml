@@ -123,6 +123,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/answer_confession_relative_layout">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
+            android:id="@+id/answer_screen_textview_edittext_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/answerScreenProfileImage"
             android:layout_width="50dp"
@@ -154,8 +163,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:visibility="gone"
             android:gravity="top|start"
-            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
             app:layout_constraintEnd_toStartOf="@+id/reply_button"
             app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
             app:layout_constraintTop_toBottomOf="@id/confess_answer_user_name_and_date">
@@ -169,7 +178,6 @@
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="start|top"
                 android:hint="@string/reply_to_confession"
-                android:visibility="gone"
                 app:boxBackgroundMode="none" />
 
             <TextView
@@ -195,7 +203,6 @@
             android:text="@string/reply_to_confession"
             android:textColor="?attr/colorOnSecondary"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/reply_button"
             app:layout_constraintStart_toEndOf="@id/answerScreenProfileImage"
@@ -206,10 +213,11 @@
             android:id="@+id/reply_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:backgroundTint="@color/confessmered"
             android:src="@drawable/ic_arrow_right"
-            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
             app:layout_constraintEnd_toEndOf="parent"></ImageButton>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/answer_edit_and_favorite_layout"
@@ -220,6 +228,7 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             android:paddingTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/answer_screen_textview_edittext_layout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

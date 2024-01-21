@@ -391,7 +391,7 @@ class ConfessAnswerFragment(
 
         if (isConfessionAnswered == true && !isEditAnswer) {
             binding.answerScreenProfileImage.visibility = View.VISIBLE
-            binding.confessAnswerEditText.visibility = View.GONE
+            binding.confessAnswerTextInputLayout.visibility = View.GONE
             binding.answerCounterTextView.visibility = View.GONE
             binding.confessAnswerTextView.visibility = View.VISIBLE
             binding.confessAnswerUserNameAndDate.visibility = View.VISIBLE
@@ -401,7 +401,7 @@ class ConfessAnswerFragment(
             )
             setAnswerUsernameAndDateText(answeredUserName, answerTimestamp)
         } else {
-            binding.confessAnswerEditText.apply {
+            binding.confessAnswerTextInputLayout.apply {
                 visibility = View.VISIBLE
                 requestFocus()
                 MyUtils.showKeyboard(requireActivity(), this.findFocus())
