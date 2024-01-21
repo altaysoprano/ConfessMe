@@ -512,18 +512,7 @@ class ConfessAnswerFragment(
         spannable.setSpan(
             object : ClickableSpan() {
                 override fun onClick(widget: View) {
-                    if (currentUserUid != confessionUserUid && confessionUserUid != "") {
-                        val bundle = Bundle()
-                        bundle.putString("userUid", confessionUserUid)
-                        bundle.putString("userName", answerUserName)
-                        bundle.putString("userToken", confessionUserToken)
-
-                        val profileFragment = OtherUserProfileFragment()
-                        profileFragment.arguments = bundle
-
-                        dismiss()
-                        navRegister.navigateFrag(profileFragment, true)
-                    }
+                    goToOtherUserProfile(confessionUserUid, answerUserName, confessionUserToken)
                 }
 
                 override fun updateDrawState(ds: TextPaint) {
@@ -561,19 +550,7 @@ class ConfessAnswerFragment(
         binding.answerScreenConfessionTimestamp.tooltipText = date
 
         binding.answerScreenConfessionProfileImage.setOnClickListener {
-            if (currentUserUid != confessionFromUserUid) {
-                val bundle = Bundle()
-
-                bundle.putString("userUid", confessionFromUserUid)
-                bundle.putString("userName", answerFromUsername)
-                bundle.putString("userToken", confessionFromUserToken)
-
-                val profileFragment = OtherUserProfileFragment()
-                profileFragment.arguments = bundle
-
-                dismiss()
-                navRegister.navigateFrag(profileFragment, true)
-            }
+            goToOtherUserProfile(confessionFromUserUid, answerFromUsername, confessionFromUserToken)
         }
     }
 
@@ -601,18 +578,7 @@ class ConfessAnswerFragment(
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(view: View) {
-                if (currentUserUid != answerFromUserUid && answerFromUserUid != "") {
-                    val bundle = Bundle()
-                    bundle.putString("userUid", answerFromUserUid)
-                    bundle.putString("userName", answerUserName)
-                    bundle.putString("userToken", userToken)
-
-                    val profileFragment = OtherUserProfileFragment()
-                    profileFragment.arguments = bundle
-
-                    dismiss()
-                    navRegister.navigateFrag(profileFragment, true)
-                }
+                goToOtherUserProfile(answerFromUserUid, answerUserName, userToken)
             }
 
             override fun updateDrawState(ds: TextPaint) {
@@ -634,19 +600,7 @@ class ConfessAnswerFragment(
         binding.confessAnswerTextView.highlightColor = Color.TRANSPARENT
 
         binding.answerScreenProfileImage.setOnClickListener {
-            if (currentUserUid != answerUserUid) {
-                val bundle = Bundle()
-
-                bundle.putString("userUid", answerUserUid)
-                bundle.putString("userName", answerFromUsername)
-                bundle.putString("userToken", fromUserToken)
-
-                val profileFragment = OtherUserProfileFragment()
-                profileFragment.arguments = bundle
-
-                dismiss()
-                navRegister.navigateFrag(profileFragment, true)
-            }
+            goToOtherUserProfile(answerUserUid, answerFromUsername, fromUserToken)
         }
     }
 
@@ -684,6 +638,21 @@ class ConfessAnswerFragment(
             binding.confessAnswerTextInputLayout.hint = getString(R.string.reply_to_confession)
             binding.answerIcDelete.enable()
             isEditAnswer = false
+        }
+    }
+
+    private fun goToOtherUserProfile(userId: String, username: String, userToken: String) {
+        if (currentUserUid != userId && userId != "") {
+            val bundle = Bundle()
+            bundle.putString("userUid", userId)
+            bundle.putString("userName", username)
+            bundle.putString("userToken", userToken)
+
+            val profileFragment = OtherUserProfileFragment()
+            profileFragment.arguments = bundle
+
+            dismiss()
+            navRegister.navigateFrag(profileFragment, true)
         }
     }
 
