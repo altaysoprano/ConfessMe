@@ -51,14 +51,13 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentConfessionDetailBinding.inflate(inflater, container, false)
-        (activity as AppCompatActivity?)!!.title = "Confess Detail"
+        (activity as AppCompatActivity?)!!.title = getString(R.string.confession)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.confessionDetailToolbar)
         navRegister = activity as FragmentNavigation
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUserUid = currentUser?.uid ?: ""
         confessionId = arguments?.getString("confessionId") ?: ""
         dialogHelper = ConfessMeDialog(requireContext())
-
         setHasOptionsMenu(true)
 
         (activity as AppCompatActivity?)!!.supportActionBar?.apply {
