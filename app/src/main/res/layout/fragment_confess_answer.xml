@@ -12,25 +12,25 @@
         android:layout_height="wrap_content">
 
         <RelativeLayout
-        android:id="@+id/answer_confession_relative_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="4dp"
-        android:paddingHorizontal="4dp"
-        android:visibility="invisible"
-        android:paddingVertical="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+            android:id="@+id/answer_confession_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="8dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/close_button_card_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="2dp"
-                app:cardCornerRadius="8dp"
                 android:layout_above="@+id/answer_screen_confession_layout"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="2dp"
+                app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
                 <ImageButton
@@ -44,67 +44,69 @@
             </androidx.cardview.widget.CardView>
 
             <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/answer_screen_confession_profile_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/empty_profile_photo" />
+                android:id="@+id/answer_screen_confession_profile_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/empty_profile_photo" />
 
-        <TableLayout
-            android:id="@+id/answer_screen_confession_username_and_timestamp_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@id/answer_screen_confession_profile_image"
-            android:layout_toStartOf="@+id/close_button_card_view"
-            android:shrinkColumns="0">
+            <TableLayout
+                android:id="@+id/answer_screen_confession_username_and_timestamp_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_toStartOf="@+id/close_button_card_view"
+                android:layout_toEndOf="@id/answer_screen_confession_profile_image"
+                android:shrinkColumns="0">
 
-            <TableRow>
-                <TextView
-                    android:id="@+id/answer_screen_confession_username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/opensans_regular"
-                    android:textColor="@color/grey600"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textStyle="bold" />
+                <TableRow>
 
-                <TextView
-                    android:id="@+id/answer_screen_confession_middle_dot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/opensans_regular"
-                    android:textColor="@color/grey600"
-                    android:paddingHorizontal="4dp"
-                    android:singleLine="true"
-                    android:text="·"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/answer_screen_confession_username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/opensans_regular"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/grey600"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/answer_screen_confession_timestamp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:alpha="0.75"
-                    android:textColor="@color/grey600"
-                    android:ellipsize="none"
-                    android:fontFamily="@font/opensans_regular"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textStyle="normal" />
-            </TableRow>
-        </TableLayout>
+                    <TextView
+                        android:id="@+id/answer_screen_confession_middle_dot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_regular"
+                        android:paddingHorizontal="4dp"
+                        android:singleLine="true"
+                        android:text="·"
+                        android:textColor="@color/grey600"
+                        android:textStyle="bold" />
 
-        <LinearLayout
-            android:id="@+id/answer_screen_confession_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/answer_screen_confession_username_and_timestamp_layout"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:layout_toEndOf="@id/answer_screen_confession_profile_image"
-            android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/answer_screen_confession_timestamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:alpha="0.75"
+                        android:ellipsize="none"
+                        android:fontFamily="@font/opensans_regular"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/grey600"
+                        android:textStyle="normal" />
+                </TableRow>
+            </TableLayout>
+
+            <LinearLayout
+                android:id="@+id/answer_screen_confession_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/answer_screen_confession_username_and_timestamp_layout"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/answer_screen_confession_profile_image"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/answer_screen_confession"
@@ -119,240 +121,225 @@
                     android:textColor="?attr/colorOnSecondary"
                     android:textStyle="normal" />
             </LinearLayout>
-    </RelativeLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/answer_confession_relative_layout">
+        </RelativeLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/answer_screen_textview_edittext_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:paddingHorizontal="8dp"
+            android:layout_below="@+id/answer_confession_relative_layout">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/answerScreenProfileImage"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/empty_profile_photo"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/answer_screen_textview_edittext_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/answer_edit_and_favorite_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/answerScreenProfileImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/empty_profile_photo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TableLayout
+                    android:id="@+id/answer_screen_answer_username_and_timestamp_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:shrinkColumns="0"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/answerScreenProfileImage"
+                    app:layout_constraintTop_toTopOf="@+id/answerScreenProfileImage">
+
+                    <TableRow>
+
+                        <TextView
+                            android:id="@+id/answer_screen_answer_username"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/opensans_regular"
+                            android:singleLine="true"
+                            android:text=""
+                            android:textColor="@color/grey600"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/answer_screen_answer_middle_dot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/opensans_regular"
+                            android:paddingHorizontal="4dp"
+                            android:singleLine="true"
+                            android:text="·"
+                            android:textColor="@color/grey600"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/answer_screen_answer_timestamp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:alpha="0.75"
+                            android:ellipsize="none"
+                            android:fontFamily="@font/opensans_regular"
+                            android:singleLine="true"
+                            android:text=""
+                            android:textColor="@color/grey600"
+                            android:textStyle="normal" />
+                    </TableRow>
+                </TableLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/confess_answer_text_input_layout"
+                    style="@style/ConfessTextInputLayoutStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="top|start"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toStartOf="@+id/reply_button"
+                    app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
+                    app:layout_constraintTop_toBottomOf="@id/answer_screen_answer_username_and_timestamp_layout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/confess_answer_edit_text"
+                        style="@style/ConfessEditTextStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="start"
+                        android:fontFamily="@font/opensans_regular"
+                        android:gravity="start|top"
+                        android:hint="@string/reply_to_confession"
+                        app:boxBackgroundMode="none" />
+
+                    <TextView
+                        android:id="@+id/answer_counter_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="4dp"
+                        android:fontFamily="@font/opensans_regular"
+                        android:text="0/560"
+                        android:textColor="#b6b6b6"
+                        android:visibility="gone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/confess_answer_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="marquee"
+                    android:fontFamily="@font/opensans_regular"
+                    android:gravity="start|top"
+                    android:text="@string/reply_to_confession"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/reply_button"
+                    app:layout_constraintStart_toEndOf="@id/answerScreenProfileImage"
+                    app:layout_constraintTop_toBottomOf="@+id/answer_screen_answer_username_and_timestamp_layout"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageButton
+                    android:id="@+id/reply_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/confessmered"
+                    android:src="@drawable/ic_arrow_right"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"></ImageButton>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/answer_edit_and_favorite_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/answer_screen_textview_edittext_layout">
+
+                <ImageButton
+                    android:id="@+id/answer_ic_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/ic_edit"
+                    app:tint="#B8B8B8" />
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1">
+
+                    <ImageButton
+                        android:id="@+id/answer_ic_favorite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:backgroundTint="@android:color/transparent"
+                        android:src="@drawable/ic_favorite" />
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar_answer_favorite"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_centerInParent="true"
+                        android:indeterminateTint="?attr/colorOnSecondary"
+                        android:visibility="invisible"></ProgressBar>
+                </RelativeLayout>
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/answer_ic_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.1"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/ic_delete"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="#B8B8B8" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_bar_confess_answer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="?attr/colorOnSecondary"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TableLayout
-                android:id="@+id/answer_screen_answer_username_and_timestamp_layout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/answerScreenProfileImage"
-                app:layout_constraintTop_toTopOf="@+id/answerScreenProfileImage"
-                android:layout_marginStart="8dp"
-                android:visibility="gone"
-                android:layout_marginEnd="2dp"
-                android:shrinkColumns="0">
-
-                <TableRow>
-                    <TextView
-                        android:id="@+id/answer_screen_answer_username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/opensans_regular"
-                        android:textColor="@color/grey600"
-                        android:singleLine="true"
-                        android:text=""
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/answer_screen_answer_middle_dot"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
-                        android:textColor="@color/grey600"
-                        android:paddingHorizontal="4dp"
-                        android:singleLine="true"
-                        android:text="·"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/answer_screen_answer_timestamp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start"
-                        android:alpha="0.75"
-                        android:textColor="@color/grey600"
-                        android:ellipsize="none"
-                        android:fontFamily="@font/opensans_regular"
-                        android:singleLine="true"
-                        android:text=""
-                        android:textStyle="normal" />
-                </TableRow>
-            </TableLayout>
-
-            <!--
-                        <TextView
-                            android:id="@+id/confess_answer_user_name_and_date"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:alpha="0.75"
-                            android:fontFamily="@font/opensans_regular"
-                            android:gravity="start|top"
-                            android:textColor="@color/grey600"
-                            android:visibility="gone"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/answerScreenProfileImage"
-                            app:layout_constraintTop_toTopOf="@+id/answerScreenProfileImage" />
-            -->
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/confess_answer_text_input_layout"
-                style="@style/ConfessTextInputLayoutStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:gravity="top|start"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/reply_button"
-                app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
-                app:layout_constraintTop_toBottomOf="@id/answer_screen_answer_username_and_timestamp_layout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/confess_answer_edit_text"
-                    style="@style/ConfessEditTextStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="start"
-                    android:fontFamily="@font/opensans_regular"
-                    android:gravity="start|top"
-                    android:hint="@string/reply_to_confession"
-                    app:boxBackgroundMode="none" />
-
-                <TextView
-                    android:id="@+id/answer_counter_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginRight="4dp"
-                    android:fontFamily="@font/opensans_regular"
-                    android:text="0/560"
-                    android:textColor="#b6b6b6"
-                    android:visibility="gone" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/confess_answer_text_view"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:ellipsize="marquee"
-                android:fontFamily="@font/opensans_regular"
-                android:gravity="start|top"
-                android:text="@string/reply_to_confession"
-                android:textColor="?attr/colorOnSecondary"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/reply_button"
-                app:layout_constraintStart_toEndOf="@id/answerScreenProfileImage"
-                app:layout_constraintTop_toBottomOf="@+id/answer_screen_answer_username_and_timestamp_layout"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <ImageButton
-                android:id="@+id/reply_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/confessmered"
-                android:src="@drawable/ic_arrow_right"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"></ImageButton>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:id="@+id/answer_edit_and_favorite_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/answer_screen_textview_edittext_layout"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <ImageButton
-                android:id="@+id/answer_ic_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1"
-                android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_edit"
-                app:tint="#B8B8B8" />
-
-            <Space
-                android:layout_width="1dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1">
-
-                <ImageButton
-                    android:id="@+id/answer_ic_favorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:backgroundTint="@android:color/transparent"
-                    android:src="@drawable/ic_favorite" />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar_answer_favorite"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_centerInParent="true"
-                    android:indeterminateTint="?attr/colorOnSecondary"
-                    android:visibility="invisible"></ProgressBar>
-            </RelativeLayout>
-
-            <Space
-                android:layout_width="1dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-
-            <ImageButton
-                android:id="@+id/answer_ic_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1"
-                android:backgroundTint="@android:color/transparent"
-                android:src="@drawable/ic_delete"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="#B8B8B8" />
-        </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progress_bar_confess_answer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="?attr/colorOnSecondary"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 </ScrollView>
