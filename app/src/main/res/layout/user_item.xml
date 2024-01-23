@@ -10,29 +10,25 @@
         android:layout_height="50dp"
         android:src="@drawable/empty_profile_photo" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/searchScreenUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/searchScreenProfileImage"
         android:layout_centerVertical="true"
-        android:layout_marginStart="8dp">
-
-        <TextView
-            android:id="@+id/searchScreenUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="username"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="2dp"
+        android:layout_toStartOf="@+id/follows_progress_button_layout"
+        android:layout_toEndOf="@id/searchScreenProfileImage"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="username"
+        android:textStyle="bold" />
 
     <include
         android:id="@+id/follows_progress_button_layout"
         layout="@layout/progress_btn_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        />
-
+        android:layout_centerVertical="true" />
 </RelativeLayout>

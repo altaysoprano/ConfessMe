@@ -38,7 +38,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
-
     private lateinit var binding: FragmentSearchBinding
     private lateinit var navRegister: FragmentNavigation
     private val currentUser = FirebaseAuth.getInstance().currentUser
@@ -145,7 +144,6 @@ class SearchFragment : Fragment() {
         searchView.setOnQueryTextFocusChangeListener { view, hasFocus ->
             viewModel.setSearchViewFocused(hasFocus)
             if (viewModel.searchViewFocused.value == true) {
-                Log.d("Mesaj: ", "viewModel.searchViewFocused.value == true")
                 (activity as AppCompatActivity?)!!.supportActionBar?.apply {
                     MyUtils.showKeyboard(requireActivity(), view.findFocus())
                     setDisplayHomeAsUpEnabled(true)

@@ -85,17 +85,7 @@ class ConfessionListAdapter(
         itemView: View,
         adapterPosition: Int
     ) {
-        val maxUsernameLength = 18
-        val ellipsis = "..."
-
-        val username = confess.username
-        val truncatedUsername = if (username.length > maxUsernameLength) {
-            username.substring(0, maxUsernameLength - ellipsis.length) + ellipsis
-        } else {
-            username
-        }
-
-        val toUserName = "@${truncatedUsername} "
+        val toUserName = "@${MyUtils.truncateText(confess.username, 18)} "
         val spannable = SpannableString("$toUserName${confess.text}")
 
         val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)

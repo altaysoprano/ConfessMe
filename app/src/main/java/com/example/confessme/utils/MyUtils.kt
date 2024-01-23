@@ -235,4 +235,13 @@ object MyUtils {
         val regex = Regex("^[a-zA-Z0-9_]*$")
         return userName?.let { regex.matches(it) } ?: false
     }
+
+    fun truncateText(text: String, maxLength: Int): String {
+        val ellipsis = "..."
+        return if (text.length > maxLength) {
+            text.substring(0, maxLength - ellipsis.length) + ellipsis
+        } else {
+            text
+        }
+    }
 }
