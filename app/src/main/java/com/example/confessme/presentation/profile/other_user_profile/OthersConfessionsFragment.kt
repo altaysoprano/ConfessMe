@@ -1,7 +1,6 @@
 package com.example.confessme.presentation.profile.other_user_profile
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBeTheFirstOneBinding
 import com.example.confessme.presentation.confess.ConfessViewModel
 import com.example.confessme.presentation.profile.ScrollableToTop
-import com.example.confessme.presentation.confess.ConfessAnswerFragment
 import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.ConfessionCategory
@@ -29,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class OthersConfessionsFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-) : OtherUserListFragment(), ScrollableToTop {
+) : OtherUserViewPagerFragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentOthersConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -113,9 +111,7 @@ class OthersConfessionsFragment(
             currentUserUid,
             false,
             onAnswerClick = { confessionId ->
-                onAnswerClick(
-                    confessionId,
-                )
+                onAnswerClick(confessionId, confessListAdapter, currentUserUid)
             },
             onFavoriteClick = { isFavorited, confessionId -> },
             onConfessDeleteClick = { confessionId ->
@@ -188,7 +184,7 @@ class OthersConfessionsFragment(
                 is UiState.Success -> {
                     binding.progressBarOthersConfessionsGeneral.visibility = View.GONE
                     val deletedConfession = state.data
-                    val position = deletedConfession?.let { findPositionById(it.id) }
+                    val position = deletedConfession?.let { findPositionById(it.id, confessListAdapter) }
 
                     if (position != -1) {
                         if (deletedConfession != null) {
@@ -273,37 +269,6 @@ class OthersConfessionsFragment(
         }
     }
 
-    private fun onAnswerClick(
-        confessionId: String
-    ) {
-        if (!confessionId.isNullOrEmpty()) {
-            val bundle = Bundle()
-            bundle.putString("confessionId", confessionId)
-            bundle.putString("currentUserUid", currentUserUid)
-
-            val confessAnswerFragment = ConfessAnswerFragment(
-                { position, updatedConfession ->
-                    confessListAdapter.updateItem(position, updatedConfession)
-                },
-                { confessionId ->
-                    findPositionById(confessionId)
-                }
-            )
-            confessAnswerFragment.arguments = bundle
-            confessAnswerFragment.show(
-                requireActivity().supportFragmentManager,
-                "ConfessAnswerFragment"
-            )
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.confession_not_found),
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-    }
-
     private fun onItemPhotoClick(
         photoUserEmail: String, photoUserUid: String,
         photoUserName: String, photoUserToken: String
@@ -322,15 +287,6 @@ class OthersConfessionsFragment(
             userNameUserEmail, userNameUserUid, userNameUserName,
             userNameUserToken, navRegister, this.userUid
         )
-    }
-
-    private fun findPositionById(confessionId: String): Int {
-        for (index in 0 until confessListAdapter.confessList.size) {
-            if (confessListAdapter.confessList[index].id == confessionId) {
-                return index
-            }
-        }
-        return -1
     }
 
     override fun scrollToTop() {

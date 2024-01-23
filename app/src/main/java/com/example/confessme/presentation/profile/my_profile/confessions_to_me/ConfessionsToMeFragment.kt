@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
-import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessionsToMeBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsToYouBinding
@@ -21,7 +20,6 @@ import com.example.confessme.presentation.confess.ConfessViewModel
 import com.example.confessme.presentation.profile.ScrollableToTop
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
 import com.example.confessme.presentation.profile.ConfessionListAdapter
-import com.example.confessme.presentation.profile.ConfessionUpdateListener
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.other_user_profile.OtherUserProfileFragment
 import com.example.confessme.presentation.profile.ConfessionCategory
@@ -32,7 +30,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableToTop {
+class ConfessionsToMeFragment: Fragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentConfessionsToMeBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -197,15 +195,6 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
         }
     }
 
-    override fun findPositionById(confessionId: String): Int {
-        for (index in 0 until confessListAdapter.confessList.size) {
-            if (confessListAdapter.confessList[index].id == confessionId) {
-                return index
-            }
-        }
-        return -1
-    }
-
     private fun observeAddBookmarks() {
         viewModel.addBookmarkState.observe(this) { state ->
             when (state) {
@@ -340,8 +329,13 @@ class ConfessionsToMeFragment: Fragment(), ConfessionUpdateListener, ScrollableT
         }
     }
 
-    override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
-        confessListAdapter.updateItem(position, updatedConfession)
+    private fun findPositionById(confessionId: String): Int {
+        for (index in 0 until confessListAdapter.confessList.size) {
+            if (confessListAdapter.confessList[index].id == confessionId) {
+                return index
+            }
+        }
+        return -1
     }
 
     override fun scrollToTop() {

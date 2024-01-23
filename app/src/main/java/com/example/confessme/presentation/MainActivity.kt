@@ -6,11 +6,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.confessme.R
-import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.ActivityMainBinding
 import com.example.confessme.presentation.utils.BottomNavBarControl
-import com.example.confessme.presentation.profile.ConfessionUpdateListener
-import com.example.confessme.presentation.profile.my_profile.confessions_to_me.ConfessionsToMeFragment
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.home.HomeFragment
 import com.example.confessme.presentation.auth.LoginFragment
@@ -21,7 +18,7 @@ import com.example.confessme.utils.MyUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateListener,
+class MainActivity : AppCompatActivity(), FragmentNavigation,
     BottomNavBarControl {
 
     private lateinit var binding: ActivityMainBinding
@@ -123,18 +120,6 @@ class MainActivity : AppCompatActivity(), FragmentNavigation, ConfessionUpdateLi
         }
 
         transaction.commit()
-    }
-
-    override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
-        val fragmentManager = supportFragmentManager
-        val confessionsToMeFragment = fragmentManager.findFragmentByTag("confessionsToMeFragment") as? ConfessionsToMeFragment
-        confessionsToMeFragment?.updateConfessionItem(position, updatedConfession)
-    }
-
-    override fun findPositionById(confessionId: String): Int {
-        val fragmentManager = supportFragmentManager
-        val confessionsToMeFragment = fragmentManager.findFragmentByTag("confessionsToMeFragment") as? ConfessionsToMeFragment
-        return confessionsToMeFragment?.findPositionById(confessionId) ?: -1
     }
 
     override fun disableBottomNavigationBar() {

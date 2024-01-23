@@ -2,8 +2,6 @@ package com.example.confessme.presentation.profile.other_user_profile
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +11,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.confessme.R
-import com.example.confessme.data.model.Confession
 import com.example.confessme.databinding.FragmentConfessedBinding
 import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.presentation.confess.ConfessViewModel
 import com.example.confessme.presentation.profile.ScrollableToTop
-import com.example.confessme.presentation.confess.ConfessAnswerFragment
-import com.example.confessme.presentation.profile.ConfessionUpdateListener
 import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.ConfessionCategory
@@ -33,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ConfessedFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-) : OtherUserListFragment(), ConfessionUpdateListener, ScrollableToTop {
+) : OtherUserViewPagerFragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentConfessedBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -113,7 +108,7 @@ class ConfessedFragment(
             currentUserUid,
             false,
             onAnswerClick = { confessionId ->
-                onAnswerClick(confessionId)
+                onAnswerClick(confessionId, confessListAdapter, currentUserUid)
             },
             onFavoriteClick = { isFavorited, confessionId ->
                 viewModel.addFavorite(isFavorited, confessionId)
@@ -181,7 +176,7 @@ class ConfessedFragment(
                     binding.progressBarConfessed.visibility = View.GONE
                     val updatedConfession = state.data
 
-                    val position = updatedConfession?.let { findPositionById(it.id) }
+                    val position = updatedConfession?.let { findPositionById(it.id, confessListAdapter) }
                     if (position != -1) {
                         if (updatedConfession != null) {
                             if (position != null) {
@@ -263,51 +258,12 @@ class ConfessedFragment(
         }
     }
 
-    private fun onAnswerClick(confessionId: String) {
-        if (!confessionId.isNullOrEmpty()) {
-            val bundle = Bundle()
-            bundle.putString("confessionId", confessionId)
-            bundle.putString("currentUserUid", currentUserUid)
-
-            val confessAnswerFragment = ConfessAnswerFragment(
-                { position, updatedConfession ->
-                    confessListAdapter.updateItem(position, updatedConfession)
-                },
-                { confessionId ->
-                    findPositionById(confessionId)
-                }
-            )
-            confessAnswerFragment.arguments = bundle
-            confessAnswerFragment.show(
-                requireActivity().supportFragmentManager,
-                "ConfessAnswerFragment"
-            )
-
-        } else {
-            Toast.makeText(requireContext(), getString(R.string.confession_not_found), Toast.LENGTH_SHORT)
-                .show()
-        }
-    }
-
     private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String, photoUserName: String, photoUserToken: String) {
         navigateToUserProfile(photoUserEmail, photoUserUid, photoUserName, photoUserToken, navRegister, this.userUid)
     }
 
     private fun onUserNameClick(userNameUserEmail: String, userNameUserUid: String, userNameUserName: String, userNameUserToken: String) {
         navigateToUserProfile(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken, navRegister, this.userUid)
-    }
-
-    override fun findPositionById(confessionId: String): Int {
-        for (index in 0 until confessListAdapter.confessList.size) {
-            if (confessListAdapter.confessList[index].id == confessionId) {
-                return index
-            }
-        }
-        return -1
-    }
-
-    override fun updateConfessionItem(position: Int, updatedConfession: Confession) {
-        confessListAdapter.updateItem(position, updatedConfession)
     }
 
     override fun scrollToTop() {
