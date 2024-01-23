@@ -35,7 +35,6 @@ class OthersConfessionsFragment(
     private lateinit var confessListAdapter: ConfessionListAdapter
     private lateinit var currentUserUid: String
     private lateinit var noConfessFoundBinding: NoConfessionsHereBeTheFirstOneBinding
-    private var limit: Long = 20
 
     private val viewModel: ConfessViewModel by viewModels()
 
@@ -52,7 +51,8 @@ class OthersConfessionsFragment(
         currentUserUid = currentUser?.uid ?: ""
 
         setConfessionListAdapter()
-        setupRecyclerView()
+        setupRecyclerView(binding.othersConfessionsListRecyclerviewId, confessListAdapter
+        ) { viewModel.fetchConfessions(userUid, limit, confessionCategory) }
 
         viewModel.fetchConfessions(userUid, limit, confessionCategory)
 
@@ -70,38 +70,6 @@ class OthersConfessionsFragment(
         observeFetchConfessions()
         observeDeleteConfession()
         observeRemoveBookmark()
-    }
-
-    private fun setupRecyclerView() {
-        binding.othersConfessionsListRecyclerviewId.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = confessListAdapter
-            setHasFixedSize(true)
-            addItemDecoration(
-                DividerItemDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL
-                )
-            )
-            this.addOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemCount = layoutManager.itemCount
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                        && firstVisibleItemPosition >= 0
-                        && totalItemCount >= limit
-                    ) {
-                        limit += 10
-                        viewModel.fetchConfessions(userUid, limit, confessionCategory)
-                    }
-                }
-            })
-        }
     }
 
     private fun setConfessionListAdapter() {
