@@ -85,7 +85,17 @@ class ConfessionListAdapter(
         itemView: View,
         adapterPosition: Int
     ) {
-        val toUserName = "@${confess.username} "
+        val maxUsernameLength = 18
+        val ellipsis = "..."
+
+        val username = confess.username
+        val truncatedUsername = if (username.length > maxUsernameLength) {
+            username.substring(0, maxUsernameLength - ellipsis.length) + ellipsis
+        } else {
+            username
+        }
+
+        val toUserName = "@${truncatedUsername} "
         val spannable = SpannableString("$toUserName${confess.text}")
 
         val usernameColor = ContextCompat.getColor(itemView.context, R.color.confessmered)
@@ -146,7 +156,7 @@ class ConfessionListAdapter(
             binding.confessionsScreenProfileImage.setImageResource(R.drawable.empty_profile_photo)
         }
 
-        setAnswerFavoriteAndMoreActionsItems(confess, binding, itemView, adapterPosition)
+        setAnswerFavoriteAndMoreActionsItems(confess, binding, adapterPosition)
 
         binding.confessionsScreenConfession.setOnClickListener {
             confess.isExpanded = !confess.isExpanded
@@ -163,7 +173,6 @@ class ConfessionListAdapter(
     private fun setAnswerFavoriteAndMoreActionsItems(
         confess: Confession,
         binding: ConfessItemBinding,
-        itemView: View,
         adapterPosition: Int
     ) {
         if (currentUserUid == confessList[adapterPosition].fromUserId) {

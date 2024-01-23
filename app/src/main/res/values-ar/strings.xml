@@ -209,4 +209,5 @@
     <string name="please_wait">يرجى الانتظار</string>
     <string name="edit_answer">عدّل الجواب</string>
     <string name="copied_to_clipboard">تم نسخها إلى الحافظة</string>
+    <string name="username_invalid_characters">أحرف غير صالحة في اسم المستخدم. يُسمح فقط بالحروف والأرقام و "_".</string>
 </resources>

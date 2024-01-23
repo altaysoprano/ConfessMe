@@ -33,6 +33,7 @@ import com.example.confessme.utils.MyUtils.disable
 import com.example.confessme.utils.MyUtils.enable
 import com.example.confessme.presentation.utils.ShareHelper
 import com.example.confessme.presentation.utils.UiState
+import com.example.confessme.utils.MyUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -316,8 +317,8 @@ class EditProfileFragment : Fragment() {
             binding.firstNameEt.error = getString(R.string.username_cannot_be_empty)
             binding.saveButton.disable()
         }
-        if (userName?.contains(" ") == true) {
-            binding.firstNameEt.error = getString(R.string.username_cannot_contain_spaces)
+        if (!MyUtils.isUserNameValid(userName)) {
+            binding.firstNameEt.error = getString(R.string.username_invalid_characters)
             binding.saveButton.disable()
         }
         if (bioCurrentLength > bioMaxLength) {
@@ -326,10 +327,6 @@ class EditProfileFragment : Fragment() {
         }
         if (userName == "Anonymous") {
             binding.firstNameEt.error = getString(R.string.username_cannot_be_anonymous)
-            binding.saveButton.disable()
-        }
-        if (userName?.contains("\n") == true) {
-            binding.firstNameEt.error = getString(R.string.username_cannot_contain_line_breaks)
             binding.saveButton.disable()
         }
         if (userName?.equals(currentUsername) == true && (bio.equals(currentBio))

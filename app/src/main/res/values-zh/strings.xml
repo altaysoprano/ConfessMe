@@ -209,4 +209,5 @@
     <string name="please_wait">请稍候</string>
     <string name="edit_answer">编辑答案</string>
     <string name="copied_to_clipboard">已复制到剪贴板</string>
+    <string name="username_invalid_characters">用户名包含无效字符。仅允许使用字母、数字和“_”。</string>
 </resources>

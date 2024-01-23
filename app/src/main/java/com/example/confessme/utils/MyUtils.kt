@@ -230,4 +230,9 @@ object MyUtils {
         val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
+    fun isUserNameValid(userName: String?): Boolean {
+        val regex = Regex("^[a-zA-Z0-9_]*$")
+        return userName?.let { regex.matches(it) } ?: false
+    }
 }

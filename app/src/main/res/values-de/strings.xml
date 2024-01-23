@@ -209,4 +209,5 @@
     <string name="please_wait">Bitte warten Sie</string>
     <string name="edit_answer">Antwort Bearbeiten</string>
     <string name="copied_to_clipboard">In die Zwischenablage kopiert</string>
+    <string name="username_invalid_characters">Ungültige Zeichen im Benutzernamen. Nur Buchstaben, Zahlen und "_" sind erlaubt.</string>
 </resources>

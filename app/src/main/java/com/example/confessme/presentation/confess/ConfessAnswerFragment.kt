@@ -502,7 +502,17 @@ class ConfessAnswerFragment(
         confessionTimeStamp: Any?, confessionUserUid: String, confessionFromUserUid: String,
         confessionFromUserToken: String, confessionUserToken: String
     ) {
-        val toUserName = "@$toUserName "
+        val maxUsernameLength = 18
+        val ellipsis = "..."
+
+        val username = toUserName
+        val truncatedUsername = if (username.length > maxUsernameLength) {
+            username.substring(0, maxUsernameLength - ellipsis.length) + ellipsis
+        } else {
+            username
+        }
+
+        val toUserName = "@${truncatedUsername} "
         val spannable = SpannableString("$toUserName${confessionText}")
 
         val usernameColor = ContextCompat.getColor(requireContext(), R.color.confessmered)
@@ -560,11 +570,21 @@ class ConfessAnswerFragment(
         userToken: String, fromUserToken: String,
         confessedUserName: String, answerText: String
     ) {
-        val confessedUserNameBold = SpannableString("@$confessedUserName")
+        val maxUsernameLength = 18
+        val ellipsis = "..."
+
+        val username = confessedUserName
+        val truncatedUsername = if (username.length > maxUsernameLength) {
+            username.substring(0, maxUsernameLength - ellipsis.length) + ellipsis
+        } else {
+            username
+        }
+
+        val confessedUserNameBold = SpannableString("@${truncatedUsername}")
         confessedUserNameBold.setSpan(
             StyleSpan(Typeface.BOLD),
             0,
-            confessedUserName.length + 1,
+            truncatedUsername.length + 1,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         confessedUserNameBold.setSpan(
@@ -573,7 +593,7 @@ class ConfessAnswerFragment(
                     requireContext(),
                     R.color.confessmered
                 )
-            ), 0, confessedUserName.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            ), 0, truncatedUsername.length + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
 
         val clickableSpan = object : ClickableSpan() {
@@ -589,7 +609,7 @@ class ConfessAnswerFragment(
         confessedUserNameBold.setSpan(
             clickableSpan,
             0,
-            confessedUserName.length + 1,
+            truncatedUsername.length + 1,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
 
