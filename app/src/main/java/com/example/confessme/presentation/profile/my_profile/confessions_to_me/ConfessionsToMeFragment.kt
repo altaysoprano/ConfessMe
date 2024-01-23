@@ -20,7 +20,7 @@ import com.example.confessme.databinding.NoConfessionsToYouBinding
 import com.example.confessme.presentation.confess.ConfessViewModel
 import com.example.confessme.presentation.profile.ScrollableToTop
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
-import com.example.confessme.presentation.confess.ConfessionListAdapter
+import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.profile.ConfessionUpdateListener
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.other_user_profile.OtherUserProfileFragment

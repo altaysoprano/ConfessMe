@@ -2,6 +2,7 @@ package com.example.confessme.presentation.profile.other_user_profile
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,7 @@ import com.example.confessme.presentation.confess.ConfessViewModel
 import com.example.confessme.presentation.profile.ScrollableToTop
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
 import com.example.confessme.presentation.profile.ConfessionUpdateListener
-import com.example.confessme.presentation.confess.ConfessionListAdapter
+import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.ConfessionCategory
 import com.example.confessme.utils.MyUtils
@@ -32,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ConfessedFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-) : Fragment(), ConfessionUpdateListener, ScrollableToTop {
+) : OtherUserListFragment(), ConfessionUpdateListener, ScrollableToTop {
 
     private lateinit var binding: FragmentConfessedBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -289,30 +290,11 @@ class ConfessedFragment(
     }
 
     private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String, photoUserName: String, photoUserToken: String) {
-        val bundle = Bundle()
-        bundle.putString("userEmail", photoUserEmail)
-        bundle.putString("userName", photoUserName)
-        bundle.putString("userUid", photoUserUid)
-        bundle.putString("userToken", photoUserToken)
-
-        val profileFragment = OtherUserProfileFragment()
-        profileFragment.arguments = bundle
-
-        navRegister.navigateFrag(profileFragment, true)
+        navigateToUserProfile(photoUserEmail, photoUserUid, photoUserName, photoUserToken, navRegister, this.userUid)
     }
 
     private fun onUserNameClick(userNameUserEmail: String, userNameUserUid: String, userNameUserName: String, userNameUserToken: String) {
-        val bundle = Bundle()
-        bundle.putString("userEmail", userNameUserEmail)
-        bundle.putString("userUid", userNameUserUid)
-        bundle.putString("userName", userNameUserName)
-        bundle.putString("userToken", userNameUserToken)
-
-
-        val profileFragment = OtherUserProfileFragment()
-        profileFragment.arguments = bundle
-
-        navRegister.navigateFrag(profileFragment, true)
+        navigateToUserProfile(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken, navRegister, this.userUid)
     }
 
     override fun findPositionById(confessionId: String): Int {

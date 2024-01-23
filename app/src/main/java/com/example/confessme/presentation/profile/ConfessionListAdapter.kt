@@ -1,4 +1,4 @@
-package com.example.confessme.presentation.confess
+package com.example.confessme.presentation.profile
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -17,7 +17,7 @@ import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.presentation.profile.ScrollableToTop
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
-import com.example.confessme.presentation.confess.ConfessionListAdapter
+import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.other_user_profile.OtherUserProfileFragment
 import com.example.confessme.utils.MyUtils
@@ -90,30 +90,10 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 viewModel.deleteBookmark(confessionId)
             },
             onItemPhotoClick = { userUid, userEmail, userToken, userName ->
-
-                val bundle = Bundle()
-                bundle.putString("userEmail", userEmail)
-                bundle.putString("userUid", userUid)
-                bundle.putString("userName", userName)
-                bundle.putString("userToken", userToken)
-
-                val profileFragment = OtherUserProfileFragment()
-                profileFragment.arguments = bundle
-
-                navRegister.navigateFrag(profileFragment, true)
+                navigateToUserProfile(userEmail, userUid, userName, userToken)
             },
             onUserNameClick =  { userUid, userEmail, userToken, userName ->
-
-                val bundle = Bundle()
-                bundle.putString("userEmail", userEmail)
-                bundle.putString("userUid", userUid)
-                bundle.putString("userName", userName)
-                bundle.putString("userToken", userToken)
-
-                val profileFragment = OtherUserProfileFragment()
-                profileFragment.arguments = bundle
-
-                navRegister.navigateFrag(profileFragment, true)
+                navigateToUserProfile(userEmail, userUid, userName, userToken)
             },
             onTimestampClick = {date ->
                 Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
@@ -328,6 +308,19 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
             Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
                 .show()
         }
+    }
+
+    private fun navigateToUserProfile(userEmail: String, userUid: String, userName: String, userToken: String) {
+        val bundle = Bundle()
+        bundle.putString("userEmail", userEmail)
+        bundle.putString("userUid", userUid)
+        bundle.putString("userName", userName)
+        bundle.putString("userToken", userToken)
+
+        val profileFragment = OtherUserProfileFragment()
+        profileFragment.arguments = bundle
+
+            navRegister.navigateFrag(profileFragment, true)
     }
 
     private fun findPositionById(confessionId: String): Int {

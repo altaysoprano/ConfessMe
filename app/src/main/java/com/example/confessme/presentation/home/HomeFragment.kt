@@ -25,7 +25,7 @@ import com.example.confessme.databinding.FragmentHomeBinding
 import com.example.confessme.databinding.HomeNoConfessFoundViewBinding
 import com.example.confessme.presentation.utils.BottomNavBarControl
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
-import com.example.confessme.presentation.confess.ConfessionListAdapter
+import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.auth.LoginFragment
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.home.notifications.NotificationsFragment

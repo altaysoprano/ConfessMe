@@ -17,7 +17,7 @@ import com.example.confessme.databinding.NoConfessionsHereBeTheFirstOneBinding
 import com.example.confessme.presentation.confess.ConfessViewModel
 import com.example.confessme.presentation.profile.ScrollableToTop
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
-import com.example.confessme.presentation.confess.ConfessionListAdapter
+import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.ConfessionCategory
 import com.example.confessme.utils.MyUtils
@@ -29,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class OthersConfessionsFragment(
     private val userUid: String,
     private val confessionCategory: ConfessionCategory
-) : Fragment(), ScrollableToTop {
+) : OtherUserListFragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentOthersConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -79,7 +79,12 @@ class OthersConfessionsFragment(
             layoutManager = LinearLayoutManager(requireContext())
             adapter = confessListAdapter
             setHasFixedSize(true)
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             this.addOnScrollListener(object :
                 RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -123,10 +128,15 @@ class OthersConfessionsFragment(
             onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, photoUserName ->
                 onItemPhotoClick(photoUserEmail, photoUserUid, photoUserName, photoUserToken)
             },
-            onUserNameClick =  { userNameUserUid, userNameUserEmail, userNameUserToken, userNameUserName ->
-                onUserNameClick(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken)
+            onUserNameClick = { userNameUserUid, userNameUserEmail, userNameUserToken, userNameUserName ->
+                onUserNameClick(
+                    userNameUserEmail,
+                    userNameUserUid,
+                    userNameUserName,
+                    userNameUserToken
+                )
             },
-            onTimestampClick = {date ->
+            onTimestampClick = { date ->
                 Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
             }
         )
@@ -249,7 +259,7 @@ class OthersConfessionsFragment(
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-                            if(removedBookmark != null) {
+                            if (removedBookmark != null) {
                                 viewModel.addBookmark(
                                     confessionId = removedBookmark.confessionId,
                                     timestamp = removedBookmark.timestamp,
@@ -285,37 +295,33 @@ class OthersConfessionsFragment(
                 "ConfessAnswerFragment"
             )
         } else {
-            Toast.makeText(requireContext(), getString(R.string.confession_not_found), Toast.LENGTH_SHORT)
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.confession_not_found),
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
     }
 
-    private fun onItemPhotoClick(photoUserEmail: String, photoUserUid: String,
-                                 photoUserName: String, photoUserToken: String) {
-        val bundle = Bundle()
-        bundle.putString("userEmail", photoUserEmail)
-        bundle.putString("userUid", photoUserUid)
-        bundle.putString("userName", photoUserName)
-        bundle.putString("userToken", photoUserToken)
-
-        val profileFragment = OtherUserProfileFragment()
-        profileFragment.arguments = bundle
-
-        navRegister.navigateFrag(profileFragment, true)
+    private fun onItemPhotoClick(
+        photoUserEmail: String, photoUserUid: String,
+        photoUserName: String, photoUserToken: String
+    ) {
+        navigateToUserProfile(
+            photoUserEmail, photoUserUid, photoUserName, photoUserToken,
+            navRegister, this.userUid
+        )
     }
 
-    private fun onUserNameClick(userNameUserEmail: String, userNameUserUid: String,
-                                userNameUserName: String, userNameUserToken: String) {
-        val bundle = Bundle()
-        bundle.putString("userEmail", userNameUserEmail)
-        bundle.putString("userUid", userNameUserUid)
-        bundle.putString("userName", userNameUserName)
-        bundle.putString("userToken", userNameUserToken)
-
-        val profileFragment = OtherUserProfileFragment()
-        profileFragment.arguments = bundle
-
-        navRegister.navigateFrag(profileFragment, true)
+    private fun onUserNameClick(
+        userNameUserEmail: String, userNameUserUid: String,
+        userNameUserName: String, userNameUserToken: String
+    ) {
+        navigateToUserProfile(
+            userNameUserEmail, userNameUserUid, userNameUserName,
+            userNameUserToken, navRegister, this.userUid
+        )
     }
 
     private fun findPositionById(confessionId: String): Int {
