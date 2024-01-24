@@ -39,7 +39,6 @@ class ConfessionListAdapter(
     private val onBookmarkRemoveClick: (String) -> Unit,
     private val onItemPhotoClick: (String, String, String, String) -> Unit,
     private val onUserNameClick: (String, String, String, String) -> Unit,
-    private val onTimestampClick: (String) -> Unit
 ) : RecyclerView.Adapter<ConfessionListAdapter.ConfessionViewHolder>() {
 
     private val dialogHelper = ConfessMeDialog(context)

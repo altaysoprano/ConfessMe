@@ -17,7 +17,9 @@ import com.example.confessme.databinding.FragmentProfileBinding
 import com.example.confessme.databinding.NoConfessionsHereBinding
 import com.example.confessme.presentation.profile.ScrollableToTop
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
+import com.example.confessme.presentation.profile.ConfessionCategory
 import com.example.confessme.presentation.profile.ConfessionListAdapter
+import com.example.confessme.presentation.profile.my_profile.MyProfileViewPagerFragment
 import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.other_user_profile.OtherUserProfileFragment
 import com.example.confessme.utils.MyUtils
@@ -26,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BookmarksFragment() : Fragment(), ScrollableToTop {
+class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentBookmarksBinding
     private lateinit var profileBinding: FragmentProfileBinding
@@ -36,8 +38,6 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
     private lateinit var currentUserUid: String
     private var removedBookmarkPosition = -1
     private val viewModel: BookmarksViewModel by viewModels()
-
-    private var limit: Long = 20
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,7 +52,8 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
         noConfessFoundBinding = binding.noConfessionsHereText
 
         setAdapter()
-        setupRecyclerView()
+        setupRecyclerView(binding.bookmarkListRecyclerviewId, confessListAdapter,
+            {viewModel.fetchBookmarks(limit)})
 
         viewModel.fetchBookmarks(limit)
 
@@ -76,7 +77,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
             currentUserUid,
             true,
             onAnswerClick = { confessionId ->
-                onAnswerClick(confessionId)
+                onAnswerClick(confessionId, currentUserUid, confessListAdapter)
             },
             onFavoriteClick = {isFavorited, confessionId ->
                 viewModel.addFavorite(isFavorited, confessionId)
@@ -90,42 +91,12 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 viewModel.deleteBookmark(confessionId)
             },
             onItemPhotoClick = { userUid, userEmail, userToken, userName ->
-                navigateToUserProfile(userEmail, userUid, userName, userToken)
+                onItemPhotoClick(userEmail, userUid, userName, userToken, navRegister)
             },
             onUserNameClick =  { userUid, userEmail, userToken, userName ->
-                navigateToUserProfile(userEmail, userUid, userName, userToken)
-            },
-            onTimestampClick = {date ->
-                Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
+                onUserNameClick(userEmail, userUid, userName, userToken, navRegister)
             }
         )
-    }
-
-    private fun setupRecyclerView() {
-        binding.bookmarkListRecyclerviewId.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = confessListAdapter
-            setHasFixedSize(true)
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-            this.addOnScrollListener(object :
-                RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                    val visibleItemCount = layoutManager.childCount
-                    val totalItemCount = layoutManager.itemCount
-                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                        && firstVisibleItemPosition >= 0
-                        && totalItemCount >= limit
-                    ) {
-                        limit += 10
-                        viewModel.fetchBookmarks(limit)
-                    }
-                }
-            })
-        }
     }
 
     private fun setSwiping() {
@@ -183,7 +154,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val deletedConfession = state.data
-                    val position = deletedConfession?.let { findPositionById(it.id) }
+                    val position = deletedConfession?.let { findPositionById(it.id, confessListAdapter) }
 
                     if (position != -1) {
                         if (deletedConfession != null) {
@@ -214,7 +185,7 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val removedBookmark = state.data
-                    val position = removedBookmark?.confessionId?.let { findPositionById(it) }
+                    val position = removedBookmark?.confessionId?.let { findPositionById(it, confessListAdapter) }
 
                     if (position != -1) {
                         if (position != null) {
@@ -283,53 +254,6 @@ class BookmarksFragment() : Fragment(), ScrollableToTop {
                 }
             }
         }
-    }
-
-    private fun onAnswerClick(confessionId: String) {
-        if (!confessionId.isNullOrEmpty()) {
-            val bundle = Bundle()
-            bundle.putString("confessionId", confessionId)
-            bundle.putString("currentUserUid", currentUserUid)
-
-            val confessAnswerFragment = ConfessAnswerFragment(
-                { position, updatedConfession ->
-                    confessListAdapter.updateItem(position, updatedConfession)
-                },
-                { confessionId ->
-                    findPositionById(confessionId)
-                }
-            )
-            confessAnswerFragment.arguments = bundle
-            confessAnswerFragment.show(
-                requireActivity().supportFragmentManager,
-                "ConfessAnswerFragment"
-            )
-        } else {
-            Toast.makeText(requireContext(), "Confession not found", Toast.LENGTH_SHORT)
-                .show()
-        }
-    }
-
-    private fun navigateToUserProfile(userEmail: String, userUid: String, userName: String, userToken: String) {
-        val bundle = Bundle()
-        bundle.putString("userEmail", userEmail)
-        bundle.putString("userUid", userUid)
-        bundle.putString("userName", userName)
-        bundle.putString("userToken", userToken)
-
-        val profileFragment = OtherUserProfileFragment()
-        profileFragment.arguments = bundle
-
-            navRegister.navigateFrag(profileFragment, true)
-    }
-
-    private fun findPositionById(confessionId: String): Int {
-        for (index in 0 until confessListAdapter.confessList.size) {
-            if (confessListAdapter.confessList[index].id == confessionId) {
-                return index
-            }
-        }
-        return -1
     }
 
     override fun scrollToTop() {

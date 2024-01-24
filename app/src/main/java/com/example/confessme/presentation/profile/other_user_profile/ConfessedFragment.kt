@@ -96,9 +96,6 @@ class ConfessedFragment(
             },
             onUserNameClick = { userNameUserUid, userNameUserEmail, userNameUserToken, userNameUserName ->
                 onUserNameClick(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken)
-            },
-            onTimestampClick = {date ->
-                Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
             }
         )
     }

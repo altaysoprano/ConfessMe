@@ -99,9 +99,6 @@ class OthersConfessionsFragment(
                     userNameUserName,
                     userNameUserToken
                 )
-            },
-            onTimestampClick = { date ->
-                Toast.makeText(context, date, Toast.LENGTH_SHORT).show()
             }
         )
     }
