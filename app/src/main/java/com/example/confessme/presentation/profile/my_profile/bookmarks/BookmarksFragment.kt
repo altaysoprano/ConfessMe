@@ -32,7 +32,6 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
 
     private lateinit var binding: FragmentBookmarksBinding
     private lateinit var profileBinding: FragmentProfileBinding
-    private lateinit var confessListAdapter: ConfessionListAdapter
     private lateinit var navRegister: FragmentNavigation
     private lateinit var noConfessFoundBinding: NoConfessionsHereBinding
     private lateinit var currentUserUid: String
@@ -51,9 +50,24 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
         currentUserUid = currentUser?.uid ?: ""
         noConfessFoundBinding = binding.noConfessionsHereText
 
-        setAdapter()
+        setAdapter(
+            isBookmarks = true,
+            currentUserUid = currentUserUid,
+            navRegister = navRegister,
+            onFavoriteClick = { isFavorited, confessionId ->
+                viewModel.addFavorite(isFavorited, confessionId)
+            },
+            onConfessDeleteClick = {confessionId ->
+                viewModel.deleteConfession(confessionId)
+            },
+            onConfessBookmarkClick = {confessionId, timestamp, userUid ->
+            },
+            onBookmarkRemoveClick = {confessionId ->
+                viewModel.deleteBookmark(confessionId)
+            }
+        )
         setupRecyclerView(binding.bookmarkListRecyclerviewId, confessListAdapter,
-            {viewModel.fetchBookmarks(limit)})
+            { viewModel.fetchBookmarks(limit) })
 
         viewModel.fetchBookmarks(limit)
 
@@ -68,35 +82,6 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
         observeRemoveBookmark()
         observeDeleteConfession()
         observeAddBookmarks()
-    }
-
-    private fun setAdapter() {
-        confessListAdapter = ConfessionListAdapter(
-            requireContext(),
-            mutableListOf(),
-            currentUserUid,
-            true,
-            onAnswerClick = { confessionId ->
-                onAnswerClick(confessionId, currentUserUid, confessListAdapter)
-            },
-            onFavoriteClick = {isFavorited, confessionId ->
-                viewModel.addFavorite(isFavorited, confessionId)
-            },
-            onConfessDeleteClick = { confessionId ->
-                viewModel.deleteConfession(confessionId)
-            },
-            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
-            },
-            onBookmarkRemoveClick = {confessionId ->
-                viewModel.deleteBookmark(confessionId)
-            },
-            onItemPhotoClick = { userUid, userEmail, userToken, userName ->
-                onItemPhotoClick(userEmail, userUid, userName, userToken, navRegister)
-            },
-            onUserNameClick =  { userUid, userEmail, userToken, userName ->
-                onUserNameClick(userEmail, userUid, userName, userToken, navRegister)
-            }
-        )
     }
 
     private fun setSwiping() {
@@ -124,7 +109,7 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarks.visibility = View.GONE
                     binding.swipeRefreshLayoutMyConfessions.isRefreshing = false
-                    limit = if(state.data.size < 20) 20 else state.data.size.toLong()
+                    limit = if (state.data.size < 20) 20 else state.data.size.toLong()
 
                     if (state.data.isEmpty()) {
                         noConfessFoundBinding.root.visibility = View.VISIBLE
@@ -154,7 +139,8 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val deletedConfession = state.data
-                    val position = deletedConfession?.let { findPositionById(it.id, confessListAdapter) }
+                    val position =
+                        deletedConfession?.let { findPositionById(it.id, confessListAdapter) }
 
                     if (position != -1) {
                         if (deletedConfession != null) {
@@ -185,7 +171,12 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
                 is UiState.Success -> {
                     binding.progressBarBookmarksGeneral.visibility = View.GONE
                     val removedBookmark = state.data
-                    val position = removedBookmark?.confessionId?.let { findPositionById(it, confessListAdapter) }
+                    val position = removedBookmark?.confessionId?.let {
+                        findPositionById(
+                            it,
+                            confessListAdapter
+                        )
+                    }
 
                     if (position != -1) {
                         if (position != null) {
@@ -202,7 +193,7 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
                         activity = requireActivity(),
                         context = requireContext(),
                         onButtonClicked = {
-                            if(removedBookmark != null) {
+                            if (removedBookmark != null) {
                                 viewModel.addBookmark(
                                     confessionId = removedBookmark.confessionId,
                                     timestamp = removedBookmark.timestamp,

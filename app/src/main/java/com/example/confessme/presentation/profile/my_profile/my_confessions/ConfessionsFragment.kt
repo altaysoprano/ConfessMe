@@ -34,7 +34,6 @@ class ConfessionsFragment: MyProfileViewPagerFragment(), ScrollableToTop {
     private lateinit var binding: FragmentConfessionsBinding
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var navRegister: FragmentNavigation
-    private lateinit var confessListAdapter: ConfessionListAdapter
     private lateinit var currentUserUid: String
     private lateinit var noConfessFoundBinding: YouHaveNoConfessionsBinding
 
@@ -52,7 +51,20 @@ class ConfessionsFragment: MyProfileViewPagerFragment(), ScrollableToTop {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUserUid = currentUser?.uid ?: ""
 
-        setConfessListAdapter()
+        setAdapter(
+            isBookmarks = false,
+            currentUserUid = currentUserUid,
+            navRegister = navRegister,
+            onFavoriteClick = { isFavorited, confessionId ->
+            },
+            onConfessDeleteClick = { confessionId ->
+                viewModel.deleteConfession(confessionId)
+            },
+            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
+                viewModel.addBookmark(confessionId, null, userUid)
+            },
+            onBookmarkRemoveClick = {confessionId -> },
+        )
         setupRecyclerView(binding.confessionListRecyclerviewId, confessListAdapter,
             {viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)})
         setConfessSomeoneTextOnClickListener()
@@ -73,34 +85,6 @@ class ConfessionsFragment: MyProfileViewPagerFragment(), ScrollableToTop {
         observeFetchConfessions()
         observeDeleteConfession()
         observeRemoveBookmark()
-    }
-
-    private fun setConfessListAdapter() {
-        confessListAdapter = ConfessionListAdapter(
-            requireContext(),
-            mutableListOf(),
-            currentUserUid,
-            false,
-            onAnswerClick = { confessionId ->
-                onAnswerClick(confessionId, currentUserUid, confessListAdapter)
-            },
-            onFavoriteClick = {isFavorited, confessionId ->
-
-            },
-            onConfessDeleteClick = { confessionId ->
-                viewModel.deleteConfession(confessionId)
-            },
-            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
-                viewModel.addBookmark(confessionId, null, userUid)
-            },
-            onBookmarkRemoveClick = {confessionId -> },
-            onItemPhotoClick = { photoUserUid, photoUserEmail, photoUserToken, userNameUserName ->
-                onItemPhotoClick(photoUserEmail, photoUserUid, userNameUserName, photoUserToken, navRegister)
-            },
-            onUserNameClick = { userNameUserUid, userNameUserEmail, userNameUserToken, userNameUserName ->
-                onUserNameClick(userNameUserEmail, userNameUserUid, userNameUserName, userNameUserToken, navRegister)
-            }
-        )
     }
 
     private fun observeFetchConfessions() {

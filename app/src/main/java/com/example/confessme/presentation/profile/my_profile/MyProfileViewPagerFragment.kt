@@ -12,10 +12,12 @@ import com.example.confessme.presentation.profile.ConfessionCategory
 import com.example.confessme.presentation.profile.ConfessionListAdapter
 import com.example.confessme.presentation.profile.other_user_profile.OtherUserProfileFragment
 import com.example.confessme.presentation.utils.FragmentNavigation
+import com.google.firebase.Timestamp
 
 open class MyProfileViewPagerFragment: Fragment() {
 
     protected var limit: Long = 20
+    protected lateinit var confessListAdapter: ConfessionListAdapter
 
     protected fun findPositionById(confessionId: String, adapter: ConfessionListAdapter): Int {
         for (index in 0 until adapter.confessList.size) {
@@ -101,5 +103,43 @@ open class MyProfileViewPagerFragment: Fragment() {
                 }
             })
         }
+    }
+
+    protected fun setAdapter(
+        isBookmarks: Boolean,
+        currentUserUid: String,
+        navRegister: FragmentNavigation,
+        onFavoriteClick: (Boolean, String) -> Unit,
+        onConfessDeleteClick: (String) -> Unit,
+        onConfessBookmarkClick: (String, Timestamp?, String) -> Unit,
+        onBookmarkRemoveClick: (String) -> Unit
+    ) {
+        confessListAdapter = ConfessionListAdapter(
+            requireContext(),
+            mutableListOf(),
+            currentUserUid,
+            isBookmarks,
+            onAnswerClick = { confessionId ->
+                onAnswerClick(confessionId, currentUserUid, confessListAdapter)
+            },
+            onFavoriteClick = {isFavorited, confessionId ->
+                onFavoriteClick(isFavorited, confessionId)
+            },
+            onConfessDeleteClick = { confessionId ->
+                onConfessDeleteClick(confessionId)
+            },
+            onConfessBookmarkClick = { confessionId, timestamp, userUid ->
+                onConfessBookmarkClick(confessionId, timestamp, userUid)
+            },
+            onBookmarkRemoveClick = {confessionId ->
+                onBookmarkRemoveClick(confessionId)
+            },
+            onItemPhotoClick = { userUid, userEmail, userToken, userName ->
+                onItemPhotoClick(userEmail, userUid, userName, userToken, navRegister)
+            },
+            onUserNameClick =  { userUid, userEmail, userToken, userName ->
+                onUserNameClick(userEmail, userUid, userName, userToken, navRegister)
+            }
+        )
     }
 }
