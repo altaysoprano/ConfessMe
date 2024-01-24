@@ -51,6 +51,27 @@ class ConfessionsFragment: MyProfileViewPagerFragment(), ScrollableToTop {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUserUid = currentUser?.uid ?: ""
 
+        setAdapter()
+        setRecyclerView()
+        setConfessSomeoneTextOnClickListener()
+        fetchConfessions()
+        setSwiping(binding.swipeRefreshLayoutMyConfessions, {
+            viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
+            confessListAdapter.notifyDataSetChanged()
+        })
+
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeAddBookmarks()
+        observeFetchConfessions()
+        observeDeleteConfession()
+        observeRemoveBookmark()
+    }
+
+    private fun setAdapter() {
         setAdapter(
             isBookmarks = false,
             currentUserUid = currentUserUid,
@@ -65,26 +86,15 @@ class ConfessionsFragment: MyProfileViewPagerFragment(), ScrollableToTop {
             },
             onBookmarkRemoveClick = {confessionId -> },
         )
-        setupRecyclerView(binding.confessionListRecyclerviewId, confessListAdapter,
-            {viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)})
-        setConfessSomeoneTextOnClickListener()
-
-        viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
-
-        binding.swipeRefreshLayoutMyConfessions.setOnRefreshListener {
-            viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
-            confessListAdapter.notifyDataSetChanged()
-        }
-
-        return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        observeAddBookmarks()
-        observeFetchConfessions()
-        observeDeleteConfession()
-        observeRemoveBookmark()
+    private fun setRecyclerView() {
+        setupRecyclerView(binding.confessionListRecyclerviewId, confessListAdapter,
+            {viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)})
+    }
+
+    private fun fetchConfessions() {
+        viewModel.fetchConfessions("", limit, ConfessionCategory.MY_CONFESSIONS)
     }
 
     private fun observeFetchConfessions() {

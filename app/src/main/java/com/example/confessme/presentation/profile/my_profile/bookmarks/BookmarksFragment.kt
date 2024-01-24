@@ -50,6 +50,23 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
         currentUserUid = currentUser?.uid ?: ""
         noConfessFoundBinding = binding.noConfessionsHereText
 
+        setAdapter()
+        setRecyclerView()
+        fetchConfessions()
+        setSwiping(binding.swipeRefreshLayoutMyConfessions, {viewModel.fetchBookmarks(limit)})
+
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeFetchBookmarks()
+        observeRemoveBookmark()
+        observeDeleteConfession()
+        observeAddBookmarks()
+    }
+
+    private fun setAdapter() {
         setAdapter(
             isBookmarks = true,
             currentUserUid = currentUserUid,
@@ -66,28 +83,15 @@ class BookmarksFragment() : MyProfileViewPagerFragment(), ScrollableToTop {
                 viewModel.deleteBookmark(confessionId)
             }
         )
+    }
+
+    private fun setRecyclerView() {
         setupRecyclerView(binding.bookmarkListRecyclerviewId, confessListAdapter,
             { viewModel.fetchBookmarks(limit) })
+    }
 
+    private fun fetchConfessions() {
         viewModel.fetchBookmarks(limit)
-
-        setSwiping()
-
-        return binding.root
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        observeFetchBookmarks()
-        observeRemoveBookmark()
-        observeDeleteConfession()
-        observeAddBookmarks()
-    }
-
-    private fun setSwiping() {
-        binding.swipeRefreshLayoutMyConfessions.setOnRefreshListener {
-            viewModel.fetchBookmarks(limit)
-        }
     }
 
     private fun observeFetchBookmarks() {

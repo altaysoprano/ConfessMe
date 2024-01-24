@@ -56,6 +56,27 @@ class ConfessionsToMeFragment: MyProfileViewPagerFragment(), ScrollableToTop {
         shareHelper = ShareHelper(requireContext())
         currentUserUid = currentUser?.uid ?: ""
 
+        setAdapter()
+        setRecyclerView()
+        setOnShareYourProfileTextClickListener()
+        fetchConfessions()
+        setSwiping(binding.swipeRefreshLayoutConfessionsToMe, {
+            viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
+            confessListAdapter.notifyDataSetChanged()
+        })
+
+        return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        observeAddBookmarks()
+        observeFetchConfessions()
+        observeAddFavorite()
+        observeRemoveBookmark()
+    }
+
+    private fun setAdapter() {
         setAdapter(
             isBookmarks = false,
             currentUserUid = currentUserUid,
@@ -68,27 +89,15 @@ class ConfessionsToMeFragment: MyProfileViewPagerFragment(), ScrollableToTop {
                 viewModel.addBookmark(confessionId, null, userUid)
             },
             onBookmarkRemoveClick = {confessionId -> }
-            )
+        )
+    }
+    private fun setRecyclerView() {
         setupRecyclerView(binding.confessionToMeListRecyclerviewId, confessListAdapter,
             {viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)})
-        setOnShareYourProfileTextClickListener()
-
-        viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
-
-        binding.swipeRefreshLayoutConfessionsToMe.setOnRefreshListener {
-            viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
-            confessListAdapter.notifyDataSetChanged()
-        }
-
-        return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        observeAddBookmarks()
-        observeFetchConfessions()
-        observeAddFavorite()
-        observeRemoveBookmark()
+    private fun fetchConfessions() {
+        viewModel.fetchConfessions("", limit, ConfessionCategory.CONFESSIONS_TO_ME)
     }
 
     private fun observeFetchConfessions() {

@@ -2,10 +2,12 @@ package com.example.confessme.presentation.profile.my_profile
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.constraintlayout.motion.widget.OnSwipe
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.confessme.R
 import com.example.confessme.presentation.confess.ConfessAnswerFragment
 import com.example.confessme.presentation.profile.ConfessionCategory
@@ -141,5 +143,11 @@ open class MyProfileViewPagerFragment: Fragment() {
                 onUserNameClick(userEmail, userUid, userName, userToken, navRegister)
             }
         )
+    }
+
+    protected fun setSwiping(swipeRefreshLayout: SwipeRefreshLayout, onSwipe: () -> Unit) {
+        swipeRefreshLayout.setOnRefreshListener {
+            onSwipe()
+        }
     }
 }
