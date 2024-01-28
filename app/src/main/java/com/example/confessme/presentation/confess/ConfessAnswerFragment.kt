@@ -170,20 +170,17 @@ class ConfessAnswerFragment(
         viewModel.addFavoriteAnswer.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.answerIcFavorite.visibility = View.INVISIBLE
-                    binding.progressBarAnswerFavorite.visibility = View.VISIBLE
+                    binding.answerIcFavorite.disable()
                 }
 
                 is UiState.Failure -> {
-                    binding.answerIcFavorite.visibility = View.VISIBLE
-                    binding.progressBarAnswerFavorite.visibility = View.GONE
+                    binding.answerIcFavorite.enable()
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.answerIcFavorite.visibility = View.VISIBLE
-                    binding.progressBarAnswerFavorite.visibility = View.GONE
+                    binding.answerIcFavorite.enable()
                     val updatedConfession = state.data
 
                     setFavorite(updatedConfession?.answer?.favorited)

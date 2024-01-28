@@ -148,11 +148,6 @@
                             android:layout_height="1dp"
                             android:layout_weight="1.5" />
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5">
-
                             <ImageButton
                                 android:id="@+id/confession_detail_screen_ic_favorite"
                                 android:layout_width="wrap_content"
@@ -160,22 +155,11 @@
                                 android:background="?selectableItemBackgroundBorderless"
                                 android:contentDescription="Favorite Button"
                                 android:src="@drawable/ic_favorite"
+                                android:layout_weight="0.5"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
-
-                            <ProgressBar
-                                android:id="@+id/confession_detail_screen_progress_bar_favorite"
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:indeterminateTint="?attr/colorOnSecondary"
-                                android:visibility="invisible"
-                                app:layout_constraintBottom_toBottomOf="@+id/confession_detail_screen_ic_favorite"
-                                app:layout_constraintEnd_toEndOf="@+id/confession_detail_screen_ic_favorite"
-                                app:layout_constraintStart_toStartOf="@+id/confession_detail_screen_ic_favorite"
-                                app:layout_constraintTop_toTopOf="@+id/confession_detail_screen_ic_favorite" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
 

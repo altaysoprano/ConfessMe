@@ -126,8 +126,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="8dp"
-            android:layout_below="@+id/answer_confession_relative_layout">
+            android:layout_below="@+id/answer_confession_relative_layout"
+            android:paddingHorizontal="8dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/answer_screen_textview_edittext_layout"
@@ -288,27 +288,16 @@
                     android:layout_height="1dp"
                     android:layout_weight="1" />
 
-                <RelativeLayout
+                <ImageButton
+                    android:id="@+id/answer_ic_favorite"
                     android:layout_width="wrap_content"
+                    android:layout_weight="0.1"
+                    android:layout_margin="8dp"
+                    android:background="?selectableItemBackgroundBorderless"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.1">
-
-                    <ImageButton
-                        android:id="@+id/answer_ic_favorite"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:backgroundTint="@android:color/transparent"
-                        android:src="@drawable/ic_favorite" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_bar_answer_favorite"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_centerInParent="true"
-                        android:indeterminateTint="?attr/colorOnSecondary"
-                        android:visibility="invisible"></ProgressBar>
-                </RelativeLayout>
+                    android:layout_centerHorizontal="true"
+                    android:backgroundTint="@android:color/transparent"
+                    android:src="@drawable/ic_favorite" />
 
                 <Space
                     android:layout_width="1dp"

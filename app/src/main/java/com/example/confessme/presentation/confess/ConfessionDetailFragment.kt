@@ -32,6 +32,8 @@ import com.example.confessme.presentation.utils.FragmentNavigation
 import com.example.confessme.presentation.profile.other_user_profile.OtherUserProfileFragment
 import com.example.confessme.utils.MyUtils
 import com.example.confessme.presentation.utils.UiState
+import com.example.confessme.utils.MyUtils.disable
+import com.example.confessme.utils.MyUtils.enable
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -389,20 +391,17 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         viewModel.addFavoriteState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.confessionDetailScreenIcFavorite.visibility = View.INVISIBLE
-                    binding.confessionDetailScreenProgressBarFavorite.visibility = View.VISIBLE
+                    binding.confessionDetailScreenIcFavorite.disable()
                 }
 
                 is UiState.Failure -> {
-                    binding.confessionDetailScreenIcFavorite.visibility = View.VISIBLE
-                    binding.confessionDetailScreenProgressBarFavorite.visibility = View.GONE
+                    binding.confessionDetailScreenIcFavorite.enable()
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
                 }
 
                 is UiState.Success -> {
-                    binding.confessionDetailScreenIcFavorite.visibility = View.VISIBLE
-                    binding.confessionDetailScreenProgressBarFavorite.visibility = View.GONE
+                    binding.confessionDetailScreenIcFavorite.enable()
                     val updatedConfession = state.data
 
                     setFavorite(updatedConfession?.favorited)
