@@ -197,14 +197,14 @@ class ConfessAnswerFragment(
         viewModel.addAnswerState.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
-                    binding.replyButton.isEnabled = false
-                    binding.replyButton.alpha = 0.5f
+                    binding.replyButton.disable()
+                    binding.answerIcEdit.disable()
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
                 }
 
                 is UiState.Failure -> {
-                    binding.replyButton.isEnabled = true
-                    binding.replyButton.alpha = 1f
+                    binding.replyButton.enable()
+                    binding.answerIcEdit.enable()
                     binding.progressBarConfessAnswer.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()
@@ -238,9 +238,15 @@ class ConfessAnswerFragment(
             when (state) {
                 is UiState.Loading -> {
                     binding.progressBarConfessAnswer.visibility = View.VISIBLE
+                    binding.answerIcDelete.disable()
+                    binding.answerIcEdit.disable()
+                    binding.answerIcFavorite.disable()
                 }
 
                 is UiState.Failure -> {
+                    binding.answerIcDelete.enable()
+                    binding.answerIcEdit.enable()
+                    binding.answerIcFavorite.enable()
                     binding.progressBarConfessAnswer.visibility = View.GONE
                     Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
                         .show()

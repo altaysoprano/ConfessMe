@@ -207,7 +207,7 @@
                     android:layout_marginTop="8dp"
                     android:gravity="top|start"
                     android:visibility="gone"
-                    app:layout_constraintEnd_toStartOf="@+id/reply_button"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@id/answerScreenProfileImage"
                     app:layout_constraintTop_toBottomOf="@id/answer_screen_answer_username_and_timestamp_layout">
 
@@ -251,14 +251,17 @@
                     app:layout_constraintTop_toBottomOf="@+id/answer_screen_answer_username_and_timestamp_layout"
                     app:layout_constraintVertical_bias="0.0" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/reply_button"
                     android:layout_width="wrap_content"
+                    android:text="@string/answer"
+                    android:textColor="@color/white"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/confessmered"
                     android:src="@drawable/ic_arrow_right"
+                    app:layout_constraintTop_toBottomOf="@id/confess_answer_text_input_layout"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"></ImageButton>
+                    app:layout_constraintEnd_toEndOf="parent"></Button>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
@@ -278,7 +281,9 @@
                     android:id="@+id/answer_ic_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="?selectableItemBackgroundBorderless"
                     android:layout_weight="0.1"
+                    android:layout_margin="8dp"
                     android:backgroundTint="@android:color/transparent"
                     android:src="@drawable/ic_edit"
                     app:tint="#B8B8B8" />
@@ -309,6 +314,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:layout_margin="8dp"
                     android:backgroundTint="@android:color/transparent"
                     android:src="@drawable/ic_delete"
                     app:layout_constraintBottom_toBottomOf="parent"

@@ -210,4 +210,5 @@
     <string name="edit_answer">回答を編集する</string>
     <string name="copied_to_clipboard">クリップボードにコピーされました</string>
     <string name="username_invalid_characters">ユーザー名に無効な文字が含まれています。文字、数字、および「_」のみが許可されています。</string>
+    <string name="answer">答える</string>
 </resources>

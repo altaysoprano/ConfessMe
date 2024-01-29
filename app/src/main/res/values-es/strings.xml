@@ -210,4 +210,5 @@
     <string name="edit_answer">Editar La Respuesta</string>
     <string name="copied_to_clipboard">Copiado al portapapeles</string>
     <string name="username_invalid_characters">Caracteres no válidos en el nombre de usuario. Solo se permiten letras, números y "_".</string>
+    <string name="answer">Responder</string>
 </resources>
