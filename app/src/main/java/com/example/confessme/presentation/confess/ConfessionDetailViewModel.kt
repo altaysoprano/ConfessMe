@@ -29,6 +29,10 @@ class ConfessionDetailViewModel @Inject constructor(
     val deleteConfessionState: LiveData<UiState<Confession?>>
         get() = _deleteConfessionState
 
+    private val _onSwipeState = MutableLiveData<UiState<Confession?>>()
+    val onSwipeState: LiveData<UiState<Confession?>>
+        get() = _onSwipeState
+
     private val _addBookmarkState = MutableLiveData<UiState<Confession?>>()
     val addBookmarkState: LiveData<UiState<Confession?>>
         get() = _addBookmarkState
@@ -71,6 +75,13 @@ class ConfessionDetailViewModel @Inject constructor(
         _deleteBookmarkState.value = UiState.Loading
         repository.removeBookmark(confessionId) { result ->
             _deleteBookmarkState.postValue(result)
+        }
+    }
+
+    fun onSwiping(confessionId: String) {
+        _onSwipeState.value = UiState.Loading
+        repository.getConfession(confessionId) {result ->
+            _onSwipeState.postValue(result)
         }
     }
 }

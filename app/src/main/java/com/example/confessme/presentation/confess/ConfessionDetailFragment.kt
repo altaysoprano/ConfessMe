@@ -13,6 +13,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -67,6 +68,11 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
             setHomeAsUpIndicator(R.drawable.ic_back)
         }
 
+        binding.swipeRefreshLayoutConfessionDetail.setOnRefreshListener {
+            Log.d("Mesaj: ", "Şu an setOnRefreshListener'da")
+            viewModel.onSwiping(confessionId)
+        }
+
         viewModel.getConfession(confessionId)
 
         return binding.root
@@ -78,6 +84,7 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
         observeFavorite()
         observeDeleteConfession()
         observeAddBookmarks()
+        observeSwiping()
         observeRemoveBookmark()
     }
 
@@ -99,6 +106,28 @@ class ConfessionDetailFragment : Fragment(), AnswerDataListener {
                 is UiState.Success -> {
                     binding.progressBarConfessionDetail.visibility = View.GONE
                     binding.confessionDetailRelativeLayout.visibility = View.VISIBLE
+                    if (state.data != null) {
+                        setItem(state.data, binding, requireView())
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeSwiping() {
+        viewModel.onSwipeState.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                }
+
+                is UiState.Failure -> {
+                    binding.swipeRefreshLayoutConfessionDetail.isRefreshing = false
+                    Toast.makeText(requireContext(), state.error.toString(), Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                is UiState.Success -> {
+                    binding.swipeRefreshLayoutConfessionDetail.isRefreshing = false
                     if (state.data != null) {
                         setItem(state.data, binding, requireView())
                     }
